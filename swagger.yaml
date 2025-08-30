@@ -1,0 +1,4476 @@
+swagger: '2.0'
+info:
+  title: Mindwell
+  version: "1.0"
+basePath: /api/v1
+produces:
+  - application/json
+securityDefinitions:
+  OAuth2App:
+    type: oauth2
+    flow: application
+    tokenUrl: "/oauth2/token"
+  OAuth2Password:
+    type: oauth2
+    flow: password
+    tokenUrl: "/oauth2/token"
+  OAuth2Code:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: "/oauth"
+    tokenUrl: "/oauth2/token"
+    scopes:
+      "account:read": read available invites, etc.
+      "account:write": change email, password, etc.
+      "adm:read": read adm info and statuses
+      "adm:write": change adm info and update statuses
+      "comments:read": read comments and comment votes
+      "comments:write": create, edit and remove comments
+      "entries:read": read entries, entry votes, favorites, watchings, tags
+      "entries:write": create, edit and remove tlog entries
+      "favorites:write": add entries to favorites and remove
+      "images:read": get uploaded images
+      "images:write": upload new images
+      "messages:read": read chats and messages and set them read
+      "messages:write": create, edit and remove messages
+      "notifications:read": read notifications and set them read
+      "relations:write": follow, block, hide tlogs, accept followers, invite people
+      "settings:read": read account settings
+      "settings:write": change account settings
+      "themes:read": read theme info, followers
+      "themes:write": create, edit themes
+      "users:read": read profile info, relations
+      "users:write": change profile info, avatar, etc.
+      "votes:write": vote and unvote entries and comments
+      "watchings:write": subscribe to entry comments and unsubscribe
+      "wishes:read": read received wishes
+      "wishes:write": send new wishes
+definitions:
+  UserID:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        minLength: 1
+        maxLength: 20
+      negKarma:
+        type: boolean
+      followersCount:
+        type: integer
+        format: int64
+      isInvited:
+        type: boolean
+      verified:
+        type: boolean
+      authority:
+        type: string
+        enum: [user, admin, moderator]
+      ban:
+        type: object
+        properties:
+          account:
+            type: boolean
+          shadow:
+            type: boolean
+          invite:
+            type: boolean
+          vote:
+            type: boolean
+          comment:
+            type: boolean
+          live:
+            type: boolean
+          complain:
+            type: boolean
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+    example:
+      message: Access denied
+  OAuth2Error:
+    type: object
+    properties:
+      error:
+        type: string
+        enum:
+          - access_denied
+          - invalid_client
+          - invalid_grant
+          - invalid_redirect
+          - invalid_request
+          - invalid_scope
+          - invalid_token
+          - server_error
+          - temporarily_unavailable
+          - unauthorized_client
+          - unrecognized_client
+          - unsupported_grant_type
+          - unsupported_response_type
+  App:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      showName:
+        type: string
+      platform:
+        type: string
+      info:
+        type: string
+  OAuth2Token:
+    type: object
+    properties:
+      access_token:
+        type: string
+      token_type:
+        type: string
+        enum: [ bearer ]
+      expires_in:
+        type: integer
+        format: int64
+      refresh_token:
+        type: string
+      scope:
+        type: array
+        items:
+          type: string
+  Color:
+    type: string
+    pattern: '^#[0-9a-fA-F]{6}$'
+    example: '#373737'
+    description: color in rgb
+  Avatar:
+    type: object
+    properties:
+      x124:
+        type: string
+      x92:
+        type: string
+      x42:
+        type: string
+  Cover:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+        description: user id
+      x1920:
+        type: string
+      x318:
+        type: string
+  Badge:
+    type: object
+    properties:
+      code:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      level:
+        type: integer
+      givenAt:
+        type: number
+        format: double
+  BadgeList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Badge'
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      name:
+        type: string
+        minLength: 1
+        maxLength: 20
+      showName:
+        type: string
+        minLength: 1
+        maxLength: 20
+      isTheme:
+        type: boolean
+      isOnline:
+        type: boolean
+      avatar:
+        $ref: '#/definitions/Avatar'
+    example:
+      id: 1
+      name: 'Mindwell'
+      showName: 'Майндвелл'
+      isOnline: false
+  Friend:
+    allOf:
+      - $ref: '#/definitions/User'
+      - type: object
+        properties:
+          gender:
+            type: string
+            enum: [male, female, not set]
+          privacy:
+            type: string
+            enum: [all, followers, invited, registered]
+          chatPrivacy:
+            type: string
+            enum: [invited, followers, friends, me]
+          title:
+            type: string
+            maxLength: 260
+          rank:
+            type: number
+            format: int64
+          lastSeenAt:
+            type: number
+            format: double
+          cover:
+            $ref: '#/definitions/Cover'
+          counts:
+            type: object
+            properties:
+              entries:
+                type: integer
+              followings:
+                type: integer
+              followers:
+                type: integer
+              ignored:
+                type: integer
+              invited:
+                type: integer
+              comments:
+                type: integer
+              favorites:
+                type: integer
+              tags:
+                type: integer
+              days:
+                type: integer
+              badges:
+                type: integer
+  FriendList:
+    type: object
+    properties:
+      subject:
+        $ref: '#/definitions/User'
+      relation:
+        type: string
+        enum: [followers, followings, requested, ignored, hidden, invited]
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/Friend'
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  Profile:
+    allOf:
+      - $ref: '#/definitions/Friend'
+      - type: object
+        properties:
+          isDaylog:
+            type: boolean
+          createdAt:
+            type: number
+            format: double
+          invitedBy:
+            $ref: '#/definitions/User'
+          createdBy:
+            $ref: '#/definitions/User'
+          ageLowerBound:
+            type: integer
+          ageUpperBound:
+            type: integer
+          country:
+            type: string
+            maxLength: 50
+          city:
+            type: string
+            maxLength: 50
+          design:
+            $ref: '#/definitions/Design'
+          relations:
+            type: object
+            properties:
+              isOpenForMe:
+                type: boolean
+              toMe:
+                type: string
+                enum: [followed, requested, ignored, hidden, none]
+              fromMe:
+                type: string
+                enum: [followed, requested, ignored, hidden, none]
+          rights:
+            type: object
+            properties:
+              chat:
+                type: boolean
+              ignore:
+                type: boolean
+              complain:
+                type: boolean
+        example:
+          gender: male
+          isDaylog: false
+          privacy: all
+          title: 'some tlog title'
+          rank: 17
+          createdAt: 1531029717.333
+          lastSeenAt: 1531029717.333
+          country: Россия
+          city: Казань
+          counts:
+            entries: 13
+            followings: 4
+            followers: 15
+            ignored: 0
+            invited: 0
+            comments: 22
+            favorites: 1
+            tags: 0
+          relations:
+            toMe: none
+            fromMe: followed
+  Design:
+    type: object
+    properties:
+      css:
+        type: string
+      backgroundColor:
+        $ref: '#/definitions/Color'
+      textColor:
+        $ref: '#/definitions/Color'
+      fontFamily:
+        type: string
+      fontSize:
+        type: integer
+      textAlignment:
+        type: string
+        enum: [left, right, center, justify]
+  AuthProfile:
+    allOf:
+      - $ref: '#/definitions/Profile'
+      - type: object
+        properties:
+          birthday:
+            type: string
+            format: full-date
+          showInTops:
+            type: boolean
+          account:
+            type: object
+            properties:
+              email:
+                type: string
+              verified:
+                type: boolean
+          ban:
+            type: object
+            properties:
+              invite:
+                type: number
+                format: double
+              vote:
+                type: number
+                format: double
+              comment:
+                type: number
+                format: double
+              live:
+                type: number
+                format: double
+        example:
+          account:
+            email: 'mail@example.com'
+            verified: true
+          ban:
+            invite: 1531029717.333
+            vote: 1531029717.333
+            comment: 1531029717.333
+            live: 1531029717.333
+  Entry:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      author:
+        $ref: '#/definitions/User'
+      user:
+        $ref: '#/definitions/User'
+      createdAt:
+        type: number
+        format: double
+      rating:
+        $ref: '#/definitions/Rating'
+      title:
+        type: string
+      cutTitle:
+        type: string
+      content:
+        type: string
+      cutContent:
+        type: string
+      editContent:
+        type: string
+      hasCut:
+        type: boolean
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      insertedImages:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      tags:
+        type: array
+        items:
+          type: string
+      wordCount:
+        type: integer
+      privacy:
+        type: string
+        enum: [all, registered, invited, followers, some, me]
+      visibleFor:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+      isCommentable:
+        type: boolean
+      inLive:
+        type: boolean
+      isAnonymous:
+        type: boolean
+      isShared:
+        type: boolean
+      isPinned:
+        type: boolean
+      commentCount:
+        type: integer
+      favoriteCount:
+        type: integer
+      isFavorited:
+        type: boolean
+      isWatching:
+        type: boolean
+      comments:
+          $ref: '#/definitions/CommentList'
+      rights:
+        type: object
+        properties:
+          edit:
+            type: boolean
+          delete:
+            type: boolean
+          pin:
+            type: boolean
+          comment:
+            type: boolean
+          vote:
+            type: boolean
+          complain:
+            type: boolean
+    example:
+      id: 152
+      createdAt: 1531029717.333
+      title: 'example title'
+      content: '<p>some text with <b>html</b> tags</p>'
+      editContent: 'some text with *html* tags'
+      wordCount: 5
+      hasCut: false
+      privacy: 'all'
+      isCommentable: true
+      inLive: true
+      commentCount: 0
+      isFavorited: false
+      isWatching: true
+      rights:
+        edit: false
+        delete: false
+        comment: true
+        vote: true
+        complain: true
+  Feed:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '#/definitions/Entry'
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  CalendarEntry:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      createdAt:
+        type: number
+        format: double
+      title:
+        type: string
+  Calendar:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '#/definitions/CalendarEntry'
+      start:
+        type: number
+        format: int64
+      end:
+        type: number
+        format: int64
+      limit:
+        type: integer
+  AdjacentEntries:
+    type: object
+    properties:
+      older:
+        $ref: '#/definitions/CalendarEntry'
+      newer:
+        $ref: '#/definitions/CalendarEntry'
+      id:
+        type: integer
+        format: int64
+  Rating:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      isVotable:
+        type: boolean
+      upCount:
+        type: integer
+      downCount:
+        type: integer
+      rating:
+        type: number
+        format: float
+      vote:
+        type: integer
+  FavoriteStatus:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      isFavorited:
+        type: boolean
+      count:
+        type: integer
+  WatchingStatus:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      isWatching:
+        type: boolean
+  PinStatus:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      isPinned:
+        type: boolean
+  Relationship:
+    type: object
+    properties:
+      from:
+        type: string
+      to:
+        type: string
+      relation:
+        type: string
+        enum: [followed, requested, ignored, hidden, none]
+  Comment:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      author:
+        $ref: '#/definitions/User'
+      entryId:
+        type: integer
+        format: int64
+        minimum: 1
+      createdAt:
+        type: number
+        format: double
+      content:
+        type: string
+      editContent:
+        type: string
+      rating:
+        $ref: '#/definitions/Rating'
+      rights:
+        type: object
+        properties:
+          edit:
+            type: boolean
+          delete:
+            type: boolean
+          vote:
+            type: boolean
+          complain:
+            type: boolean
+    example:
+      id: 999
+      entryId: 152
+      createdAt: 1531029717.333
+      content: 'some multiline text <br> with html'
+      editContent: 'some multiline text \n with html'
+      rights:
+        edit: true
+        delete: true
+        vote: false
+  CommentList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  Notification:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      type:
+        type: string
+        enum: [comment, follower, request, accept, invite, welcome, invited, badge,
+               adm_sent, adm_received, wish_created, wish_received, entry_moved, info]
+      read:
+        type: boolean
+      createdAt:
+        type: number
+        format: double
+      user:
+        $ref: '#/definitions/User'
+      comment:
+        $ref: '#/definitions/Comment'
+      entry:
+        $ref: '#/definitions/Entry'
+      wish:
+        $ref: '#/definitions/Wish'
+      badge:
+        $ref: '#/definitions/Badge'
+      info:
+        type: object
+        properties:
+          content:
+            type: string
+          link:
+            type: string
+  NotificationList:
+    type: object
+    properties:
+      notifications:
+        type: array
+        items:
+          $ref: '#/definitions/Notification'
+      unreadCount:
+        type: integer
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  ImageSize:
+    type: object
+    properties:
+      width:
+        type: integer
+      height:
+        type: integer
+      url:
+        type: string
+      preview:
+        type: string
+  Image:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      author:
+        $ref: '#/definitions/User'
+      isAnimated:
+        type: boolean
+      processing:
+        type: boolean
+      thumbnail:
+        $ref: '#/definitions/ImageSize'
+      small:
+        $ref: '#/definitions/ImageSize'
+      medium:
+        $ref: '#/definitions/ImageSize'
+      large:
+        $ref: '#/definitions/ImageSize'
+  ImageList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  Chat:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      partner:
+        $ref: '#/definitions/User'
+      lastMessage:
+        $ref: '#/definitions/Message'
+      unreadCount:
+        type: integer
+      rights:
+        type: object
+        properties:
+          send:
+            type: boolean
+  ChatList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Chat'
+      unreadCount:
+        type: integer
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  Message:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      chatId:
+        type: integer
+        format: int64
+      author:
+        $ref: '#/definitions/User'
+      createdAt:
+        type: number
+        format: double
+      read:
+        type: boolean
+      content:
+        type: string
+      editContent:
+        type: string
+      rights:
+        type: object
+        properties:
+          edit:
+            type: boolean
+          delete:
+            type: boolean
+          complain:
+            type: boolean
+  MessageList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Message'
+      unreadCount:
+        type: integer
+      nextAfter:
+        type: string
+      hasAfter:
+        type: boolean
+      nextBefore:
+        type: string
+      hasBefore:
+        type: boolean
+  TagList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            tag:
+              type: string
+            count:
+              type: integer
+  Wish:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      content:
+        type: string
+      state:
+        type: string
+        enum: [new, sent, expired, declined, thanked, complained]
+      sendUntil:
+        type: number
+        format: double
+      receiver:
+        $ref: '#/definitions/User'
+parameters:
+  pathId:
+    in: path
+    name: id
+    type: integer
+    format: int64
+    minimum: 1
+    required: true
+  pathName:
+    in: path
+    name: name
+    type: string
+    minLength: 1
+    maxLength: 20
+    required: true
+    pattern: "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$"
+  formEmail:
+    in: formData
+    name: email
+    type: string
+    maxLength: 500
+    required: true
+    pattern: "^.+@.+\\..+$"
+  password:
+    in: formData
+    name: password
+    type: string
+    minLength: 6
+    maxLength: 100
+    required: true
+  limit:
+    in: query
+    name: limit
+    type: integer
+    minimum: 1
+    maximum: 100
+    default: 30
+  after:
+    in: query
+    name: after
+    type: string
+    default: ""
+  before:
+    in: query
+    name: before
+    type: string
+    default: ""
+  start:
+    in: query
+    name: start
+    type: integer
+    format: int64
+    default: 0
+  end:
+    in: query
+    name: end
+    type: integer
+    format: int64
+    default: 0
+  bigLimit:
+    in: query
+    name: limit
+    type: integer
+    minimum: 1
+    maximum: 1000
+    default: 1000
+  tag:
+    in: query
+    name: tag
+    type: string
+    maxLength: 50
+    default: ""
+  sort:
+    in: query
+    name: sort
+    type: string
+    enum: [new, old, best]
+    default: new
+  query:
+    in: query
+    name: query
+    type: string
+    maxLength: 100
+    default: ""
+  source:
+    in: query
+    name: source
+    type: string
+    enum: [all, users, themes]
+    default: all
+paths:
+  /account/email/{email}:
+    get:
+      summary: check if email is used
+      parameters:
+        - in: path
+          name: email
+          type: string
+          required: true
+          maxLength: 500
+          pattern: ".+@.+"
+      tags:
+        - account
+      responses:
+        200:
+          description: check result
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              isFree:
+                type: boolean
+            example:
+              email: mail@example.com
+              isFree: true
+  /account/name/{name}:
+    get:
+      summary: check if name is used
+      parameters:
+        - $ref: '#/parameters/pathName'
+      tags:
+        - account
+      responses:
+        200:
+          description: check result
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              isFree:
+                type: boolean
+            example:
+              name: example
+              isFree: false
+  /account/register:
+    post:
+      summary: register new account
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: '#/parameters/formEmail'
+        - $ref: '#/parameters/password'
+        - in: formData
+          name: name
+          type: string
+          minLength: 1
+          maxLength: 20
+          required: true
+          pattern: "^[a-zA-Z][a-zA-Z0-9\\-_]*$"
+        - in: formData
+          name: birthday
+          type: string
+          format: full-date
+        - in: formData
+          name: gender
+          type: string
+          enum: [not set, male, female]
+          default: not set
+        - in: formData
+          name: country
+          type: string
+          default: ''
+          maxLength: 50
+        - in: formData
+          name: city
+          type: string
+          default: ''
+          maxLength: 50
+      tags:
+        - account
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthProfile'
+        400:
+          description: email or name already exists
+          schema:
+            $ref: '#/definitions/Error'
+  /account/verification:
+    post:
+      summary: request verification email
+      security:
+        - OAuth2Password: []
+      tags:
+        - account
+      responses:
+        200:
+          description: email has been sent
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+  /account/verification/{email}:
+    get:
+      summary: verify account email
+      parameters:
+        - in: path
+          type: string
+          name: email
+          maxLength: 500
+          required: true
+          pattern: '.+@.+'
+        - in: query
+          type: string
+          name: code
+          minLength: 64
+          maxLength: 64
+          required: true
+      tags:
+        - account
+      responses:
+        200:
+          description: verified
+        400:
+          description: code or email is not valid
+          schema:
+            $ref: '#/definitions/Error'
+  /account/settings/email:
+    get:
+      security:
+        - OAuth2Password: []
+        - OAuth2Code: [ "settings:read" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: email notification settings
+          schema:
+            type: object
+            properties:
+              comments:
+                type: boolean
+              followers:
+                type: boolean
+              invites:
+                type: boolean
+              movedEntries:
+                type: boolean
+              badges:
+                type: boolean
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "settings:write" ]
+      tags:
+        - account
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          type: boolean
+          name: comments
+          default: false
+        - in: formData
+          type: boolean
+          name: followers
+          default: false
+        - in: formData
+          type: boolean
+          name: invites
+          default: false
+        - in: formData
+          type: boolean
+          name: movedEntries
+          default: false
+        - in: formData
+          type: boolean
+          name: badges
+          default: false
+      responses:
+        200:
+          description: email notification settings has been updated
+  /account/settings/telegram:
+    get:
+      security:
+          - OAuth2Password: []
+          - OAuth2Code: [ "settings:read" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: telegram notification settings
+          schema:
+            type: object
+            properties:
+              comments:
+                type: boolean
+              followers:
+                type: boolean
+              invites:
+                type: boolean
+              messages:
+                type: boolean
+              movedEntries:
+                type: boolean
+              badges:
+                type: boolean
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "settings:write" ]
+      tags:
+        - account
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          type: boolean
+          name: comments
+          default: false
+        - in: formData
+          type: boolean
+          name: followers
+          default: false
+        - in: formData
+          type: boolean
+          name: invites
+          default: false
+        - in: formData
+          type: boolean
+          name: messages
+          default: false
+        - in: formData
+          type: boolean
+          name: movedEntries
+          default: false
+        - in: formData
+          type: boolean
+          name: badges
+          default: false
+      responses:
+        200:
+          description: telegram notification settings has been updated
+  /account/settings/onsite:
+    get:
+      security:
+        - OAuth2Password: []
+        - OAuth2Code: [ "settings:read" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: onsite notification settings
+          schema:
+            type: object
+            properties:
+              wishes:
+                type: boolean
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "settings:write" ]
+      tags:
+        - account
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          type: boolean
+          name: wishes
+          default: false
+      responses:
+        200:
+          description: onsite notification settings has been updated
+  /account/password:
+    post:
+      summary: change new password
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          type: string
+          name: old_password
+          minLength: 6
+          maxLength: 100
+          required: true
+        - in: formData
+          type: string
+          name: new_password
+          minLength: 6
+          maxLength: 100
+          required: true
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "account:write" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: password has been set
+        403:
+          description: old password is invalid
+          schema:
+            $ref: '#/definitions/Error'
+  /account/email:
+    post:
+      summary: set new email
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: '#/parameters/formEmail'
+        - $ref: '#/parameters/password'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "account:write" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: email has been set
+        400:
+          description: email is the same
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: password is invalid
+          schema:
+            $ref: '#/definitions/Error'
+  /account/recover:
+    post:
+      summary: request reset password email
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: '#/parameters/formEmail'
+      tags:
+        - account
+      responses:
+        200:
+          description: OK
+        400:
+          description: Email not found
+          schema:
+            $ref: '#/definitions/Error'
+  /account/recover/password:
+    post:
+      summary: reset password
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: '#/parameters/formEmail'
+        - $ref: '#/parameters/password'
+        - in: formData
+          type: integer
+          format: int64
+          name: date
+          required: true
+        - in: formData
+          type: string
+          name: code
+          minLength: 64
+          maxLength: 64
+          required: true
+      tags:
+        - account
+      responses:
+        200:
+          description: Password changed
+        400:
+          description: Email not found
+          schema:
+            $ref: '#/definitions/Error'
+  /account/invites:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "account:read" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: invite list
+          schema:
+            type: object
+            properties:
+              invites:
+                type: array
+                items:
+                  type: string
+  /account/subscribe/token:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "notifications:read" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: centrifugo connection token
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+  /account/subscribe/telegram:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "settings:write" ]
+      tags:
+        - account
+      responses:
+        200:
+          description: telegram login token
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "settings:write" ]
+      tags:
+        - account
+      responses:
+        204:
+          description: OK
+  /oauth2/allow:
+    post:
+      summary: only for internal usage
+      tags:
+        - oauth2
+      security:
+        - OAuth2Password: []
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: response_type
+          type: string
+          required: true
+          enum: [ code ]
+        - in: formData
+          name: client_id
+          type: integer
+          required: true
+        - in: formData
+          name: redirect_uri
+          type: string
+          required: true
+          maxLength: 500
+        - in: formData
+          name: scope
+          type: array
+          required: true
+          items:
+            type: string
+          maxLength: 50
+          collectionFormat: multi
+        - in: formData
+          name: state
+          type: string
+          maxLength: 500
+        - in: formData
+          name: code_challenge
+          type: string
+          minLength: 43
+          maxLength: 128
+        - in: formData
+          name: code_challenge_method
+          type: string
+          enum: [ plain, S256 ]
+      responses:
+        400:
+          description: some error happened
+          schema:
+            $ref: '#/definitions/OAuth2Error'
+        401:
+          description: invalid client
+          schema:
+            $ref: '#/definitions/OAuth2Error'
+        200:
+          description: auth code
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              state:
+                type: string
+  /oauth2/deny:
+    get:
+      summary: only for internal usage
+      tags:
+        - oauth2
+      parameters:
+        - in: query
+          name: client_id
+          type: integer
+          required: true
+        - in: query
+          name: redirect_uri
+          type: string
+          required: true
+          maxLength: 500
+      responses:
+        400:
+          description: some error happened
+          schema:
+            $ref: '#/definitions/OAuth2Error'
+  /oauth2/token:
+    post:
+      tags:
+        - oauth2
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: grant_type
+          type: string
+          enum: [ authorization_code, client_credentials, password, refresh_token ]
+          required: true
+        - in: formData
+          name: client_id
+          type: integer
+          required: true
+        - in: formData
+          name: client_secret
+          type: string
+          default: ""
+          maxLength: 64
+        - in: formData
+          name: code
+          type: string
+          maxLength: 32
+        - in: formData
+          name: redirect_uri
+          type: string
+          maxLength: 500
+        - in: formData
+          name: code_verifier
+          type: string
+          maxLength: 128
+        - in: formData
+          name: refresh_token
+          type: string
+          minLength: 50
+          maxLength: 60
+        - in: formData
+          name: username
+          type: string
+          maxLength: 500
+        - in: formData
+          name: password
+          type: string
+          minLength: 6
+          maxLength: 100
+      responses:
+        400:
+          description: some error happened
+          schema:
+            $ref: '#/definitions/OAuth2Error'
+        401:
+          description: invalid client
+          schema:
+            $ref: '#/definitions/OAuth2Error'
+        200:
+          description: authorized
+          schema:
+            $ref: '#/definitions/OAuth2Token'
+  /oauth2/apps/{id}:
+    get:
+      security:
+        - OAuth2Password: []
+      parameters:
+        - $ref: '#/parameters/pathId'
+      tags:
+        - oauth2
+      responses:
+        200:
+          description: app info
+          schema:
+            $ref: '#/definitions/App'
+        404:
+          description: not found
+          schema:
+            $ref: '#/definitions/Error'
+  /notifications:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "notifications:read" ]
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - in: query
+          name: unread
+          type: boolean
+          default: false
+      tags:
+        - notifications
+      responses:
+        200:
+          description: notification list
+          schema:
+            $ref: '#/definitions/NotificationList'
+  /notifications/{id}:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "notifications:read" ]
+      parameters:
+        - $ref: '#/parameters/pathId'
+      tags:
+        - notifications
+      responses:
+        200:
+          description: notification
+          schema:
+            $ref: '#/definitions/Notification'
+        404:
+          description: not found
+          schema:
+            $ref: '#/definitions/Error'
+  /notifications/read:
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "notifications:read" ]
+      parameters:
+        - in: query
+          name: time
+          type: number
+          default: 0
+      tags:
+        - notifications
+      responses:
+        200:
+          description: unread count
+          schema:
+            type: object
+            properties:
+              unread:
+                type: integer
+  /users:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      parameters:
+        - in: query
+          name: top
+          type: string
+          enum: [new, rank, waiting]
+          default: new
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      tags:
+        - users
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              top:
+                type: string
+              query:
+                type: string
+              users:
+                type: array
+                items:
+                  $ref: '#/definitions/Friend'
+  /users/{name}:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: User data
+          schema:
+            $ref: '#/definitions/Profile'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/followers:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/followings:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/invited:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/tlog:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/calendar:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/start'
+        - $ref: '#/parameters/end'
+        - $ref: '#/parameters/bigLimit'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Calendar'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/favorites:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/comments:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: Comment list
+          schema:
+            $ref: '#/definitions/CommentList'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/images:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: Image list
+          schema:
+            $ref: '#/definitions/ImageList'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/tags:
+    get:
+      parameters:
+        - $ref: '#/parameters/pathName'
+        - $ref: '#/parameters/limit'
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: user tags
+          schema:
+            $ref: '#/definitions/TagList'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/badges:
+    get:
+      parameters:
+        - $ref: '#/parameters/pathName'
+        - $ref: '#/parameters/bigLimit'
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - users
+      responses:
+        200:
+          description: user badges
+          schema:
+            $ref: '#/definitions/BadgeList'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /users/{name}/complain:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          maxLength: 1000
+          default: ""
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - users
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:read" ]
+      parameters:
+        - in: query
+          name: top
+          type: string
+          enum: [new, rank]
+          default: new
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      tags:
+        - themes
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              top:
+                type: string
+              query:
+                type: string
+              themes:
+                type: array
+                items:
+                  $ref: '#/definitions/Friend'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:write" ]
+      tags:
+        - themes
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: name
+          type: string
+          minLength: 1
+          maxLength: 20
+          required: true
+          pattern: "^[a-zA-Z][a-zA-Z0-9\\-_]*$"
+        - in: formData
+          name: showName
+          type: string
+          minLength: 1
+          maxLength: 20
+          required: true
+          pattern: "\\s*\\S+.*"
+      responses:
+        200:
+          description: theme data
+          schema:
+            $ref: '#/definitions/Profile'
+        400:
+          description: name already exists
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Theme data
+          schema:
+            $ref: '#/definitions/Profile'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:write" ]
+      tags:
+        - themes
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: showName
+          type: string
+          minLength: 1
+          maxLength: 20
+          required: true
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: isDaylog
+          type: boolean
+          default: false
+        - in: formData
+          name: privacy
+          type: string
+          enum: [all, invited, registered]
+          required: true
+        - in: formData
+          name: title
+          type: string
+          maxLength: 500
+          default: ''
+        - in: formData
+          name: showInTops
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: theme data
+          schema:
+            $ref: '#/definitions/Profile'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/avatar:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:write" ]
+      tags:
+        - themes
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        204:
+          description: OK
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/cover:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:write" ]
+      tags:
+        - themes
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        204:
+          description: OK
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/followers:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "themes:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Theme list
+          schema:
+            $ref: '#/definitions/FriendList'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/tlog:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - themes
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: title
+          type: string
+          maxLength: 500
+          default: ''
+        - in: formData
+          name: content
+          type: string
+          required: true
+          minLength: 1
+          maxLength: 30000
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: images
+          type: array
+          maxItems: 10
+          uniqueItems: true
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        - in: formData
+          name: tags
+          type: array
+          maxItems: 5
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 50
+        - in: formData
+          name: privacy
+          type: string
+          enum: [all, registered, invited, followers]
+          required: true
+        - in: formData
+          name: isCommentable
+          type: boolean
+          default: true
+        - in: formData
+          name: isVotable
+          type: boolean
+          default: false
+        - in: formData
+          name: inLive
+          type: boolean
+          default: false
+        - in: formData
+          name: isShared
+          type: boolean
+          default: false
+        - in: formData
+          name: isDraft
+          type: boolean
+          default: false
+        - in: formData
+          name: isAnonymous
+          type: boolean
+          default: false
+      responses:
+        201:
+          description: Entry data
+          schema:
+            $ref: '#/definitions/Entry'
+        403:
+          description: access denied or post in live restriction
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/calendar:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/start'
+        - $ref: '#/parameters/end'
+        - $ref: '#/parameters/bigLimit'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Calendar'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/comments:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Comment list
+          schema:
+            $ref: '#/definitions/CommentList'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/images:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Image list
+          schema:
+            $ref: '#/definitions/ImageList'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/tags:
+    get:
+      parameters:
+        - $ref: '#/parameters/pathName'
+        - $ref: '#/parameters/limit'
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - themes
+      responses:
+        200:
+          description: Theme tags
+          schema:
+            $ref: '#/definitions/TagList'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /themes/{name}/complain:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          maxLength: 1000
+          default: ""
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - themes
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Theme not found
+          schema:
+            $ref: '#/definitions/Error'
+  /me:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: your data
+          schema:
+            $ref: '#/definitions/AuthProfile'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:write" ]
+      tags:
+        - me
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: showName
+          type: string
+          minLength: 1
+          maxLength: 20
+          required: true
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: gender
+          type: string
+          enum: [male, female, not set]
+          default: 'not set'
+        - in: formData
+          name: isDaylog
+          type: boolean
+          default: false
+        - in: formData
+          name: privacy
+          type: string
+          enum: [all, invited, followers, registered]
+          required: true
+        - in: formData
+          name: chatPrivacy
+          type: string
+          enum: [invited, followers, friends, me]
+          required: true
+        - in: formData
+          name: title
+          type: string
+          maxLength: 500
+          default: ''
+        - in: formData
+          name: birthday
+          type: string
+          format: full-date
+          default: ''
+        - in: formData
+          name: country
+          type: string
+          maxLength: 50
+          default: ''
+        - in: formData
+          name: city
+          type: string
+          maxLength: 50
+          default: ''
+        - in: formData
+          name: showInTops
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: your data
+          schema:
+            $ref: '#/definitions/Profile'
+  /me/avatar:
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:write" ]
+      tags:
+        - me
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        204:
+          description: OK
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+  /me/cover:
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:write" ]
+      tags:
+        - me
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        204:
+          description: OK
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+  /me/online:
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - me
+      responses:
+        200:
+          description: unread counts
+          schema:
+            type: object
+            properties:
+              notifications:
+                type: integer
+              chats:
+                type: integer
+  /me/followers:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/followings:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/invited:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/ignored:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/hidden:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/requested:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: User list
+          schema:
+            $ref: '#/definitions/FriendList'
+  /me/tlog:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - me
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: title
+          type: string
+          maxLength: 500
+          default: ''
+        - in: formData
+          name: content
+          type: string
+          required: true
+          minLength: 1
+          maxLength: 30000
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: images
+          type: array
+          maxItems: 10
+          uniqueItems: true
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        - in: formData
+          name: tags
+          type: array
+          maxItems: 5
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 50
+        - in: formData
+          name: privacy
+          type: string
+          enum: [all, registered, invited, followers, some, me]
+          required: true
+        - in: formData
+          name: visibleFor
+          type: array
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        - in: formData
+          name: isCommentable
+          type: boolean
+          default: true
+        - in: formData
+          name: isVotable
+          type: boolean
+          default: false
+        - in: formData
+          name: inLive
+          type: boolean
+          default: false
+        - in: formData
+          name: isShared
+          type: boolean
+          default: false
+        - in: formData
+          name: isDraft
+          type: boolean
+          default: false
+      responses:
+        201:
+          description: Entry data
+          schema:
+            $ref: '#/definitions/Entry'
+        403:
+          description: post in live restriction
+          schema:
+            $ref: '#/definitions/Error'
+  /me/calendar:
+    get:
+      parameters:
+        - $ref: '#/parameters/start'
+        - $ref: '#/parameters/end'
+        - $ref: '#/parameters/bigLimit'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Calendar'
+  /me/favorites:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+  /me/comments:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: Comment list
+          schema:
+            $ref: '#/definitions/CommentList'
+  /me/images:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: Image list
+          schema:
+            $ref: '#/definitions/ImageList'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /me/tags:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: my tags
+          schema:
+            $ref: '#/definitions/TagList'
+  /me/badges:
+    get:
+      parameters:
+        - $ref: '#/parameters/bigLimit'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - me
+      responses:
+        200:
+          description: my badges
+          schema:
+            $ref: '#/definitions/BadgeList'
+  /design:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - design
+      responses:
+        200:
+          description: Design of your tlog
+          schema:
+            $ref: '#/definitions/Design'
+    put:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: css
+          type: string
+          default: ''
+          maxLength: 10000
+        - in: formData
+          name: backgroundColor
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+          default: '#ffffff'
+        - in: formData
+          name: textColor
+          type: string
+          pattern: '^#[0-9a-fA-F]{6}$'
+          default: '#000000'
+        - in: formData
+          name: fontFamily
+          type: string
+        - in: formData
+          name: fontSize
+          type: integer
+        - in: formData
+          name: textAlignment
+          type: string
+          enum: [left, right, center, justify]
+          required: true
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:write" ]
+      tags:
+        - design
+      responses:
+        200:
+          description: Design of your tlog
+          schema:
+            $ref: '#/definitions/Design'
+  /design/fonts:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - design
+      responses:
+        200:
+          description: List of available font families
+          schema:
+            type: object
+            properties:
+              fonts:
+                type: array
+                items:
+                  type: string
+  /relations/to/{name}:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: your relationship with the user
+          schema:
+            $ref: '#/definitions/Relationship'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - in: query
+          name: r
+          type: string
+          enum: [followed, ignored, hidden]
+          required: true
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "relations:write" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: your relationship with the user
+          schema:
+            $ref: '#/definitions/Relationship'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "relations:write" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: your relationship with the user
+          schema:
+            $ref: '#/definitions/Relationship'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /relations/from/{name}:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "users:read" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: the user relationship with you
+          schema:
+            $ref: '#/definitions/Relationship'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: permit the user to follow you
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "relations:write" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: the user relationship with you
+          schema:
+            $ref: '#/definitions/Relationship'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: cancel following request or unsubscribe the user
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "relations:write" ]
+      tags:
+        - relations
+      responses:
+        200:
+          description: the user relationship with you
+          schema:
+            $ref: '#/definitions/Relationship'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /relations/invited/{name}:
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "relations:write" ]
+      tags:
+        - relations
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: '#/parameters/pathName'
+        - in: formData
+          name: invite
+          type: string
+          required: true
+          pattern: "^\\s*\\S+\\s+\\S+\\s+\\S+\\s*$"
+      responses:
+        204:
+          description: invited
+        403:
+          description: invalid invite or the user is invited already
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/live:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/query'
+        - $ref: '#/parameters/source'
+        - in: query
+          name: section
+          type: string
+          enum: [entries, comments, waiting]
+          default: entries
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+  /entries/friends:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/query'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+  /entries/watching:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+  /entries/best:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/tag'
+        - $ref: '#/parameters/query'
+        - $ref: '#/parameters/source'
+        - in: query
+          name: category
+          type: string
+          enum: [year, month, week]
+          default: month
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry list
+          schema:
+            $ref: '#/definitions/Feed'
+  /entries/random:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry data
+          schema:
+            $ref: '#/definitions/Entry'
+        404:
+          description: No entries found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/tags:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - in: query
+          name: query
+          type: string
+          minLength: 1
+          maxLength: 50
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: popular tags
+          schema:
+            $ref: '#/definitions/TagList'
+  /entries/{id}:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Entry data
+          schema:
+            $ref: '#/definitions/Entry'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - entries
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: title
+          type: string
+          default: ''
+          maxLength: 500
+        - in: formData
+          name: content
+          type: string
+          required: true
+          minLength: 1
+          maxLength: 30000
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: images
+          type: array
+          maxItems: 10
+          uniqueItems: true
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        - in: formData
+          name: tags
+          type: array
+          maxItems: 5
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 50
+        - in: formData
+          name: privacy
+          type: string
+          enum: [all, registered, invited, followers, some, me]
+          required: true
+        - in: formData
+          name: visibleFor
+          type: array
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        - in: formData
+          name: isCommentable
+          type: boolean
+          default: true
+        - in: formData
+          name: isVotable
+          type: boolean
+          default: false
+        - in: formData
+          name: inLive
+          type: boolean
+          default: false
+        - in: formData
+          name: isShared
+          type: boolean
+          default: false
+        - in: formData
+          name: anonymous_comments
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: Entry data
+          schema:
+            $ref: '#/definitions/Entry'
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: access denied or post in live restriction
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/adjacent:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2App: []
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: Adjacent entries
+          schema:
+            $ref: '#/definitions/AdjacentEntries'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/pin:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: pin status
+          schema:
+            $ref: '#/definitions/PinStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: pin status
+          schema:
+            $ref: '#/definitions/PinStatus'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:write" ]
+      tags:
+        - entries
+      responses:
+        200:
+          description: pin status
+          schema:
+            $ref: '#/definitions/PinStatus'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/vote:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - in: query
+          name: positive
+          type: boolean
+          default: true
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "votes:write" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "votes:write" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/favorite:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - favorites
+      responses:
+        200:
+          description: favorite status
+          schema:
+            $ref: '#/definitions/FavoriteStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "favorites:write" ]
+      tags:
+        - favorites
+      responses:
+        200:
+          description: favorite status
+          schema:
+            $ref: '#/definitions/FavoriteStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "favorites:write" ]
+      tags:
+        - favorites
+      responses:
+        200:
+          description: favorite status
+          schema:
+            $ref: '#/definitions/FavoriteStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/watching:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "entries:read" ]
+      tags:
+        - watchings
+      responses:
+        200:
+          description: watching status
+          schema:
+            $ref: '#/definitions/WatchingStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "watchings:write" ]
+      tags:
+        - watchings
+      responses:
+        200:
+          description: watching status
+          schema:
+            $ref: '#/definitions/WatchingStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "watchings:write" ]
+      tags:
+        - watchings
+      responses:
+        200:
+          description: watching status
+          schema:
+            $ref: '#/definitions/WatchingStatus'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/commentator:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:write" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: your profile as a comment author
+          schema:
+            $ref: '#/definitions/User'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/comments:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: comments list
+          schema:
+            $ref: '#/definitions/CommentList'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          minLength: 1
+          maxLength: 1000
+          required: true
+          pattern: "\\s*\\S+.*"
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:write" ]
+      tags:
+        - comments
+      responses:
+        201:
+          description: Comment data
+          schema:
+            $ref: '#/definitions/Comment'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /entries/{id}/complain:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          maxLength: 1000
+          default: ""
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - entries
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Entry not found
+          schema:
+            $ref: '#/definitions/Error'
+  /comments:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: Comment list
+          schema:
+            $ref: '#/definitions/CommentList'
+  /comments/{id}:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: Comment data
+          schema:
+            $ref: '#/definitions/Comment'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          minLength: 1
+          maxLength: 1000
+          required: true
+          pattern: "\\s*\\S+.*"
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:write" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: Comment data
+          schema:
+            $ref: '#/definitions/Comment'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:write" ]
+      tags:
+        - comments
+      responses:
+        200:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+  /comments/{id}/vote:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "comments:read" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      parameters:
+        - in: query
+          name: positive
+          type: boolean
+          default: true
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "votes:write" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "votes:write" ]
+      tags:
+        - votes
+      responses:
+        200:
+          description: vote status
+          schema:
+            $ref: '#/definitions/Rating'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+  /comments/{id}/complain:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          maxLength: 1000
+          default: ""
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - comments
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/Error'
+  /chats:
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:read" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: Chat list
+          schema:
+            $ref: '#/definitions/ChatList'
+  /chats/{name}:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:read" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: Chat info
+          schema:
+            $ref: '#/definitions/Chat'
+        404:
+          description: Chat not found
+          schema:
+            $ref: '#/definitions/Error'
+  /chats/{name}/read:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    put:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:read" ]
+      parameters:
+        - in: query
+          name: message
+          type: integer
+          format: int64
+          required: true
+      tags:
+        - chats
+      responses:
+        200:
+          description: unread count
+          schema:
+            type: object
+            properties:
+              unread:
+                type: integer
+        404:
+          description: Chat not found
+          schema:
+            $ref: '#/definitions/Error'
+  /chats/{name}/messages:
+    parameters:
+      - $ref: '#/parameters/pathName'
+    get:
+      parameters:
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/after'
+        - $ref: '#/parameters/before'
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:read" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: message list
+          schema:
+            $ref: '#/definitions/MessageList'
+        404:
+          description: Chat not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          minLength: 1
+          maxLength: 1000
+          required: true
+          pattern: "\\s*\\S+.*"
+        - in: formData
+          name: uid
+          type: number
+          format: int64
+          required: true
+          description: unique message id
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:write" ]
+      tags:
+        - chats
+      responses:
+        201:
+          description: Message data
+          schema:
+            $ref: '#/definitions/Message'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Chat not found
+          schema:
+            $ref: '#/definitions/Error'
+  /messages/{id}:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:read" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: Message data
+          schema:
+            $ref: '#/definitions/Message'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Message not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          minLength: 1
+          maxLength: 1000
+          required: true
+          pattern: "\\s*\\S+.*"
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:write" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: Message data
+          schema:
+            $ref: '#/definitions/Message'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Message not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "messages:write" ]
+      tags:
+        - chats
+      responses:
+        200:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Message not found
+          schema:
+            $ref: '#/definitions/Error'
+  /messages/{id}/complain:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          maxLength: 1000
+          default: ""
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - chats
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Message not found
+          schema:
+            $ref: '#/definitions/Error'
+  /adm/grandson:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:read" ]
+      tags:
+        - adm
+      responses:
+        200:
+          description: your address
+          schema:
+            type: object
+            properties:
+              postcode:
+                type: string
+              country:
+                type: string
+              address:
+                type: string
+              phone:
+                type: string
+              name:
+                type: string
+              comment:
+                type: string
+              anonymous:
+                type: boolean
+        403:
+          description: you're not allowed to participate
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: registration finished
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:write" ]
+      tags:
+        - adm
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: postcode
+          type: string
+          maxLength: 50
+          required: true
+        - in: formData
+          name: country
+          type: string
+          maxLength: 50
+          required: true
+        - in: formData
+          name: address
+          type: string
+          maxLength: 500
+          required: true
+        - in: formData
+          name: phone
+          type: string
+          maxLength: 50
+          default: ''
+          required: false
+        - in: formData
+          name: name
+          type: string
+          maxLength: 100
+          required: true
+        - in: formData
+          name: comment
+          type: string
+          default: ''
+          maxLength: 1000
+        - in: formData
+          name: anonymous
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: OK
+        403:
+          description: you're not allowed to participate
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: registration finished
+          schema:
+            $ref: '#/definitions/Error'
+  /adm/grandson/status:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:read" ]
+      tags:
+        - adm
+      responses:
+        200:
+          description: status of your gifts
+          schema:
+            type: object
+            properties:
+              sent:
+                type: boolean
+              received:
+                type: boolean
+              tracking:
+                type: string
+              comment:
+                type: string
+        403:
+          description: you're not registered in adm
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:write" ]
+      tags:
+        - adm
+      parameters:
+        - in: query
+          name: received
+          type: boolean
+          required: true
+      responses:
+        200:
+          description: OK
+        403:
+          description: you're not registered in adm
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+  /adm/grandfather:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:read" ]
+      tags:
+        - adm
+      responses:
+        200:
+          description: your grandson address
+          schema:
+            type: object
+            properties:
+              postcode:
+                type: string
+              country:
+                type: string
+              address:
+                type: string
+              phone:
+                type: string
+              fullname:
+                type: string
+              comment:
+                type: string
+              name:
+                type: string
+        403:
+          description: you're not registered in adm
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+  /adm/grandfather/status:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:read" ]
+      tags:
+        - adm
+      responses:
+        200:
+          description: status of your gifts
+          schema:
+            type: object
+            properties:
+              sent:
+                type: boolean
+              received:
+                type: boolean
+              tracking:
+                type: string
+              comment:
+                type: string
+        403:
+          description: you're not registered in adm
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:write" ]
+      tags:
+        - adm
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: sent
+          type: boolean
+          required: false
+          default: false
+        - in: formData
+          name: tracking
+          type: string
+          maxLength: 50
+          default: ''
+        - in: formData
+          name: comment
+          type: string
+          maxLength: 1000
+          default: ''
+      responses:
+        200:
+          description: OK
+        403:
+          description: you're not registered in adm
+          schema:
+            $ref: '#/definitions/Error'
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+  /adm/stat:
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "adm:read" ]
+      tags:
+        - adm
+      responses:
+        200:
+          description: ADM stats
+          schema:
+            type: object
+            properties:
+              grandsons:
+                type: integer
+              sent:
+                type: integer
+              received:
+                type: integer
+        410:
+          description: adm finished
+          schema:
+            $ref: '#/definitions/Error'
+  /wishes/{id}:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "wishes:read" ]
+      tags:
+        - wishes
+      responses:
+        200:
+          description: Wish data
+          schema:
+            $ref: '#/definitions/Wish'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wish not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: content
+          type: string
+          minLength: 1
+          maxLength: 1000
+          required: true
+          pattern: "^\\s*\\S+"
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "wishes:write" ]
+      tags:
+        - wishes
+      responses:
+        200:
+          description: Wish sent
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wish not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "wishes:write" ]
+      tags:
+        - wishes
+      responses:
+        200:
+          description: Wish declined
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wish not found
+          schema:
+            $ref: '#/definitions/Error'
+  /wishes/{id}/thank:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - wishes
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wish not found
+          schema:
+            $ref: '#/definitions/Error'
+  /wishes/{id}/complain:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    post:
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ ]
+      tags:
+        - wishes
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wish not found
+          schema:
+            $ref: '#/definitions/Error'
+  /images:
+    post:
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:write" ]
+      tags:
+        - images
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        200:
+          description: Image
+          schema:
+            $ref: '#/definitions/Image'
+        400:
+          description: bad request
+          schema:
+            $ref: '#/definitions/Error'
+  /images/{id}:
+    parameters:
+      - $ref: '#/parameters/pathId'
+    get:
+      tags:
+        - images
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:read" ]
+      responses:
+        200:
+          description: Image
+          schema:
+            $ref: '#/definitions/Image'
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Image not found
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - images
+      security:
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:write" ]
+      responses:
+        204:
+          description: OK
+        403:
+          description: access denied
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Image not found
+          schema:
+            $ref: '#/definitions/Error'
+  /images/find:
+    get:
+      security:
+        - OAuth2App: [ ]
+        - OAuth2Password: [ ]
+        - OAuth2Code: [ "images:read" ]
+      tags:
+        - images
+      parameters:
+        - in: query
+          name: link
+          type: string
+          required: true
+      responses:
+        200:
+          description: Image
+          schema:
+            $ref: '#/definitions/Image'
+        404:
+          description: Image not found
+          schema:
+            $ref: '#/definitions/Error'
