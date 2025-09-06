@@ -1,0 +1,140 @@
+# Entry Feed Screen Specification
+
+## 1. Introduction
+
+This document outlines the technical specifications for the Entry Feed screen in the Mindwell mobile application. This screen is the primary interface for users to view a chronological list of diary entries.
+
+## 2. Goals
+
+*   Provide a flexible and engaging way to browse different types of entry feeds.
+*   Offer a high degree of customization, allowing users to control the display format, sorting, and filtering of the feed.
+*   Ensure a consistent and high-quality user experience across all feed types.
+
+## 3. Functional Requirements
+
+### 3.1. Tabbed Navigation
+
+The screen will use a `SliverAppBar` with a persistent `TabBar` to switch between different feed types. The available tabs will depend on the context.
+
+*   **Live:** Real-time feed of entries.
+*   **Best:** Highly-rated entries.
+*   **Followings:** Entries from followed users.
+*   **Profile:** Entries from a specific user or theme.
+
+### 3.2. UI Elements
+
+*   **App Bar:** A `SliverAppBar` that displays the screen title and a menu button for accessing settings and search. The `TabBar` will be part of the app bar.
+*   **Entry List:** A list of entries, displayed in either a "short" (masonry) or "full" (single-column) format.
+    *   **Short Format:** A compact, masonry layout using `EntryCardShort` widgets and the `flutter_staggered_grid_view` package.
+    *   **Full Format:** A detailed, single-column layout using `EntryCardFull` widgets.
+*   **Floating Action Button (FAB):** A FAB for creating a new entry.
+*   **Loading State:** A shimmer effect will be used to indicate that the feed is loading.
+*   **Animations:** New entries appearing in the feed will have a subtle animation (e.g., fade in).
+
+### 3.3. User Actions
+
+*   **Tap on Entry:** Navigates to the Entry Detail screen.
+*   **Tap on Author:** Navigates to the author's Profile screen.
+*   **Pull to Refresh:** Reloads the feed.
+*   **Infinite Scrolling:** Loads older entries as the user scrolls down.
+
+### 3.4. Settings
+
+A bottom sheet will be used to display the settings for the current feed, including:
+
+*   **Entries per page:** 10, 20, 30, 50, 100.
+*   **Load from:** Diaries and/or Themes.
+*   **Display format:** Short or Full.
+*   **Sort by:** Newest, Oldest, Best.
+
+## 4. Non-Functional Requirements
+
+*   **Performance:** The feed should load quickly and scroll smoothly.
+*   **Security:** All data must be transmitted over HTTPS.
+*   **Accessibility:** The screen should be accessible to users with disabilities.
+*   **Responsiveness:** The layout should adapt to different screen sizes.
+
+## 5. Flutter Implementation Details
+
+*   **API Abstraction:** A `FeedRepository` will be created to abstract the different API endpoints for the various feed types, simplifying the `StateNotifier` logic.
+*   **State Management:** Use a `StateNotifierProvider` from `Riverpod` for each feed type.
+*   **Componentization:**
+    *   A reusable `EntryFeed` widget will be created that can be configured for different feed types.
+    *   `EntryCardShort` and `EntryCardFull` widgets will be created for the two display formats.
+*   **Widgets:**
+    *   `CustomScrollView`, `SliverAppBar`, `TabBar`, and `TabBarView`.
+    *   `flutter_staggered_grid_view` for the masonry layout.
+    *   `FloatingActionButton`.
+
+## 6. State Management
+
+Each feed's `StateNotifier` will manage an `EntryFeedState` object, which will be a sealed class with the following states:
+
+```dart
+sealed class EntryFeedState {
+  EntryFeedLoading();
+  EntryFeedLoaded({
+    required List<Entry> entries,
+    required bool isFetchingMore,
+    required bool hasMore,
+    required FeedSettings settings,
+    required FeedType feedType,
+  });
+  EntryFeedError(String errorMessage);
+  EntryFeedEmpty();
+}
+```
+
+### 6.1. Feed Settings
+
+```dart
+class FeedSettings {
+  final int entriesPerPage;
+  final bool loadFromDiaries;
+  final bool loadFromThemes;
+  final DisplayFormat displayFormat;
+  final SortOrder sortOrder;
+  
+  const FeedSettings({
+    this.entriesPerPage = 20,
+    this.loadFromDiaries = true,
+    this.loadFromThemes = true,
+    this.displayFormat = DisplayFormat.short,
+    this.sortOrder = SortOrder.newest,
+  });
+}
+
+enum DisplayFormat { short, full }
+enum SortOrder { newest, oldest, best }
+enum FeedType { live, best, friends, profile, theme }
+```
+
+## 7. Offline Support
+
+*   **Caching Strategy:**
+    *   Cache feed data locally using Hive
+    *   Implement cache invalidation based on data freshness
+    *   Show cached data immediately when available
+*   **Offline Actions:**
+    *   Queue user actions (votes, favorites) when offline
+    *   Sync queued actions when connection is restored
+    *   Show offline indicators in UI
+*   **Conflict Resolution:**
+    *   Handle conflicts when syncing offline actions
+    *   Provide user choice for conflict resolution
+
+
+## 8. Accessibility
+
+*   **Semantic Labels:** Provide meaningful semantic labels for all interactive elements, including the entry cards, tabs, and settings.
+*   **Focus Order:** Ensure that the focus order is logical and that all interactive elements are focusable.
+*   **Layout Accessibility:** Ensure that both the masonry and single-column layouts are accessible to screen readers, with a clear and logical reading order.
+*   **Screen Reader Support:** Provide descriptive text for entry content and metadata.
+*   **High Contrast:** Support for high contrast mode and system theme preferences.
+
+## 9. Future Considerations
+
+*   **Advanced Filtering:** Add more advanced filtering options, such as filtering by date range or content type.
+*   **Personalization:** Implement personalized feed algorithms based on user preferences.
+*   **Content Recommendations:** Suggest relevant entries based on user activity.
+*   **Feed Analytics:** Track user engagement with different feed types and content.
