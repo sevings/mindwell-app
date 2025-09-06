@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwAccountSettingsEmailGet200Response
 void main() {
@@ -19,6 +19,16 @@ void main() {
 
     // bool invites
     test('to test the property `invites`', () async {
+      // TODO
+    });
+
+    // bool movedEntries
+    test('to test the property `movedEntries`', () async {
+      // TODO
+    });
+
+    // bool badges
+    test('to test the property `badges`', () async {
       // TODO
     });
 

@@ -14,6 +14,8 @@ part 'mw_account_settings_email_get200_response.g.dart';
 /// * [comments] 
 /// * [followers] 
 /// * [invites] 
+/// * [movedEntries] 
+/// * [badges] 
 @BuiltValue()
 abstract class MwAccountSettingsEmailGet200Response implements Built<MwAccountSettingsEmailGet200Response, MwAccountSettingsEmailGet200ResponseBuilder> {
   @BuiltValueField(wireName: r'comments')
@@ -24,6 +26,12 @@ abstract class MwAccountSettingsEmailGet200Response implements Built<MwAccountSe
 
   @BuiltValueField(wireName: r'invites')
   bool? get invites;
+
+  @BuiltValueField(wireName: r'movedEntries')
+  bool? get movedEntries;
+
+  @BuiltValueField(wireName: r'badges')
+  bool? get badges;
 
   MwAccountSettingsEmailGet200Response._();
 
@@ -66,6 +74,20 @@ class _$MwAccountSettingsEmailGet200ResponseSerializer implements PrimitiveSeria
       yield r'invites';
       yield serializers.serialize(
         object.invites,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.movedEntries != null) {
+      yield r'movedEntries';
+      yield serializers.serialize(
+        object.movedEntries,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.badges != null) {
+      yield r'badges';
+      yield serializers.serialize(
+        object.badges,
         specifiedType: const FullType(bool),
       );
     }
@@ -112,6 +134,20 @@ class _$MwAccountSettingsEmailGet200ResponseSerializer implements PrimitiveSeria
             specifiedType: const FullType(bool),
           ) as bool;
           result.invites = valueDes;
+          break;
+        case r'movedEntries':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.movedEntries = valueDes;
+          break;
+        case r'badges':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.badges = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -13,6 +13,7 @@ part 'mw_entry_rights.g.dart';
 /// Properties:
 /// * [edit] 
 /// * [delete] 
+/// * [pin] 
 /// * [comment] 
 /// * [vote] 
 /// * [complain] 
@@ -23,6 +24,9 @@ abstract class MwEntryRights implements Built<MwEntryRights, MwEntryRightsBuilde
 
   @BuiltValueField(wireName: r'delete')
   bool? get delete;
+
+  @BuiltValueField(wireName: r'pin')
+  bool? get pin;
 
   @BuiltValueField(wireName: r'comment')
   bool? get comment;
@@ -67,6 +71,13 @@ class _$MwEntryRightsSerializer implements PrimitiveSerializer<MwEntryRights> {
       yield r'delete';
       yield serializers.serialize(
         object.delete,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.pin != null) {
+      yield r'pin';
+      yield serializers.serialize(
+        object.pin,
         specifiedType: const FullType(bool),
       );
     }
@@ -127,6 +138,13 @@ class _$MwEntryRightsSerializer implements PrimitiveSerializer<MwEntryRights> {
             specifiedType: const FullType(bool),
           ) as bool;
           result.delete = valueDes;
+          break;
+        case r'pin':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.pin = valueDes;
           break;
         case r'comment':
           final valueDes = serializers.deserialize(

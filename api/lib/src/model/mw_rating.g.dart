@@ -21,7 +21,7 @@ class _$MwRating extends MwRating {
   final int? vote;
 
   factory _$MwRating([void Function(MwRatingBuilder)? updates]) =>
-      (new MwRatingBuilder()..update(updates))._build();
+      (MwRatingBuilder()..update(updates))._build();
 
   _$MwRating._(
       {this.id,
@@ -31,13 +31,12 @@ class _$MwRating extends MwRating {
       this.rating,
       this.vote})
       : super._();
-
   @override
   MwRating rebuild(void Function(MwRatingBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwRatingBuilder toBuilder() => new MwRatingBuilder()..replace(this);
+  MwRatingBuilder toBuilder() => MwRatingBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -124,7 +123,6 @@ class MwRatingBuilder implements Builder<MwRating, MwRatingBuilder> {
 
   @override
   void replace(MwRating other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwRating;
   }
 
@@ -138,13 +136,14 @@ class MwRatingBuilder implements Builder<MwRating, MwRatingBuilder> {
 
   _$MwRating _build() {
     final _$result = _$v ??
-        new _$MwRating._(
-            id: id,
-            isVotable: isVotable,
-            upCount: upCount,
-            downCount: downCount,
-            rating: rating,
-            vote: vote);
+        _$MwRating._(
+          id: id,
+          isVotable: isVotable,
+          upCount: upCount,
+          downCount: downCount,
+          rating: rating,
+          vote: vote,
+        );
     replace(_$result);
     return _$result;
   }

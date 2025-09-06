@@ -15,16 +15,15 @@ class _$MwAvatar extends MwAvatar {
   final String? x42;
 
   factory _$MwAvatar([void Function(MwAvatarBuilder)? updates]) =>
-      (new MwAvatarBuilder()..update(updates))._build();
+      (MwAvatarBuilder()..update(updates))._build();
 
   _$MwAvatar._({this.x124, this.x92, this.x42}) : super._();
-
   @override
   MwAvatar rebuild(void Function(MwAvatarBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwAvatarBuilder toBuilder() => new MwAvatarBuilder()..replace(this);
+  MwAvatarBuilder toBuilder() => MwAvatarBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -87,7 +86,6 @@ class MwAvatarBuilder implements Builder<MwAvatar, MwAvatarBuilder> {
 
   @override
   void replace(MwAvatar other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAvatar;
   }
 
@@ -100,7 +98,12 @@ class MwAvatarBuilder implements Builder<MwAvatar, MwAvatarBuilder> {
   MwAvatar build() => _build();
 
   _$MwAvatar _build() {
-    final _$result = _$v ?? new _$MwAvatar._(x124: x124, x92: x92, x42: x42);
+    final _$result = _$v ??
+        _$MwAvatar._(
+          x124: x124,
+          x92: x92,
+          x42: x42,
+        );
     replace(_$result);
     return _$result;
   }

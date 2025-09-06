@@ -1,8 +1,8 @@
-# mindwell.api.ImagesApi
+# mindwell_api.api.ImagesApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -22,7 +22,7 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -30,7 +30,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getImagesApi();
+final api = MindwellApi().getImagesApi();
 final String link = link_example; // String | 
 
 try {
@@ -69,13 +69,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getImagesApi();
+final api = MindwellApi().getImagesApi();
 final int id = 789; // int | 
 
 try {
@@ -113,13 +113,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getImagesApi();
+final api = MindwellApi().getImagesApi();
 final int id = 789; // int | 
 
 try {
@@ -158,13 +158,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getImagesApi();
+final api = MindwellApi().getImagesApi();
 final MultipartFile file = BINARY_DATA_HERE; // MultipartFile | 
 
 try {

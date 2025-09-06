@@ -15,17 +15,15 @@ class _$MwMessageRights extends MwMessageRights {
   final bool? complain;
 
   factory _$MwMessageRights([void Function(MwMessageRightsBuilder)? updates]) =>
-      (new MwMessageRightsBuilder()..update(updates))._build();
+      (MwMessageRightsBuilder()..update(updates))._build();
 
   _$MwMessageRights._({this.edit, this.delete, this.complain}) : super._();
-
   @override
   MwMessageRights rebuild(void Function(MwMessageRightsBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwMessageRightsBuilder toBuilder() =>
-      new MwMessageRightsBuilder()..replace(this);
+  MwMessageRightsBuilder toBuilder() => MwMessageRightsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -89,7 +87,6 @@ class MwMessageRightsBuilder
 
   @override
   void replace(MwMessageRights other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwMessageRights;
   }
 
@@ -103,7 +100,11 @@ class MwMessageRightsBuilder
 
   _$MwMessageRights _build() {
     final _$result = _$v ??
-        new _$MwMessageRights._(edit: edit, delete: delete, complain: complain);
+        _$MwMessageRights._(
+          edit: edit,
+          delete: delete,
+          complain: complain,
+        );
     replace(_$result);
     return _$result;
   }

@@ -17,16 +17,15 @@ class _$MwCalendar extends MwCalendar {
   final int? limit;
 
   factory _$MwCalendar([void Function(MwCalendarBuilder)? updates]) =>
-      (new MwCalendarBuilder()..update(updates))._build();
+      (MwCalendarBuilder()..update(updates))._build();
 
   _$MwCalendar._({this.entries, this.start, this.end, this.limit}) : super._();
-
   @override
   MwCalendar rebuild(void Function(MwCalendarBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCalendarBuilder toBuilder() => new MwCalendarBuilder()..replace(this);
+  MwCalendarBuilder toBuilder() => MwCalendarBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -65,7 +64,7 @@ class MwCalendarBuilder implements Builder<MwCalendar, MwCalendarBuilder> {
 
   ListBuilder<MwCalendarEntry>? _entries;
   ListBuilder<MwCalendarEntry> get entries =>
-      _$this._entries ??= new ListBuilder<MwCalendarEntry>();
+      _$this._entries ??= ListBuilder<MwCalendarEntry>();
   set entries(ListBuilder<MwCalendarEntry>? entries) =>
       _$this._entries = entries;
 
@@ -99,7 +98,6 @@ class MwCalendarBuilder implements Builder<MwCalendar, MwCalendarBuilder> {
 
   @override
   void replace(MwCalendar other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwCalendar;
   }
 
@@ -115,15 +113,19 @@ class MwCalendarBuilder implements Builder<MwCalendar, MwCalendarBuilder> {
     _$MwCalendar _$result;
     try {
       _$result = _$v ??
-          new _$MwCalendar._(
-              entries: _entries?.build(), start: start, end: end, limit: limit);
+          _$MwCalendar._(
+            entries: _entries?.build(),
+            start: start,
+            end: end,
+            limit: limit,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'entries';
         _entries?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwCalendar', _$failedField, e.toString());
       }
       rethrow;

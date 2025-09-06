@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for ChatsApi
 void main() {
-  final instance = Mindwell().getChatsApi();
+  final instance = MindwellApi().getChatsApi();
 
   group(ChatsApi, () {
     //Future<MwChatList> chatsGet({ int limit, String after, String before }) async

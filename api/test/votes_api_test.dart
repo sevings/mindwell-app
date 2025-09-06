@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for VotesApi
 void main() {
-  final instance = Mindwell().getVotesApi();
+  final instance = MindwellApi().getVotesApi();
 
   group(VotesApi, () {
     //Future<MwRating> commentsIdVoteDelete(int id) async

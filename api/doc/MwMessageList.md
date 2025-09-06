@@ -1,8 +1,8 @@
-# mindwell.model.MwMessageList
+# mindwell_api.model.MwMessageList
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

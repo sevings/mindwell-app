@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for RelationsApi
 void main() {
-  final instance = Mindwell().getRelationsApi();
+  final instance = MindwellApi().getRelationsApi();
 
   group(RelationsApi, () {
     // cancel following request or unsubscribe the user

@@ -14,10 +14,9 @@ class _$MwTagListDataInner extends MwTagListDataInner {
 
   factory _$MwTagListDataInner(
           [void Function(MwTagListDataInnerBuilder)? updates]) =>
-      (new MwTagListDataInnerBuilder()..update(updates))._build();
+      (MwTagListDataInnerBuilder()..update(updates))._build();
 
   _$MwTagListDataInner._({this.tag, this.count}) : super._();
-
   @override
   MwTagListDataInner rebuild(
           void Function(MwTagListDataInnerBuilder) updates) =>
@@ -25,7 +24,7 @@ class _$MwTagListDataInner extends MwTagListDataInner {
 
   @override
   MwTagListDataInnerBuilder toBuilder() =>
-      new MwTagListDataInnerBuilder()..replace(this);
+      MwTagListDataInnerBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -81,7 +80,6 @@ class MwTagListDataInnerBuilder
 
   @override
   void replace(MwTagListDataInner other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwTagListDataInner;
   }
 
@@ -94,7 +92,11 @@ class MwTagListDataInnerBuilder
   MwTagListDataInner build() => _build();
 
   _$MwTagListDataInner _build() {
-    final _$result = _$v ?? new _$MwTagListDataInner._(tag: tag, count: count);
+    final _$result = _$v ??
+        _$MwTagListDataInner._(
+          tag: tag,
+          count: count,
+        );
     replace(_$result);
     return _$result;
   }

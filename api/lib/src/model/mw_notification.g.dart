@@ -20,6 +20,8 @@ const MwNotificationTypeEnum _$mwNotificationTypeEnum_welcome =
     const MwNotificationTypeEnum._('welcome');
 const MwNotificationTypeEnum _$mwNotificationTypeEnum_invited =
     const MwNotificationTypeEnum._('invited');
+const MwNotificationTypeEnum _$mwNotificationTypeEnum_badge =
+    const MwNotificationTypeEnum._('badge');
 const MwNotificationTypeEnum _$mwNotificationTypeEnum_admSent =
     const MwNotificationTypeEnum._('admSent');
 const MwNotificationTypeEnum _$mwNotificationTypeEnum_admReceived =
@@ -28,6 +30,8 @@ const MwNotificationTypeEnum _$mwNotificationTypeEnum_wishCreated =
     const MwNotificationTypeEnum._('wishCreated');
 const MwNotificationTypeEnum _$mwNotificationTypeEnum_wishReceived =
     const MwNotificationTypeEnum._('wishReceived');
+const MwNotificationTypeEnum _$mwNotificationTypeEnum_entryMoved =
+    const MwNotificationTypeEnum._('entryMoved');
 const MwNotificationTypeEnum _$mwNotificationTypeEnum_info =
     const MwNotificationTypeEnum._('info');
 
@@ -47,6 +51,8 @@ MwNotificationTypeEnum _$mwNotificationTypeEnumValueOf(String name) {
       return _$mwNotificationTypeEnum_welcome;
     case 'invited':
       return _$mwNotificationTypeEnum_invited;
+    case 'badge':
+      return _$mwNotificationTypeEnum_badge;
     case 'admSent':
       return _$mwNotificationTypeEnum_admSent;
     case 'admReceived':
@@ -55,15 +61,17 @@ MwNotificationTypeEnum _$mwNotificationTypeEnumValueOf(String name) {
       return _$mwNotificationTypeEnum_wishCreated;
     case 'wishReceived':
       return _$mwNotificationTypeEnum_wishReceived;
+    case 'entryMoved':
+      return _$mwNotificationTypeEnum_entryMoved;
     case 'info':
       return _$mwNotificationTypeEnum_info;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwNotificationTypeEnum> _$mwNotificationTypeEnumValues =
-    new BuiltSet<MwNotificationTypeEnum>(const <MwNotificationTypeEnum>[
+    BuiltSet<MwNotificationTypeEnum>(const <MwNotificationTypeEnum>[
   _$mwNotificationTypeEnum_comment,
   _$mwNotificationTypeEnum_follower,
   _$mwNotificationTypeEnum_request,
@@ -71,15 +79,17 @@ final BuiltSet<MwNotificationTypeEnum> _$mwNotificationTypeEnumValues =
   _$mwNotificationTypeEnum_invite,
   _$mwNotificationTypeEnum_welcome,
   _$mwNotificationTypeEnum_invited,
+  _$mwNotificationTypeEnum_badge,
   _$mwNotificationTypeEnum_admSent,
   _$mwNotificationTypeEnum_admReceived,
   _$mwNotificationTypeEnum_wishCreated,
   _$mwNotificationTypeEnum_wishReceived,
+  _$mwNotificationTypeEnum_entryMoved,
   _$mwNotificationTypeEnum_info,
 ]);
 
 Serializer<MwNotificationTypeEnum> _$mwNotificationTypeEnumSerializer =
-    new _$MwNotificationTypeEnumSerializer();
+    _$MwNotificationTypeEnumSerializer();
 
 class _$MwNotificationTypeEnumSerializer
     implements PrimitiveSerializer<MwNotificationTypeEnum> {
@@ -91,10 +101,12 @@ class _$MwNotificationTypeEnumSerializer
     'invite': 'invite',
     'welcome': 'welcome',
     'invited': 'invited',
+    'badge': 'badge',
     'admSent': 'adm_sent',
     'admReceived': 'adm_received',
     'wishCreated': 'wish_created',
     'wishReceived': 'wish_received',
+    'entryMoved': 'entry_moved',
     'info': 'info',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
@@ -105,10 +117,12 @@ class _$MwNotificationTypeEnumSerializer
     'invite': 'invite',
     'welcome': 'welcome',
     'invited': 'invited',
+    'badge': 'badge',
     'adm_sent': 'admSent',
     'adm_received': 'admReceived',
     'wish_created': 'wishCreated',
     'wish_received': 'wishReceived',
+    'entry_moved': 'entryMoved',
     'info': 'info',
   };
 
@@ -147,10 +161,12 @@ class _$MwNotification extends MwNotification {
   @override
   final MwWish? wish;
   @override
+  final MwBadge? badge;
+  @override
   final MwNotificationInfo? info;
 
   factory _$MwNotification([void Function(MwNotificationBuilder)? updates]) =>
-      (new MwNotificationBuilder()..update(updates))._build();
+      (MwNotificationBuilder()..update(updates))._build();
 
   _$MwNotification._(
       {this.id,
@@ -161,16 +177,15 @@ class _$MwNotification extends MwNotification {
       this.comment,
       this.entry,
       this.wish,
+      this.badge,
       this.info})
       : super._();
-
   @override
   MwNotification rebuild(void Function(MwNotificationBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwNotificationBuilder toBuilder() =>
-      new MwNotificationBuilder()..replace(this);
+  MwNotificationBuilder toBuilder() => MwNotificationBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -184,6 +199,7 @@ class _$MwNotification extends MwNotification {
         comment == other.comment &&
         entry == other.entry &&
         wish == other.wish &&
+        badge == other.badge &&
         info == other.info;
   }
 
@@ -198,6 +214,7 @@ class _$MwNotification extends MwNotification {
     _$hash = $jc(_$hash, comment.hashCode);
     _$hash = $jc(_$hash, entry.hashCode);
     _$hash = $jc(_$hash, wish.hashCode);
+    _$hash = $jc(_$hash, badge.hashCode);
     _$hash = $jc(_$hash, info.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -214,6 +231,7 @@ class _$MwNotification extends MwNotification {
           ..add('comment', comment)
           ..add('entry', entry)
           ..add('wish', wish)
+          ..add('badge', badge)
           ..add('info', info))
         .toString();
   }
@@ -244,20 +262,24 @@ class MwNotificationBuilder
   set user(MwUser? user) => _$this._user = user;
 
   MwCommentBuilder? _comment;
-  MwCommentBuilder get comment => _$this._comment ??= new MwCommentBuilder();
+  MwCommentBuilder get comment => _$this._comment ??= MwCommentBuilder();
   set comment(MwCommentBuilder? comment) => _$this._comment = comment;
 
   MwEntryBuilder? _entry;
-  MwEntryBuilder get entry => _$this._entry ??= new MwEntryBuilder();
+  MwEntryBuilder get entry => _$this._entry ??= MwEntryBuilder();
   set entry(MwEntryBuilder? entry) => _$this._entry = entry;
 
   MwWishBuilder? _wish;
-  MwWishBuilder get wish => _$this._wish ??= new MwWishBuilder();
+  MwWishBuilder get wish => _$this._wish ??= MwWishBuilder();
   set wish(MwWishBuilder? wish) => _$this._wish = wish;
+
+  MwBadgeBuilder? _badge;
+  MwBadgeBuilder get badge => _$this._badge ??= MwBadgeBuilder();
+  set badge(MwBadgeBuilder? badge) => _$this._badge = badge;
 
   MwNotificationInfoBuilder? _info;
   MwNotificationInfoBuilder get info =>
-      _$this._info ??= new MwNotificationInfoBuilder();
+      _$this._info ??= MwNotificationInfoBuilder();
   set info(MwNotificationInfoBuilder? info) => _$this._info = info;
 
   MwNotificationBuilder() {
@@ -275,6 +297,7 @@ class MwNotificationBuilder
       _comment = $v.comment?.toBuilder();
       _entry = $v.entry?.toBuilder();
       _wish = $v.wish?.toBuilder();
+      _badge = $v.badge?.toBuilder();
       _info = $v.info?.toBuilder();
       _$v = null;
     }
@@ -283,7 +306,6 @@ class MwNotificationBuilder
 
   @override
   void replace(MwNotification other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwNotification;
   }
 
@@ -299,16 +321,18 @@ class MwNotificationBuilder
     _$MwNotification _$result;
     try {
       _$result = _$v ??
-          new _$MwNotification._(
-              id: id,
-              type: type,
-              read: read,
-              createdAt: createdAt,
-              user: user,
-              comment: _comment?.build(),
-              entry: _entry?.build(),
-              wish: _wish?.build(),
-              info: _info?.build());
+          _$MwNotification._(
+            id: id,
+            type: type,
+            read: read,
+            createdAt: createdAt,
+            user: user,
+            comment: _comment?.build(),
+            entry: _entry?.build(),
+            wish: _wish?.build(),
+            badge: _badge?.build(),
+            info: _info?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -318,10 +342,12 @@ class MwNotificationBuilder
         _entry?.build();
         _$failedField = 'wish';
         _wish?.build();
+        _$failedField = 'badge';
+        _badge?.build();
         _$failedField = 'info';
         _info?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwNotification', _$failedField, e.toString());
       }
       rethrow;

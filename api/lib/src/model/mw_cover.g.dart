@@ -15,16 +15,15 @@ class _$MwCover extends MwCover {
   final String? x318;
 
   factory _$MwCover([void Function(MwCoverBuilder)? updates]) =>
-      (new MwCoverBuilder()..update(updates))._build();
+      (MwCoverBuilder()..update(updates))._build();
 
   _$MwCover._({this.id, this.x1920, this.x318}) : super._();
-
   @override
   MwCover rebuild(void Function(MwCoverBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCoverBuilder toBuilder() => new MwCoverBuilder()..replace(this);
+  MwCoverBuilder toBuilder() => MwCoverBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -87,7 +86,6 @@ class MwCoverBuilder implements Builder<MwCover, MwCoverBuilder> {
 
   @override
   void replace(MwCover other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwCover;
   }
 
@@ -100,7 +98,12 @@ class MwCoverBuilder implements Builder<MwCover, MwCoverBuilder> {
   MwCover build() => _build();
 
   _$MwCover _build() {
-    final _$result = _$v ?? new _$MwCover._(id: id, x1920: x1920, x318: x318);
+    final _$result = _$v ??
+        _$MwCover._(
+          id: id,
+          x1920: x1920,
+          x318: x318,
+        );
     replace(_$result);
     return _$result;
   }

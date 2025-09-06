@@ -16,10 +16,9 @@ class _$MwProfileAllOfRights extends MwProfileAllOfRights {
 
   factory _$MwProfileAllOfRights(
           [void Function(MwProfileAllOfRightsBuilder)? updates]) =>
-      (new MwProfileAllOfRightsBuilder()..update(updates))._build();
+      (MwProfileAllOfRightsBuilder()..update(updates))._build();
 
   _$MwProfileAllOfRights._({this.chat, this.ignore, this.complain}) : super._();
-
   @override
   MwProfileAllOfRights rebuild(
           void Function(MwProfileAllOfRightsBuilder) updates) =>
@@ -27,7 +26,7 @@ class _$MwProfileAllOfRights extends MwProfileAllOfRights {
 
   @override
   MwProfileAllOfRightsBuilder toBuilder() =>
-      new MwProfileAllOfRightsBuilder()..replace(this);
+      MwProfileAllOfRightsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -91,7 +90,6 @@ class MwProfileAllOfRightsBuilder
 
   @override
   void replace(MwProfileAllOfRights other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwProfileAllOfRights;
   }
 
@@ -105,8 +103,11 @@ class MwProfileAllOfRightsBuilder
 
   _$MwProfileAllOfRights _build() {
     final _$result = _$v ??
-        new _$MwProfileAllOfRights._(
-            chat: chat, ignore: ignore, complain: complain);
+        _$MwProfileAllOfRights._(
+          chat: chat,
+          ignore: ignore,
+          complain: complain,
+        );
     replace(_$result);
     return _$result;
   }

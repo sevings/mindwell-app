@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for AccountApi
 void main() {
-  final instance = Mindwell().getAccountApi();
+  final instance = MindwellApi().getAccountApi();
 
   group(AccountApi, () {
     // check if email is used
@@ -66,7 +66,7 @@ void main() {
       // TODO
     });
 
-    //Future accountSettingsEmailPut({ bool comments, bool followers, bool invites }) async
+    //Future accountSettingsEmailPut({ bool comments, bool followers, bool invites, bool movedEntries, bool badges }) async
     test('test accountSettingsEmailPut', () async {
       // TODO
     });
@@ -86,7 +86,7 @@ void main() {
       // TODO
     });
 
-    //Future accountSettingsTelegramPut({ bool comments, bool followers, bool invites, bool messages }) async
+    //Future accountSettingsTelegramPut({ bool comments, bool followers, bool invites, bool messages, bool movedEntries, bool badges }) async
     test('test accountSettingsTelegramPut', () async {
       // TODO
     });

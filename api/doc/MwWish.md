@@ -1,8 +1,8 @@
-# mindwell.model.MwWish
+# mindwell_api.model.MwWish
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

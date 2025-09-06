@@ -17,18 +17,16 @@ class _$MwCommentRights extends MwCommentRights {
   final bool? complain;
 
   factory _$MwCommentRights([void Function(MwCommentRightsBuilder)? updates]) =>
-      (new MwCommentRightsBuilder()..update(updates))._build();
+      (MwCommentRightsBuilder()..update(updates))._build();
 
   _$MwCommentRights._({this.edit, this.delete, this.vote, this.complain})
       : super._();
-
   @override
   MwCommentRights rebuild(void Function(MwCommentRightsBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCommentRightsBuilder toBuilder() =>
-      new MwCommentRightsBuilder()..replace(this);
+  MwCommentRightsBuilder toBuilder() => MwCommentRightsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -100,7 +98,6 @@ class MwCommentRightsBuilder
 
   @override
   void replace(MwCommentRights other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwCommentRights;
   }
 
@@ -114,8 +111,12 @@ class MwCommentRightsBuilder
 
   _$MwCommentRights _build() {
     final _$result = _$v ??
-        new _$MwCommentRights._(
-            edit: edit, delete: delete, vote: vote, complain: complain);
+        _$MwCommentRights._(
+          edit: edit,
+          delete: delete,
+          vote: vote,
+          complain: complain,
+        );
     replace(_$result);
     return _$result;
   }

@@ -25,7 +25,7 @@ class _$MwMessage extends MwMessage {
   final MwMessageRights? rights;
 
   factory _$MwMessage([void Function(MwMessageBuilder)? updates]) =>
-      (new MwMessageBuilder()..update(updates))._build();
+      (MwMessageBuilder()..update(updates))._build();
 
   _$MwMessage._(
       {this.id,
@@ -37,13 +37,12 @@ class _$MwMessage extends MwMessage {
       this.editContent,
       this.rights})
       : super._();
-
   @override
   MwMessage rebuild(void Function(MwMessageBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwMessageBuilder toBuilder() => new MwMessageBuilder()..replace(this);
+  MwMessageBuilder toBuilder() => MwMessageBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -122,7 +121,7 @@ class MwMessageBuilder implements Builder<MwMessage, MwMessageBuilder> {
 
   MwMessageRightsBuilder? _rights;
   MwMessageRightsBuilder get rights =>
-      _$this._rights ??= new MwMessageRightsBuilder();
+      _$this._rights ??= MwMessageRightsBuilder();
   set rights(MwMessageRightsBuilder? rights) => _$this._rights = rights;
 
   MwMessageBuilder() {
@@ -147,7 +146,6 @@ class MwMessageBuilder implements Builder<MwMessage, MwMessageBuilder> {
 
   @override
   void replace(MwMessage other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwMessage;
   }
 
@@ -163,22 +161,23 @@ class MwMessageBuilder implements Builder<MwMessage, MwMessageBuilder> {
     _$MwMessage _$result;
     try {
       _$result = _$v ??
-          new _$MwMessage._(
-              id: id,
-              chatId: chatId,
-              author: author,
-              createdAt: createdAt,
-              read: read,
-              content: content,
-              editContent: editContent,
-              rights: _rights?.build());
+          _$MwMessage._(
+            id: id,
+            chatId: chatId,
+            author: author,
+            createdAt: createdAt,
+            read: read,
+            content: content,
+            editContent: editContent,
+            rights: _rights?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'rights';
         _rights?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwMessage', _$failedField, e.toString());
       }
       rethrow;

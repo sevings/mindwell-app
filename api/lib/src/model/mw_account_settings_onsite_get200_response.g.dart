@@ -14,11 +14,10 @@ class _$MwAccountSettingsOnsiteGet200Response
   factory _$MwAccountSettingsOnsiteGet200Response(
           [void Function(MwAccountSettingsOnsiteGet200ResponseBuilder)?
               updates]) =>
-      (new MwAccountSettingsOnsiteGet200ResponseBuilder()..update(updates))
+      (MwAccountSettingsOnsiteGet200ResponseBuilder()..update(updates))
           ._build();
 
   _$MwAccountSettingsOnsiteGet200Response._({this.wishes}) : super._();
-
   @override
   MwAccountSettingsOnsiteGet200Response rebuild(
           void Function(MwAccountSettingsOnsiteGet200ResponseBuilder)
@@ -27,7 +26,7 @@ class _$MwAccountSettingsOnsiteGet200Response
 
   @override
   MwAccountSettingsOnsiteGet200ResponseBuilder toBuilder() =>
-      new MwAccountSettingsOnsiteGet200ResponseBuilder()..replace(this);
+      MwAccountSettingsOnsiteGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -78,7 +77,6 @@ class MwAccountSettingsOnsiteGet200ResponseBuilder
 
   @override
   void replace(MwAccountSettingsOnsiteGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountSettingsOnsiteGet200Response;
   }
 
@@ -92,8 +90,10 @@ class MwAccountSettingsOnsiteGet200ResponseBuilder
   MwAccountSettingsOnsiteGet200Response build() => _build();
 
   _$MwAccountSettingsOnsiteGet200Response _build() {
-    final _$result =
-        _$v ?? new _$MwAccountSettingsOnsiteGet200Response._(wishes: wishes);
+    final _$result = _$v ??
+        _$MwAccountSettingsOnsiteGet200Response._(
+          wishes: wishes,
+        );
     replace(_$result);
     return _$result;
   }

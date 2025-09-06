@@ -14,10 +14,9 @@ class _$MwAuthProfileAllOfAccount extends MwAuthProfileAllOfAccount {
 
   factory _$MwAuthProfileAllOfAccount(
           [void Function(MwAuthProfileAllOfAccountBuilder)? updates]) =>
-      (new MwAuthProfileAllOfAccountBuilder()..update(updates))._build();
+      (MwAuthProfileAllOfAccountBuilder()..update(updates))._build();
 
   _$MwAuthProfileAllOfAccount._({this.email, this.verified}) : super._();
-
   @override
   MwAuthProfileAllOfAccount rebuild(
           void Function(MwAuthProfileAllOfAccountBuilder) updates) =>
@@ -25,7 +24,7 @@ class _$MwAuthProfileAllOfAccount extends MwAuthProfileAllOfAccount {
 
   @override
   MwAuthProfileAllOfAccountBuilder toBuilder() =>
-      new MwAuthProfileAllOfAccountBuilder()..replace(this);
+      MwAuthProfileAllOfAccountBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -82,7 +81,6 @@ class MwAuthProfileAllOfAccountBuilder
 
   @override
   void replace(MwAuthProfileAllOfAccount other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAuthProfileAllOfAccount;
   }
 
@@ -96,7 +94,10 @@ class MwAuthProfileAllOfAccountBuilder
 
   _$MwAuthProfileAllOfAccount _build() {
     final _$result = _$v ??
-        new _$MwAuthProfileAllOfAccount._(email: email, verified: verified);
+        _$MwAuthProfileAllOfAccount._(
+          email: email,
+          verified: verified,
+        );
     replace(_$result);
     return _$result;
   }

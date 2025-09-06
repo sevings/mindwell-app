@@ -16,17 +16,16 @@ class _$MwFavoriteStatus extends MwFavoriteStatus {
 
   factory _$MwFavoriteStatus(
           [void Function(MwFavoriteStatusBuilder)? updates]) =>
-      (new MwFavoriteStatusBuilder()..update(updates))._build();
+      (MwFavoriteStatusBuilder()..update(updates))._build();
 
   _$MwFavoriteStatus._({this.id, this.isFavorited, this.count}) : super._();
-
   @override
   MwFavoriteStatus rebuild(void Function(MwFavoriteStatusBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
   MwFavoriteStatusBuilder toBuilder() =>
-      new MwFavoriteStatusBuilder()..replace(this);
+      MwFavoriteStatusBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -90,7 +89,6 @@ class MwFavoriteStatusBuilder
 
   @override
   void replace(MwFavoriteStatus other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwFavoriteStatus;
   }
 
@@ -104,8 +102,11 @@ class MwFavoriteStatusBuilder
 
   _$MwFavoriteStatus _build() {
     final _$result = _$v ??
-        new _$MwFavoriteStatus._(
-            id: id, isFavorited: isFavorited, count: count);
+        _$MwFavoriteStatus._(
+          id: id,
+          isFavorited: isFavorited,
+          count: count,
+        );
     replace(_$result);
     return _$result;
   }

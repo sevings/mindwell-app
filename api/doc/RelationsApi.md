@@ -1,8 +1,8 @@
-# mindwell.api.RelationsApi
+# mindwell_api.api.RelationsApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -25,13 +25,13 @@ cancel following request or unsubscribe the user
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 
 try {
@@ -70,13 +70,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 
 try {
@@ -115,13 +115,13 @@ permit the user to follow you
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 
 try {
@@ -160,13 +160,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 final String invite = invite_example; // String | 
 
@@ -206,13 +206,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 
 try {
@@ -251,13 +251,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 
 try {
@@ -296,13 +296,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getRelationsApi();
+final api = MindwellApi().getRelationsApi();
 final String name = name_example; // String | 
 final String r = r_example; // String | 
 

@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwNotification
 void main() {
@@ -44,6 +44,11 @@ void main() {
 
     // MwWish wish
     test('to test the property `wish`', () async {
+      // TODO
+    });
+
+    // MwBadge badge
+    test('to test the property `badge`', () async {
       // TODO
     });
 

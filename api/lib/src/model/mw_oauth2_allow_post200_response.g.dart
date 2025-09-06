@@ -14,10 +14,9 @@ class _$MwOauth2AllowPost200Response extends MwOauth2AllowPost200Response {
 
   factory _$MwOauth2AllowPost200Response(
           [void Function(MwOauth2AllowPost200ResponseBuilder)? updates]) =>
-      (new MwOauth2AllowPost200ResponseBuilder()..update(updates))._build();
+      (MwOauth2AllowPost200ResponseBuilder()..update(updates))._build();
 
   _$MwOauth2AllowPost200Response._({this.code, this.state}) : super._();
-
   @override
   MwOauth2AllowPost200Response rebuild(
           void Function(MwOauth2AllowPost200ResponseBuilder) updates) =>
@@ -25,7 +24,7 @@ class _$MwOauth2AllowPost200Response extends MwOauth2AllowPost200Response {
 
   @override
   MwOauth2AllowPost200ResponseBuilder toBuilder() =>
-      new MwOauth2AllowPost200ResponseBuilder()..replace(this);
+      MwOauth2AllowPost200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -83,7 +82,6 @@ class MwOauth2AllowPost200ResponseBuilder
 
   @override
   void replace(MwOauth2AllowPost200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwOauth2AllowPost200Response;
   }
 
@@ -96,8 +94,11 @@ class MwOauth2AllowPost200ResponseBuilder
   MwOauth2AllowPost200Response build() => _build();
 
   _$MwOauth2AllowPost200Response _build() {
-    final _$result =
-        _$v ?? new _$MwOauth2AllowPost200Response._(code: code, state: state);
+    final _$result = _$v ??
+        _$MwOauth2AllowPost200Response._(
+          code: code,
+          state: state,
+        );
     replace(_$result);
     return _$result;
   }

@@ -14,17 +14,23 @@ class _$MwAccountSettingsEmailGet200Response
   final bool? followers;
   @override
   final bool? invites;
+  @override
+  final bool? movedEntries;
+  @override
+  final bool? badges;
 
   factory _$MwAccountSettingsEmailGet200Response(
           [void Function(MwAccountSettingsEmailGet200ResponseBuilder)?
               updates]) =>
-      (new MwAccountSettingsEmailGet200ResponseBuilder()..update(updates))
-          ._build();
+      (MwAccountSettingsEmailGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAccountSettingsEmailGet200Response._(
-      {this.comments, this.followers, this.invites})
+      {this.comments,
+      this.followers,
+      this.invites,
+      this.movedEntries,
+      this.badges})
       : super._();
-
   @override
   MwAccountSettingsEmailGet200Response rebuild(
           void Function(MwAccountSettingsEmailGet200ResponseBuilder) updates) =>
@@ -32,7 +38,7 @@ class _$MwAccountSettingsEmailGet200Response
 
   @override
   MwAccountSettingsEmailGet200ResponseBuilder toBuilder() =>
-      new MwAccountSettingsEmailGet200ResponseBuilder()..replace(this);
+      MwAccountSettingsEmailGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -40,7 +46,9 @@ class _$MwAccountSettingsEmailGet200Response
     return other is MwAccountSettingsEmailGet200Response &&
         comments == other.comments &&
         followers == other.followers &&
-        invites == other.invites;
+        invites == other.invites &&
+        movedEntries == other.movedEntries &&
+        badges == other.badges;
   }
 
   @override
@@ -49,6 +57,8 @@ class _$MwAccountSettingsEmailGet200Response
     _$hash = $jc(_$hash, comments.hashCode);
     _$hash = $jc(_$hash, followers.hashCode);
     _$hash = $jc(_$hash, invites.hashCode);
+    _$hash = $jc(_$hash, movedEntries.hashCode);
+    _$hash = $jc(_$hash, badges.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -58,7 +68,9 @@ class _$MwAccountSettingsEmailGet200Response
     return (newBuiltValueToStringHelper(r'MwAccountSettingsEmailGet200Response')
           ..add('comments', comments)
           ..add('followers', followers)
-          ..add('invites', invites))
+          ..add('invites', invites)
+          ..add('movedEntries', movedEntries)
+          ..add('badges', badges))
         .toString();
   }
 }
@@ -81,6 +93,14 @@ class MwAccountSettingsEmailGet200ResponseBuilder
   bool? get invites => _$this._invites;
   set invites(bool? invites) => _$this._invites = invites;
 
+  bool? _movedEntries;
+  bool? get movedEntries => _$this._movedEntries;
+  set movedEntries(bool? movedEntries) => _$this._movedEntries = movedEntries;
+
+  bool? _badges;
+  bool? get badges => _$this._badges;
+  set badges(bool? badges) => _$this._badges = badges;
+
   MwAccountSettingsEmailGet200ResponseBuilder() {
     MwAccountSettingsEmailGet200Response._defaults(this);
   }
@@ -91,6 +111,8 @@ class MwAccountSettingsEmailGet200ResponseBuilder
       _comments = $v.comments;
       _followers = $v.followers;
       _invites = $v.invites;
+      _movedEntries = $v.movedEntries;
+      _badges = $v.badges;
       _$v = null;
     }
     return this;
@@ -98,7 +120,6 @@ class MwAccountSettingsEmailGet200ResponseBuilder
 
   @override
   void replace(MwAccountSettingsEmailGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountSettingsEmailGet200Response;
   }
 
@@ -113,8 +134,13 @@ class MwAccountSettingsEmailGet200ResponseBuilder
 
   _$MwAccountSettingsEmailGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAccountSettingsEmailGet200Response._(
-            comments: comments, followers: followers, invites: invites);
+        _$MwAccountSettingsEmailGet200Response._(
+          comments: comments,
+          followers: followers,
+          invites: invites,
+          movedEntries: movedEntries,
+          badges: badges,
+        );
     replace(_$result);
     return _$result;
   }

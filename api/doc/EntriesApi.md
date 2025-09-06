@@ -1,8 +1,8 @@
-# mindwell.api.EntriesApi
+# mindwell_api.api.EntriesApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -15,6 +15,9 @@ Method | HTTP request | Description
 [**entriesIdComplainPost**](EntriesApi.md#entriesidcomplainpost) | **POST** /entries/{id}/complain | 
 [**entriesIdDelete**](EntriesApi.md#entriesiddelete) | **DELETE** /entries/{id} | 
 [**entriesIdGet**](EntriesApi.md#entriesidget) | **GET** /entries/{id} | 
+[**entriesIdPinDelete**](EntriesApi.md#entriesidpindelete) | **DELETE** /entries/{id}/pin | 
+[**entriesIdPinGet**](EntriesApi.md#entriesidpinget) | **GET** /entries/{id}/pin | 
+[**entriesIdPinPut**](EntriesApi.md#entriesidpinput) | **PUT** /entries/{id}/pin | 
 [**entriesIdPut**](EntriesApi.md#entriesidput) | **PUT** /entries/{id} | 
 [**entriesLiveGet**](EntriesApi.md#entriesliveget) | **GET** /entries/live | 
 [**entriesRandomGet**](EntriesApi.md#entriesrandomget) | **GET** /entries/random | 
@@ -29,7 +32,7 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -37,7 +40,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int limit = 56; // int | 
 final String tag = tag_example; // String | 
 final String query = query_example; // String | 
@@ -84,13 +87,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int limit = 56; // int | 
 final String after = after_example; // String | 
 final String before = before_example; // String | 
@@ -137,7 +140,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -145,7 +148,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int id = 789; // int | 
 
 try {
@@ -184,13 +187,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int id = 789; // int | 
 final String content = content_example; // String | 
 
@@ -230,13 +233,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int id = 789; // int | 
 
 try {
@@ -274,7 +277,7 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -282,7 +285,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int id = 789; // int | 
 
 try {
@@ -314,6 +317,141 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **entriesIdPinDelete**
+> MwPinStatus entriesIdPinDelete(id)
+
+
+
+### Example
+```dart
+import 'package:mindwell_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2Code
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
+// TODO Configure OAuth2 access token for authorization: OAuth2Password
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = MindwellApi().getEntriesApi();
+final int id = 789; // int | 
+
+try {
+    final response = api.entriesIdPinDelete(id);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling EntriesApi->entriesIdPinDelete: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **int**|  | 
+
+### Return type
+
+[**MwPinStatus**](MwPinStatus.md)
+
+### Authorization
+
+[OAuth2Code](../README.md#OAuth2Code), [OAuth2Password](../README.md#OAuth2Password)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **entriesIdPinGet**
+> MwPinStatus entriesIdPinGet(id)
+
+
+
+### Example
+```dart
+import 'package:mindwell_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2Code
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
+// TODO Configure OAuth2 access token for authorization: OAuth2Password
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = MindwellApi().getEntriesApi();
+final int id = 789; // int | 
+
+try {
+    final response = api.entriesIdPinGet(id);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling EntriesApi->entriesIdPinGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **int**|  | 
+
+### Return type
+
+[**MwPinStatus**](MwPinStatus.md)
+
+### Authorization
+
+[OAuth2Code](../README.md#OAuth2Code), [OAuth2Password](../README.md#OAuth2Password)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **entriesIdPinPut**
+> MwPinStatus entriesIdPinPut(id)
+
+
+
+### Example
+```dart
+import 'package:mindwell_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2Code
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
+// TODO Configure OAuth2 access token for authorization: OAuth2Password
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = MindwellApi().getEntriesApi();
+final int id = 789; // int | 
+
+try {
+    final response = api.entriesIdPinPut(id);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling EntriesApi->entriesIdPinPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **int**|  | 
+
+### Return type
+
+[**MwPinStatus**](MwPinStatus.md)
+
+### Authorization
+
+[OAuth2Code](../README.md#OAuth2Code), [OAuth2Password](../README.md#OAuth2Password)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **entriesIdPut**
 > MwEntry entriesIdPut(id, content, privacy, title, images, tags, visibleFor, isCommentable, isVotable, inLive, isShared, anonymousComments)
 
@@ -321,13 +459,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int id = 789; // int | 
 final String content = content_example; // String | 
 final String privacy = privacy_example; // String | 
@@ -388,7 +526,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -396,7 +534,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int limit = 56; // int | 
 final String after = after_example; // String | 
 final String before = before_example; // String | 
@@ -447,13 +585,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 
 try {
     final response = api.entriesRandomGet();
@@ -488,13 +626,13 @@ This endpoint does not need any parameter.
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int limit = 56; // int | 
 final String query = query_example; // String | 
 
@@ -535,13 +673,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getEntriesApi();
+final api = MindwellApi().getEntriesApi();
 final int limit = 56; // int | 
 final String after = after_example; // String | 
 final String before = before_example; // String | 

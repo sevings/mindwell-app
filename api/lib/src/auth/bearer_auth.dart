@@ -3,7 +3,7 @@
 //
 
 import 'package:dio/dio.dart';
-import 'package:mindwell/src/auth/auth.dart';
+import 'package:mindwell_api/src/auth/auth.dart';
 
 class BearerAuthInterceptor extends AuthInterceptor {
   final Map<String, String> tokens = {};

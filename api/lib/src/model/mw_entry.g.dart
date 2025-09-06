@@ -34,12 +34,12 @@ MwEntryPrivacyEnum _$mwEntryPrivacyEnumValueOf(String name) {
     case 'me':
       return _$mwEntryPrivacyEnum_me;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwEntryPrivacyEnum> _$mwEntryPrivacyEnumValues =
-    new BuiltSet<MwEntryPrivacyEnum>(const <MwEntryPrivacyEnum>[
+    BuiltSet<MwEntryPrivacyEnum>(const <MwEntryPrivacyEnum>[
   _$mwEntryPrivacyEnum_all,
   _$mwEntryPrivacyEnum_registered,
   _$mwEntryPrivacyEnum_invited,
@@ -49,7 +49,7 @@ final BuiltSet<MwEntryPrivacyEnum> _$mwEntryPrivacyEnumValues =
 ]);
 
 Serializer<MwEntryPrivacyEnum> _$mwEntryPrivacyEnumSerializer =
-    new _$MwEntryPrivacyEnumSerializer();
+    _$MwEntryPrivacyEnumSerializer();
 
 class _$MwEntryPrivacyEnumSerializer
     implements PrimitiveSerializer<MwEntryPrivacyEnum> {
@@ -131,6 +131,8 @@ class _$MwEntry extends MwEntry {
   @override
   final bool? isShared;
   @override
+  final bool? isPinned;
+  @override
   final int? commentCount;
   @override
   final int? favoriteCount;
@@ -144,7 +146,7 @@ class _$MwEntry extends MwEntry {
   final MwEntryRights? rights;
 
   factory _$MwEntry([void Function(MwEntryBuilder)? updates]) =>
-      (new MwEntryBuilder()..update(updates))._build();
+      (MwEntryBuilder()..update(updates))._build();
 
   _$MwEntry._(
       {this.id,
@@ -168,6 +170,7 @@ class _$MwEntry extends MwEntry {
       this.inLive,
       this.isAnonymous,
       this.isShared,
+      this.isPinned,
       this.commentCount,
       this.favoriteCount,
       this.isFavorited,
@@ -175,13 +178,12 @@ class _$MwEntry extends MwEntry {
       this.comments,
       this.rights})
       : super._();
-
   @override
   MwEntry rebuild(void Function(MwEntryBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwEntryBuilder toBuilder() => new MwEntryBuilder()..replace(this);
+  MwEntryBuilder toBuilder() => MwEntryBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -208,6 +210,7 @@ class _$MwEntry extends MwEntry {
         inLive == other.inLive &&
         isAnonymous == other.isAnonymous &&
         isShared == other.isShared &&
+        isPinned == other.isPinned &&
         commentCount == other.commentCount &&
         favoriteCount == other.favoriteCount &&
         isFavorited == other.isFavorited &&
@@ -240,6 +243,7 @@ class _$MwEntry extends MwEntry {
     _$hash = $jc(_$hash, inLive.hashCode);
     _$hash = $jc(_$hash, isAnonymous.hashCode);
     _$hash = $jc(_$hash, isShared.hashCode);
+    _$hash = $jc(_$hash, isPinned.hashCode);
     _$hash = $jc(_$hash, commentCount.hashCode);
     _$hash = $jc(_$hash, favoriteCount.hashCode);
     _$hash = $jc(_$hash, isFavorited.hashCode);
@@ -274,6 +278,7 @@ class _$MwEntry extends MwEntry {
           ..add('inLive', inLive)
           ..add('isAnonymous', isAnonymous)
           ..add('isShared', isShared)
+          ..add('isPinned', isPinned)
           ..add('commentCount', commentCount)
           ..add('favoriteCount', favoriteCount)
           ..add('isFavorited', isFavorited)
@@ -304,7 +309,7 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
   set createdAt(double? createdAt) => _$this._createdAt = createdAt;
 
   MwRatingBuilder? _rating;
-  MwRatingBuilder get rating => _$this._rating ??= new MwRatingBuilder();
+  MwRatingBuilder get rating => _$this._rating ??= MwRatingBuilder();
   set rating(MwRatingBuilder? rating) => _$this._rating = rating;
 
   String? _title;
@@ -332,18 +337,17 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
   set hasCut(bool? hasCut) => _$this._hasCut = hasCut;
 
   ListBuilder<MwImage>? _images;
-  ListBuilder<MwImage> get images =>
-      _$this._images ??= new ListBuilder<MwImage>();
+  ListBuilder<MwImage> get images => _$this._images ??= ListBuilder<MwImage>();
   set images(ListBuilder<MwImage>? images) => _$this._images = images;
 
   ListBuilder<MwImage>? _insertedImages;
   ListBuilder<MwImage> get insertedImages =>
-      _$this._insertedImages ??= new ListBuilder<MwImage>();
+      _$this._insertedImages ??= ListBuilder<MwImage>();
   set insertedImages(ListBuilder<MwImage>? insertedImages) =>
       _$this._insertedImages = insertedImages;
 
   ListBuilder<String>? _tags;
-  ListBuilder<String> get tags => _$this._tags ??= new ListBuilder<String>();
+  ListBuilder<String> get tags => _$this._tags ??= ListBuilder<String>();
   set tags(ListBuilder<String>? tags) => _$this._tags = tags;
 
   int? _wordCount;
@@ -356,7 +360,7 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
 
   ListBuilder<MwUser>? _visibleFor;
   ListBuilder<MwUser> get visibleFor =>
-      _$this._visibleFor ??= new ListBuilder<MwUser>();
+      _$this._visibleFor ??= ListBuilder<MwUser>();
   set visibleFor(ListBuilder<MwUser>? visibleFor) =>
       _$this._visibleFor = visibleFor;
 
@@ -377,6 +381,10 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
   bool? get isShared => _$this._isShared;
   set isShared(bool? isShared) => _$this._isShared = isShared;
 
+  bool? _isPinned;
+  bool? get isPinned => _$this._isPinned;
+  set isPinned(bool? isPinned) => _$this._isPinned = isPinned;
+
   int? _commentCount;
   int? get commentCount => _$this._commentCount;
   set commentCount(int? commentCount) => _$this._commentCount = commentCount;
@@ -396,12 +404,11 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
 
   MwCommentListBuilder? _comments;
   MwCommentListBuilder get comments =>
-      _$this._comments ??= new MwCommentListBuilder();
+      _$this._comments ??= MwCommentListBuilder();
   set comments(MwCommentListBuilder? comments) => _$this._comments = comments;
 
   MwEntryRightsBuilder? _rights;
-  MwEntryRightsBuilder get rights =>
-      _$this._rights ??= new MwEntryRightsBuilder();
+  MwEntryRightsBuilder get rights => _$this._rights ??= MwEntryRightsBuilder();
   set rights(MwEntryRightsBuilder? rights) => _$this._rights = rights;
 
   MwEntryBuilder() {
@@ -432,6 +439,7 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
       _inLive = $v.inLive;
       _isAnonymous = $v.isAnonymous;
       _isShared = $v.isShared;
+      _isPinned = $v.isPinned;
       _commentCount = $v.commentCount;
       _favoriteCount = $v.favoriteCount;
       _isFavorited = $v.isFavorited;
@@ -445,7 +453,6 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
 
   @override
   void replace(MwEntry other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwEntry;
   }
 
@@ -461,34 +468,36 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
     _$MwEntry _$result;
     try {
       _$result = _$v ??
-          new _$MwEntry._(
-              id: id,
-              author: author,
-              user: user,
-              createdAt: createdAt,
-              rating: _rating?.build(),
-              title: title,
-              cutTitle: cutTitle,
-              content: content,
-              cutContent: cutContent,
-              editContent: editContent,
-              hasCut: hasCut,
-              images: _images?.build(),
-              insertedImages: _insertedImages?.build(),
-              tags: _tags?.build(),
-              wordCount: wordCount,
-              privacy: privacy,
-              visibleFor: _visibleFor?.build(),
-              isCommentable: isCommentable,
-              inLive: inLive,
-              isAnonymous: isAnonymous,
-              isShared: isShared,
-              commentCount: commentCount,
-              favoriteCount: favoriteCount,
-              isFavorited: isFavorited,
-              isWatching: isWatching,
-              comments: _comments?.build(),
-              rights: _rights?.build());
+          _$MwEntry._(
+            id: id,
+            author: author,
+            user: user,
+            createdAt: createdAt,
+            rating: _rating?.build(),
+            title: title,
+            cutTitle: cutTitle,
+            content: content,
+            cutContent: cutContent,
+            editContent: editContent,
+            hasCut: hasCut,
+            images: _images?.build(),
+            insertedImages: _insertedImages?.build(),
+            tags: _tags?.build(),
+            wordCount: wordCount,
+            privacy: privacy,
+            visibleFor: _visibleFor?.build(),
+            isCommentable: isCommentable,
+            inLive: inLive,
+            isAnonymous: isAnonymous,
+            isShared: isShared,
+            isPinned: isPinned,
+            commentCount: commentCount,
+            favoriteCount: favoriteCount,
+            isFavorited: isFavorited,
+            isWatching: isWatching,
+            comments: _comments?.build(),
+            rights: _rights?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -510,7 +519,7 @@ class MwEntryBuilder implements Builder<MwEntry, MwEntryBuilder> {
         _$failedField = 'rights';
         _rights?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwEntry', _$failedField, e.toString());
       }
       rethrow;

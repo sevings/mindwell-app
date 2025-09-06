@@ -14,10 +14,9 @@ class _$MwMeOnlinePut200Response extends MwMeOnlinePut200Response {
 
   factory _$MwMeOnlinePut200Response(
           [void Function(MwMeOnlinePut200ResponseBuilder)? updates]) =>
-      (new MwMeOnlinePut200ResponseBuilder()..update(updates))._build();
+      (MwMeOnlinePut200ResponseBuilder()..update(updates))._build();
 
   _$MwMeOnlinePut200Response._({this.notifications, this.chats}) : super._();
-
   @override
   MwMeOnlinePut200Response rebuild(
           void Function(MwMeOnlinePut200ResponseBuilder) updates) =>
@@ -25,7 +24,7 @@ class _$MwMeOnlinePut200Response extends MwMeOnlinePut200Response {
 
   @override
   MwMeOnlinePut200ResponseBuilder toBuilder() =>
-      new MwMeOnlinePut200ResponseBuilder()..replace(this);
+      MwMeOnlinePut200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -83,7 +82,6 @@ class MwMeOnlinePut200ResponseBuilder
 
   @override
   void replace(MwMeOnlinePut200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwMeOnlinePut200Response;
   }
 
@@ -97,8 +95,10 @@ class MwMeOnlinePut200ResponseBuilder
 
   _$MwMeOnlinePut200Response _build() {
     final _$result = _$v ??
-        new _$MwMeOnlinePut200Response._(
-            notifications: notifications, chats: chats);
+        _$MwMeOnlinePut200Response._(
+          notifications: notifications,
+          chats: chats,
+        );
     replace(_$result);
     return _$result;
   }

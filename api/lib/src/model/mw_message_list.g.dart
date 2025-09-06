@@ -21,7 +21,7 @@ class _$MwMessageList extends MwMessageList {
   final bool? hasBefore;
 
   factory _$MwMessageList([void Function(MwMessageListBuilder)? updates]) =>
-      (new MwMessageListBuilder()..update(updates))._build();
+      (MwMessageListBuilder()..update(updates))._build();
 
   _$MwMessageList._(
       {this.data,
@@ -31,13 +31,12 @@ class _$MwMessageList extends MwMessageList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwMessageList rebuild(void Function(MwMessageListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwMessageListBuilder toBuilder() => new MwMessageListBuilder()..replace(this);
+  MwMessageListBuilder toBuilder() => MwMessageListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -82,8 +81,7 @@ class MwMessageListBuilder
   _$MwMessageList? _$v;
 
   ListBuilder<MwMessage>? _data;
-  ListBuilder<MwMessage> get data =>
-      _$this._data ??= new ListBuilder<MwMessage>();
+  ListBuilder<MwMessage> get data => _$this._data ??= ListBuilder<MwMessage>();
   set data(ListBuilder<MwMessage>? data) => _$this._data = data;
 
   int? _unreadCount;
@@ -126,7 +124,6 @@ class MwMessageListBuilder
 
   @override
   void replace(MwMessageList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwMessageList;
   }
 
@@ -142,20 +139,21 @@ class MwMessageListBuilder
     _$MwMessageList _$result;
     try {
       _$result = _$v ??
-          new _$MwMessageList._(
-              data: _data?.build(),
-              unreadCount: unreadCount,
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwMessageList._(
+            data: _data?.build(),
+            unreadCount: unreadCount,
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwMessageList', _$failedField, e.toString());
       }
       rethrow;

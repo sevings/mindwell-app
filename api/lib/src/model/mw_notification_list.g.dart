@@ -22,7 +22,7 @@ class _$MwNotificationList extends MwNotificationList {
 
   factory _$MwNotificationList(
           [void Function(MwNotificationListBuilder)? updates]) =>
-      (new MwNotificationListBuilder()..update(updates))._build();
+      (MwNotificationListBuilder()..update(updates))._build();
 
   _$MwNotificationList._(
       {this.notifications,
@@ -32,7 +32,6 @@ class _$MwNotificationList extends MwNotificationList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwNotificationList rebuild(
           void Function(MwNotificationListBuilder) updates) =>
@@ -40,7 +39,7 @@ class _$MwNotificationList extends MwNotificationList {
 
   @override
   MwNotificationListBuilder toBuilder() =>
-      new MwNotificationListBuilder()..replace(this);
+      MwNotificationListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -86,7 +85,7 @@ class MwNotificationListBuilder
 
   ListBuilder<MwNotification>? _notifications;
   ListBuilder<MwNotification> get notifications =>
-      _$this._notifications ??= new ListBuilder<MwNotification>();
+      _$this._notifications ??= ListBuilder<MwNotification>();
   set notifications(ListBuilder<MwNotification>? notifications) =>
       _$this._notifications = notifications;
 
@@ -130,7 +129,6 @@ class MwNotificationListBuilder
 
   @override
   void replace(MwNotificationList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwNotificationList;
   }
 
@@ -146,20 +144,21 @@ class MwNotificationListBuilder
     _$MwNotificationList _$result;
     try {
       _$result = _$v ??
-          new _$MwNotificationList._(
-              notifications: _notifications?.build(),
-              unreadCount: unreadCount,
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwNotificationList._(
+            notifications: _notifications?.build(),
+            unreadCount: unreadCount,
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'notifications';
         _notifications?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwNotificationList', _$failedField, e.toString());
       }
       rethrow;

@@ -6,7 +6,7 @@ part of 'serializers.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializers _$serializers = (new Serializers().toBuilder()
+Serializers _$serializers = (Serializers().toBuilder()
       ..add($MwFriend.serializer)
       ..add($MwProfile.serializer)
       ..add($MwUser.serializer)
@@ -27,6 +27,8 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(MwAuthProfileAllOfAccount.serializer)
       ..add(MwAuthProfileAllOfBan.serializer)
       ..add(MwAvatar.serializer)
+      ..add(MwBadge.serializer)
+      ..add(MwBadgeList.serializer)
       ..add(MwCalendar.serializer)
       ..add(MwCalendarEntry.serializer)
       ..add(MwChat.serializer)
@@ -68,6 +70,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(MwOAuth2Token.serializer)
       ..add(MwOAuth2TokenTokenTypeEnum.serializer)
       ..add(MwOauth2AllowPost200Response.serializer)
+      ..add(MwPinStatus.serializer)
       ..add(MwProfileAllOfRelations.serializer)
       ..add(MwProfileAllOfRelationsFromMeEnum.serializer)
       ..add(MwProfileAllOfRelationsToMeEnum.serializer)
@@ -86,59 +89,62 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(MwWish.serializer)
       ..add(MwWishStateEnum.serializer)
       ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(MwBadge)]),
+          () => ListBuilder<MwBadge>())
+      ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwCalendarEntry)]),
-          () => new ListBuilder<MwCalendarEntry>())
+          () => ListBuilder<MwCalendarEntry>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwChat)]),
-          () => new ListBuilder<MwChat>())
+          () => ListBuilder<MwChat>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwComment)]),
-          () => new ListBuilder<MwComment>())
+          () => ListBuilder<MwComment>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwEntry)]),
-          () => new ListBuilder<MwEntry>())
+          () => ListBuilder<MwEntry>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwFriend)]),
-          () => new ListBuilder<MwFriend>())
+          () => ListBuilder<MwFriend>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwFriend)]),
-          () => new ListBuilder<MwFriend>())
+          () => ListBuilder<MwFriend>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwFriend)]),
-          () => new ListBuilder<MwFriend>())
+          () => ListBuilder<MwFriend>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwImage)]),
-          () => new ListBuilder<MwImage>())
+          () => ListBuilder<MwImage>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwImage)]),
-          () => new ListBuilder<MwImage>())
+          () => ListBuilder<MwImage>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwImage)]),
-          () => new ListBuilder<MwImage>())
+          () => ListBuilder<MwImage>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
+          () => ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwUser)]),
-          () => new ListBuilder<MwUser>())
+          () => ListBuilder<MwUser>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwMessage)]),
-          () => new ListBuilder<MwMessage>())
+          () => ListBuilder<MwMessage>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwNotification)]),
-          () => new ListBuilder<MwNotification>())
+          () => ListBuilder<MwNotification>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(MwTagListDataInner)]),
-          () => new ListBuilder<MwTagListDataInner>())
+          () => ListBuilder<MwTagListDataInner>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
+          () => ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
+          () => ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>()))
+          () => ListBuilder<String>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

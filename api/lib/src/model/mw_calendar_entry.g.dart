@@ -15,17 +15,15 @@ class _$MwCalendarEntry extends MwCalendarEntry {
   final String? title;
 
   factory _$MwCalendarEntry([void Function(MwCalendarEntryBuilder)? updates]) =>
-      (new MwCalendarEntryBuilder()..update(updates))._build();
+      (MwCalendarEntryBuilder()..update(updates))._build();
 
   _$MwCalendarEntry._({this.id, this.createdAt, this.title}) : super._();
-
   @override
   MwCalendarEntry rebuild(void Function(MwCalendarEntryBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCalendarEntryBuilder toBuilder() =>
-      new MwCalendarEntryBuilder()..replace(this);
+  MwCalendarEntryBuilder toBuilder() => MwCalendarEntryBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -89,7 +87,6 @@ class MwCalendarEntryBuilder
 
   @override
   void replace(MwCalendarEntry other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwCalendarEntry;
   }
 
@@ -103,7 +100,11 @@ class MwCalendarEntryBuilder
 
   _$MwCalendarEntry _build() {
     final _$result = _$v ??
-        new _$MwCalendarEntry._(id: id, createdAt: createdAt, title: title);
+        _$MwCalendarEntry._(
+          id: id,
+          createdAt: createdAt,
+          title: title,
+        );
     replace(_$result);
     return _$result;
   }

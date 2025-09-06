@@ -30,12 +30,12 @@ MwRelationshipRelationEnum _$mwRelationshipRelationEnumValueOf(String name) {
     case 'none':
       return _$mwRelationshipRelationEnum_none;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwRelationshipRelationEnum> _$mwRelationshipRelationEnumValues =
-    new BuiltSet<MwRelationshipRelationEnum>(const <MwRelationshipRelationEnum>[
+    BuiltSet<MwRelationshipRelationEnum>(const <MwRelationshipRelationEnum>[
   _$mwRelationshipRelationEnum_followed,
   _$mwRelationshipRelationEnum_requested,
   _$mwRelationshipRelationEnum_ignored,
@@ -44,7 +44,7 @@ final BuiltSet<MwRelationshipRelationEnum> _$mwRelationshipRelationEnumValues =
 ]);
 
 Serializer<MwRelationshipRelationEnum> _$mwRelationshipRelationEnumSerializer =
-    new _$MwRelationshipRelationEnumSerializer();
+    _$MwRelationshipRelationEnumSerializer();
 
 class _$MwRelationshipRelationEnumSerializer
     implements PrimitiveSerializer<MwRelationshipRelationEnum> {
@@ -90,17 +90,15 @@ class _$MwRelationship extends MwRelationship {
   final MwRelationshipRelationEnum? relation;
 
   factory _$MwRelationship([void Function(MwRelationshipBuilder)? updates]) =>
-      (new MwRelationshipBuilder()..update(updates))._build();
+      (MwRelationshipBuilder()..update(updates))._build();
 
   _$MwRelationship._({this.from, this.to, this.relation}) : super._();
-
   @override
   MwRelationship rebuild(void Function(MwRelationshipBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwRelationshipBuilder toBuilder() =>
-      new MwRelationshipBuilder()..replace(this);
+  MwRelationshipBuilder toBuilder() => MwRelationshipBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -165,7 +163,6 @@ class MwRelationshipBuilder
 
   @override
   void replace(MwRelationship other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwRelationship;
   }
 
@@ -178,8 +175,12 @@ class MwRelationshipBuilder
   MwRelationship build() => _build();
 
   _$MwRelationship _build() {
-    final _$result =
-        _$v ?? new _$MwRelationship._(from: from, to: to, relation: relation);
+    final _$result = _$v ??
+        _$MwRelationship._(
+          from: from,
+          to: to,
+          relation: relation,
+        );
     replace(_$result);
     return _$result;
   }

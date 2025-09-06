@@ -16,10 +16,9 @@ class _$MwUsersGet200Response extends MwUsersGet200Response {
 
   factory _$MwUsersGet200Response(
           [void Function(MwUsersGet200ResponseBuilder)? updates]) =>
-      (new MwUsersGet200ResponseBuilder()..update(updates))._build();
+      (MwUsersGet200ResponseBuilder()..update(updates))._build();
 
   _$MwUsersGet200Response._({this.top, this.query, this.users}) : super._();
-
   @override
   MwUsersGet200Response rebuild(
           void Function(MwUsersGet200ResponseBuilder) updates) =>
@@ -27,7 +26,7 @@ class _$MwUsersGet200Response extends MwUsersGet200Response {
 
   @override
   MwUsersGet200ResponseBuilder toBuilder() =>
-      new MwUsersGet200ResponseBuilder()..replace(this);
+      MwUsersGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -71,8 +70,7 @@ class MwUsersGet200ResponseBuilder
   set query(String? query) => _$this._query = query;
 
   ListBuilder<MwFriend>? _users;
-  ListBuilder<MwFriend> get users =>
-      _$this._users ??= new ListBuilder<MwFriend>();
+  ListBuilder<MwFriend> get users => _$this._users ??= ListBuilder<MwFriend>();
   set users(ListBuilder<MwFriend>? users) => _$this._users = users;
 
   MwUsersGet200ResponseBuilder() {
@@ -92,7 +90,6 @@ class MwUsersGet200ResponseBuilder
 
   @override
   void replace(MwUsersGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwUsersGet200Response;
   }
 
@@ -108,15 +105,18 @@ class MwUsersGet200ResponseBuilder
     _$MwUsersGet200Response _$result;
     try {
       _$result = _$v ??
-          new _$MwUsersGet200Response._(
-              top: top, query: query, users: _users?.build());
+          _$MwUsersGet200Response._(
+            top: top,
+            query: query,
+            users: _users?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'users';
         _users?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwUsersGet200Response', _$failedField, e.toString());
       }
       rethrow;

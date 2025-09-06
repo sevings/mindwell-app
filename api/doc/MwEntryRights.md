@@ -1,8 +1,8 @@
-# mindwell.model.MwEntryRights
+# mindwell_api.model.MwEntryRights
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties
@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **edit** | **bool** |  | [optional] 
 **delete** | **bool** |  | [optional] 
+**pin** | **bool** |  | [optional] 
 **comment** | **bool** |  | [optional] 
 **vote** | **bool** |  | [optional] 
 **complain** | **bool** |  | [optional] 

@@ -12,6 +12,8 @@ class _$MwEntryRights extends MwEntryRights {
   @override
   final bool? delete;
   @override
+  final bool? pin;
+  @override
   final bool? comment;
   @override
   final bool? vote;
@@ -19,18 +21,22 @@ class _$MwEntryRights extends MwEntryRights {
   final bool? complain;
 
   factory _$MwEntryRights([void Function(MwEntryRightsBuilder)? updates]) =>
-      (new MwEntryRightsBuilder()..update(updates))._build();
+      (MwEntryRightsBuilder()..update(updates))._build();
 
   _$MwEntryRights._(
-      {this.edit, this.delete, this.comment, this.vote, this.complain})
+      {this.edit,
+      this.delete,
+      this.pin,
+      this.comment,
+      this.vote,
+      this.complain})
       : super._();
-
   @override
   MwEntryRights rebuild(void Function(MwEntryRightsBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwEntryRightsBuilder toBuilder() => new MwEntryRightsBuilder()..replace(this);
+  MwEntryRightsBuilder toBuilder() => MwEntryRightsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -38,6 +44,7 @@ class _$MwEntryRights extends MwEntryRights {
     return other is MwEntryRights &&
         edit == other.edit &&
         delete == other.delete &&
+        pin == other.pin &&
         comment == other.comment &&
         vote == other.vote &&
         complain == other.complain;
@@ -48,6 +55,7 @@ class _$MwEntryRights extends MwEntryRights {
     var _$hash = 0;
     _$hash = $jc(_$hash, edit.hashCode);
     _$hash = $jc(_$hash, delete.hashCode);
+    _$hash = $jc(_$hash, pin.hashCode);
     _$hash = $jc(_$hash, comment.hashCode);
     _$hash = $jc(_$hash, vote.hashCode);
     _$hash = $jc(_$hash, complain.hashCode);
@@ -60,6 +68,7 @@ class _$MwEntryRights extends MwEntryRights {
     return (newBuiltValueToStringHelper(r'MwEntryRights')
           ..add('edit', edit)
           ..add('delete', delete)
+          ..add('pin', pin)
           ..add('comment', comment)
           ..add('vote', vote)
           ..add('complain', complain))
@@ -78,6 +87,10 @@ class MwEntryRightsBuilder
   bool? _delete;
   bool? get delete => _$this._delete;
   set delete(bool? delete) => _$this._delete = delete;
+
+  bool? _pin;
+  bool? get pin => _$this._pin;
+  set pin(bool? pin) => _$this._pin = pin;
 
   bool? _comment;
   bool? get comment => _$this._comment;
@@ -100,6 +113,7 @@ class MwEntryRightsBuilder
     if ($v != null) {
       _edit = $v.edit;
       _delete = $v.delete;
+      _pin = $v.pin;
       _comment = $v.comment;
       _vote = $v.vote;
       _complain = $v.complain;
@@ -110,7 +124,6 @@ class MwEntryRightsBuilder
 
   @override
   void replace(MwEntryRights other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwEntryRights;
   }
 
@@ -124,12 +137,14 @@ class MwEntryRightsBuilder
 
   _$MwEntryRights _build() {
     final _$result = _$v ??
-        new _$MwEntryRights._(
-            edit: edit,
-            delete: delete,
-            comment: comment,
-            vote: vote,
-            complain: complain);
+        _$MwEntryRights._(
+          edit: edit,
+          delete: delete,
+          pin: pin,
+          comment: comment,
+          vote: vote,
+          complain: complain,
+        );
     replace(_$result);
     return _$result;
   }

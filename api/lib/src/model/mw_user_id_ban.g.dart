@@ -23,7 +23,7 @@ class _$MwUserIDBan extends MwUserIDBan {
   final bool? complain;
 
   factory _$MwUserIDBan([void Function(MwUserIDBanBuilder)? updates]) =>
-      (new MwUserIDBanBuilder()..update(updates))._build();
+      (MwUserIDBanBuilder()..update(updates))._build();
 
   _$MwUserIDBan._(
       {this.account,
@@ -34,13 +34,12 @@ class _$MwUserIDBan extends MwUserIDBan {
       this.live,
       this.complain})
       : super._();
-
   @override
   MwUserIDBan rebuild(void Function(MwUserIDBanBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwUserIDBanBuilder toBuilder() => new MwUserIDBanBuilder()..replace(this);
+  MwUserIDBanBuilder toBuilder() => MwUserIDBanBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -135,7 +134,6 @@ class MwUserIDBanBuilder implements Builder<MwUserIDBan, MwUserIDBanBuilder> {
 
   @override
   void replace(MwUserIDBan other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwUserIDBan;
   }
 
@@ -149,14 +147,15 @@ class MwUserIDBanBuilder implements Builder<MwUserIDBan, MwUserIDBanBuilder> {
 
   _$MwUserIDBan _build() {
     final _$result = _$v ??
-        new _$MwUserIDBan._(
-            account: account,
-            shadow: shadow,
-            invite: invite,
-            vote: vote,
-            comment: comment,
-            live: live,
-            complain: complain);
+        _$MwUserIDBan._(
+          account: account,
+          shadow: shadow,
+          invite: invite,
+          vote: vote,
+          comment: comment,
+          live: live,
+          complain: complain,
+        );
     replace(_$result);
     return _$result;
   }

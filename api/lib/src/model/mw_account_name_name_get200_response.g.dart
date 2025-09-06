@@ -15,10 +15,9 @@ class _$MwAccountNameNameGet200Response
 
   factory _$MwAccountNameNameGet200Response(
           [void Function(MwAccountNameNameGet200ResponseBuilder)? updates]) =>
-      (new MwAccountNameNameGet200ResponseBuilder()..update(updates))._build();
+      (MwAccountNameNameGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAccountNameNameGet200Response._({this.name, this.isFree}) : super._();
-
   @override
   MwAccountNameNameGet200Response rebuild(
           void Function(MwAccountNameNameGet200ResponseBuilder) updates) =>
@@ -26,7 +25,7 @@ class _$MwAccountNameNameGet200Response
 
   @override
   MwAccountNameNameGet200ResponseBuilder toBuilder() =>
-      new MwAccountNameNameGet200ResponseBuilder()..replace(this);
+      MwAccountNameNameGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -84,7 +83,6 @@ class MwAccountNameNameGet200ResponseBuilder
 
   @override
   void replace(MwAccountNameNameGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountNameNameGet200Response;
   }
 
@@ -98,7 +96,10 @@ class MwAccountNameNameGet200ResponseBuilder
 
   _$MwAccountNameNameGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAccountNameNameGet200Response._(name: name, isFree: isFree);
+        _$MwAccountNameNameGet200Response._(
+          name: name,
+          isFree: isFree,
+        );
     replace(_$result);
     return _$result;
   }

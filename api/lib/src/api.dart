@@ -4,36 +4,36 @@
 
 import 'package:dio/dio.dart';
 import 'package:built_value/serializer.dart';
-import 'package:mindwell/src/serializers.dart';
-import 'package:mindwell/src/auth/api_key_auth.dart';
-import 'package:mindwell/src/auth/basic_auth.dart';
-import 'package:mindwell/src/auth/bearer_auth.dart';
-import 'package:mindwell/src/auth/oauth.dart';
-import 'package:mindwell/src/api/account_api.dart';
-import 'package:mindwell/src/api/adm_api.dart';
-import 'package:mindwell/src/api/chats_api.dart';
-import 'package:mindwell/src/api/comments_api.dart';
-import 'package:mindwell/src/api/design_api.dart';
-import 'package:mindwell/src/api/entries_api.dart';
-import 'package:mindwell/src/api/favorites_api.dart';
-import 'package:mindwell/src/api/images_api.dart';
-import 'package:mindwell/src/api/me_api.dart';
-import 'package:mindwell/src/api/notifications_api.dart';
-import 'package:mindwell/src/api/oauth2_api.dart';
-import 'package:mindwell/src/api/relations_api.dart';
-import 'package:mindwell/src/api/themes_api.dart';
-import 'package:mindwell/src/api/users_api.dart';
-import 'package:mindwell/src/api/votes_api.dart';
-import 'package:mindwell/src/api/watchings_api.dart';
-import 'package:mindwell/src/api/wishes_api.dart';
+import 'package:mindwell_api/src/serializers.dart';
+import 'package:mindwell_api/src/auth/api_key_auth.dart';
+import 'package:mindwell_api/src/auth/basic_auth.dart';
+import 'package:mindwell_api/src/auth/bearer_auth.dart';
+import 'package:mindwell_api/src/auth/oauth.dart';
+import 'package:mindwell_api/src/api/account_api.dart';
+import 'package:mindwell_api/src/api/adm_api.dart';
+import 'package:mindwell_api/src/api/chats_api.dart';
+import 'package:mindwell_api/src/api/comments_api.dart';
+import 'package:mindwell_api/src/api/design_api.dart';
+import 'package:mindwell_api/src/api/entries_api.dart';
+import 'package:mindwell_api/src/api/favorites_api.dart';
+import 'package:mindwell_api/src/api/images_api.dart';
+import 'package:mindwell_api/src/api/me_api.dart';
+import 'package:mindwell_api/src/api/notifications_api.dart';
+import 'package:mindwell_api/src/api/oauth2_api.dart';
+import 'package:mindwell_api/src/api/relations_api.dart';
+import 'package:mindwell_api/src/api/themes_api.dart';
+import 'package:mindwell_api/src/api/users_api.dart';
+import 'package:mindwell_api/src/api/votes_api.dart';
+import 'package:mindwell_api/src/api/watchings_api.dart';
+import 'package:mindwell_api/src/api/wishes_api.dart';
 
-class Mindwell {
+class MindwellApi {
   static const String basePath = r'/api/v1';
 
   final Dio dio;
   final Serializers serializers;
 
-  Mindwell({
+  MindwellApi({
     Dio? dio,
     Serializers? serializers,
     String? basePathOverride,

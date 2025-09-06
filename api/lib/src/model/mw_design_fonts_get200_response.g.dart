@@ -12,10 +12,9 @@ class _$MwDesignFontsGet200Response extends MwDesignFontsGet200Response {
 
   factory _$MwDesignFontsGet200Response(
           [void Function(MwDesignFontsGet200ResponseBuilder)? updates]) =>
-      (new MwDesignFontsGet200ResponseBuilder()..update(updates))._build();
+      (MwDesignFontsGet200ResponseBuilder()..update(updates))._build();
 
   _$MwDesignFontsGet200Response._({this.fonts}) : super._();
-
   @override
   MwDesignFontsGet200Response rebuild(
           void Function(MwDesignFontsGet200ResponseBuilder) updates) =>
@@ -23,7 +22,7 @@ class _$MwDesignFontsGet200Response extends MwDesignFontsGet200Response {
 
   @override
   MwDesignFontsGet200ResponseBuilder toBuilder() =>
-      new MwDesignFontsGet200ResponseBuilder()..replace(this);
+      MwDesignFontsGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -54,7 +53,7 @@ class MwDesignFontsGet200ResponseBuilder
   _$MwDesignFontsGet200Response? _$v;
 
   ListBuilder<String>? _fonts;
-  ListBuilder<String> get fonts => _$this._fonts ??= new ListBuilder<String>();
+  ListBuilder<String> get fonts => _$this._fonts ??= ListBuilder<String>();
   set fonts(ListBuilder<String>? fonts) => _$this._fonts = fonts;
 
   MwDesignFontsGet200ResponseBuilder() {
@@ -72,7 +71,6 @@ class MwDesignFontsGet200ResponseBuilder
 
   @override
   void replace(MwDesignFontsGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwDesignFontsGet200Response;
   }
 
@@ -87,15 +85,17 @@ class MwDesignFontsGet200ResponseBuilder
   _$MwDesignFontsGet200Response _build() {
     _$MwDesignFontsGet200Response _$result;
     try {
-      _$result =
-          _$v ?? new _$MwDesignFontsGet200Response._(fonts: _fonts?.build());
+      _$result = _$v ??
+          _$MwDesignFontsGet200Response._(
+            fonts: _fonts?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'fonts';
         _fonts?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwDesignFontsGet200Response', _$failedField, e.toString());
       }
       rethrow;

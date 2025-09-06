@@ -15,6 +15,8 @@ part 'mw_account_settings_telegram_get200_response.g.dart';
 /// * [followers] 
 /// * [invites] 
 /// * [messages] 
+/// * [movedEntries] 
+/// * [badges] 
 @BuiltValue()
 abstract class MwAccountSettingsTelegramGet200Response implements Built<MwAccountSettingsTelegramGet200Response, MwAccountSettingsTelegramGet200ResponseBuilder> {
   @BuiltValueField(wireName: r'comments')
@@ -28,6 +30,12 @@ abstract class MwAccountSettingsTelegramGet200Response implements Built<MwAccoun
 
   @BuiltValueField(wireName: r'messages')
   bool? get messages;
+
+  @BuiltValueField(wireName: r'movedEntries')
+  bool? get movedEntries;
+
+  @BuiltValueField(wireName: r'badges')
+  bool? get badges;
 
   MwAccountSettingsTelegramGet200Response._();
 
@@ -77,6 +85,20 @@ class _$MwAccountSettingsTelegramGet200ResponseSerializer implements PrimitiveSe
       yield r'messages';
       yield serializers.serialize(
         object.messages,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.movedEntries != null) {
+      yield r'movedEntries';
+      yield serializers.serialize(
+        object.movedEntries,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.badges != null) {
+      yield r'badges';
+      yield serializers.serialize(
+        object.badges,
         specifiedType: const FullType(bool),
       );
     }
@@ -130,6 +152,20 @@ class _$MwAccountSettingsTelegramGet200ResponseSerializer implements PrimitiveSe
             specifiedType: const FullType(bool),
           ) as bool;
           result.messages = valueDes;
+          break;
+        case r'movedEntries':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.movedEntries = valueDes;
+          break;
+        case r'badges':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.badges = valueDes;
           break;
         default:
           unhandled.add(key);

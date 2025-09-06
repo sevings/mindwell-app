@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for WishesApi
 void main() {
-  final instance = Mindwell().getWishesApi();
+  final instance = MindwellApi().getWishesApi();
 
   group(WishesApi, () {
     //Future wishesIdComplainPost(int id) async

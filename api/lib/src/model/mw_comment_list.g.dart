@@ -19,7 +19,7 @@ class _$MwCommentList extends MwCommentList {
   final bool? hasBefore;
 
   factory _$MwCommentList([void Function(MwCommentListBuilder)? updates]) =>
-      (new MwCommentListBuilder()..update(updates))._build();
+      (MwCommentListBuilder()..update(updates))._build();
 
   _$MwCommentList._(
       {this.data,
@@ -28,13 +28,12 @@ class _$MwCommentList extends MwCommentList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwCommentList rebuild(void Function(MwCommentListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCommentListBuilder toBuilder() => new MwCommentListBuilder()..replace(this);
+  MwCommentListBuilder toBuilder() => MwCommentListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -76,8 +75,7 @@ class MwCommentListBuilder
   _$MwCommentList? _$v;
 
   ListBuilder<MwComment>? _data;
-  ListBuilder<MwComment> get data =>
-      _$this._data ??= new ListBuilder<MwComment>();
+  ListBuilder<MwComment> get data => _$this._data ??= ListBuilder<MwComment>();
   set data(ListBuilder<MwComment>? data) => _$this._data = data;
 
   String? _nextAfter;
@@ -115,7 +113,6 @@ class MwCommentListBuilder
 
   @override
   void replace(MwCommentList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwCommentList;
   }
 
@@ -131,19 +128,20 @@ class MwCommentListBuilder
     _$MwCommentList _$result;
     try {
       _$result = _$v ??
-          new _$MwCommentList._(
-              data: _data?.build(),
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwCommentList._(
+            data: _data?.build(),
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwCommentList', _$failedField, e.toString());
       }
       rethrow;

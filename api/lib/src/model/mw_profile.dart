@@ -3,15 +3,15 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mindwell/src/model/mw_friend_all_of_counts.dart';
-import 'package:mindwell/src/model/mw_design.dart';
-import 'package:mindwell/src/model/mw_friend.dart';
+import 'package:mindwell_api/src/model/mw_cover.dart';
+import 'package:mindwell_api/src/model/mw_avatar.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:mindwell/src/model/mw_cover.dart';
-import 'package:mindwell/src/model/mw_profile_all_of_relations.dart';
-import 'package:mindwell/src/model/mw_profile_all_of_rights.dart';
-import 'package:mindwell/src/model/mw_user.dart';
-import 'package:mindwell/src/model/mw_avatar.dart';
+import 'package:mindwell_api/src/model/mw_profile_all_of_relations.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_design.dart';
+import 'package:mindwell_api/src/model/mw_friend_all_of_counts.dart';
+import 'package:mindwell_api/src/model/mw_friend.dart';
+import 'package:mindwell_api/src/model/mw_profile_all_of_rights.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

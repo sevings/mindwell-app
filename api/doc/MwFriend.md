@@ -1,8 +1,8 @@
-# mindwell.model.MwFriend
+# mindwell_api.model.MwFriend
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

@@ -26,12 +26,12 @@ MwDesignTextAlignmentEnum _$mwDesignTextAlignmentEnumValueOf(String name) {
     case 'justify':
       return _$mwDesignTextAlignmentEnum_justify;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwDesignTextAlignmentEnum> _$mwDesignTextAlignmentEnumValues =
-    new BuiltSet<MwDesignTextAlignmentEnum>(const <MwDesignTextAlignmentEnum>[
+    BuiltSet<MwDesignTextAlignmentEnum>(const <MwDesignTextAlignmentEnum>[
   _$mwDesignTextAlignmentEnum_left,
   _$mwDesignTextAlignmentEnum_right,
   _$mwDesignTextAlignmentEnum_center,
@@ -39,7 +39,7 @@ final BuiltSet<MwDesignTextAlignmentEnum> _$mwDesignTextAlignmentEnumValues =
 ]);
 
 Serializer<MwDesignTextAlignmentEnum> _$mwDesignTextAlignmentEnumSerializer =
-    new _$MwDesignTextAlignmentEnumSerializer();
+    _$MwDesignTextAlignmentEnumSerializer();
 
 class _$MwDesignTextAlignmentEnumSerializer
     implements PrimitiveSerializer<MwDesignTextAlignmentEnum> {
@@ -89,7 +89,7 @@ class _$MwDesign extends MwDesign {
   final MwDesignTextAlignmentEnum? textAlignment;
 
   factory _$MwDesign([void Function(MwDesignBuilder)? updates]) =>
-      (new MwDesignBuilder()..update(updates))._build();
+      (MwDesignBuilder()..update(updates))._build();
 
   _$MwDesign._(
       {this.css,
@@ -99,13 +99,12 @@ class _$MwDesign extends MwDesign {
       this.fontSize,
       this.textAlignment})
       : super._();
-
   @override
   MwDesign rebuild(void Function(MwDesignBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwDesignBuilder toBuilder() => new MwDesignBuilder()..replace(this);
+  MwDesignBuilder toBuilder() => MwDesignBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -194,7 +193,6 @@ class MwDesignBuilder implements Builder<MwDesign, MwDesignBuilder> {
 
   @override
   void replace(MwDesign other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwDesign;
   }
 
@@ -208,13 +206,14 @@ class MwDesignBuilder implements Builder<MwDesign, MwDesignBuilder> {
 
   _$MwDesign _build() {
     final _$result = _$v ??
-        new _$MwDesign._(
-            css: css,
-            backgroundColor: backgroundColor,
-            textColor: textColor,
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            textAlignment: textAlignment);
+        _$MwDesign._(
+          css: css,
+          backgroundColor: backgroundColor,
+          textColor: textColor,
+          fontFamily: fontFamily,
+          fontSize: fontSize,
+          textAlignment: textAlignment,
+        );
     replace(_$result);
     return _$result;
   }

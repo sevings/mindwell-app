@@ -11,16 +11,15 @@ class _$MwChatRights extends MwChatRights {
   final bool? send;
 
   factory _$MwChatRights([void Function(MwChatRightsBuilder)? updates]) =>
-      (new MwChatRightsBuilder()..update(updates))._build();
+      (MwChatRightsBuilder()..update(updates))._build();
 
   _$MwChatRights._({this.send}) : super._();
-
   @override
   MwChatRights rebuild(void Function(MwChatRightsBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwChatRightsBuilder toBuilder() => new MwChatRightsBuilder()..replace(this);
+  MwChatRightsBuilder toBuilder() => MwChatRightsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -66,7 +65,6 @@ class MwChatRightsBuilder
 
   @override
   void replace(MwChatRights other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwChatRights;
   }
 
@@ -79,7 +77,10 @@ class MwChatRightsBuilder
   MwChatRights build() => _build();
 
   _$MwChatRights _build() {
-    final _$result = _$v ?? new _$MwChatRights._(send: send);
+    final _$result = _$v ??
+        _$MwChatRights._(
+          send: send,
+        );
     replace(_$result);
     return _$result;
   }

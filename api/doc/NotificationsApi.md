@@ -1,8 +1,8 @@
-# mindwell.api.NotificationsApi
+# mindwell_api.api.NotificationsApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -21,13 +21,13 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getNotificationsApi();
+final api = MindwellApi().getNotificationsApi();
 final int limit = 56; // int | 
 final String after = after_example; // String | 
 final String before = before_example; // String | 
@@ -72,13 +72,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getNotificationsApi();
+final api = MindwellApi().getNotificationsApi();
 final int id = 789; // int | 
 
 try {
@@ -117,13 +117,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getNotificationsApi();
+final api = MindwellApi().getNotificationsApi();
 final num time = 8.14; // num | 
 
 try {

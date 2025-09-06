@@ -4,20 +4,18 @@
 
 import 'dart:async';
 
-import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
-import 'package:mindwell/src/api_util.dart';
-import 'package:mindwell/src/model/mw_account_email_email_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_invites_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_name_name_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_email_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_onsite_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_telegram_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_subscribe_token_get200_response.dart';
-import 'package:mindwell/src/model/mw_auth_profile.dart';
-import 'package:mindwell/src/model/mw_error.dart';
+import 'package:mindwell_api/src/api_util.dart';
+import 'package:mindwell_api/src/model/mw_account_email_email_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_invites_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_name_name_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_email_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_onsite_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_telegram_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_subscribe_token_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_auth_profile.dart';
 
 class AccountApi {
 
@@ -763,6 +761,8 @@ class AccountApi {
   /// * [comments] 
   /// * [followers] 
   /// * [invites] 
+  /// * [movedEntries] 
+  /// * [badges] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -776,6 +776,8 @@ class AccountApi {
     bool? comments,
     bool? followers,
     bool? invites,
+    bool? movedEntries,
+    bool? badges,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -812,6 +814,8 @@ class AccountApi {
         if (comments != null) r'comments': encodeFormParameter(_serializers, comments, const FullType(bool)),
         if (followers != null) r'followers': encodeFormParameter(_serializers, followers, const FullType(bool)),
         if (invites != null) r'invites': encodeFormParameter(_serializers, invites, const FullType(bool)),
+        if (movedEntries != null) r'movedEntries': encodeFormParameter(_serializers, movedEntries, const FullType(bool)),
+        if (badges != null) r'badges': encodeFormParameter(_serializers, badges, const FullType(bool)),
       });
 
     } catch(error, stackTrace) {
@@ -1084,6 +1088,8 @@ class AccountApi {
   /// * [followers] 
   /// * [invites] 
   /// * [messages] 
+  /// * [movedEntries] 
+  /// * [badges] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1098,6 +1104,8 @@ class AccountApi {
     bool? followers,
     bool? invites,
     bool? messages,
+    bool? movedEntries,
+    bool? badges,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1135,6 +1143,8 @@ class AccountApi {
         if (followers != null) r'followers': encodeFormParameter(_serializers, followers, const FullType(bool)),
         if (invites != null) r'invites': encodeFormParameter(_serializers, invites, const FullType(bool)),
         if (messages != null) r'messages': encodeFormParameter(_serializers, messages, const FullType(bool)),
+        if (movedEntries != null) r'movedEntries': encodeFormParameter(_serializers, movedEntries, const FullType(bool)),
+        if (badges != null) r'badges': encodeFormParameter(_serializers, badges, const FullType(bool)),
       });
 
     } catch(error, stackTrace) {

@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for AdmApi
 void main() {
-  final instance = Mindwell().getAdmApi();
+  final instance = MindwellApi().getAdmApi();
 
   group(AdmApi, () {
     //Future<MwAdmGrandfatherGet200Response> admGrandfatherGet() async

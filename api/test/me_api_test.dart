@@ -1,14 +1,19 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for MeApi
 void main() {
-  final instance = Mindwell().getMeApi();
+  final instance = MindwellApi().getMeApi();
 
   group(MeApi, () {
     //Future meAvatarPut(MultipartFile file) async
     test('test meAvatarPut', () async {
+      // TODO
+    });
+
+    //Future<MwBadgeList> meBadgesGet({ int limit }) async
+    test('test meBadgesGet', () async {
       // TODO
     });
 

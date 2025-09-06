@@ -13,11 +13,9 @@ class _$MwNotificationsReadPut200Response
 
   factory _$MwNotificationsReadPut200Response(
           [void Function(MwNotificationsReadPut200ResponseBuilder)? updates]) =>
-      (new MwNotificationsReadPut200ResponseBuilder()..update(updates))
-          ._build();
+      (MwNotificationsReadPut200ResponseBuilder()..update(updates))._build();
 
   _$MwNotificationsReadPut200Response._({this.unread}) : super._();
-
   @override
   MwNotificationsReadPut200Response rebuild(
           void Function(MwNotificationsReadPut200ResponseBuilder) updates) =>
@@ -25,7 +23,7 @@ class _$MwNotificationsReadPut200Response
 
   @override
   MwNotificationsReadPut200ResponseBuilder toBuilder() =>
-      new MwNotificationsReadPut200ResponseBuilder()..replace(this);
+      MwNotificationsReadPut200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -74,7 +72,6 @@ class MwNotificationsReadPut200ResponseBuilder
 
   @override
   void replace(MwNotificationsReadPut200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwNotificationsReadPut200Response;
   }
 
@@ -88,8 +85,10 @@ class MwNotificationsReadPut200ResponseBuilder
   MwNotificationsReadPut200Response build() => _build();
 
   _$MwNotificationsReadPut200Response _build() {
-    final _$result =
-        _$v ?? new _$MwNotificationsReadPut200Response._(unread: unread);
+    final _$result = _$v ??
+        _$MwNotificationsReadPut200Response._(
+          unread: unread,
+        );
     replace(_$result);
     return _$result;
   }

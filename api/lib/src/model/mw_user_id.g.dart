@@ -22,19 +22,19 @@ MwUserIDAuthorityEnum _$mwUserIDAuthorityEnumValueOf(String name) {
     case 'moderator':
       return _$mwUserIDAuthorityEnum_moderator;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwUserIDAuthorityEnum> _$mwUserIDAuthorityEnumValues =
-    new BuiltSet<MwUserIDAuthorityEnum>(const <MwUserIDAuthorityEnum>[
+    BuiltSet<MwUserIDAuthorityEnum>(const <MwUserIDAuthorityEnum>[
   _$mwUserIDAuthorityEnum_user,
   _$mwUserIDAuthorityEnum_admin,
   _$mwUserIDAuthorityEnum_moderator,
 ]);
 
 Serializer<MwUserIDAuthorityEnum> _$mwUserIDAuthorityEnumSerializer =
-    new _$MwUserIDAuthorityEnumSerializer();
+    _$MwUserIDAuthorityEnumSerializer();
 
 class _$MwUserIDAuthorityEnumSerializer
     implements PrimitiveSerializer<MwUserIDAuthorityEnum> {
@@ -85,7 +85,7 @@ class _$MwUserID extends MwUserID {
   final MwUserIDBan? ban;
 
   factory _$MwUserID([void Function(MwUserIDBuilder)? updates]) =>
-      (new MwUserIDBuilder()..update(updates))._build();
+      (MwUserIDBuilder()..update(updates))._build();
 
   _$MwUserID._(
       {this.id,
@@ -97,13 +97,12 @@ class _$MwUserID extends MwUserID {
       this.authority,
       this.ban})
       : super._();
-
   @override
   MwUserID rebuild(void Function(MwUserIDBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwUserIDBuilder toBuilder() => new MwUserIDBuilder()..replace(this);
+  MwUserIDBuilder toBuilder() => MwUserIDBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -183,7 +182,7 @@ class MwUserIDBuilder implements Builder<MwUserID, MwUserIDBuilder> {
       _$this._authority = authority;
 
   MwUserIDBanBuilder? _ban;
-  MwUserIDBanBuilder get ban => _$this._ban ??= new MwUserIDBanBuilder();
+  MwUserIDBanBuilder get ban => _$this._ban ??= MwUserIDBanBuilder();
   set ban(MwUserIDBanBuilder? ban) => _$this._ban = ban;
 
   MwUserIDBuilder() {
@@ -208,7 +207,6 @@ class MwUserIDBuilder implements Builder<MwUserID, MwUserIDBuilder> {
 
   @override
   void replace(MwUserID other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwUserID;
   }
 
@@ -224,22 +222,23 @@ class MwUserIDBuilder implements Builder<MwUserID, MwUserIDBuilder> {
     _$MwUserID _$result;
     try {
       _$result = _$v ??
-          new _$MwUserID._(
-              id: id,
-              name: name,
-              negKarma: negKarma,
-              followersCount: followersCount,
-              isInvited: isInvited,
-              verified: verified,
-              authority: authority,
-              ban: _ban?.build());
+          _$MwUserID._(
+            id: id,
+            name: name,
+            negKarma: negKarma,
+            followersCount: followersCount,
+            isInvited: isInvited,
+            verified: verified,
+            authority: authority,
+            ban: _ban?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'ban';
         _ban?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwUserID', _$failedField, e.toString());
       }
       rethrow;

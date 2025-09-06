@@ -1,8 +1,8 @@
-# mindwell.model.MwAuthProfileAllOfAccount
+# mindwell_api.model.MwAuthProfileAllOfAccount
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

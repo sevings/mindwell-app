@@ -25,7 +25,7 @@ class _$MwImage extends MwImage {
   final MwImageSize? large;
 
   factory _$MwImage([void Function(MwImageBuilder)? updates]) =>
-      (new MwImageBuilder()..update(updates))._build();
+      (MwImageBuilder()..update(updates))._build();
 
   _$MwImage._(
       {this.id,
@@ -37,13 +37,12 @@ class _$MwImage extends MwImage {
       this.medium,
       this.large})
       : super._();
-
   @override
   MwImage rebuild(void Function(MwImageBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwImageBuilder toBuilder() => new MwImageBuilder()..replace(this);
+  MwImageBuilder toBuilder() => MwImageBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -110,19 +109,19 @@ class MwImageBuilder implements Builder<MwImage, MwImageBuilder> {
 
   MwImageSizeBuilder? _thumbnail;
   MwImageSizeBuilder get thumbnail =>
-      _$this._thumbnail ??= new MwImageSizeBuilder();
+      _$this._thumbnail ??= MwImageSizeBuilder();
   set thumbnail(MwImageSizeBuilder? thumbnail) => _$this._thumbnail = thumbnail;
 
   MwImageSizeBuilder? _small;
-  MwImageSizeBuilder get small => _$this._small ??= new MwImageSizeBuilder();
+  MwImageSizeBuilder get small => _$this._small ??= MwImageSizeBuilder();
   set small(MwImageSizeBuilder? small) => _$this._small = small;
 
   MwImageSizeBuilder? _medium;
-  MwImageSizeBuilder get medium => _$this._medium ??= new MwImageSizeBuilder();
+  MwImageSizeBuilder get medium => _$this._medium ??= MwImageSizeBuilder();
   set medium(MwImageSizeBuilder? medium) => _$this._medium = medium;
 
   MwImageSizeBuilder? _large;
-  MwImageSizeBuilder get large => _$this._large ??= new MwImageSizeBuilder();
+  MwImageSizeBuilder get large => _$this._large ??= MwImageSizeBuilder();
   set large(MwImageSizeBuilder? large) => _$this._large = large;
 
   MwImageBuilder() {
@@ -147,7 +146,6 @@ class MwImageBuilder implements Builder<MwImage, MwImageBuilder> {
 
   @override
   void replace(MwImage other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwImage;
   }
 
@@ -163,15 +161,16 @@ class MwImageBuilder implements Builder<MwImage, MwImageBuilder> {
     _$MwImage _$result;
     try {
       _$result = _$v ??
-          new _$MwImage._(
-              id: id,
-              author: author,
-              isAnimated: isAnimated,
-              processing: processing,
-              thumbnail: _thumbnail?.build(),
-              small: _small?.build(),
-              medium: _medium?.build(),
-              large: _large?.build());
+          _$MwImage._(
+            id: id,
+            author: author,
+            isAnimated: isAnimated,
+            processing: processing,
+            thumbnail: _thumbnail?.build(),
+            small: _small?.build(),
+            medium: _medium?.build(),
+            large: _large?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -184,7 +183,7 @@ class MwImageBuilder implements Builder<MwImage, MwImageBuilder> {
         _$failedField = 'large';
         _large?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwImage', _$failedField, e.toString());
       }
       rethrow;

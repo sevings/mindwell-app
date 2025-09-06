@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for CommentsApi
 void main() {
-  final instance = Mindwell().getCommentsApi();
+  final instance = MindwellApi().getCommentsApi();
 
   group(CommentsApi, () {
     //Future<MwCommentList> commentsGet({ int limit, String after, String before }) async

@@ -1,8 +1,8 @@
-# mindwell.model.MwFavoriteStatus
+# mindwell_api.model.MwFavoriteStatus
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

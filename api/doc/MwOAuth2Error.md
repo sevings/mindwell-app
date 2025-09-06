@@ -1,8 +1,8 @@
-# mindwell.model.MwOAuth2Error
+# mindwell_api.model.MwOAuth2Error
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

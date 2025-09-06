@@ -1,8 +1,8 @@
-# mindwell.api.AccountApi
+# mindwell_api.api.AccountApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -37,9 +37,9 @@ check if email is used
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 
 try {
@@ -78,13 +78,13 @@ set new email
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 final String password = password_example; // String | 
 
@@ -124,13 +124,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountInvitesGet();
@@ -165,9 +165,9 @@ check if name is used
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String name = name_example; // String | 
 
 try {
@@ -206,13 +206,13 @@ change new password
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String oldPassword = oldPassword_example; // String | 
 final String newPassword = newPassword_example; // String | 
 
@@ -252,9 +252,9 @@ reset password
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 final String password = password_example; // String | 
 final int date = 789; // int | 
@@ -298,9 +298,9 @@ request reset password email
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 
 try {
@@ -338,9 +338,9 @@ register new account
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 final String password = password_example; // String | 
 final String name = name_example; // String | 
@@ -391,13 +391,13 @@ No authorization required
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountSettingsEmailGet();
@@ -426,25 +426,27 @@ This endpoint does not need any parameter.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **accountSettingsEmailPut**
-> accountSettingsEmailPut(comments, followers, invites)
+> accountSettingsEmailPut(comments, followers, invites, movedEntries, badges)
 
 
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final bool comments = true; // bool | 
 final bool followers = true; // bool | 
 final bool invites = true; // bool | 
+final bool movedEntries = true; // bool | 
+final bool badges = true; // bool | 
 
 try {
-    api.accountSettingsEmailPut(comments, followers, invites);
+    api.accountSettingsEmailPut(comments, followers, invites, movedEntries, badges);
 } catch on DioException (e) {
     print('Exception when calling AccountApi->accountSettingsEmailPut: $e\n');
 }
@@ -457,6 +459,8 @@ Name | Type | Description  | Notes
  **comments** | **bool**|  | [optional] [default to false]
  **followers** | **bool**|  | [optional] [default to false]
  **invites** | **bool**|  | [optional] [default to false]
+ **movedEntries** | **bool**|  | [optional] [default to false]
+ **badges** | **bool**|  | [optional] [default to false]
 
 ### Return type
 
@@ -480,13 +484,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountSettingsOnsiteGet();
@@ -521,13 +525,13 @@ This endpoint does not need any parameter.
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final bool wishes = true; // bool | 
 
 try {
@@ -565,13 +569,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountSettingsTelegramGet();
@@ -600,26 +604,28 @@ This endpoint does not need any parameter.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **accountSettingsTelegramPut**
-> accountSettingsTelegramPut(comments, followers, invites, messages)
+> accountSettingsTelegramPut(comments, followers, invites, messages, movedEntries, badges)
 
 
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final bool comments = true; // bool | 
 final bool followers = true; // bool | 
 final bool invites = true; // bool | 
 final bool messages = true; // bool | 
+final bool movedEntries = true; // bool | 
+final bool badges = true; // bool | 
 
 try {
-    api.accountSettingsTelegramPut(comments, followers, invites, messages);
+    api.accountSettingsTelegramPut(comments, followers, invites, messages, movedEntries, badges);
 } catch on DioException (e) {
     print('Exception when calling AccountApi->accountSettingsTelegramPut: $e\n');
 }
@@ -633,6 +639,8 @@ Name | Type | Description  | Notes
  **followers** | **bool**|  | [optional] [default to false]
  **invites** | **bool**|  | [optional] [default to false]
  **messages** | **bool**|  | [optional] [default to false]
+ **movedEntries** | **bool**|  | [optional] [default to false]
+ **badges** | **bool**|  | [optional] [default to false]
 
 ### Return type
 
@@ -656,13 +664,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     api.accountSubscribeTelegramDelete();
@@ -696,13 +704,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountSubscribeTelegramGet();
@@ -737,13 +745,13 @@ This endpoint does not need any parameter.
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     final response = api.accountSubscribeTokenGet();
@@ -778,9 +786,9 @@ verify account email
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 final String email = email_example; // String | 
 final String code = code_example; // String | 
 
@@ -820,11 +828,11 @@ request verification email
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getAccountApi();
+final api = MindwellApi().getAccountApi();
 
 try {
     api.accountVerificationPost();

@@ -16,10 +16,9 @@ class _$MwThemesGet200Response extends MwThemesGet200Response {
 
   factory _$MwThemesGet200Response(
           [void Function(MwThemesGet200ResponseBuilder)? updates]) =>
-      (new MwThemesGet200ResponseBuilder()..update(updates))._build();
+      (MwThemesGet200ResponseBuilder()..update(updates))._build();
 
   _$MwThemesGet200Response._({this.top, this.query, this.themes}) : super._();
-
   @override
   MwThemesGet200Response rebuild(
           void Function(MwThemesGet200ResponseBuilder) updates) =>
@@ -27,7 +26,7 @@ class _$MwThemesGet200Response extends MwThemesGet200Response {
 
   @override
   MwThemesGet200ResponseBuilder toBuilder() =>
-      new MwThemesGet200ResponseBuilder()..replace(this);
+      MwThemesGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -72,7 +71,7 @@ class MwThemesGet200ResponseBuilder
 
   ListBuilder<MwFriend>? _themes;
   ListBuilder<MwFriend> get themes =>
-      _$this._themes ??= new ListBuilder<MwFriend>();
+      _$this._themes ??= ListBuilder<MwFriend>();
   set themes(ListBuilder<MwFriend>? themes) => _$this._themes = themes;
 
   MwThemesGet200ResponseBuilder() {
@@ -92,7 +91,6 @@ class MwThemesGet200ResponseBuilder
 
   @override
   void replace(MwThemesGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwThemesGet200Response;
   }
 
@@ -108,15 +106,18 @@ class MwThemesGet200ResponseBuilder
     _$MwThemesGet200Response _$result;
     try {
       _$result = _$v ??
-          new _$MwThemesGet200Response._(
-              top: top, query: query, themes: _themes?.build());
+          _$MwThemesGet200Response._(
+            top: top,
+            query: query,
+            themes: _themes?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'themes';
         _themes?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwThemesGet200Response', _$failedField, e.toString());
       }
       rethrow;

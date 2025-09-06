@@ -43,7 +43,7 @@ class _$$MwUser extends $MwUser {
   final MwAvatar? avatar;
 
   factory _$$MwUser([void Function($MwUserBuilder)? updates]) =>
-      (new $MwUserBuilder()..update(updates))._build();
+      ($MwUserBuilder()..update(updates))._build();
 
   _$$MwUser._(
       {this.id,
@@ -53,13 +53,12 @@ class _$$MwUser extends $MwUser {
       this.isOnline,
       this.avatar})
       : super._();
-
   @override
   $MwUser rebuild(void Function($MwUserBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  $MwUserBuilder toBuilder() => new $MwUserBuilder()..replace(this);
+  $MwUserBuilder toBuilder() => $MwUserBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -124,7 +123,7 @@ class $MwUserBuilder
   set isOnline(covariant bool? isOnline) => _$this._isOnline = isOnline;
 
   MwAvatarBuilder? _avatar;
-  MwAvatarBuilder get avatar => _$this._avatar ??= new MwAvatarBuilder();
+  MwAvatarBuilder get avatar => _$this._avatar ??= MwAvatarBuilder();
   set avatar(covariant MwAvatarBuilder? avatar) => _$this._avatar = avatar;
 
   $MwUserBuilder() {
@@ -147,7 +146,6 @@ class $MwUserBuilder
 
   @override
   void replace(covariant $MwUser other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$$MwUser;
   }
 
@@ -163,20 +161,21 @@ class $MwUserBuilder
     _$$MwUser _$result;
     try {
       _$result = _$v ??
-          new _$$MwUser._(
-              id: id,
-              name: name,
-              showName: showName,
-              isTheme: isTheme,
-              isOnline: isOnline,
-              avatar: _avatar?.build());
+          _$$MwUser._(
+            id: id,
+            name: name,
+            showName: showName,
+            isTheme: isTheme,
+            isOnline: isOnline,
+            avatar: _avatar?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'avatar';
         _avatar?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'$MwUser', _$failedField, e.toString());
       }
       rethrow;

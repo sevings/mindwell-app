@@ -34,12 +34,12 @@ MwProfileAllOfRelationsToMeEnum _$mwProfileAllOfRelationsToMeEnumValueOf(
     case 'none':
       return _$mwProfileAllOfRelationsToMeEnum_none;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwProfileAllOfRelationsToMeEnum>
-    _$mwProfileAllOfRelationsToMeEnumValues = new BuiltSet<
+    _$mwProfileAllOfRelationsToMeEnumValues = BuiltSet<
         MwProfileAllOfRelationsToMeEnum>(const <MwProfileAllOfRelationsToMeEnum>[
   _$mwProfileAllOfRelationsToMeEnum_followed,
   _$mwProfileAllOfRelationsToMeEnum_requested,
@@ -78,12 +78,12 @@ MwProfileAllOfRelationsFromMeEnum _$mwProfileAllOfRelationsFromMeEnumValueOf(
     case 'none':
       return _$mwProfileAllOfRelationsFromMeEnum_none;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwProfileAllOfRelationsFromMeEnum>
-    _$mwProfileAllOfRelationsFromMeEnumValues = new BuiltSet<
+    _$mwProfileAllOfRelationsFromMeEnumValues = BuiltSet<
         MwProfileAllOfRelationsFromMeEnum>(const <MwProfileAllOfRelationsFromMeEnum>[
   _$mwProfileAllOfRelationsFromMeEnum_followed,
   _$mwProfileAllOfRelationsFromMeEnum_requested,
@@ -94,10 +94,10 @@ final BuiltSet<MwProfileAllOfRelationsFromMeEnum>
 
 Serializer<MwProfileAllOfRelationsToMeEnum>
     _$mwProfileAllOfRelationsToMeEnumSerializer =
-    new _$MwProfileAllOfRelationsToMeEnumSerializer();
+    _$MwProfileAllOfRelationsToMeEnumSerializer();
 Serializer<MwProfileAllOfRelationsFromMeEnum>
     _$mwProfileAllOfRelationsFromMeEnumSerializer =
-    new _$MwProfileAllOfRelationsFromMeEnumSerializer();
+    _$MwProfileAllOfRelationsFromMeEnumSerializer();
 
 class _$MwProfileAllOfRelationsToMeEnumSerializer
     implements PrimitiveSerializer<MwProfileAllOfRelationsToMeEnum> {
@@ -181,11 +181,10 @@ class _$MwProfileAllOfRelations extends MwProfileAllOfRelations {
 
   factory _$MwProfileAllOfRelations(
           [void Function(MwProfileAllOfRelationsBuilder)? updates]) =>
-      (new MwProfileAllOfRelationsBuilder()..update(updates))._build();
+      (MwProfileAllOfRelationsBuilder()..update(updates))._build();
 
   _$MwProfileAllOfRelations._({this.isOpenForMe, this.toMe, this.fromMe})
       : super._();
-
   @override
   MwProfileAllOfRelations rebuild(
           void Function(MwProfileAllOfRelationsBuilder) updates) =>
@@ -193,7 +192,7 @@ class _$MwProfileAllOfRelations extends MwProfileAllOfRelations {
 
   @override
   MwProfileAllOfRelationsBuilder toBuilder() =>
-      new MwProfileAllOfRelationsBuilder()..replace(this);
+      MwProfileAllOfRelationsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -259,7 +258,6 @@ class MwProfileAllOfRelationsBuilder
 
   @override
   void replace(MwProfileAllOfRelations other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwProfileAllOfRelations;
   }
 
@@ -273,8 +271,11 @@ class MwProfileAllOfRelationsBuilder
 
   _$MwProfileAllOfRelations _build() {
     final _$result = _$v ??
-        new _$MwProfileAllOfRelations._(
-            isOpenForMe: isOpenForMe, toMe: toMe, fromMe: fromMe);
+        _$MwProfileAllOfRelations._(
+          isOpenForMe: isOpenForMe,
+          toMe: toMe,
+          fromMe: fromMe,
+        );
     replace(_$result);
     return _$result;
   }

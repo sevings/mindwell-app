@@ -34,12 +34,12 @@ MwFriendListRelationEnum _$mwFriendListRelationEnumValueOf(String name) {
     case 'invited':
       return _$mwFriendListRelationEnum_invited;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwFriendListRelationEnum> _$mwFriendListRelationEnumValues =
-    new BuiltSet<MwFriendListRelationEnum>(const <MwFriendListRelationEnum>[
+    BuiltSet<MwFriendListRelationEnum>(const <MwFriendListRelationEnum>[
   _$mwFriendListRelationEnum_followers,
   _$mwFriendListRelationEnum_followings,
   _$mwFriendListRelationEnum_requested,
@@ -49,7 +49,7 @@ final BuiltSet<MwFriendListRelationEnum> _$mwFriendListRelationEnumValues =
 ]);
 
 Serializer<MwFriendListRelationEnum> _$mwFriendListRelationEnumSerializer =
-    new _$MwFriendListRelationEnumSerializer();
+    _$MwFriendListRelationEnumSerializer();
 
 class _$MwFriendListRelationEnumSerializer
     implements PrimitiveSerializer<MwFriendListRelationEnum> {
@@ -105,7 +105,7 @@ class _$MwFriendList extends MwFriendList {
   final bool? hasBefore;
 
   factory _$MwFriendList([void Function(MwFriendListBuilder)? updates]) =>
-      (new MwFriendListBuilder()..update(updates))._build();
+      (MwFriendListBuilder()..update(updates))._build();
 
   _$MwFriendList._(
       {this.subject,
@@ -116,13 +116,12 @@ class _$MwFriendList extends MwFriendList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwFriendList rebuild(void Function(MwFriendListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwFriendListBuilder toBuilder() => new MwFriendListBuilder()..replace(this);
+  MwFriendListBuilder toBuilder() => MwFriendListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -179,8 +178,7 @@ class MwFriendListBuilder
       _$this._relation = relation;
 
   ListBuilder<MwFriend>? _users;
-  ListBuilder<MwFriend> get users =>
-      _$this._users ??= new ListBuilder<MwFriend>();
+  ListBuilder<MwFriend> get users => _$this._users ??= ListBuilder<MwFriend>();
   set users(ListBuilder<MwFriend>? users) => _$this._users = users;
 
   String? _nextAfter;
@@ -220,7 +218,6 @@ class MwFriendListBuilder
 
   @override
   void replace(MwFriendList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwFriendList;
   }
 
@@ -236,21 +233,22 @@ class MwFriendListBuilder
     _$MwFriendList _$result;
     try {
       _$result = _$v ??
-          new _$MwFriendList._(
-              subject: subject,
-              relation: relation,
-              users: _users?.build(),
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwFriendList._(
+            subject: subject,
+            relation: relation,
+            users: _users?.build(),
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'users';
         _users?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwFriendList', _$failedField, e.toString());
       }
       rethrow;

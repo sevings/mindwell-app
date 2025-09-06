@@ -1,8 +1,8 @@
-# mindwell.model.MwRating
+# mindwell_api.model.MwRating
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

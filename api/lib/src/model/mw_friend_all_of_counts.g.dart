@@ -25,10 +25,12 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
   final int? tags;
   @override
   final int? days;
+  @override
+  final int? badges;
 
   factory _$MwFriendAllOfCounts(
           [void Function(MwFriendAllOfCountsBuilder)? updates]) =>
-      (new MwFriendAllOfCountsBuilder()..update(updates))._build();
+      (MwFriendAllOfCountsBuilder()..update(updates))._build();
 
   _$MwFriendAllOfCounts._(
       {this.entries,
@@ -39,9 +41,9 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
       this.comments,
       this.favorites,
       this.tags,
-      this.days})
+      this.days,
+      this.badges})
       : super._();
-
   @override
   MwFriendAllOfCounts rebuild(
           void Function(MwFriendAllOfCountsBuilder) updates) =>
@@ -49,7 +51,7 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
 
   @override
   MwFriendAllOfCountsBuilder toBuilder() =>
-      new MwFriendAllOfCountsBuilder()..replace(this);
+      MwFriendAllOfCountsBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -63,7 +65,8 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
         comments == other.comments &&
         favorites == other.favorites &&
         tags == other.tags &&
-        days == other.days;
+        days == other.days &&
+        badges == other.badges;
   }
 
   @override
@@ -78,6 +81,7 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
     _$hash = $jc(_$hash, favorites.hashCode);
     _$hash = $jc(_$hash, tags.hashCode);
     _$hash = $jc(_$hash, days.hashCode);
+    _$hash = $jc(_$hash, badges.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -93,7 +97,8 @@ class _$MwFriendAllOfCounts extends MwFriendAllOfCounts {
           ..add('comments', comments)
           ..add('favorites', favorites)
           ..add('tags', tags)
-          ..add('days', days))
+          ..add('days', days)
+          ..add('badges', badges))
         .toString();
   }
 }
@@ -138,6 +143,10 @@ class MwFriendAllOfCountsBuilder
   int? get days => _$this._days;
   set days(int? days) => _$this._days = days;
 
+  int? _badges;
+  int? get badges => _$this._badges;
+  set badges(int? badges) => _$this._badges = badges;
+
   MwFriendAllOfCountsBuilder() {
     MwFriendAllOfCounts._defaults(this);
   }
@@ -154,6 +163,7 @@ class MwFriendAllOfCountsBuilder
       _favorites = $v.favorites;
       _tags = $v.tags;
       _days = $v.days;
+      _badges = $v.badges;
       _$v = null;
     }
     return this;
@@ -161,7 +171,6 @@ class MwFriendAllOfCountsBuilder
 
   @override
   void replace(MwFriendAllOfCounts other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwFriendAllOfCounts;
   }
 
@@ -175,16 +184,18 @@ class MwFriendAllOfCountsBuilder
 
   _$MwFriendAllOfCounts _build() {
     final _$result = _$v ??
-        new _$MwFriendAllOfCounts._(
-            entries: entries,
-            followings: followings,
-            followers: followers,
-            ignored: ignored,
-            invited: invited,
-            comments: comments,
-            favorites: favorites,
-            tags: tags,
-            days: days);
+        _$MwFriendAllOfCounts._(
+          entries: entries,
+          followings: followings,
+          followers: followers,
+          ignored: ignored,
+          invited: invited,
+          comments: comments,
+          favorites: favorites,
+          tags: tags,
+          days: days,
+          badges: badges,
+        );
     replace(_$result);
     return _$result;
   }

@@ -24,7 +24,7 @@ class _$MwAdmGrandfatherGet200Response extends MwAdmGrandfatherGet200Response {
 
   factory _$MwAdmGrandfatherGet200Response(
           [void Function(MwAdmGrandfatherGet200ResponseBuilder)? updates]) =>
-      (new MwAdmGrandfatherGet200ResponseBuilder()..update(updates))._build();
+      (MwAdmGrandfatherGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAdmGrandfatherGet200Response._(
       {this.postcode,
@@ -35,7 +35,6 @@ class _$MwAdmGrandfatherGet200Response extends MwAdmGrandfatherGet200Response {
       this.comment,
       this.name})
       : super._();
-
   @override
   MwAdmGrandfatherGet200Response rebuild(
           void Function(MwAdmGrandfatherGet200ResponseBuilder) updates) =>
@@ -43,7 +42,7 @@ class _$MwAdmGrandfatherGet200Response extends MwAdmGrandfatherGet200Response {
 
   @override
   MwAdmGrandfatherGet200ResponseBuilder toBuilder() =>
-      new MwAdmGrandfatherGet200ResponseBuilder()..replace(this);
+      MwAdmGrandfatherGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -141,7 +140,6 @@ class MwAdmGrandfatherGet200ResponseBuilder
 
   @override
   void replace(MwAdmGrandfatherGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAdmGrandfatherGet200Response;
   }
 
@@ -155,14 +153,15 @@ class MwAdmGrandfatherGet200ResponseBuilder
 
   _$MwAdmGrandfatherGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAdmGrandfatherGet200Response._(
-            postcode: postcode,
-            country: country,
-            address: address,
-            phone: phone,
-            fullname: fullname,
-            comment: comment,
-            name: name);
+        _$MwAdmGrandfatherGet200Response._(
+          postcode: postcode,
+          country: country,
+          address: address,
+          phone: phone,
+          fullname: fullname,
+          comment: comment,
+          name: name,
+        );
     replace(_$result);
     return _$result;
   }

@@ -19,7 +19,7 @@ class _$MwImageList extends MwImageList {
   final bool? hasBefore;
 
   factory _$MwImageList([void Function(MwImageListBuilder)? updates]) =>
-      (new MwImageListBuilder()..update(updates))._build();
+      (MwImageListBuilder()..update(updates))._build();
 
   _$MwImageList._(
       {this.data,
@@ -28,13 +28,12 @@ class _$MwImageList extends MwImageList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwImageList rebuild(void Function(MwImageListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwImageListBuilder toBuilder() => new MwImageListBuilder()..replace(this);
+  MwImageListBuilder toBuilder() => MwImageListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -75,7 +74,7 @@ class MwImageListBuilder implements Builder<MwImageList, MwImageListBuilder> {
   _$MwImageList? _$v;
 
   ListBuilder<MwImage>? _data;
-  ListBuilder<MwImage> get data => _$this._data ??= new ListBuilder<MwImage>();
+  ListBuilder<MwImage> get data => _$this._data ??= ListBuilder<MwImage>();
   set data(ListBuilder<MwImage>? data) => _$this._data = data;
 
   String? _nextAfter;
@@ -113,7 +112,6 @@ class MwImageListBuilder implements Builder<MwImageList, MwImageListBuilder> {
 
   @override
   void replace(MwImageList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwImageList;
   }
 
@@ -129,19 +127,20 @@ class MwImageListBuilder implements Builder<MwImageList, MwImageListBuilder> {
     _$MwImageList _$result;
     try {
       _$result = _$v ??
-          new _$MwImageList._(
-              data: _data?.build(),
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwImageList._(
+            data: _data?.build(),
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwImageList', _$failedField, e.toString());
       }
       rethrow;

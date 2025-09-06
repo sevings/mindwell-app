@@ -1,8 +1,8 @@
-# mindwell.model.MwUserID
+# mindwell_api.model.MwUserID
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

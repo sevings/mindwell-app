@@ -14,11 +14,10 @@ class _$MwAccountSubscribeTokenGet200Response
   factory _$MwAccountSubscribeTokenGet200Response(
           [void Function(MwAccountSubscribeTokenGet200ResponseBuilder)?
               updates]) =>
-      (new MwAccountSubscribeTokenGet200ResponseBuilder()..update(updates))
+      (MwAccountSubscribeTokenGet200ResponseBuilder()..update(updates))
           ._build();
 
   _$MwAccountSubscribeTokenGet200Response._({this.token}) : super._();
-
   @override
   MwAccountSubscribeTokenGet200Response rebuild(
           void Function(MwAccountSubscribeTokenGet200ResponseBuilder)
@@ -27,7 +26,7 @@ class _$MwAccountSubscribeTokenGet200Response
 
   @override
   MwAccountSubscribeTokenGet200ResponseBuilder toBuilder() =>
-      new MwAccountSubscribeTokenGet200ResponseBuilder()..replace(this);
+      MwAccountSubscribeTokenGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -78,7 +77,6 @@ class MwAccountSubscribeTokenGet200ResponseBuilder
 
   @override
   void replace(MwAccountSubscribeTokenGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountSubscribeTokenGet200Response;
   }
 
@@ -92,8 +90,10 @@ class MwAccountSubscribeTokenGet200ResponseBuilder
   MwAccountSubscribeTokenGet200Response build() => _build();
 
   _$MwAccountSubscribeTokenGet200Response _build() {
-    final _$result =
-        _$v ?? new _$MwAccountSubscribeTokenGet200Response._(token: token);
+    final _$result = _$v ??
+        _$MwAccountSubscribeTokenGet200Response._(
+          token: token,
+        );
     replace(_$result);
     return _$result;
   }

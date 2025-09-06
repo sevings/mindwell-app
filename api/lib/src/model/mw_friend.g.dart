@@ -22,12 +22,12 @@ MwFriendGenderEnum _$mwFriendGenderEnumValueOf(String name) {
     case 'notSet':
       return _$mwFriendGenderEnum_notSet;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwFriendGenderEnum> _$mwFriendGenderEnumValues =
-    new BuiltSet<MwFriendGenderEnum>(const <MwFriendGenderEnum>[
+    BuiltSet<MwFriendGenderEnum>(const <MwFriendGenderEnum>[
   _$mwFriendGenderEnum_male,
   _$mwFriendGenderEnum_female,
   _$mwFriendGenderEnum_notSet,
@@ -53,12 +53,12 @@ MwFriendPrivacyEnum _$mwFriendPrivacyEnumValueOf(String name) {
     case 'registered':
       return _$mwFriendPrivacyEnum_registered;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwFriendPrivacyEnum> _$mwFriendPrivacyEnumValues =
-    new BuiltSet<MwFriendPrivacyEnum>(const <MwFriendPrivacyEnum>[
+    BuiltSet<MwFriendPrivacyEnum>(const <MwFriendPrivacyEnum>[
   _$mwFriendPrivacyEnum_all,
   _$mwFriendPrivacyEnum_followers,
   _$mwFriendPrivacyEnum_invited,
@@ -85,12 +85,12 @@ MwFriendChatPrivacyEnum _$mwFriendChatPrivacyEnumValueOf(String name) {
     case 'me':
       return _$mwFriendChatPrivacyEnum_me;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwFriendChatPrivacyEnum> _$mwFriendChatPrivacyEnumValues =
-    new BuiltSet<MwFriendChatPrivacyEnum>(const <MwFriendChatPrivacyEnum>[
+    BuiltSet<MwFriendChatPrivacyEnum>(const <MwFriendChatPrivacyEnum>[
   _$mwFriendChatPrivacyEnum_invited,
   _$mwFriendChatPrivacyEnum_followers,
   _$mwFriendChatPrivacyEnum_friends,
@@ -98,11 +98,11 @@ final BuiltSet<MwFriendChatPrivacyEnum> _$mwFriendChatPrivacyEnumValues =
 ]);
 
 Serializer<MwFriendGenderEnum> _$mwFriendGenderEnumSerializer =
-    new _$MwFriendGenderEnumSerializer();
+    _$MwFriendGenderEnumSerializer();
 Serializer<MwFriendPrivacyEnum> _$mwFriendPrivacyEnumSerializer =
-    new _$MwFriendPrivacyEnumSerializer();
+    _$MwFriendPrivacyEnumSerializer();
 Serializer<MwFriendChatPrivacyEnum> _$mwFriendChatPrivacyEnumSerializer =
-    new _$MwFriendChatPrivacyEnumSerializer();
+    _$MwFriendChatPrivacyEnumSerializer();
 
 class _$MwFriendGenderEnumSerializer
     implements PrimitiveSerializer<MwFriendGenderEnum> {
@@ -276,7 +276,7 @@ class _$$MwFriend extends $MwFriend {
   final MwAvatar? avatar;
 
   factory _$$MwFriend([void Function($MwFriendBuilder)? updates]) =>
-      (new $MwFriendBuilder()..update(updates))._build();
+      ($MwFriendBuilder()..update(updates))._build();
 
   _$$MwFriend._(
       {this.lastSeenAt,
@@ -294,13 +294,12 @@ class _$$MwFriend extends $MwFriend {
       this.isOnline,
       this.avatar})
       : super._();
-
   @override
   $MwFriend rebuild(void Function($MwFriendBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  $MwFriendBuilder toBuilder() => new $MwFriendBuilder()..replace(this);
+  $MwFriendBuilder toBuilder() => $MwFriendBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -374,7 +373,7 @@ class $MwFriendBuilder
       _$this._lastSeenAt = lastSeenAt;
 
   MwCoverBuilder? _cover;
-  MwCoverBuilder get cover => _$this._cover ??= new MwCoverBuilder();
+  MwCoverBuilder get cover => _$this._cover ??= MwCoverBuilder();
   set cover(covariant MwCoverBuilder? cover) => _$this._cover = cover;
 
   MwFriendGenderEnum? _gender;
@@ -383,7 +382,7 @@ class $MwFriendBuilder
 
   MwFriendAllOfCountsBuilder? _counts;
   MwFriendAllOfCountsBuilder get counts =>
-      _$this._counts ??= new MwFriendAllOfCountsBuilder();
+      _$this._counts ??= MwFriendAllOfCountsBuilder();
   set counts(covariant MwFriendAllOfCountsBuilder? counts) =>
       _$this._counts = counts;
 
@@ -426,7 +425,7 @@ class $MwFriendBuilder
   set isOnline(covariant bool? isOnline) => _$this._isOnline = isOnline;
 
   MwAvatarBuilder? _avatar;
-  MwAvatarBuilder get avatar => _$this._avatar ??= new MwAvatarBuilder();
+  MwAvatarBuilder get avatar => _$this._avatar ??= MwAvatarBuilder();
   set avatar(covariant MwAvatarBuilder? avatar) => _$this._avatar = avatar;
 
   $MwFriendBuilder() {
@@ -457,7 +456,6 @@ class $MwFriendBuilder
 
   @override
   void replace(covariant $MwFriend other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$$MwFriend;
   }
 
@@ -473,21 +471,22 @@ class $MwFriendBuilder
     _$$MwFriend _$result;
     try {
       _$result = _$v ??
-          new _$$MwFriend._(
-              lastSeenAt: lastSeenAt,
-              cover: _cover?.build(),
-              gender: gender,
-              counts: _counts?.build(),
-              chatPrivacy: chatPrivacy,
-              privacy: privacy,
-              rank: rank,
-              title: title,
-              id: id,
-              name: name,
-              showName: showName,
-              isTheme: isTheme,
-              isOnline: isOnline,
-              avatar: _avatar?.build());
+          _$$MwFriend._(
+            lastSeenAt: lastSeenAt,
+            cover: _cover?.build(),
+            gender: gender,
+            counts: _counts?.build(),
+            chatPrivacy: chatPrivacy,
+            privacy: privacy,
+            rank: rank,
+            title: title,
+            id: id,
+            name: name,
+            showName: showName,
+            isTheme: isTheme,
+            isOnline: isOnline,
+            avatar: _avatar?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -500,7 +499,7 @@ class $MwFriendBuilder
         _$failedField = 'avatar';
         _avatar?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'$MwFriend', _$failedField, e.toString());
       }
       rethrow;

@@ -3,12 +3,12 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mindwell/src/model/mw_entry_rights.dart';
+import 'package:mindwell_api/src/model/mw_comment_list.dart';
+import 'package:mindwell_api/src/model/mw_entry_rights.dart';
+import 'package:mindwell_api/src/model/mw_rating.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:mindwell/src/model/mw_image.dart';
-import 'package:mindwell/src/model/mw_rating.dart';
-import 'package:mindwell/src/model/mw_user.dart';
-import 'package:mindwell/src/model/mw_comment_list.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_image.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -38,6 +38,7 @@ part 'mw_entry.g.dart';
 /// * [inLive] 
 /// * [isAnonymous] 
 /// * [isShared] 
+/// * [isPinned] 
 /// * [commentCount] 
 /// * [favoriteCount] 
 /// * [isFavorited] 
@@ -109,6 +110,9 @@ abstract class MwEntry implements Built<MwEntry, MwEntryBuilder> {
 
   @BuiltValueField(wireName: r'isShared')
   bool? get isShared;
+
+  @BuiltValueField(wireName: r'isPinned')
+  bool? get isPinned;
 
   @BuiltValueField(wireName: r'commentCount')
   int? get commentCount;
@@ -295,6 +299,13 @@ class _$MwEntrySerializer implements PrimitiveSerializer<MwEntry> {
       yield r'isShared';
       yield serializers.serialize(
         object.isShared,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.isPinned != null) {
+      yield r'isPinned';
+      yield serializers.serialize(
+        object.isPinned,
         specifiedType: const FullType(bool),
       );
     }
@@ -509,6 +520,13 @@ class _$MwEntrySerializer implements PrimitiveSerializer<MwEntry> {
             specifiedType: const FullType(bool),
           ) as bool;
           result.isShared = valueDes;
+          break;
+        case r'isPinned':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.isPinned = valueDes;
           break;
         case r'commentCount':
           final valueDes = serializers.deserialize(

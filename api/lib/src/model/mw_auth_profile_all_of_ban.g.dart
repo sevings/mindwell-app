@@ -18,11 +18,10 @@ class _$MwAuthProfileAllOfBan extends MwAuthProfileAllOfBan {
 
   factory _$MwAuthProfileAllOfBan(
           [void Function(MwAuthProfileAllOfBanBuilder)? updates]) =>
-      (new MwAuthProfileAllOfBanBuilder()..update(updates))._build();
+      (MwAuthProfileAllOfBanBuilder()..update(updates))._build();
 
   _$MwAuthProfileAllOfBan._({this.invite, this.vote, this.comment, this.live})
       : super._();
-
   @override
   MwAuthProfileAllOfBan rebuild(
           void Function(MwAuthProfileAllOfBanBuilder) updates) =>
@@ -30,7 +29,7 @@ class _$MwAuthProfileAllOfBan extends MwAuthProfileAllOfBan {
 
   @override
   MwAuthProfileAllOfBanBuilder toBuilder() =>
-      new MwAuthProfileAllOfBanBuilder()..replace(this);
+      MwAuthProfileAllOfBanBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -102,7 +101,6 @@ class MwAuthProfileAllOfBanBuilder
 
   @override
   void replace(MwAuthProfileAllOfBan other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAuthProfileAllOfBan;
   }
 
@@ -116,8 +114,12 @@ class MwAuthProfileAllOfBanBuilder
 
   _$MwAuthProfileAllOfBan _build() {
     final _$result = _$v ??
-        new _$MwAuthProfileAllOfBan._(
-            invite: invite, vote: vote, comment: comment, live: live);
+        _$MwAuthProfileAllOfBan._(
+          invite: invite,
+          vote: vote,
+          comment: comment,
+          live: live,
+        );
     replace(_$result);
     return _$result;
   }

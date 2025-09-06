@@ -21,7 +21,7 @@ class _$MwChatList extends MwChatList {
   final bool? hasBefore;
 
   factory _$MwChatList([void Function(MwChatListBuilder)? updates]) =>
-      (new MwChatListBuilder()..update(updates))._build();
+      (MwChatListBuilder()..update(updates))._build();
 
   _$MwChatList._(
       {this.data,
@@ -31,13 +31,12 @@ class _$MwChatList extends MwChatList {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwChatList rebuild(void Function(MwChatListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwChatListBuilder toBuilder() => new MwChatListBuilder()..replace(this);
+  MwChatListBuilder toBuilder() => MwChatListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -81,7 +80,7 @@ class MwChatListBuilder implements Builder<MwChatList, MwChatListBuilder> {
   _$MwChatList? _$v;
 
   ListBuilder<MwChat>? _data;
-  ListBuilder<MwChat> get data => _$this._data ??= new ListBuilder<MwChat>();
+  ListBuilder<MwChat> get data => _$this._data ??= ListBuilder<MwChat>();
   set data(ListBuilder<MwChat>? data) => _$this._data = data;
 
   int? _unreadCount;
@@ -124,7 +123,6 @@ class MwChatListBuilder implements Builder<MwChatList, MwChatListBuilder> {
 
   @override
   void replace(MwChatList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwChatList;
   }
 
@@ -140,20 +138,21 @@ class MwChatListBuilder implements Builder<MwChatList, MwChatListBuilder> {
     _$MwChatList _$result;
     try {
       _$result = _$v ??
-          new _$MwChatList._(
-              data: _data?.build(),
-              unreadCount: unreadCount,
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwChatList._(
+            data: _data?.build(),
+            unreadCount: unreadCount,
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwChatList', _$failedField, e.toString());
       }
       rethrow;

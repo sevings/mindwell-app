@@ -19,7 +19,7 @@ class _$MwFeed extends MwFeed {
   final bool? hasBefore;
 
   factory _$MwFeed([void Function(MwFeedBuilder)? updates]) =>
-      (new MwFeedBuilder()..update(updates))._build();
+      (MwFeedBuilder()..update(updates))._build();
 
   _$MwFeed._(
       {this.entries,
@@ -28,13 +28,12 @@ class _$MwFeed extends MwFeed {
       this.nextBefore,
       this.hasBefore})
       : super._();
-
   @override
   MwFeed rebuild(void Function(MwFeedBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwFeedBuilder toBuilder() => new MwFeedBuilder()..replace(this);
+  MwFeedBuilder toBuilder() => MwFeedBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -76,7 +75,7 @@ class MwFeedBuilder implements Builder<MwFeed, MwFeedBuilder> {
 
   ListBuilder<MwEntry>? _entries;
   ListBuilder<MwEntry> get entries =>
-      _$this._entries ??= new ListBuilder<MwEntry>();
+      _$this._entries ??= ListBuilder<MwEntry>();
   set entries(ListBuilder<MwEntry>? entries) => _$this._entries = entries;
 
   String? _nextAfter;
@@ -114,7 +113,6 @@ class MwFeedBuilder implements Builder<MwFeed, MwFeedBuilder> {
 
   @override
   void replace(MwFeed other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwFeed;
   }
 
@@ -130,19 +128,20 @@ class MwFeedBuilder implements Builder<MwFeed, MwFeedBuilder> {
     _$MwFeed _$result;
     try {
       _$result = _$v ??
-          new _$MwFeed._(
-              entries: _entries?.build(),
-              nextAfter: nextAfter,
-              hasAfter: hasAfter,
-              nextBefore: nextBefore,
-              hasBefore: hasBefore);
+          _$MwFeed._(
+            entries: _entries?.build(),
+            nextAfter: nextAfter,
+            hasAfter: hasAfter,
+            nextBefore: nextBefore,
+            hasBefore: hasBefore,
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'entries';
         _entries?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwFeed', _$failedField, e.toString());
       }
       rethrow;

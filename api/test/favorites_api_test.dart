@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for FavoritesApi
 void main() {
-  final instance = Mindwell().getFavoritesApi();
+  final instance = MindwellApi().getFavoritesApi();
 
   group(FavoritesApi, () {
     //Future<MwFavoriteStatus> entriesIdFavoriteDelete(int id) async

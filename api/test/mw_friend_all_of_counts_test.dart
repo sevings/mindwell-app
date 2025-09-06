@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwFriendAllOfCounts
 void main() {
@@ -49,6 +49,11 @@ void main() {
 
     // int days
     test('to test the property `days`', () async {
+      // TODO
+    });
+
+    // int badges
+    test('to test the property `badges`', () async {
       // TODO
     });
 

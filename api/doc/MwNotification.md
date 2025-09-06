@@ -1,8 +1,8 @@
-# mindwell.model.MwNotification
+# mindwell_api.model.MwNotification
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties
@@ -16,6 +16,7 @@ Name | Type | Description | Notes
 **comment** | [**MwComment**](MwComment.md) |  | [optional] 
 **entry** | [**MwEntry**](MwEntry.md) |  | [optional] 
 **wish** | [**MwWish**](MwWish.md) |  | [optional] 
+**badge** | [**MwBadge**](MwBadge.md) |  | [optional] 
 **info** | [**MwNotificationInfo**](MwNotificationInfo.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -1,8 +1,8 @@
-# mindwell.api.UsersApi
+# mindwell_api.api.UsersApi
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -10,6 +10,7 @@ All URIs are relative to */api/v1*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**usersGet**](UsersApi.md#usersget) | **GET** /users | 
+[**usersNameBadgesGet**](UsersApi.md#usersnamebadgesget) | **GET** /users/{name}/badges | 
 [**usersNameCalendarGet**](UsersApi.md#usersnamecalendarget) | **GET** /users/{name}/calendar | 
 [**usersNameCommentsGet**](UsersApi.md#usersnamecommentsget) | **GET** /users/{name}/comments | 
 [**usersNameComplainPost**](UsersApi.md#usersnamecomplainpost) | **POST** /users/{name}/complain | 
@@ -30,13 +31,13 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String top = top_example; // String | 
 final String query = query_example; // String | 
 
@@ -70,14 +71,14 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **usersNameCalendarGet**
-> MwCalendar usersNameCalendarGet(name, start, end, limit)
+# **usersNameBadgesGet**
+> MwBadgeList usersNameBadgesGet(name, limit)
 
 
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -85,7 +86,56 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
+final String name = name_example; // String | 
+final int limit = 56; // int | 
+
+try {
+    final response = api.usersNameBadgesGet(name, limit);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->usersNameBadgesGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **name** | **String**|  | 
+ **limit** | **int**|  | [optional] [default to 1000]
+
+### Return type
+
+[**MwBadgeList**](MwBadgeList.md)
+
+### Authorization
+
+[OAuth2App](../README.md#OAuth2App), [OAuth2Code](../README.md#OAuth2Code), [OAuth2Password](../README.md#OAuth2Password)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **usersNameCalendarGet**
+> MwCalendar usersNameCalendarGet(name, start, end, limit)
+
+
+
+### Example
+```dart
+import 'package:mindwell_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2App
+//defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
+// TODO Configure OAuth2 access token for authorization: OAuth2Code
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
+// TODO Configure OAuth2 access token for authorization: OAuth2Password
+//defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int start = 789; // int | 
 final int end = 789; // int | 
@@ -130,13 +180,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -181,13 +231,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final String content = content_example; // String | 
 
@@ -227,13 +277,13 @@ void (empty response body)
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -280,13 +330,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -331,13 +381,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -382,7 +432,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -390,7 +440,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 
 try {
@@ -429,7 +479,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -437,7 +487,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -482,13 +532,13 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Code').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 
@@ -533,7 +583,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -541,7 +591,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String query = query_example; // String | 
@@ -584,7 +634,7 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2App
 //defaultApiClient.getAuthentication<OAuth>('OAuth2App').accessToken = 'YOUR_ACCESS_TOKEN';
 // TODO Configure OAuth2 access token for authorization: OAuth2Code
@@ -592,7 +642,7 @@ import 'package:mindwell/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getUsersApi();
+final api = MindwellApi().getUsersApi();
 final String name = name_example; // String | 
 final int limit = 56; // int | 
 final String after = after_example; // String | 

@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for EntriesApi
 void main() {
-  final instance = Mindwell().getEntriesApi();
+  final instance = MindwellApi().getEntriesApi();
 
   group(EntriesApi, () {
     //Future<MwFeed> entriesBestGet({ int limit, String tag, String query, String source_, String category }) async
@@ -34,6 +34,21 @@ void main() {
 
     //Future<MwEntry> entriesIdGet(int id) async
     test('test entriesIdGet', () async {
+      // TODO
+    });
+
+    //Future<MwPinStatus> entriesIdPinDelete(int id) async
+    test('test entriesIdPinDelete', () async {
+      // TODO
+    });
+
+    //Future<MwPinStatus> entriesIdPinGet(int id) async
+    test('test entriesIdPinGet', () async {
+      // TODO
+    });
+
+    //Future<MwPinStatus> entriesIdPinPut(int id) async
+    test('test entriesIdPinPut', () async {
       // TODO
     });
 

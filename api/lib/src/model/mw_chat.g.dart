@@ -19,18 +19,17 @@ class _$MwChat extends MwChat {
   final MwChatRights? rights;
 
   factory _$MwChat([void Function(MwChatBuilder)? updates]) =>
-      (new MwChatBuilder()..update(updates))._build();
+      (MwChatBuilder()..update(updates))._build();
 
   _$MwChat._(
       {this.id, this.partner, this.lastMessage, this.unreadCount, this.rights})
       : super._();
-
   @override
   MwChat rebuild(void Function(MwChatBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwChatBuilder toBuilder() => new MwChatBuilder()..replace(this);
+  MwChatBuilder toBuilder() => MwChatBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -80,7 +79,7 @@ class MwChatBuilder implements Builder<MwChat, MwChatBuilder> {
 
   MwMessageBuilder? _lastMessage;
   MwMessageBuilder get lastMessage =>
-      _$this._lastMessage ??= new MwMessageBuilder();
+      _$this._lastMessage ??= MwMessageBuilder();
   set lastMessage(MwMessageBuilder? lastMessage) =>
       _$this._lastMessage = lastMessage;
 
@@ -89,8 +88,7 @@ class MwChatBuilder implements Builder<MwChat, MwChatBuilder> {
   set unreadCount(int? unreadCount) => _$this._unreadCount = unreadCount;
 
   MwChatRightsBuilder? _rights;
-  MwChatRightsBuilder get rights =>
-      _$this._rights ??= new MwChatRightsBuilder();
+  MwChatRightsBuilder get rights => _$this._rights ??= MwChatRightsBuilder();
   set rights(MwChatRightsBuilder? rights) => _$this._rights = rights;
 
   MwChatBuilder() {
@@ -112,7 +110,6 @@ class MwChatBuilder implements Builder<MwChat, MwChatBuilder> {
 
   @override
   void replace(MwChat other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwChat;
   }
 
@@ -128,12 +125,13 @@ class MwChatBuilder implements Builder<MwChat, MwChatBuilder> {
     _$MwChat _$result;
     try {
       _$result = _$v ??
-          new _$MwChat._(
-              id: id,
-              partner: partner,
-              lastMessage: _lastMessage?.build(),
-              unreadCount: unreadCount,
-              rights: _rights?.build());
+          _$MwChat._(
+            id: id,
+            partner: partner,
+            lastMessage: _lastMessage?.build(),
+            unreadCount: unreadCount,
+            rights: _rights?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -143,7 +141,7 @@ class MwChatBuilder implements Builder<MwChat, MwChatBuilder> {
         _$failedField = 'rights';
         _rights?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwChat', _$failedField, e.toString());
       }
       rethrow;

@@ -4,22 +4,20 @@
 
 import 'dart:async';
 
-import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:built_collection/built_collection.dart';
-import 'package:mindwell/src/api_util.dart';
-import 'package:mindwell/src/model/mw_calendar.dart';
-import 'package:mindwell/src/model/mw_comment_list.dart';
-import 'package:mindwell/src/model/mw_entry.dart';
-import 'package:mindwell/src/model/mw_error.dart';
-import 'package:mindwell/src/model/mw_feed.dart';
-import 'package:mindwell/src/model/mw_friend_list.dart';
-import 'package:mindwell/src/model/mw_image_list.dart';
-import 'package:mindwell/src/model/mw_profile.dart';
-import 'package:mindwell/src/model/mw_tag_list.dart';
-import 'package:mindwell/src/model/mw_themes_get200_response.dart';
+import 'package:mindwell_api/src/api_util.dart';
+import 'package:mindwell_api/src/model/mw_calendar.dart';
+import 'package:mindwell_api/src/model/mw_comment_list.dart';
+import 'package:mindwell_api/src/model/mw_entry.dart';
+import 'package:mindwell_api/src/model/mw_feed.dart';
+import 'package:mindwell_api/src/model/mw_friend_list.dart';
+import 'package:mindwell_api/src/model/mw_image_list.dart';
+import 'package:mindwell_api/src/model/mw_profile.dart';
+import 'package:mindwell_api/src/model/mw_tag_list.dart';
+import 'package:mindwell_api/src/model/mw_themes_get200_response.dart';
 
 class ThemesApi {
 

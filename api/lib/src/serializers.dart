@@ -11,73 +11,76 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 import 'package:built_value/iso_8601_date_time_serializer.dart';
-import 'package:mindwell/src/date_serializer.dart';
-import 'package:mindwell/src/model/date.dart';
+import 'package:mindwell_api/src/date_serializer.dart';
+import 'package:mindwell_api/src/model/date.dart';
 
-import 'package:mindwell/src/model/mw_account_email_email_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_invites_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_name_name_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_email_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_onsite_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_settings_telegram_get200_response.dart';
-import 'package:mindwell/src/model/mw_account_subscribe_token_get200_response.dart';
-import 'package:mindwell/src/model/mw_adjacent_entries.dart';
-import 'package:mindwell/src/model/mw_adm_grandfather_get200_response.dart';
-import 'package:mindwell/src/model/mw_adm_grandson_get200_response.dart';
-import 'package:mindwell/src/model/mw_adm_grandson_status_get200_response.dart';
-import 'package:mindwell/src/model/mw_adm_stat_get200_response.dart';
-import 'package:mindwell/src/model/mw_app.dart';
-import 'package:mindwell/src/model/mw_auth_profile.dart';
-import 'package:mindwell/src/model/mw_auth_profile_all_of_account.dart';
-import 'package:mindwell/src/model/mw_auth_profile_all_of_ban.dart';
-import 'package:mindwell/src/model/mw_avatar.dart';
-import 'package:mindwell/src/model/mw_calendar.dart';
-import 'package:mindwell/src/model/mw_calendar_entry.dart';
-import 'package:mindwell/src/model/mw_chat.dart';
-import 'package:mindwell/src/model/mw_chat_list.dart';
-import 'package:mindwell/src/model/mw_chat_rights.dart';
-import 'package:mindwell/src/model/mw_comment.dart';
-import 'package:mindwell/src/model/mw_comment_list.dart';
-import 'package:mindwell/src/model/mw_comment_rights.dart';
-import 'package:mindwell/src/model/mw_cover.dart';
-import 'package:mindwell/src/model/mw_design.dart';
-import 'package:mindwell/src/model/mw_design_fonts_get200_response.dart';
-import 'package:mindwell/src/model/mw_entry.dart';
-import 'package:mindwell/src/model/mw_entry_rights.dart';
-import 'package:mindwell/src/model/mw_error.dart';
-import 'package:mindwell/src/model/mw_favorite_status.dart';
-import 'package:mindwell/src/model/mw_feed.dart';
-import 'package:mindwell/src/model/mw_friend.dart';
-import 'package:mindwell/src/model/mw_friend_all_of_counts.dart';
-import 'package:mindwell/src/model/mw_friend_list.dart';
-import 'package:mindwell/src/model/mw_image.dart';
-import 'package:mindwell/src/model/mw_image_list.dart';
-import 'package:mindwell/src/model/mw_image_size.dart';
-import 'package:mindwell/src/model/mw_me_online_put200_response.dart';
-import 'package:mindwell/src/model/mw_message.dart';
-import 'package:mindwell/src/model/mw_message_list.dart';
-import 'package:mindwell/src/model/mw_message_rights.dart';
-import 'package:mindwell/src/model/mw_notification.dart';
-import 'package:mindwell/src/model/mw_notification_info.dart';
-import 'package:mindwell/src/model/mw_notification_list.dart';
-import 'package:mindwell/src/model/mw_notifications_read_put200_response.dart';
-import 'package:mindwell/src/model/mw_o_auth2_error.dart';
-import 'package:mindwell/src/model/mw_o_auth2_token.dart';
-import 'package:mindwell/src/model/mw_oauth2_allow_post200_response.dart';
-import 'package:mindwell/src/model/mw_profile.dart';
-import 'package:mindwell/src/model/mw_profile_all_of_relations.dart';
-import 'package:mindwell/src/model/mw_profile_all_of_rights.dart';
-import 'package:mindwell/src/model/mw_rating.dart';
-import 'package:mindwell/src/model/mw_relationship.dart';
-import 'package:mindwell/src/model/mw_tag_list.dart';
-import 'package:mindwell/src/model/mw_tag_list_data_inner.dart';
-import 'package:mindwell/src/model/mw_themes_get200_response.dart';
-import 'package:mindwell/src/model/mw_user.dart';
-import 'package:mindwell/src/model/mw_user_id.dart';
-import 'package:mindwell/src/model/mw_user_id_ban.dart';
-import 'package:mindwell/src/model/mw_users_get200_response.dart';
-import 'package:mindwell/src/model/mw_watching_status.dart';
-import 'package:mindwell/src/model/mw_wish.dart';
+import 'package:mindwell_api/src/model/mw_account_email_email_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_invites_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_name_name_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_email_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_onsite_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_settings_telegram_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_account_subscribe_token_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_adjacent_entries.dart';
+import 'package:mindwell_api/src/model/mw_adm_grandfather_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_adm_grandson_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_adm_grandson_status_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_adm_stat_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_app.dart';
+import 'package:mindwell_api/src/model/mw_auth_profile.dart';
+import 'package:mindwell_api/src/model/mw_auth_profile_all_of_account.dart';
+import 'package:mindwell_api/src/model/mw_auth_profile_all_of_ban.dart';
+import 'package:mindwell_api/src/model/mw_avatar.dart';
+import 'package:mindwell_api/src/model/mw_badge.dart';
+import 'package:mindwell_api/src/model/mw_badge_list.dart';
+import 'package:mindwell_api/src/model/mw_calendar.dart';
+import 'package:mindwell_api/src/model/mw_calendar_entry.dart';
+import 'package:mindwell_api/src/model/mw_chat.dart';
+import 'package:mindwell_api/src/model/mw_chat_list.dart';
+import 'package:mindwell_api/src/model/mw_chat_rights.dart';
+import 'package:mindwell_api/src/model/mw_comment.dart';
+import 'package:mindwell_api/src/model/mw_comment_list.dart';
+import 'package:mindwell_api/src/model/mw_comment_rights.dart';
+import 'package:mindwell_api/src/model/mw_cover.dart';
+import 'package:mindwell_api/src/model/mw_design.dart';
+import 'package:mindwell_api/src/model/mw_design_fonts_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_entry.dart';
+import 'package:mindwell_api/src/model/mw_entry_rights.dart';
+import 'package:mindwell_api/src/model/mw_error.dart';
+import 'package:mindwell_api/src/model/mw_favorite_status.dart';
+import 'package:mindwell_api/src/model/mw_feed.dart';
+import 'package:mindwell_api/src/model/mw_friend.dart';
+import 'package:mindwell_api/src/model/mw_friend_all_of_counts.dart';
+import 'package:mindwell_api/src/model/mw_friend_list.dart';
+import 'package:mindwell_api/src/model/mw_image.dart';
+import 'package:mindwell_api/src/model/mw_image_list.dart';
+import 'package:mindwell_api/src/model/mw_image_size.dart';
+import 'package:mindwell_api/src/model/mw_me_online_put200_response.dart';
+import 'package:mindwell_api/src/model/mw_message.dart';
+import 'package:mindwell_api/src/model/mw_message_list.dart';
+import 'package:mindwell_api/src/model/mw_message_rights.dart';
+import 'package:mindwell_api/src/model/mw_notification.dart';
+import 'package:mindwell_api/src/model/mw_notification_info.dart';
+import 'package:mindwell_api/src/model/mw_notification_list.dart';
+import 'package:mindwell_api/src/model/mw_notifications_read_put200_response.dart';
+import 'package:mindwell_api/src/model/mw_o_auth2_error.dart';
+import 'package:mindwell_api/src/model/mw_o_auth2_token.dart';
+import 'package:mindwell_api/src/model/mw_oauth2_allow_post200_response.dart';
+import 'package:mindwell_api/src/model/mw_pin_status.dart';
+import 'package:mindwell_api/src/model/mw_profile.dart';
+import 'package:mindwell_api/src/model/mw_profile_all_of_relations.dart';
+import 'package:mindwell_api/src/model/mw_profile_all_of_rights.dart';
+import 'package:mindwell_api/src/model/mw_rating.dart';
+import 'package:mindwell_api/src/model/mw_relationship.dart';
+import 'package:mindwell_api/src/model/mw_tag_list.dart';
+import 'package:mindwell_api/src/model/mw_tag_list_data_inner.dart';
+import 'package:mindwell_api/src/model/mw_themes_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_user_id.dart';
+import 'package:mindwell_api/src/model/mw_user_id_ban.dart';
+import 'package:mindwell_api/src/model/mw_users_get200_response.dart';
+import 'package:mindwell_api/src/model/mw_watching_status.dart';
+import 'package:mindwell_api/src/model/mw_wish.dart';
 
 part 'serializers.g.dart';
 
@@ -99,6 +102,8 @@ part 'serializers.g.dart';
   MwAuthProfileAllOfAccount,
   MwAuthProfileAllOfBan,
   MwAvatar,
+  MwBadge,
+  MwBadgeList,
   MwCalendar,
   MwCalendarEntry,
   MwChat,
@@ -132,6 +137,7 @@ part 'serializers.g.dart';
   MwOAuth2Error,
   MwOAuth2Token,
   MwOauth2AllowPost200Response,
+  MwPinStatus,
   MwProfile,$MwProfile,
   MwProfileAllOfRelations,
   MwProfileAllOfRights,
@@ -170,8 +176,8 @@ Serializers serializers = (_$serializers.toBuilder()
       ..add(const OneOfSerializer())
       ..add(const AnyOfSerializer())
       ..add(const DateSerializer())
-      ..add(Iso8601DateTimeSerializer()))
-    .build();
+      ..add(Iso8601DateTimeSerializer())
+    ).build();
 
 Serializers standardSerializers =
     (serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();

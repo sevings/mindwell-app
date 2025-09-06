@@ -1,8 +1,8 @@
-# mindwell.model.MwUsersGet200Response
+# mindwell_api.model.MwUsersGet200Response
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

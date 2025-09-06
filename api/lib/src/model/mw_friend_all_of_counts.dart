@@ -20,6 +20,7 @@ part 'mw_friend_all_of_counts.g.dart';
 /// * [favorites] 
 /// * [tags] 
 /// * [days] 
+/// * [badges] 
 @BuiltValue()
 abstract class MwFriendAllOfCounts implements Built<MwFriendAllOfCounts, MwFriendAllOfCountsBuilder> {
   @BuiltValueField(wireName: r'entries')
@@ -48,6 +49,9 @@ abstract class MwFriendAllOfCounts implements Built<MwFriendAllOfCounts, MwFrien
 
   @BuiltValueField(wireName: r'days')
   int? get days;
+
+  @BuiltValueField(wireName: r'badges')
+  int? get badges;
 
   MwFriendAllOfCounts._();
 
@@ -132,6 +136,13 @@ class _$MwFriendAllOfCountsSerializer implements PrimitiveSerializer<MwFriendAll
       yield r'days';
       yield serializers.serialize(
         object.days,
+        specifiedType: const FullType(int),
+      );
+    }
+    if (object.badges != null) {
+      yield r'badges';
+      yield serializers.serialize(
+        object.badges,
         specifiedType: const FullType(int),
       );
     }
@@ -220,6 +231,13 @@ class _$MwFriendAllOfCountsSerializer implements PrimitiveSerializer<MwFriendAll
             specifiedType: const FullType(int),
           ) as int;
           result.days = valueDes;
+          break;
+        case r'badges':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(int),
+          ) as int;
+          result.badges = valueDes;
           break;
         default:
           unhandled.add(key);

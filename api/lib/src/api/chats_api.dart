@@ -4,17 +4,15 @@
 
 import 'dart:async';
 
-import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
-import 'package:mindwell/src/api_util.dart';
-import 'package:mindwell/src/model/mw_chat.dart';
-import 'package:mindwell/src/model/mw_chat_list.dart';
-import 'package:mindwell/src/model/mw_error.dart';
-import 'package:mindwell/src/model/mw_message.dart';
-import 'package:mindwell/src/model/mw_message_list.dart';
-import 'package:mindwell/src/model/mw_notifications_read_put200_response.dart';
+import 'package:mindwell_api/src/api_util.dart';
+import 'package:mindwell_api/src/model/mw_chat.dart';
+import 'package:mindwell_api/src/model/mw_chat_list.dart';
+import 'package:mindwell_api/src/model/mw_message.dart';
+import 'package:mindwell_api/src/model/mw_message_list.dart';
+import 'package:mindwell_api/src/model/mw_notifications_read_put200_response.dart';
 
 class ChatsApi {
 

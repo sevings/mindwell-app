@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwOAuth2Error
 void main() {

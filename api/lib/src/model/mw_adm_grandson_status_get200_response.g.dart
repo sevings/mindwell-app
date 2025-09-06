@@ -19,13 +19,11 @@ class _$MwAdmGrandsonStatusGet200Response
 
   factory _$MwAdmGrandsonStatusGet200Response(
           [void Function(MwAdmGrandsonStatusGet200ResponseBuilder)? updates]) =>
-      (new MwAdmGrandsonStatusGet200ResponseBuilder()..update(updates))
-          ._build();
+      (MwAdmGrandsonStatusGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAdmGrandsonStatusGet200Response._(
       {this.sent, this.received, this.tracking, this.comment})
       : super._();
-
   @override
   MwAdmGrandsonStatusGet200Response rebuild(
           void Function(MwAdmGrandsonStatusGet200ResponseBuilder) updates) =>
@@ -33,7 +31,7 @@ class _$MwAdmGrandsonStatusGet200Response
 
   @override
   MwAdmGrandsonStatusGet200ResponseBuilder toBuilder() =>
-      new MwAdmGrandsonStatusGet200ResponseBuilder()..replace(this);
+      MwAdmGrandsonStatusGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -107,7 +105,6 @@ class MwAdmGrandsonStatusGet200ResponseBuilder
 
   @override
   void replace(MwAdmGrandsonStatusGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAdmGrandsonStatusGet200Response;
   }
 
@@ -122,11 +119,12 @@ class MwAdmGrandsonStatusGet200ResponseBuilder
 
   _$MwAdmGrandsonStatusGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAdmGrandsonStatusGet200Response._(
-            sent: sent,
-            received: received,
-            tracking: tracking,
-            comment: comment);
+        _$MwAdmGrandsonStatusGet200Response._(
+          sent: sent,
+          received: received,
+          tracking: tracking,
+          comment: comment,
+        );
     replace(_$result);
     return _$result;
   }

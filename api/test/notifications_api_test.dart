@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for NotificationsApi
 void main() {
-  final instance = Mindwell().getNotificationsApi();
+  final instance = MindwellApi().getNotificationsApi();
 
   group(NotificationsApi, () {
     //Future<MwNotificationList> notificationsGet({ int limit, String after, String before, bool unread }) async

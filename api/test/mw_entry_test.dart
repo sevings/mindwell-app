@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwEntry
 void main() {
@@ -109,6 +109,11 @@ void main() {
 
     // bool isShared
     test('to test the property `isShared`', () async {
+      // TODO
+    });
+
+    // bool isPinned
+    test('to test the property `isPinned`', () async {
       // TODO
     });
 

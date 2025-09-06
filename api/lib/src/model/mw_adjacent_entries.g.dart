@@ -16,17 +16,16 @@ class _$MwAdjacentEntries extends MwAdjacentEntries {
 
   factory _$MwAdjacentEntries(
           [void Function(MwAdjacentEntriesBuilder)? updates]) =>
-      (new MwAdjacentEntriesBuilder()..update(updates))._build();
+      (MwAdjacentEntriesBuilder()..update(updates))._build();
 
   _$MwAdjacentEntries._({this.older, this.newer, this.id}) : super._();
-
   @override
   MwAdjacentEntries rebuild(void Function(MwAdjacentEntriesBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
   MwAdjacentEntriesBuilder toBuilder() =>
-      new MwAdjacentEntriesBuilder()..replace(this);
+      MwAdjacentEntriesBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -63,12 +62,12 @@ class MwAdjacentEntriesBuilder
 
   MwCalendarEntryBuilder? _older;
   MwCalendarEntryBuilder get older =>
-      _$this._older ??= new MwCalendarEntryBuilder();
+      _$this._older ??= MwCalendarEntryBuilder();
   set older(MwCalendarEntryBuilder? older) => _$this._older = older;
 
   MwCalendarEntryBuilder? _newer;
   MwCalendarEntryBuilder get newer =>
-      _$this._newer ??= new MwCalendarEntryBuilder();
+      _$this._newer ??= MwCalendarEntryBuilder();
   set newer(MwCalendarEntryBuilder? newer) => _$this._newer = newer;
 
   int? _id;
@@ -92,7 +91,6 @@ class MwAdjacentEntriesBuilder
 
   @override
   void replace(MwAdjacentEntries other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAdjacentEntries;
   }
 
@@ -108,8 +106,11 @@ class MwAdjacentEntriesBuilder
     _$MwAdjacentEntries _$result;
     try {
       _$result = _$v ??
-          new _$MwAdjacentEntries._(
-              older: _older?.build(), newer: _newer?.build(), id: id);
+          _$MwAdjacentEntries._(
+            older: _older?.build(),
+            newer: _newer?.build(),
+            id: id,
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -118,7 +119,7 @@ class MwAdjacentEntriesBuilder
         _$failedField = 'newer';
         _newer?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwAdjacentEntries', _$failedField, e.toString());
       }
       rethrow;

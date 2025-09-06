@@ -4,11 +4,12 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:mindwell/src/model/mw_comment.dart';
-import 'package:mindwell/src/model/mw_user.dart';
-import 'package:mindwell/src/model/mw_entry.dart';
-import 'package:mindwell/src/model/mw_notification_info.dart';
-import 'package:mindwell/src/model/mw_wish.dart';
+import 'package:mindwell_api/src/model/mw_badge.dart';
+import 'package:mindwell_api/src/model/mw_entry.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_comment.dart';
+import 'package:mindwell_api/src/model/mw_notification_info.dart';
+import 'package:mindwell_api/src/model/mw_wish.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -25,6 +26,7 @@ part 'mw_notification.g.dart';
 /// * [comment] 
 /// * [entry] 
 /// * [wish] 
+/// * [badge] 
 /// * [info] 
 @BuiltValue()
 abstract class MwNotification implements Built<MwNotification, MwNotificationBuilder> {
@@ -33,7 +35,7 @@ abstract class MwNotification implements Built<MwNotification, MwNotificationBui
 
   @BuiltValueField(wireName: r'type')
   MwNotificationTypeEnum? get type;
-  // enum typeEnum {  comment,  follower,  request,  accept,  invite,  welcome,  invited,  adm_sent,  adm_received,  wish_created,  wish_received,  info,  };
+  // enum typeEnum {  comment,  follower,  request,  accept,  invite,  welcome,  invited,  badge,  adm_sent,  adm_received,  wish_created,  wish_received,  entry_moved,  info,  };
 
   @BuiltValueField(wireName: r'read')
   bool? get read;
@@ -52,6 +54,9 @@ abstract class MwNotification implements Built<MwNotification, MwNotificationBui
 
   @BuiltValueField(wireName: r'wish')
   MwWish? get wish;
+
+  @BuiltValueField(wireName: r'badge')
+  MwBadge? get badge;
 
   @BuiltValueField(wireName: r'info')
   MwNotificationInfo? get info;
@@ -133,6 +138,13 @@ class _$MwNotificationSerializer implements PrimitiveSerializer<MwNotification> 
       yield serializers.serialize(
         object.wish,
         specifiedType: const FullType(MwWish),
+      );
+    }
+    if (object.badge != null) {
+      yield r'badge';
+      yield serializers.serialize(
+        object.badge,
+        specifiedType: const FullType(MwBadge),
       );
     }
     if (object.info != null) {
@@ -221,6 +233,13 @@ class _$MwNotificationSerializer implements PrimitiveSerializer<MwNotification> 
           ) as MwWish;
           result.wish.replace(valueDes);
           break;
+        case r'badge':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(MwBadge),
+          ) as MwBadge;
+          result.badge.replace(valueDes);
+          break;
         case r'info':
           final valueDes = serializers.deserialize(
             value,
@@ -273,6 +292,8 @@ class MwNotificationTypeEnum extends EnumClass {
   static const MwNotificationTypeEnum welcome = _$mwNotificationTypeEnum_welcome;
   @BuiltValueEnumConst(wireName: r'invited')
   static const MwNotificationTypeEnum invited = _$mwNotificationTypeEnum_invited;
+  @BuiltValueEnumConst(wireName: r'badge')
+  static const MwNotificationTypeEnum badge = _$mwNotificationTypeEnum_badge;
   @BuiltValueEnumConst(wireName: r'adm_sent')
   static const MwNotificationTypeEnum admSent = _$mwNotificationTypeEnum_admSent;
   @BuiltValueEnumConst(wireName: r'adm_received')
@@ -281,6 +302,8 @@ class MwNotificationTypeEnum extends EnumClass {
   static const MwNotificationTypeEnum wishCreated = _$mwNotificationTypeEnum_wishCreated;
   @BuiltValueEnumConst(wireName: r'wish_received')
   static const MwNotificationTypeEnum wishReceived = _$mwNotificationTypeEnum_wishReceived;
+  @BuiltValueEnumConst(wireName: r'entry_moved')
+  static const MwNotificationTypeEnum entryMoved = _$mwNotificationTypeEnum_entryMoved;
   @BuiltValueEnumConst(wireName: r'info')
   static const MwNotificationTypeEnum info = _$mwNotificationTypeEnum_info;
 

@@ -11,16 +11,15 @@ class _$MwTagList extends MwTagList {
   final BuiltList<MwTagListDataInner>? data;
 
   factory _$MwTagList([void Function(MwTagListBuilder)? updates]) =>
-      (new MwTagListBuilder()..update(updates))._build();
+      (MwTagListBuilder()..update(updates))._build();
 
   _$MwTagList._({this.data}) : super._();
-
   @override
   MwTagList rebuild(void Function(MwTagListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwTagListBuilder toBuilder() => new MwTagListBuilder()..replace(this);
+  MwTagListBuilder toBuilder() => MwTagListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -48,7 +47,7 @@ class MwTagListBuilder implements Builder<MwTagList, MwTagListBuilder> {
 
   ListBuilder<MwTagListDataInner>? _data;
   ListBuilder<MwTagListDataInner> get data =>
-      _$this._data ??= new ListBuilder<MwTagListDataInner>();
+      _$this._data ??= ListBuilder<MwTagListDataInner>();
   set data(ListBuilder<MwTagListDataInner>? data) => _$this._data = data;
 
   MwTagListBuilder() {
@@ -66,7 +65,6 @@ class MwTagListBuilder implements Builder<MwTagList, MwTagListBuilder> {
 
   @override
   void replace(MwTagList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwTagList;
   }
 
@@ -81,14 +79,17 @@ class MwTagListBuilder implements Builder<MwTagList, MwTagListBuilder> {
   _$MwTagList _build() {
     _$MwTagList _$result;
     try {
-      _$result = _$v ?? new _$MwTagList._(data: _data?.build());
+      _$result = _$v ??
+          _$MwTagList._(
+            data: _data?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwTagList', _$failedField, e.toString());
       }
       rethrow;

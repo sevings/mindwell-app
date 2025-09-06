@@ -32,12 +32,12 @@ MwWishStateEnum _$mwWishStateEnumValueOf(String name) {
     case 'complained':
       return _$mwWishStateEnum_complained;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwWishStateEnum> _$mwWishStateEnumValues =
-    new BuiltSet<MwWishStateEnum>(const <MwWishStateEnum>[
+    BuiltSet<MwWishStateEnum>(const <MwWishStateEnum>[
   _$mwWishStateEnum_new_,
   _$mwWishStateEnum_sent,
   _$mwWishStateEnum_expired,
@@ -47,7 +47,7 @@ final BuiltSet<MwWishStateEnum> _$mwWishStateEnumValues =
 ]);
 
 Serializer<MwWishStateEnum> _$mwWishStateEnumSerializer =
-    new _$MwWishStateEnumSerializer();
+    _$MwWishStateEnumSerializer();
 
 class _$MwWishStateEnumSerializer
     implements PrimitiveSerializer<MwWishStateEnum> {
@@ -98,17 +98,16 @@ class _$MwWish extends MwWish {
   final MwUser? receiver;
 
   factory _$MwWish([void Function(MwWishBuilder)? updates]) =>
-      (new MwWishBuilder()..update(updates))._build();
+      (MwWishBuilder()..update(updates))._build();
 
   _$MwWish._({this.id, this.content, this.state, this.sendUntil, this.receiver})
       : super._();
-
   @override
   MwWish rebuild(void Function(MwWishBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwWishBuilder toBuilder() => new MwWishBuilder()..replace(this);
+  MwWishBuilder toBuilder() => MwWishBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -187,7 +186,6 @@ class MwWishBuilder implements Builder<MwWish, MwWishBuilder> {
 
   @override
   void replace(MwWish other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwWish;
   }
 
@@ -201,12 +199,13 @@ class MwWishBuilder implements Builder<MwWish, MwWishBuilder> {
 
   _$MwWish _build() {
     final _$result = _$v ??
-        new _$MwWish._(
-            id: id,
-            content: content,
-            state: state,
-            sendUntil: sendUntil,
-            receiver: receiver);
+        _$MwWish._(
+          id: id,
+          content: content,
+          state: state,
+          sendUntil: sendUntil,
+          receiver: receiver,
+        );
     replace(_$result);
     return _$result;
   }

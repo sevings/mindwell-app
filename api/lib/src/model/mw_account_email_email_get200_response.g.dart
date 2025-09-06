@@ -15,11 +15,9 @@ class _$MwAccountEmailEmailGet200Response
 
   factory _$MwAccountEmailEmailGet200Response(
           [void Function(MwAccountEmailEmailGet200ResponseBuilder)? updates]) =>
-      (new MwAccountEmailEmailGet200ResponseBuilder()..update(updates))
-          ._build();
+      (MwAccountEmailEmailGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAccountEmailEmailGet200Response._({this.email, this.isFree}) : super._();
-
   @override
   MwAccountEmailEmailGet200Response rebuild(
           void Function(MwAccountEmailEmailGet200ResponseBuilder) updates) =>
@@ -27,7 +25,7 @@ class _$MwAccountEmailEmailGet200Response
 
   @override
   MwAccountEmailEmailGet200ResponseBuilder toBuilder() =>
-      new MwAccountEmailEmailGet200ResponseBuilder()..replace(this);
+      MwAccountEmailEmailGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -85,7 +83,6 @@ class MwAccountEmailEmailGet200ResponseBuilder
 
   @override
   void replace(MwAccountEmailEmailGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountEmailEmailGet200Response;
   }
 
@@ -100,7 +97,10 @@ class MwAccountEmailEmailGet200ResponseBuilder
 
   _$MwAccountEmailEmailGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAccountEmailEmailGet200Response._(email: email, isFree: isFree);
+        _$MwAccountEmailEmailGet200Response._(
+          email: email,
+          isFree: isFree,
+        );
     replace(_$result);
     return _$result;
   }

@@ -14,17 +14,16 @@ class _$MwWatchingStatus extends MwWatchingStatus {
 
   factory _$MwWatchingStatus(
           [void Function(MwWatchingStatusBuilder)? updates]) =>
-      (new MwWatchingStatusBuilder()..update(updates))._build();
+      (MwWatchingStatusBuilder()..update(updates))._build();
 
   _$MwWatchingStatus._({this.id, this.isWatching}) : super._();
-
   @override
   MwWatchingStatus rebuild(void Function(MwWatchingStatusBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
   MwWatchingStatusBuilder toBuilder() =>
-      new MwWatchingStatusBuilder()..replace(this);
+      MwWatchingStatusBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -80,7 +79,6 @@ class MwWatchingStatusBuilder
 
   @override
   void replace(MwWatchingStatus other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwWatchingStatus;
   }
 
@@ -93,8 +91,11 @@ class MwWatchingStatusBuilder
   MwWatchingStatus build() => _build();
 
   _$MwWatchingStatus _build() {
-    final _$result =
-        _$v ?? new _$MwWatchingStatus._(id: id, isWatching: isWatching);
+    final _$result = _$v ??
+        _$MwWatchingStatus._(
+          id: id,
+          isWatching: isWatching,
+        );
     replace(_$result);
     return _$result;
   }

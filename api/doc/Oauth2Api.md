@@ -1,8 +1,8 @@
-# mindwell.api.Oauth2Api
+# mindwell_api.api.Oauth2Api
 
 ## Load the API package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 All URIs are relative to */api/v1*
@@ -22,11 +22,11 @@ only for internal usage
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getOauth2Api();
+final api = MindwellApi().getOauth2Api();
 final String responseType = responseType_example; // String | 
 final int clientId = 56; // int | 
 final String redirectUri = redirectUri_example; // String | 
@@ -77,11 +77,11 @@ Name | Type | Description  | Notes
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: OAuth2Password
 //defaultApiClient.getAuthentication<OAuth>('OAuth2Password').accessToken = 'YOUR_ACCESS_TOKEN';
 
-final api = Mindwell().getOauth2Api();
+final api = MindwellApi().getOauth2Api();
 final int id = 789; // int | 
 
 try {
@@ -120,9 +120,9 @@ only for internal usage
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getOauth2Api();
+final api = MindwellApi().getOauth2Api();
 final int clientId = 56; // int | 
 final String redirectUri = redirectUri_example; // String | 
 
@@ -162,9 +162,9 @@ No authorization required
 
 ### Example
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 
-final api = Mindwell().getOauth2Api();
+final api = MindwellApi().getOauth2Api();
 final String grantType = grantType_example; // String | 
 final int clientId = 56; // int | 
 final String clientSecret = clientSecret_example; // String | 

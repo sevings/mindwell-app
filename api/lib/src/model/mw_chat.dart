@@ -3,9 +3,9 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mindwell/src/model/mw_chat_rights.dart';
-import 'package:mindwell/src/model/mw_message.dart';
-import 'package:mindwell/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_chat_rights.dart';
+import 'package:mindwell_api/src/model/mw_message.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

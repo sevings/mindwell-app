@@ -14,17 +14,17 @@ MwOAuth2TokenTokenTypeEnum _$mwOAuth2TokenTokenTypeEnumValueOf(String name) {
     case 'bearer':
       return _$mwOAuth2TokenTokenTypeEnum_bearer;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwOAuth2TokenTokenTypeEnum> _$mwOAuth2TokenTokenTypeEnumValues =
-    new BuiltSet<MwOAuth2TokenTokenTypeEnum>(const <MwOAuth2TokenTokenTypeEnum>[
+    BuiltSet<MwOAuth2TokenTokenTypeEnum>(const <MwOAuth2TokenTokenTypeEnum>[
   _$mwOAuth2TokenTokenTypeEnum_bearer,
 ]);
 
 Serializer<MwOAuth2TokenTokenTypeEnum> _$mwOAuth2TokenTokenTypeEnumSerializer =
-    new _$MwOAuth2TokenTokenTypeEnumSerializer();
+    _$MwOAuth2TokenTokenTypeEnumSerializer();
 
 class _$MwOAuth2TokenTokenTypeEnumSerializer
     implements PrimitiveSerializer<MwOAuth2TokenTokenTypeEnum> {
@@ -66,7 +66,7 @@ class _$MwOAuth2Token extends MwOAuth2Token {
   final BuiltList<String>? scope;
 
   factory _$MwOAuth2Token([void Function(MwOAuth2TokenBuilder)? updates]) =>
-      (new MwOAuth2TokenBuilder()..update(updates))._build();
+      (MwOAuth2TokenBuilder()..update(updates))._build();
 
   _$MwOAuth2Token._(
       {this.accessToken,
@@ -75,13 +75,12 @@ class _$MwOAuth2Token extends MwOAuth2Token {
       this.refreshToken,
       this.scope})
       : super._();
-
   @override
   MwOAuth2Token rebuild(void Function(MwOAuth2TokenBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwOAuth2TokenBuilder toBuilder() => new MwOAuth2TokenBuilder()..replace(this);
+  MwOAuth2TokenBuilder toBuilder() => MwOAuth2TokenBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -140,7 +139,7 @@ class MwOAuth2TokenBuilder
   set refreshToken(String? refreshToken) => _$this._refreshToken = refreshToken;
 
   ListBuilder<String>? _scope;
-  ListBuilder<String> get scope => _$this._scope ??= new ListBuilder<String>();
+  ListBuilder<String> get scope => _$this._scope ??= ListBuilder<String>();
   set scope(ListBuilder<String>? scope) => _$this._scope = scope;
 
   MwOAuth2TokenBuilder() {
@@ -162,7 +161,6 @@ class MwOAuth2TokenBuilder
 
   @override
   void replace(MwOAuth2Token other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwOAuth2Token;
   }
 
@@ -178,19 +176,20 @@ class MwOAuth2TokenBuilder
     _$MwOAuth2Token _$result;
     try {
       _$result = _$v ??
-          new _$MwOAuth2Token._(
-              accessToken: accessToken,
-              tokenType: tokenType,
-              expiresIn: expiresIn,
-              refreshToken: refreshToken,
-              scope: _scope?.build());
+          _$MwOAuth2Token._(
+            accessToken: accessToken,
+            tokenType: tokenType,
+            expiresIn: expiresIn,
+            refreshToken: refreshToken,
+            scope: _scope?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'scope';
         _scope?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwOAuth2Token', _$failedField, e.toString());
       }
       rethrow;

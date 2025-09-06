@@ -17,17 +17,16 @@ class _$MwImageSize extends MwImageSize {
   final String? preview;
 
   factory _$MwImageSize([void Function(MwImageSizeBuilder)? updates]) =>
-      (new MwImageSizeBuilder()..update(updates))._build();
+      (MwImageSizeBuilder()..update(updates))._build();
 
   _$MwImageSize._({this.width, this.height, this.url, this.preview})
       : super._();
-
   @override
   MwImageSize rebuild(void Function(MwImageSizeBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwImageSizeBuilder toBuilder() => new MwImageSizeBuilder()..replace(this);
+  MwImageSizeBuilder toBuilder() => MwImageSizeBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -98,7 +97,6 @@ class MwImageSizeBuilder implements Builder<MwImageSize, MwImageSizeBuilder> {
 
   @override
   void replace(MwImageSize other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwImageSize;
   }
 
@@ -112,8 +110,12 @@ class MwImageSizeBuilder implements Builder<MwImageSize, MwImageSizeBuilder> {
 
   _$MwImageSize _build() {
     final _$result = _$v ??
-        new _$MwImageSize._(
-            width: width, height: height, url: url, preview: preview);
+        _$MwImageSize._(
+          width: width,
+          height: height,
+          url: url,
+          preview: preview,
+        );
     replace(_$result);
     return _$result;
   }

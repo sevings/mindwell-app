@@ -1,8 +1,8 @@
-# mindwell.model.MwUserIDBan
+# mindwell_api.model.MwUserIDBan
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties

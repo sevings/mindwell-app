@@ -14,10 +14,9 @@ class _$MwNotificationInfo extends MwNotificationInfo {
 
   factory _$MwNotificationInfo(
           [void Function(MwNotificationInfoBuilder)? updates]) =>
-      (new MwNotificationInfoBuilder()..update(updates))._build();
+      (MwNotificationInfoBuilder()..update(updates))._build();
 
   _$MwNotificationInfo._({this.content, this.link}) : super._();
-
   @override
   MwNotificationInfo rebuild(
           void Function(MwNotificationInfoBuilder) updates) =>
@@ -25,7 +24,7 @@ class _$MwNotificationInfo extends MwNotificationInfo {
 
   @override
   MwNotificationInfoBuilder toBuilder() =>
-      new MwNotificationInfoBuilder()..replace(this);
+      MwNotificationInfoBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -81,7 +80,6 @@ class MwNotificationInfoBuilder
 
   @override
   void replace(MwNotificationInfo other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwNotificationInfo;
   }
 
@@ -94,8 +92,11 @@ class MwNotificationInfoBuilder
   MwNotificationInfo build() => _build();
 
   _$MwNotificationInfo _build() {
-    final _$result =
-        _$v ?? new _$MwNotificationInfo._(content: content, link: link);
+    final _$result = _$v ??
+        _$MwNotificationInfo._(
+          content: content,
+          link: link,
+        );
     replace(_$result);
     return _$result;
   }

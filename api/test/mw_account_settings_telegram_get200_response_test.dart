@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 // tests for MwAccountSettingsTelegramGet200Response
 void main() {
@@ -24,6 +24,16 @@ void main() {
 
     // bool messages
     test('to test the property `messages`', () async {
+      // TODO
+    });
+
+    // bool movedEntries
+    test('to test the property `movedEntries`', () async {
+      // TODO
+    });
+
+    // bool badges
+    test('to test the property `badges`', () async {
       // TODO
     });
 

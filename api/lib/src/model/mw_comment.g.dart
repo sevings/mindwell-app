@@ -25,7 +25,7 @@ class _$MwComment extends MwComment {
   final MwCommentRights? rights;
 
   factory _$MwComment([void Function(MwCommentBuilder)? updates]) =>
-      (new MwCommentBuilder()..update(updates))._build();
+      (MwCommentBuilder()..update(updates))._build();
 
   _$MwComment._(
       {this.id,
@@ -37,13 +37,12 @@ class _$MwComment extends MwComment {
       this.rating,
       this.rights})
       : super._();
-
   @override
   MwComment rebuild(void Function(MwCommentBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwCommentBuilder toBuilder() => new MwCommentBuilder()..replace(this);
+  MwCommentBuilder toBuilder() => MwCommentBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -117,12 +116,12 @@ class MwCommentBuilder implements Builder<MwComment, MwCommentBuilder> {
   set editContent(String? editContent) => _$this._editContent = editContent;
 
   MwRatingBuilder? _rating;
-  MwRatingBuilder get rating => _$this._rating ??= new MwRatingBuilder();
+  MwRatingBuilder get rating => _$this._rating ??= MwRatingBuilder();
   set rating(MwRatingBuilder? rating) => _$this._rating = rating;
 
   MwCommentRightsBuilder? _rights;
   MwCommentRightsBuilder get rights =>
-      _$this._rights ??= new MwCommentRightsBuilder();
+      _$this._rights ??= MwCommentRightsBuilder();
   set rights(MwCommentRightsBuilder? rights) => _$this._rights = rights;
 
   MwCommentBuilder() {
@@ -147,7 +146,6 @@ class MwCommentBuilder implements Builder<MwComment, MwCommentBuilder> {
 
   @override
   void replace(MwComment other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwComment;
   }
 
@@ -163,15 +161,16 @@ class MwCommentBuilder implements Builder<MwComment, MwCommentBuilder> {
     _$MwComment _$result;
     try {
       _$result = _$v ??
-          new _$MwComment._(
-              id: id,
-              author: author,
-              entryId: entryId,
-              createdAt: createdAt,
-              content: content,
-              editContent: editContent,
-              rating: _rating?.build(),
-              rights: _rights?.build());
+          _$MwComment._(
+            id: id,
+            author: author,
+            entryId: entryId,
+            createdAt: createdAt,
+            content: content,
+            editContent: editContent,
+            rating: _rating?.build(),
+            rights: _rights?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -180,7 +179,7 @@ class MwCommentBuilder implements Builder<MwComment, MwCommentBuilder> {
         _$failedField = 'rights';
         _rights?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwComment', _$failedField, e.toString());
       }
       rethrow;

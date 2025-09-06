@@ -1,8 +1,8 @@
-# mindwell.model.MwFriendAllOfCounts
+# mindwell_api.model.MwFriendAllOfCounts
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties
@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **favorites** | **int** |  | [optional] 
 **tags** | **int** |  | [optional] 
 **days** | **int** |  | [optional] 
+**badges** | **int** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

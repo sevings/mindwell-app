@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
-import 'package:mindwell/mindwell.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 
 /// tests for ImagesApi
 void main() {
-  final instance = Mindwell().getImagesApi();
+  final instance = MindwellApi().getImagesApi();
 
   group(ImagesApi, () {
     //Future<MwImage> imagesFindGet(String link) async

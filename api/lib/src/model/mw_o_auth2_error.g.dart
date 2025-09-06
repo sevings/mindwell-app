@@ -62,12 +62,12 @@ MwOAuth2ErrorErrorEnum _$mwOAuth2ErrorErrorEnumValueOf(String name) {
     case 'unsupportedResponseType':
       return _$mwOAuth2ErrorErrorEnum_unsupportedResponseType;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwOAuth2ErrorErrorEnum> _$mwOAuth2ErrorErrorEnumValues =
-    new BuiltSet<MwOAuth2ErrorErrorEnum>(const <MwOAuth2ErrorErrorEnum>[
+    BuiltSet<MwOAuth2ErrorErrorEnum>(const <MwOAuth2ErrorErrorEnum>[
   _$mwOAuth2ErrorErrorEnum_accessDenied,
   _$mwOAuth2ErrorErrorEnum_invalidClient,
   _$mwOAuth2ErrorErrorEnum_invalidGrant,
@@ -84,7 +84,7 @@ final BuiltSet<MwOAuth2ErrorErrorEnum> _$mwOAuth2ErrorErrorEnumValues =
 ]);
 
 Serializer<MwOAuth2ErrorErrorEnum> _$mwOAuth2ErrorErrorEnumSerializer =
-    new _$MwOAuth2ErrorErrorEnumSerializer();
+    _$MwOAuth2ErrorErrorEnumSerializer();
 
 class _$MwOAuth2ErrorErrorEnumSerializer
     implements PrimitiveSerializer<MwOAuth2ErrorErrorEnum> {
@@ -141,16 +141,15 @@ class _$MwOAuth2Error extends MwOAuth2Error {
   final MwOAuth2ErrorErrorEnum? error;
 
   factory _$MwOAuth2Error([void Function(MwOAuth2ErrorBuilder)? updates]) =>
-      (new MwOAuth2ErrorBuilder()..update(updates))._build();
+      (MwOAuth2ErrorBuilder()..update(updates))._build();
 
   _$MwOAuth2Error._({this.error}) : super._();
-
   @override
   MwOAuth2Error rebuild(void Function(MwOAuth2ErrorBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwOAuth2ErrorBuilder toBuilder() => new MwOAuth2ErrorBuilder()..replace(this);
+  MwOAuth2ErrorBuilder toBuilder() => MwOAuth2ErrorBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -196,7 +195,6 @@ class MwOAuth2ErrorBuilder
 
   @override
   void replace(MwOAuth2Error other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwOAuth2Error;
   }
 
@@ -209,7 +207,10 @@ class MwOAuth2ErrorBuilder
   MwOAuth2Error build() => _build();
 
   _$MwOAuth2Error _build() {
-    final _$result = _$v ?? new _$MwOAuth2Error._(error: error);
+    final _$result = _$v ??
+        _$MwOAuth2Error._(
+          error: error,
+        );
     replace(_$result);
     return _$result;
   }

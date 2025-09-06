@@ -19,17 +19,16 @@ class _$MwApp extends MwApp {
   final String? info;
 
   factory _$MwApp([void Function(MwAppBuilder)? updates]) =>
-      (new MwAppBuilder()..update(updates))._build();
+      (MwAppBuilder()..update(updates))._build();
 
   _$MwApp._({this.id, this.name, this.showName, this.platform, this.info})
       : super._();
-
   @override
   MwApp rebuild(void Function(MwAppBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwAppBuilder toBuilder() => new MwAppBuilder()..replace(this);
+  MwAppBuilder toBuilder() => MwAppBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -108,7 +107,6 @@ class MwAppBuilder implements Builder<MwApp, MwAppBuilder> {
 
   @override
   void replace(MwApp other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwApp;
   }
 
@@ -122,12 +120,13 @@ class MwAppBuilder implements Builder<MwApp, MwAppBuilder> {
 
   _$MwApp _build() {
     final _$result = _$v ??
-        new _$MwApp._(
-            id: id,
-            name: name,
-            showName: showName,
-            platform: platform,
-            info: info);
+        _$MwApp._(
+          id: id,
+          name: name,
+          showName: showName,
+          platform: platform,
+          info: info,
+        );
     replace(_$result);
     return _$result;
   }

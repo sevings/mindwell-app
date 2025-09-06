@@ -11,16 +11,15 @@ class _$MwError extends MwError {
   final String? message;
 
   factory _$MwError([void Function(MwErrorBuilder)? updates]) =>
-      (new MwErrorBuilder()..update(updates))._build();
+      (MwErrorBuilder()..update(updates))._build();
 
   _$MwError._({this.message}) : super._();
-
   @override
   MwError rebuild(void Function(MwErrorBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwErrorBuilder toBuilder() => new MwErrorBuilder()..replace(this);
+  MwErrorBuilder toBuilder() => MwErrorBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -65,7 +64,6 @@ class MwErrorBuilder implements Builder<MwError, MwErrorBuilder> {
 
   @override
   void replace(MwError other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwError;
   }
 
@@ -78,7 +76,10 @@ class MwErrorBuilder implements Builder<MwError, MwErrorBuilder> {
   MwError build() => _build();
 
   _$MwError _build() {
-    final _$result = _$v ?? new _$MwError._(message: message);
+    final _$result = _$v ??
+        _$MwError._(
+          message: message,
+        );
     replace(_$result);
     return _$result;
   }

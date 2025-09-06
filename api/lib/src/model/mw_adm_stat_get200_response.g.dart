@@ -16,11 +16,10 @@ class _$MwAdmStatGet200Response extends MwAdmStatGet200Response {
 
   factory _$MwAdmStatGet200Response(
           [void Function(MwAdmStatGet200ResponseBuilder)? updates]) =>
-      (new MwAdmStatGet200ResponseBuilder()..update(updates))._build();
+      (MwAdmStatGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAdmStatGet200Response._({this.grandsons, this.sent, this.received})
       : super._();
-
   @override
   MwAdmStatGet200Response rebuild(
           void Function(MwAdmStatGet200ResponseBuilder) updates) =>
@@ -28,7 +27,7 @@ class _$MwAdmStatGet200Response extends MwAdmStatGet200Response {
 
   @override
   MwAdmStatGet200ResponseBuilder toBuilder() =>
-      new MwAdmStatGet200ResponseBuilder()..replace(this);
+      MwAdmStatGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -93,7 +92,6 @@ class MwAdmStatGet200ResponseBuilder
 
   @override
   void replace(MwAdmStatGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAdmStatGet200Response;
   }
 
@@ -107,8 +105,11 @@ class MwAdmStatGet200ResponseBuilder
 
   _$MwAdmStatGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAdmStatGet200Response._(
-            grandsons: grandsons, sent: sent, received: received);
+        _$MwAdmStatGet200Response._(
+          grandsons: grandsons,
+          sent: sent,
+          received: received,
+        );
     replace(_$result);
     return _$result;
   }

@@ -3,8 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mindwell/src/model/mw_image_size.dart';
-import 'package:mindwell/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_user.dart';
+import 'package:mindwell_api/src/model/mw_image_size.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

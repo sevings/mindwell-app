@@ -12,10 +12,9 @@ class _$MwAccountInvitesGet200Response extends MwAccountInvitesGet200Response {
 
   factory _$MwAccountInvitesGet200Response(
           [void Function(MwAccountInvitesGet200ResponseBuilder)? updates]) =>
-      (new MwAccountInvitesGet200ResponseBuilder()..update(updates))._build();
+      (MwAccountInvitesGet200ResponseBuilder()..update(updates))._build();
 
   _$MwAccountInvitesGet200Response._({this.invites}) : super._();
-
   @override
   MwAccountInvitesGet200Response rebuild(
           void Function(MwAccountInvitesGet200ResponseBuilder) updates) =>
@@ -23,7 +22,7 @@ class _$MwAccountInvitesGet200Response extends MwAccountInvitesGet200Response {
 
   @override
   MwAccountInvitesGet200ResponseBuilder toBuilder() =>
-      new MwAccountInvitesGet200ResponseBuilder()..replace(this);
+      MwAccountInvitesGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -54,8 +53,7 @@ class MwAccountInvitesGet200ResponseBuilder
   _$MwAccountInvitesGet200Response? _$v;
 
   ListBuilder<String>? _invites;
-  ListBuilder<String> get invites =>
-      _$this._invites ??= new ListBuilder<String>();
+  ListBuilder<String> get invites => _$this._invites ??= ListBuilder<String>();
   set invites(ListBuilder<String>? invites) => _$this._invites = invites;
 
   MwAccountInvitesGet200ResponseBuilder() {
@@ -73,7 +71,6 @@ class MwAccountInvitesGet200ResponseBuilder
 
   @override
   void replace(MwAccountInvitesGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountInvitesGet200Response;
   }
 
@@ -89,14 +86,16 @@ class MwAccountInvitesGet200ResponseBuilder
     _$MwAccountInvitesGet200Response _$result;
     try {
       _$result = _$v ??
-          new _$MwAccountInvitesGet200Response._(invites: _invites?.build());
+          _$MwAccountInvitesGet200Response._(
+            invites: _invites?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'invites';
         _invites?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwAccountInvitesGet200Response', _$failedField, e.toString());
       }
       rethrow;

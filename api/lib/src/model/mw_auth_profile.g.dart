@@ -22,12 +22,12 @@ MwAuthProfileGenderEnum _$mwAuthProfileGenderEnumValueOf(String name) {
     case 'notSet':
       return _$mwAuthProfileGenderEnum_notSet;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwAuthProfileGenderEnum> _$mwAuthProfileGenderEnumValues =
-    new BuiltSet<MwAuthProfileGenderEnum>(const <MwAuthProfileGenderEnum>[
+    BuiltSet<MwAuthProfileGenderEnum>(const <MwAuthProfileGenderEnum>[
   _$mwAuthProfileGenderEnum_male,
   _$mwAuthProfileGenderEnum_female,
   _$mwAuthProfileGenderEnum_notSet,
@@ -53,12 +53,12 @@ MwAuthProfilePrivacyEnum _$mwAuthProfilePrivacyEnumValueOf(String name) {
     case 'registered':
       return _$mwAuthProfilePrivacyEnum_registered;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwAuthProfilePrivacyEnum> _$mwAuthProfilePrivacyEnumValues =
-    new BuiltSet<MwAuthProfilePrivacyEnum>(const <MwAuthProfilePrivacyEnum>[
+    BuiltSet<MwAuthProfilePrivacyEnum>(const <MwAuthProfilePrivacyEnum>[
   _$mwAuthProfilePrivacyEnum_all,
   _$mwAuthProfilePrivacyEnum_followers,
   _$mwAuthProfilePrivacyEnum_invited,
@@ -86,13 +86,13 @@ MwAuthProfileChatPrivacyEnum _$mwAuthProfileChatPrivacyEnumValueOf(
     case 'me':
       return _$mwAuthProfileChatPrivacyEnum_me;
     default:
-      throw new ArgumentError(name);
+      throw ArgumentError(name);
   }
 }
 
 final BuiltSet<MwAuthProfileChatPrivacyEnum>
-    _$mwAuthProfileChatPrivacyEnumValues = new BuiltSet<
-        MwAuthProfileChatPrivacyEnum>(const <MwAuthProfileChatPrivacyEnum>[
+    _$mwAuthProfileChatPrivacyEnumValues =
+    BuiltSet<MwAuthProfileChatPrivacyEnum>(const <MwAuthProfileChatPrivacyEnum>[
   _$mwAuthProfileChatPrivacyEnum_invited,
   _$mwAuthProfileChatPrivacyEnum_followers,
   _$mwAuthProfileChatPrivacyEnum_friends,
@@ -100,12 +100,12 @@ final BuiltSet<MwAuthProfileChatPrivacyEnum>
 ]);
 
 Serializer<MwAuthProfileGenderEnum> _$mwAuthProfileGenderEnumSerializer =
-    new _$MwAuthProfileGenderEnumSerializer();
+    _$MwAuthProfileGenderEnumSerializer();
 Serializer<MwAuthProfilePrivacyEnum> _$mwAuthProfilePrivacyEnumSerializer =
-    new _$MwAuthProfilePrivacyEnumSerializer();
+    _$MwAuthProfilePrivacyEnumSerializer();
 Serializer<MwAuthProfileChatPrivacyEnum>
     _$mwAuthProfileChatPrivacyEnumSerializer =
-    new _$MwAuthProfileChatPrivacyEnumSerializer();
+    _$MwAuthProfileChatPrivacyEnumSerializer();
 
 class _$MwAuthProfileGenderEnumSerializer
     implements PrimitiveSerializer<MwAuthProfileGenderEnum> {
@@ -265,7 +265,7 @@ class _$MwAuthProfile extends MwAuthProfile {
   final MwAvatar? avatar;
 
   factory _$MwAuthProfile([void Function(MwAuthProfileBuilder)? updates]) =>
-      (new MwAuthProfileBuilder()..update(updates))._build();
+      (MwAuthProfileBuilder()..update(updates))._build();
 
   _$MwAuthProfile._(
       {this.birthday,
@@ -298,13 +298,12 @@ class _$MwAuthProfile extends MwAuthProfile {
       this.isOnline,
       this.avatar})
       : super._();
-
   @override
   MwAuthProfile rebuild(void Function(MwAuthProfileBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MwAuthProfileBuilder toBuilder() => new MwAuthProfileBuilder()..replace(this);
+  MwAuthProfileBuilder toBuilder() => MwAuthProfileBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -427,13 +426,13 @@ class MwAuthProfileBuilder
 
   MwAuthProfileAllOfAccountBuilder? _account;
   MwAuthProfileAllOfAccountBuilder get account =>
-      _$this._account ??= new MwAuthProfileAllOfAccountBuilder();
+      _$this._account ??= MwAuthProfileAllOfAccountBuilder();
   set account(covariant MwAuthProfileAllOfAccountBuilder? account) =>
       _$this._account = account;
 
   MwAuthProfileAllOfBanBuilder? _ban;
   MwAuthProfileAllOfBanBuilder get ban =>
-      _$this._ban ??= new MwAuthProfileAllOfBanBuilder();
+      _$this._ban ??= MwAuthProfileAllOfBanBuilder();
   set ban(covariant MwAuthProfileAllOfBanBuilder? ban) => _$this._ban = ban;
 
   double? _createdAt;
@@ -461,18 +460,18 @@ class MwAuthProfileBuilder
   set city(covariant String? city) => _$this._city = city;
 
   MwDesignBuilder? _design;
-  MwDesignBuilder get design => _$this._design ??= new MwDesignBuilder();
+  MwDesignBuilder get design => _$this._design ??= MwDesignBuilder();
   set design(covariant MwDesignBuilder? design) => _$this._design = design;
 
   MwProfileAllOfRightsBuilder? _rights;
   MwProfileAllOfRightsBuilder get rights =>
-      _$this._rights ??= new MwProfileAllOfRightsBuilder();
+      _$this._rights ??= MwProfileAllOfRightsBuilder();
   set rights(covariant MwProfileAllOfRightsBuilder? rights) =>
       _$this._rights = rights;
 
   MwProfileAllOfRelationsBuilder? _relations;
   MwProfileAllOfRelationsBuilder get relations =>
-      _$this._relations ??= new MwProfileAllOfRelationsBuilder();
+      _$this._relations ??= MwProfileAllOfRelationsBuilder();
   set relations(covariant MwProfileAllOfRelationsBuilder? relations) =>
       _$this._relations = relations;
 
@@ -492,7 +491,7 @@ class MwAuthProfileBuilder
       _$this._lastSeenAt = lastSeenAt;
 
   MwCoverBuilder? _cover;
-  MwCoverBuilder get cover => _$this._cover ??= new MwCoverBuilder();
+  MwCoverBuilder get cover => _$this._cover ??= MwCoverBuilder();
   set cover(covariant MwCoverBuilder? cover) => _$this._cover = cover;
 
   MwFriendGenderEnum? _gender;
@@ -501,7 +500,7 @@ class MwAuthProfileBuilder
 
   MwFriendAllOfCountsBuilder? _counts;
   MwFriendAllOfCountsBuilder get counts =>
-      _$this._counts ??= new MwFriendAllOfCountsBuilder();
+      _$this._counts ??= MwFriendAllOfCountsBuilder();
   set counts(covariant MwFriendAllOfCountsBuilder? counts) =>
       _$this._counts = counts;
 
@@ -544,7 +543,7 @@ class MwAuthProfileBuilder
   set isOnline(covariant bool? isOnline) => _$this._isOnline = isOnline;
 
   MwAvatarBuilder? _avatar;
-  MwAvatarBuilder get avatar => _$this._avatar ??= new MwAvatarBuilder();
+  MwAvatarBuilder get avatar => _$this._avatar ??= MwAvatarBuilder();
   set avatar(covariant MwAvatarBuilder? avatar) => _$this._avatar = avatar;
 
   MwAuthProfileBuilder() {
@@ -590,7 +589,6 @@ class MwAuthProfileBuilder
 
   @override
   void replace(covariant MwAuthProfile other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAuthProfile;
   }
 
@@ -606,36 +604,37 @@ class MwAuthProfileBuilder
     _$MwAuthProfile _$result;
     try {
       _$result = _$v ??
-          new _$MwAuthProfile._(
-              birthday: birthday,
-              showInTops: showInTops,
-              account: _account?.build(),
-              ban: _ban?.build(),
-              createdAt: createdAt,
-              country: country,
-              isDaylog: isDaylog,
-              invitedBy: invitedBy,
-              createdBy: createdBy,
-              city: city,
-              design: _design?.build(),
-              rights: _rights?.build(),
-              relations: _relations?.build(),
-              ageLowerBound: ageLowerBound,
-              ageUpperBound: ageUpperBound,
-              lastSeenAt: lastSeenAt,
-              cover: _cover?.build(),
-              gender: gender,
-              counts: _counts?.build(),
-              chatPrivacy: chatPrivacy,
-              privacy: privacy,
-              rank: rank,
-              title: title,
-              id: id,
-              name: name,
-              showName: showName,
-              isTheme: isTheme,
-              isOnline: isOnline,
-              avatar: _avatar?.build());
+          _$MwAuthProfile._(
+            birthday: birthday,
+            showInTops: showInTops,
+            account: _account?.build(),
+            ban: _ban?.build(),
+            createdAt: createdAt,
+            country: country,
+            isDaylog: isDaylog,
+            invitedBy: invitedBy,
+            createdBy: createdBy,
+            city: city,
+            design: _design?.build(),
+            rights: _rights?.build(),
+            relations: _relations?.build(),
+            ageLowerBound: ageLowerBound,
+            ageUpperBound: ageUpperBound,
+            lastSeenAt: lastSeenAt,
+            cover: _cover?.build(),
+            gender: gender,
+            counts: _counts?.build(),
+            chatPrivacy: chatPrivacy,
+            privacy: privacy,
+            rank: rank,
+            title: title,
+            id: id,
+            name: name,
+            showName: showName,
+            isTheme: isTheme,
+            isOnline: isOnline,
+            avatar: _avatar?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -660,7 +659,7 @@ class MwAuthProfileBuilder
         _$failedField = 'avatar';
         _avatar?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'MwAuthProfile', _$failedField, e.toString());
       }
       rethrow;

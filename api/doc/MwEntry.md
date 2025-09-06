@@ -1,8 +1,8 @@
-# mindwell.model.MwEntry
+# mindwell_api.model.MwEntry
 
 ## Load the model package
 ```dart
-import 'package:mindwell/api.dart';
+import 'package:mindwell_api/api.dart';
 ```
 
 ## Properties
@@ -29,6 +29,7 @@ Name | Type | Description | Notes
 **inLive** | **bool** |  | [optional] 
 **isAnonymous** | **bool** |  | [optional] 
 **isShared** | **bool** |  | [optional] 
+**isPinned** | **bool** |  | [optional] 
 **commentCount** | **int** |  | [optional] 
 **favoriteCount** | **int** |  | [optional] 
 **isFavorited** | **bool** |  | [optional] 

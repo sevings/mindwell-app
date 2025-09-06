@@ -28,6 +28,8 @@ doc/MwAuthProfile.md
 doc/MwAuthProfileAllOfAccount.md
 doc/MwAuthProfileAllOfBan.md
 doc/MwAvatar.md
+doc/MwBadge.md
+doc/MwBadgeList.md
 doc/MwCalendar.md
 doc/MwCalendarEntry.md
 doc/MwChat.md
@@ -61,6 +63,7 @@ doc/MwNotificationsReadPut200Response.md
 doc/MwOAuth2Error.md
 doc/MwOAuth2Token.md
 doc/MwOauth2AllowPost200Response.md
+doc/MwPinStatus.md
 doc/MwProfile.md
 doc/MwProfileAllOfRelations.md
 doc/MwProfileAllOfRights.md
@@ -83,7 +86,7 @@ doc/UsersApi.md
 doc/VotesApi.md
 doc/WatchingsApi.md
 doc/WishesApi.md
-lib/mindwell.dart
+lib/mindwell_api.dart
 lib/src/api.dart
 lib/src/api/account_api.dart
 lib/src/api/adm_api.dart
@@ -127,6 +130,8 @@ lib/src/model/mw_auth_profile.dart
 lib/src/model/mw_auth_profile_all_of_account.dart
 lib/src/model/mw_auth_profile_all_of_ban.dart
 lib/src/model/mw_avatar.dart
+lib/src/model/mw_badge.dart
+lib/src/model/mw_badge_list.dart
 lib/src/model/mw_calendar.dart
 lib/src/model/mw_calendar_entry.dart
 lib/src/model/mw_chat.dart
@@ -160,6 +165,7 @@ lib/src/model/mw_notifications_read_put200_response.dart
 lib/src/model/mw_o_auth2_error.dart
 lib/src/model/mw_o_auth2_token.dart
 lib/src/model/mw_oauth2_allow_post200_response.dart
+lib/src/model/mw_pin_status.dart
 lib/src/model/mw_profile.dart
 lib/src/model/mw_profile_all_of_relations.dart
 lib/src/model/mw_profile_all_of_rights.dart
@@ -202,6 +208,8 @@ test/mw_auth_profile_all_of_account_test.dart
 test/mw_auth_profile_all_of_ban_test.dart
 test/mw_auth_profile_test.dart
 test/mw_avatar_test.dart
+test/mw_badge_list_test.dart
+test/mw_badge_test.dart
 test/mw_calendar_entry_test.dart
 test/mw_calendar_test.dart
 test/mw_chat_list_test.dart
@@ -235,6 +243,7 @@ test/mw_notifications_read_put200_response_test.dart
 test/mw_o_auth2_error_test.dart
 test/mw_o_auth2_token_test.dart
 test/mw_oauth2_allow_post200_response_test.dart
+test/mw_pin_status_test.dart
 test/mw_profile_all_of_relations_test.dart
 test/mw_profile_all_of_rights_test.dart
 test/mw_profile_test.dart

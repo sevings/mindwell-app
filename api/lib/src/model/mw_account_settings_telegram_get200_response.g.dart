@@ -16,17 +16,25 @@ class _$MwAccountSettingsTelegramGet200Response
   final bool? invites;
   @override
   final bool? messages;
+  @override
+  final bool? movedEntries;
+  @override
+  final bool? badges;
 
   factory _$MwAccountSettingsTelegramGet200Response(
           [void Function(MwAccountSettingsTelegramGet200ResponseBuilder)?
               updates]) =>
-      (new MwAccountSettingsTelegramGet200ResponseBuilder()..update(updates))
+      (MwAccountSettingsTelegramGet200ResponseBuilder()..update(updates))
           ._build();
 
   _$MwAccountSettingsTelegramGet200Response._(
-      {this.comments, this.followers, this.invites, this.messages})
+      {this.comments,
+      this.followers,
+      this.invites,
+      this.messages,
+      this.movedEntries,
+      this.badges})
       : super._();
-
   @override
   MwAccountSettingsTelegramGet200Response rebuild(
           void Function(MwAccountSettingsTelegramGet200ResponseBuilder)
@@ -35,7 +43,7 @@ class _$MwAccountSettingsTelegramGet200Response
 
   @override
   MwAccountSettingsTelegramGet200ResponseBuilder toBuilder() =>
-      new MwAccountSettingsTelegramGet200ResponseBuilder()..replace(this);
+      MwAccountSettingsTelegramGet200ResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -44,7 +52,9 @@ class _$MwAccountSettingsTelegramGet200Response
         comments == other.comments &&
         followers == other.followers &&
         invites == other.invites &&
-        messages == other.messages;
+        messages == other.messages &&
+        movedEntries == other.movedEntries &&
+        badges == other.badges;
   }
 
   @override
@@ -54,6 +64,8 @@ class _$MwAccountSettingsTelegramGet200Response
     _$hash = $jc(_$hash, followers.hashCode);
     _$hash = $jc(_$hash, invites.hashCode);
     _$hash = $jc(_$hash, messages.hashCode);
+    _$hash = $jc(_$hash, movedEntries.hashCode);
+    _$hash = $jc(_$hash, badges.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -65,7 +77,9 @@ class _$MwAccountSettingsTelegramGet200Response
           ..add('comments', comments)
           ..add('followers', followers)
           ..add('invites', invites)
-          ..add('messages', messages))
+          ..add('messages', messages)
+          ..add('movedEntries', movedEntries)
+          ..add('badges', badges))
         .toString();
   }
 }
@@ -92,6 +106,14 @@ class MwAccountSettingsTelegramGet200ResponseBuilder
   bool? get messages => _$this._messages;
   set messages(bool? messages) => _$this._messages = messages;
 
+  bool? _movedEntries;
+  bool? get movedEntries => _$this._movedEntries;
+  set movedEntries(bool? movedEntries) => _$this._movedEntries = movedEntries;
+
+  bool? _badges;
+  bool? get badges => _$this._badges;
+  set badges(bool? badges) => _$this._badges = badges;
+
   MwAccountSettingsTelegramGet200ResponseBuilder() {
     MwAccountSettingsTelegramGet200Response._defaults(this);
   }
@@ -103,6 +125,8 @@ class MwAccountSettingsTelegramGet200ResponseBuilder
       _followers = $v.followers;
       _invites = $v.invites;
       _messages = $v.messages;
+      _movedEntries = $v.movedEntries;
+      _badges = $v.badges;
       _$v = null;
     }
     return this;
@@ -110,7 +134,6 @@ class MwAccountSettingsTelegramGet200ResponseBuilder
 
   @override
   void replace(MwAccountSettingsTelegramGet200Response other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$MwAccountSettingsTelegramGet200Response;
   }
 
@@ -125,11 +148,14 @@ class MwAccountSettingsTelegramGet200ResponseBuilder
 
   _$MwAccountSettingsTelegramGet200Response _build() {
     final _$result = _$v ??
-        new _$MwAccountSettingsTelegramGet200Response._(
-            comments: comments,
-            followers: followers,
-            invites: invites,
-            messages: messages);
+        _$MwAccountSettingsTelegramGet200Response._(
+          comments: comments,
+          followers: followers,
+          invites: invites,
+          messages: messages,
+          movedEntries: movedEntries,
+          badges: badges,
+        );
     replace(_$result);
     return _$result;
   }
