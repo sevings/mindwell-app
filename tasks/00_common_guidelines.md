@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-MindWell is a cross-platform mobile application built with Flutter for iOS and Android. It's a social diary platform where users can create entries, interact with others, and participate in themed communities.
+Mindwell is a cross-platform mobile application built with Flutter for iOS and Android. It's a social diary platform where users can create entries, interact with others, and participate in themed communities.
 
 ## Architecture Principles
 
@@ -74,7 +74,7 @@ lib/
 ### UI/UX Guidelines
 
 #### Design System
-- **Primary Color:** `#ff5e3a` (MindWell Orange)
+- **Primary Color:** `#ff5e3a` (Mindwell Orange)
 - **Secondary Colors:** Purple `#7c5ac2`, Blue `#38a9ff`, Teal `#08ddc1`
 - **Typography:** Inter (web), SF Pro Display (iOS), Roboto (Android)
 - **Spacing:** 8dp base unit (xs: 4dp, sm: 8dp, md: 16dp, lg: 24dp, xl: 32dp)

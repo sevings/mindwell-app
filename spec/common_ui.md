@@ -46,7 +46,7 @@ To ensure visual consistency and adherence to the DRY principle, a comprehensive
 #### 1.5.1. Color System
 
 *   **Primary Colors:**
-    *   **Main:** `#ff5e3a` (MindWell Orange)
+    *   **Main:** `#ff5e3a` (Mindwell Orange)
     *   **Primary Light:** `#ff7a5c`
     *   **Primary Dark:** `#e54a2a`
 *   **Secondary Colors:**

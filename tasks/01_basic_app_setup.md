@@ -1,7 +1,7 @@
 # Basic App Setup and Core Infrastructure
 
 ## Epic Overview
-This epic covers the foundational setup of the MindWell Flutter application, including project configuration, core infrastructure, and basic architectural components.
+This epic covers the foundational setup of the Mindwell Flutter application, including project configuration, core infrastructure, and basic architectural components.
 
 ## Common Guidelines for This Epic
 - Follow the layered architecture pattern (Presentation → Domain → Data)

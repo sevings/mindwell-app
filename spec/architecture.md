@@ -1,6 +1,6 @@
 # Architecture
 
-This document outlines the architecture of the MindWell application, a cross-platform mobile application for iOS and Android built with Flutter.
+This document outlines the architecture of the Mindwell application, a cross-platform mobile application for iOS and Android built with Flutter.
 
 ## 1. Guiding Principles
 
@@ -183,7 +183,7 @@ We will use a **Layered Architecture** based on the principles of Clean Architec
 
 To ensure a consistent and high-quality user experience, we will adhere to the following UI/UX design principles:
 
-*   **Color Palette:** We will define a primary, secondary, and accent color palette that reflects the MindWell brand. The color palette will be used consistently throughout the application.
+*   **Color Palette:** We will define a primary, secondary, and accent color palette that reflects the Mindwell brand. The color palette will be used consistently throughout the application.
 *   **Typography:** We will use a consistent set of fonts, font sizes, and font weights to ensure readability and a clear visual hierarchy.
 *   **Iconography:** We will use a consistent set of icons, preferably from the Material Icons library, to represent actions and information.
 *   **Component Library:** We will build a custom component library on top of the Material Design library to ensure that common UI elements (e.g., buttons, text fields, cards) have a consistent look and feel.
@@ -229,7 +229,7 @@ We will adopt a comprehensive testing strategy to ensure the quality and reliabi
 
 ## 14. Accessibility (a11y)
 
-We will strive to make the MindWell application accessible to as many users as possible, including those with disabilities. We will follow the Web Content Accessibility Guidelines (WCAG) 2.1 and will:
+We will strive to make the Mindwell application accessible to as many users as possible, including those with disabilities. We will follow the Web Content Accessibility Guidelines (WCAG) 2.1 and will:
 
 *   Use semantic widgets to provide context to screen readers.
 *   Provide alternative text for all images.

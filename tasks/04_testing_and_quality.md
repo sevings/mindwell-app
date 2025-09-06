@@ -1,7 +1,7 @@
 # Testing and Quality Assurance
 
 ## Epic Overview
-This epic covers comprehensive testing implementation, quality assurance, and performance optimization for the MindWell application.
+This epic covers comprehensive testing implementation, quality assurance, and performance optimization for the Mindwell application.
 
 ## Common Guidelines for This Epic
 - Implement comprehensive testing at all levels (unit, widget, integration)

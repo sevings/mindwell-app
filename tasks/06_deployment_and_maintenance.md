@@ -1,7 +1,7 @@
 # Deployment and Maintenance
 
 ## Epic Overview
-This epic covers the deployment, maintenance, and ongoing operations of the MindWell application, including CI/CD, monitoring, and maintenance procedures.
+This epic covers the deployment, maintenance, and ongoing operations of the Mindwell application, including CI/CD, monitoring, and maintenance procedures.
 
 ## Common Guidelines for This Epic
 - Implement robust deployment pipelines and automation

@@ -1,7 +1,7 @@
 # Advanced Features Implementation
 
 ## Epic Overview
-This epic covers the advanced features of the MindWell application, including real-time chat, notifications, themes, and other sophisticated functionality.
+This epic covers the advanced features of the Mindwell application, including real-time chat, notifications, themes, and other sophisticated functionality.
 
 ## Common Guidelines for This Epic
 - Implement WebSocket integration for real-time features

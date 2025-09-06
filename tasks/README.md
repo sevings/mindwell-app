@@ -1,8 +1,8 @@
-# MindWell Flutter App - Task Breakdown
+# Mindwell Flutter App - Task Breakdown
 
 ## Overview
 
-This directory contains a comprehensive task breakdown for the MindWell Flutter application. The tasks are organized into epics that follow a logical development progression from basic setup to advanced features and deployment.
+This directory contains a comprehensive task breakdown for the Mindwell Flutter application. The tasks are organized into epics that follow a logical development progression from basic setup to advanced features and deployment.
 
 ## Task Organization
 

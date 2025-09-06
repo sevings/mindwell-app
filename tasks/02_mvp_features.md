@@ -1,7 +1,7 @@
 # MVP Features Implementation
 
 ## Epic Overview
-This epic covers the core MVP features of the MindWell application, including authentication, basic entry feeds, user profiles, and essential user interactions.
+This epic covers the core MVP features of the Mindwell application, including authentication, basic entry feeds, user profiles, and essential user interactions.
 
 ## Common Guidelines for This Epic
 - Implement proper state management with Riverpod
