@@ -61,7 +61,7 @@ This document details the technical specifications for the Entry Editor screen i
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `EntriesApi`, `ThemesApi`, and `ImagesApi`.
+*   **API Client:** Use the generated `EntriesApi`, `ThemesApi`, and `ImagesApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Rich Text Editor:** Use the `flutter_quill` package.
 *   **Image Picker:** Use the `image_picker` package.

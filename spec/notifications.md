@@ -56,7 +56,7 @@ The screen requires data from the `/notifications` API endpoint, which returns a
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `NotificationsApi`.
+*   **API Client:** Use the generated `NotificationsApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Componentization:** A reusable `NotificationItem` widget will be created.
 *   **Widgets:**

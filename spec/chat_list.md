@@ -55,7 +55,7 @@ The Chat List screen requires data from the `/chats` API endpoint, which returns
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `ChatsApi`.
+*   **API Client:** Use the generated `ChatsApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod` to manage the state of the chat list.
 *   **Widgets:**
     *   `CustomScrollView` with a `SliverAppBar` and `SliverList`.

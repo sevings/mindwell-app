@@ -49,7 +49,7 @@ The Chat Messages screen will display messages fetched from the `/chats/{name}/m
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `ChatsApi`.
+*   **API Client:** Use the generated `ChatsApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Widgets:**
     *   `ListView.builder` (with `reverse: true`) for the message list.

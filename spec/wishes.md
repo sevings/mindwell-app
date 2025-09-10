@@ -93,9 +93,9 @@ sealed class SendWishState {
 
 ## 5. API Integration
 
-*   **WishesApi:** Use generated API client for all wish operations
+*   **WishesApi:** Use generated API client directly in providers for all wish operations
 *   **Real-time Updates:** Subscribe to wish-related notifications
-*   **Caching:** Cache wishes for offline reading
+*   **Caching:** Cache wishes for offline reading using Hive
 *   **Optimistic Updates:** Show sent wishes immediately
 
 ## 6. UI/UX Considerations

@@ -1,428 +1,257 @@
-# Basic App Setup and Core Infrastructure
+# Epic 01: Basic App Setup
+
+This epic establishes the foundational structure of the Mindwell Flutter application, including project configuration, basic navigation, and core infrastructure.
 
 ## Epic Overview
-This epic covers the foundational setup of the Mindwell Flutter application, including project configuration, core infrastructure, and basic architectural components.
 
-## Common Guidelines for This Epic
-- Follow the layered architecture pattern (Presentation → Domain → Data)
-- Use dependency injection with injectable package
-- Implement proper error handling with sealed classes
-- Set up comprehensive logging with the logging package
-- Ensure all code follows Flutter lints and Dart analyzer recommendations
-- Use the established project structure from the common guidelines
+**Goal:** Create a functional Flutter app with basic navigation, theme setup, and core infrastructure.
 
----
+**Dependencies:** None (foundational epic)
 
-## Task 1.1: Project Configuration and Dependencies
+**Estimated Time:** 2-3 days
 
-### Description
-Set up the Flutter project with all required dependencies and basic configuration.
+## Tasks
 
-### Acceptance Criteria
-- [ ] All dependencies from pubspec.yaml are properly configured
-- [ ] Analysis options are set up with Flutter lints
-- [ ] Basic project structure is created following the architecture guidelines
-- [ ] Environment configuration is set up for different build modes
+### Task 01.1: Project Initialization and Configuration
 
-### Implementation Details
-1. **Update pubspec.yaml** with all required dependencies:
-   - Riverpod for state management
-   - go_router for navigation
-   - Dio for HTTP client
-   - Hive for local storage
-   - flutter_secure_storage for sensitive data
-   - cached_network_image for image handling
-   - image_picker for image selection
-   - injectable for dependency injection
-   - json_serializable and freezed for data classes
-   - intl for date formatting
-   - logging for logging
-   - flutter_test, integration_test, mocktail for testing
+**Goal:** Set up the basic Flutter project structure and configuration files.
 
-2. **Configure analysis_options.yaml** with Flutter lints
+**Files to Create:**
+- `lib/main.dart` - Main application entry point
+- `lib/config/config.dart` - App configuration
+- `lib/config/sample_config.dart` - Sample configuration for development
+- `pubspec.yaml` - Dependencies and project metadata
+- `analysis_options.yaml` - Dart analysis configuration
 
-3. **Create basic folder structure**:
-   ```
-   lib/
-   ├── config/
-   ├── src/
-   │   ├── features/
-   │   ├── core/
-   │   │   ├── api/
-   │   │   ├── di/
-   │   │   ├── error/
-   │   │   ├── routing/
-   │   │   └── design/
-   │   └── app.dart
-   └── main.dart
-   ```
+**Implementation Details:**
+1. Create main.dart with basic MaterialApp setup
+2. Set up configuration system for different environments
+3. Configure pubspec.yaml with all required dependencies
+4. Set up analysis_options.yaml with Flutter lints
+5. Configure proper app metadata and icons
 
-4. **Set up environment configuration** in `lib/config/config.dart`
-
-### Files to Create/Modify
-- `pubspec.yaml`
-- `analysis_options.yaml`
-- `lib/config/config.dart`
-- `lib/main.dart`
-- `lib/src/app.dart`
+**Testing:**
+- Unit test for configuration loading
+- Widget test for main app initialization
 
 ---
 
-## Task 1.2: Core Error Handling System
+### Task 01.2: Core App Structure and Navigation
 
-### Description
-Implement a comprehensive error handling system with sealed classes and centralized error management.
+**Goal:** Implement the basic app structure with navigation and routing.
 
-### Acceptance Criteria
-- [ ] Sealed error class hierarchy is implemented
-- [ ] Error interceptor for Dio is set up
-- [ ] Global error handling mechanism is in place
-- [ ] User-friendly error messages are defined
-- [ ] Error logging with context is implemented
+**Files to Create:**
+- `lib/src/app.dart` - Main app widget
+- `lib/src/core/navigation/app_router.dart` - Go router configuration
+- `lib/src/core/navigation/route_names.dart` - Route name constants
+- `lib/src/features/splash/splash_screen.dart` - Splash screen
+- `lib/src/features/splash/providers/splash_provider.dart` - Splash state management
 
-### Implementation Details
-1. **Create error classes** in `lib/src/core/error/`:
-   ```dart
-   sealed class AppError {
-     NetworkError(String message);
-     ApiError(int statusCode, String message);
-     ValidationError(String field, String message);
-     AuthenticationError(String message);
-     PermissionError(String message);
-   }
-   ```
+**Files to Modify:**
+- `lib/main.dart` - Update to use new app structure
 
-2. **Implement error interceptor** for Dio with:
-   - Automatic error classification
-   - Context logging (user ID, screen, action)
-   - Retry logic for transient errors
-   - Offline detection
+**Implementation Details:**
+1. Create app.dart with proper MaterialApp configuration
+2. Set up go_router with basic routes (splash, login, home)
+3. Implement splash screen with loading state
+4. Create route name constants for type safety
+5. Set up basic navigation flow
 
-3. **Create error handling utilities**:
-   - Error message localization
-   - Error recovery options
-   - Consistent error UI components
-
-### Files to Create
-- `lib/src/core/error/app_error.dart`
-- `lib/src/core/error/error_interceptor.dart`
-- `lib/src/core/error/error_handler.dart`
-- `lib/src/core/error/error_messages.dart`
+**Testing:**
+- Widget test for splash screen
+- Unit test for router configuration
+- Integration test for navigation flow
 
 ---
 
-## Task 1.3: Dependency Injection Setup
+### Task 01.3: Theme System and Design Tokens
 
-### Description
-Set up dependency injection using the injectable package with proper service registration.
+**Goal:** Implement the centralized theme system with design tokens.
 
-### Acceptance Criteria
-- [ ] Injectable configuration is set up
-- [ ] Core services are registered (API client, storage, etc.)
-- [ ] Repository interfaces and implementations are registered
-- [ ] Use case classes are registered
-- [ ] Service locator is properly configured
+**Files to Create:**
+- `lib/src/core/theme/app_theme.dart` - Main theme configuration
+- `lib/src/core/theme/app_colors.dart` - Color palette
+- `lib/src/core/theme/app_typography.dart` - Typography system
+- `lib/src/core/theme/app_spacing.dart` - Spacing system
+- `lib/src/core/theme/app_animations.dart` - Animation constants
+- `lib/src/core/theme/theme_extensions.dart` - Custom theme extensions
 
-### Implementation Details
-1. **Configure injectable** in `lib/src/core/di/`:
-   - Create service locator
-   - Set up module registration
-   - Configure environment-specific dependencies
+**Implementation Details:**
+1. Define color palette with light/dark variants
+2. Set up typography system with proper font families
+3. Create spacing system based on 8dp grid
+4. Define animation durations and curves
+5. Create custom theme extensions for app-specific styling
+6. Implement proper theme switching support
 
-2. **Register core services**:
-   - API client with Dio configuration
-   - Local storage services (Hive, secure storage)
-   - Authentication service
-   - Logging service
-
-3. **Set up repository pattern**:
-   - Create abstract repository interfaces
-   - Register concrete implementations
-   - Configure for different environments
-
-### Files to Create
-- `lib/src/core/di/injection.dart`
-- `lib/src/core/di/service_locator.dart`
-- `lib/src/core/di/modules/`
+**Testing:**
+- Unit test for theme configuration
+- Widget test for theme switching
+- Visual regression test for theme consistency
 
 ---
 
-## Task 1.4: API Client Configuration
+### Task 01.4: Core Widgets and Components
 
-### Description
-Set up the API client with proper configuration, interceptors, and integration with the generated API.
+**Goal:** Create reusable core widgets and components.
 
-### Acceptance Criteria
-- [ ] Generated API client is integrated
-- [ ] Dio is configured with base URL and timeouts
-- [ ] Authentication interceptor is implemented
-- [ ] Request/response logging is set up
-- [ ] Error handling interceptor is integrated
-- [ ] Token refresh mechanism is implemented
+**Files to Create:**
+- `lib/src/core/widgets/app_button.dart` - Button components
+- `lib/src/core/widgets/app_text_field.dart` - Text input components
+- `lib/src/core/widgets/app_card.dart` - Card components
+- `lib/src/core/widgets/app_loading.dart` - Loading indicators
+- `lib/src/core/widgets/app_error.dart` - Error display components
+- `lib/src/core/widgets/app_avatar.dart` - Avatar component
+- `lib/src/core/widgets/app_badge.dart` - Badge component
+- `lib/src/core/widgets/app_divider.dart` - Divider component
 
-### Implementation Details
-1. **Configure Dio client** in `lib/src/core/api/`:
-   - Base URL configuration
-   - Timeout settings
-   - Request/response interceptors
-   - Error handling
+**Implementation Details:**
+1. Create primary, secondary, text, and icon button variants
+2. Implement text field with validation and error states
+3. Create card component with consistent styling
+4. Implement shimmer loading effects
+5. Create error display with retry functionality
+6. Build avatar component with fallback initials
+7. Create badge component for notifications
+8. Implement consistent divider styling
 
-2. **Implement authentication interceptor**:
-   - Automatic token injection
-   - Token refresh on 401 responses
-   - Secure token storage integration
-
-3. **Set up logging interceptor**:
-   - Request/response logging
-   - Error logging with context
-   - Performance monitoring
-
-### Files to Create
-- `lib/src/core/api/api_client.dart`
-- `lib/src/core/api/auth_interceptor.dart`
-- `lib/src/core/api/logging_interceptor.dart`
-- `lib/src/core/api/api_config.dart`
+**Testing:**
+- Widget test for each component
+- Unit test for component props and states
+- Visual test for component variations
 
 ---
 
-## Task 1.5: Local Storage Setup
+### Task 01.5: State Management Infrastructure
 
-### Description
-Set up local storage using Hive for caching and flutter_secure_storage for sensitive data.
+**Goal:** Set up Riverpod state management infrastructure.
 
-### Acceptance Criteria
-- [ ] Hive is initialized and configured
-- [ ] Secure storage is set up for tokens
-- [ ] Storage adapters are registered
-- [ ] Cache management utilities are implemented
-- [ ] Data serialization is configured
+**Files to Create:**
+- `lib/src/core/providers/app_providers.dart` - Global providers
+- `lib/src/core/providers/connectivity_provider.dart` - Network connectivity
+- `lib/src/core/providers/theme_provider.dart` - Theme state management
+- `lib/src/core/providers/locale_provider.dart` - Localization state
+- `lib/src/core/utils/state_extensions.dart` - State utility extensions
 
-### Implementation Details
-1. **Initialize Hive** in `lib/src/core/storage/`:
-   - Database initialization
-   - Adapter registration
-   - Box configuration
+**Implementation Details:**
+1. Set up global providers for app-wide state
+2. Implement connectivity monitoring
+3. Create theme switching provider
+4. Set up localization provider
+5. Create utility extensions for common state operations
+6. Implement proper error handling patterns
 
-2. **Set up secure storage**:
-   - Token storage service
-   - Biometric authentication integration
-   - Secure key management
-
-3. **Implement cache utilities**:
-   - Cache invalidation strategies
-   - TTL management
-   - Storage cleanup utilities
-
-### Files to Create
-- `lib/src/core/storage/hive_service.dart`
-- `lib/src/core/storage/secure_storage_service.dart`
-- `lib/src/core/storage/cache_manager.dart`
-- `lib/src/core/storage/storage_adapters/`
+**Testing:**
+- Unit test for each provider
+- Integration test for provider interactions
+- Mock test for connectivity scenarios
 
 ---
 
-## Task 1.6: Design System Implementation
+### Task 01.6: Localization Setup
 
-### Description
-Implement the core design system with colors, typography, spacing, and component themes.
+**Goal:** Implement internationalization support for Russian and English.
 
-### Acceptance Criteria
-- [ ] Color palette is defined and implemented
-- [ ] Typography system is set up
-- [ ] Spacing system is implemented
-- [ ] Component themes are configured
-- [ ] Dark mode support is implemented
-- [ ] Material You integration is set up
+**Files to Create:**
+- `lib/l10n/app_ru.arb` - Russian translations
+- `lib/l10n/app_en.arb` - English translations
+- `lib/l10n/app_localizations.dart` - Generated localizations
+- `lib/src/core/l10n/l10n_utils.dart` - Localization utilities
+- `lib/src/core/l10n/date_formatter.dart` - Date formatting utilities
 
-### Implementation Details
-1. **Create design tokens** in `lib/src/core/design/`:
-   - Color definitions with dark mode variants
-   - Typography scale and font families
-   - Spacing system (8dp base unit)
-   - Animation durations and curves
+**Files to Modify:**
+- `pubspec.yaml` - Add l10n configuration
+- `lib/src/app.dart` - Add localization support
 
-2. **Set up theme configuration**:
-   - Light and dark themes
-   - Material You integration for Android 12+
-   - Component-specific themes
-   - Accessibility considerations
+**Implementation Details:**
+1. Set up Flutter l10n configuration
+2. Create translation files for both languages
+3. Implement date and number formatting utilities
+4. Set up proper locale switching
+5. Create utility functions for common translations
+6. Implement proper text direction support
 
-3. **Implement design utilities**:
-   - Responsive breakpoints
-   - Theme extension utilities
-   - Color contrast utilities
-
-### Files to Create
-- `lib/src/core/design/colors.dart`
-- `lib/src/core/design/typography.dart`
-- `lib/src/core/design/spacing.dart`
-- `lib/src/core/design/theme.dart`
-- `lib/src/core/design/breakpoints.dart`
+**Testing:**
+- Unit test for localization utilities
+- Widget test for locale switching
+- Integration test for date formatting
 
 ---
 
-## Task 1.7: Navigation Setup
+### Task 01.7: Error Handling and Logging
 
-### Description
-Set up navigation using go_router with proper route definitions and navigation guards.
+**Goal:** Implement comprehensive error handling and logging system.
 
-### Acceptance Criteria
-- [ ] go_router is configured with route definitions
-- [ ] Authentication guards are implemented
-- [ ] Deep linking support is set up
-- [ ] Navigation utilities are created
-- [ ] Route transitions are configured
+**Files to Create:**
+- `lib/src/core/error/app_error.dart` - Error types and handling
+- `lib/src/core/error/error_handler.dart` - Global error handler
+- `lib/src/core/utils/logger.dart` - Logging utilities
+- `lib/src/core/utils/network_utils.dart` - Network utilities
+- `lib/src/core/widgets/error_boundary.dart` - Error boundary widget
 
-### Implementation Details
-1. **Configure go_router** in `lib/src/core/routing/`:
-   - Route definitions for all screens
-   - Route parameters and query parameters
-   - Nested routing structure
+**Implementation Details:**
+1. Define custom error types (NetworkError, ApiError, ValidationError)
+2. Implement global error handler with user-friendly messages
+3. Set up logging system with different levels
+4. Create network utilities for connectivity checks
+5. Implement error boundary for widget error handling
+6. Set up proper error reporting and analytics
 
-2. **Implement navigation guards**:
-   - Authentication required routes
-   - Permission-based access control
-   - Redirect logic for unauthorized access
-
-3. **Set up navigation utilities**:
-   - Type-safe navigation methods
-   - Route generation utilities
-   - Navigation state management
-
-### Files to Create
-- `lib/src/core/routing/app_router.dart`
-- `lib/src/core/routing/route_guards.dart`
-- `lib/src/core/routing/navigation_utils.dart`
-- `lib/src/core/routing/route_definitions.dart`
+**Testing:**
+- Unit test for error handling
+- Widget test for error boundary
+- Integration test for error scenarios
 
 ---
 
-## Task 1.8: Logging System
+### Task 01.8: Basic Navigation and Layout
 
-### Description
-Implement a comprehensive logging system with different log levels and context information.
+**Goal:** Implement basic navigation structure with drawer and bottom navigation.
 
-### Acceptance Criteria
-- [ ] Logging service is implemented with multiple levels
-- [ ] Context logging is set up (user ID, screen, action)
-- [ ] Performance logging is implemented
-- [ ] Error logging with stack traces
-- [ ] Log filtering and formatting
+**Files to Create:**
+- `lib/src/features/navigation/navigation_drawer.dart` - Navigation drawer
+- `lib/src/features/navigation/bottom_navigation.dart` - Bottom navigation
+- `lib/src/features/navigation/navigation_items.dart` - Navigation item definitions
+- `lib/src/features/home/home_screen.dart` - Home screen placeholder
+- `lib/src/features/home/providers/home_provider.dart` - Home state management
 
-### Implementation Details
-1. **Create logging service** in `lib/src/core/logging/`:
-   - Multiple log levels (debug, info, warning, error)
-   - Context information injection
-   - Performance timing utilities
-   - Stack trace capture
+**Implementation Details:**
+1. Create navigation drawer with user profile header
+2. Implement bottom navigation for logged-in users
+3. Define navigation items with proper icons and labels
+4. Create home screen with basic layout
+5. Set up proper navigation state management
+6. Implement responsive navigation for different screen sizes
 
-2. **Implement log formatting**:
-   - Structured log format
-   - Timestamp and context inclusion
-   - Error categorization
-   - User action tracking
-
-3. **Set up log management**:
-   - Log rotation and cleanup
-   - Remote logging integration (optional)
-   - Debug vs release logging levels
-
-### Files to Create
-- `lib/src/core/logging/logger.dart`
-- `lib/src/core/logging/log_formatter.dart`
-- `lib/src/core/logging/log_manager.dart`
-
----
-
-## Task 1.9: Basic App Structure
-
-### Description
-Create the basic app structure with main entry point, app widget, and initial routing setup.
-
-### Acceptance Criteria
-- [ ] Main app widget is implemented
-- [ ] Initial routing is set up
-- [ ] App lifecycle management is implemented
-- [ ] Error boundary is set up
-- [ ] Basic splash screen is implemented
-
-### Implementation Details
-1. **Create main app widget** in `lib/src/app.dart`:
-   - Material app configuration
-   - Theme setup
-   - Router integration
-   - Error handling setup
-
-2. **Implement app lifecycle**:
-   - App state management
-   - Background/foreground handling
-   - Memory management
-
-3. **Set up error boundary**:
-   - Global error catching
-   - Error reporting
-   - Recovery mechanisms
-
-### Files to Create/Modify
-- `lib/main.dart`
-- `lib/src/app.dart`
-- `lib/src/core/app_lifecycle.dart`
-- `lib/src/core/error_boundary.dart`
-
----
-
-## Task 1.10: Testing Infrastructure
-
-### Description
-Set up the testing infrastructure with unit tests, widget tests, and integration test configuration.
-
-### Acceptance Criteria
-- [ ] Test configuration is set up
-- [ ] Mock services are configured
-- [ ] Test utilities are implemented
-- [ ] Widget test helpers are created
-- [ ] Integration test setup is complete
-
-### Implementation Details
-1. **Set up test configuration**:
-   - Test dependencies configuration
-   - Mock service setup
-   - Test environment configuration
-
-2. **Create test utilities**:
-   - Widget test helpers
-   - Mock data generators
-   - Test assertion utilities
-   - Performance test utilities
-
-3. **Implement test structure**:
-   - Unit test organization
-   - Widget test structure
-   - Integration test setup
-
-### Files to Create
-- `test/test_helpers/`
-- `test/mocks/`
-- `test/utils/`
-- `integration_test/app_test.dart`
+**Testing:**
+- Widget test for navigation components
+- Unit test for navigation state
+- Integration test for navigation flow
 
 ---
 
 ## Epic Completion Criteria
-- [ ] All core infrastructure is implemented and tested
-- [ ] Dependency injection is properly configured
-- [ ] Error handling system is comprehensive and tested
-- [ ] API client is configured with all interceptors
-- [ ] Local storage is set up and tested
-- [ ] Design system is implemented and documented
-- [ ] Navigation is configured with proper guards
-- [ ] Logging system is comprehensive and functional
-- [ ] Basic app structure is complete and runnable
-- [ ] Testing infrastructure is set up and functional
+
+- [ ] App launches successfully with splash screen
+- [ ] Basic navigation works (drawer, bottom nav)
+- [ ] Theme system is functional (light/dark mode)
+- [ ] Localization works (Russian/English)
+- [ ] Core widgets are reusable and tested
+- [ ] Error handling is comprehensive
+- [ ] State management infrastructure is set up
+- [ ] All tests pass
+- [ ] Code follows project guidelines
+
+## Dependencies for Next Epic
+
+This epic provides the foundation for:
+- Authentication system (Epic 03)
+- Design system implementation (Epic 02)
+- All feature epics (Epic 04+)
 
 ## Notes
-- Each task should be implemented and tested before moving to the next
-- Follow the established patterns and architecture guidelines
-- Ensure all code is properly documented and follows Flutter best practices
-- Test each component thoroughly before integration
-- Use the generated API client from the `/api` folder
+
+- Focus on creating a solid foundation that can support all future features
+- Ensure all components are properly tested and documented
+- Follow the established architecture patterns consistently
+- Pay special attention to accessibility and internationalization from the start

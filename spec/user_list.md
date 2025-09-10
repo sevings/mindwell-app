@@ -16,7 +16,7 @@ This document specifies the requirements for the User List screen in the Mindwel
 
 ### 3.1. Data Source
 
-The User List screen will display users fetched from various API endpoints, which will be abstracted by a `UserListRepository`.
+The User List screen will display users fetched from various API endpoints using the generated API clients directly in the provider.
 
 ### 3.2. UI Elements
 
@@ -44,7 +44,7 @@ The User List screen will display users fetched from various API endpoints, whic
 
 ## 5. Flutter Implementation Details
 
-*   **API Abstraction:** A `UserListRepository` will be created to abstract the different API endpoints.
+*   **API Client:** Use the generated API clients directly in the provider for different user list types.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Componentization:** A reusable `UserCard` widget will be created.
 *   **Widgets:**

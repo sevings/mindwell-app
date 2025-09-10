@@ -65,7 +65,7 @@ This document specifies the requirements for the Login and Registration screens 
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `AccountApi` and `Oauth2Api`.
+*   **API Client:** Use the generated `AccountApi` and `Oauth2Api` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod` to manage the authentication state.
 *   **Componentization:**
     *   Reusable `LoginForm` and `RegistrationForm` widgets will be created.

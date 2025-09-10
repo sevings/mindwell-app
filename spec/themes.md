@@ -96,9 +96,9 @@ sealed class ThemeDetailState {
 
 ## 5. API Integration
 
-*   **ThemesApi:** Use generated API client for all theme operations
+*   **ThemesApi:** Use generated API client directly in providers for all theme operations
 *   **Image Upload:** Handle theme avatar and cover image uploads
-*   **Caching:** Cache theme data for offline access
+*   **Caching:** Cache theme data for offline access using Hive
 
 ## 6. UI/UX Considerations
 

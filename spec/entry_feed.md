@@ -56,7 +56,7 @@ A bottom sheet will be used to display the settings for the current feed, includ
 
 ## 5. Flutter Implementation Details
 
-*   **API Abstraction:** A `FeedRepository` will be created to abstract the different API endpoints for the various feed types, simplifying the `StateNotifier` logic.
+*   **API Client:** Use the generated API clients directly in the providers for each feed type.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod` for each feed type.
 *   **Componentization:**
     *   A reusable `EntryFeed` widget will be created that can be configured for different feed types.

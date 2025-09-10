@@ -39,7 +39,7 @@ The screen requires data from the `/users/{name}/images` API endpoint.
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `UsersApi`.
+*   **API Client:** Use the generated `UsersApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Componentization:**
     *   A reusable `ImageGrid` widget will be created.

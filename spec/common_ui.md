@@ -41,7 +41,7 @@ The App Bar (or Top App Bar) is a consistent navigation and branding element tha
 
 ### 1.5. Centralized Design System
 
-To ensure visual consistency and adherence to the DRY principle, a comprehensive design system must be implemented in `lib/src/core/design/`. This system will define all common UI values, making style adjustments easy and global.
+To ensure visual consistency and adherence to the DRY principle, a comprehensive design system must be implemented in `lib/src/core/`. This system will define all common UI values, making style adjustments easy and global.
 
 #### 1.5.1. Color System
 

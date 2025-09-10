@@ -55,7 +55,7 @@ The screen requires data from the following API endpoints:
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `EntriesApi` and `CommentsApi`.
+*   **API Client:** Use the generated `EntriesApi` and `CommentsApi` directly in the provider.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod`.
 *   **Widgets:**
     *   `CustomScrollView`, `SliverAppBar`, and other `Slivers`.

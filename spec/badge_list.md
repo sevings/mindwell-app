@@ -59,10 +59,10 @@ The User Badge List screen requires data from the following API endpoint:
 
 ## 6. Flutter Implementation Details
 
-*   **API Client:** Use the generated `UsersApi` to make the API request.
+*   **API Client:** Use the generated `UsersApi` directly in the provider.
 *   **State Management:** Use `Riverpod` to manage the state of the screen.
-    *   Use a `FutureProvider` to fetch the initial list of badges.
-    *   Use a `StateNotifierProvider` to handle the state of the badge list, including the pull-to-refresh action.
+    *   Use a `StateNotifierProvider` to handle the badge list state and API calls.
+    *   The provider will directly call the API client methods.
 *   **Widget:**
     *   The main widget will be a `ConsumerWidget` that listens to the `StateNotifierProvider`.
     *   The widget will handle the different states of the badge list (loading, data, error, empty).
