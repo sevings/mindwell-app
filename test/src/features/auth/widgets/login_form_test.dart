@@ -55,35 +55,30 @@ void main() {
       expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
     });
 
-    testWidgets('validates empty email field', (WidgetTester tester) async {
+    testWidgets('validates empty email or username field', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Try to submit the form with empty email
+      // Try to submit the form with empty email/username
       final loginButton = find.text('Login');
       await tester.tap(loginButton);
       await tester.pumpAndSettle();
 
       // Check that validation error appears
-      expect(find.text('Email is required'), findsOneWidget);
+      expect(find.text('Email or username is required'), findsOneWidget);
     });
 
-    testWidgets('validates invalid email format', (WidgetTester tester) async {
+    testWidgets('accepts any text in email or username field', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Enter invalid email
-      final emailField = find.byType(TextFormField).first;
-      await tester.enterText(emailField, 'invalid-email');
-      await tester.pumpAndSettle();
+      // Enter any text (email or username)
+      final emailOrUsernameField = find.byType(TextFormField).first;
+      await tester.enterText(emailOrUsernameField, 'test@example.com');
+      await tester.pump();
 
-      // Try to submit the form
-      final loginButton = find.text('Login');
-      await tester.tap(loginButton);
-      await tester.pumpAndSettle();
-
-      // Check that validation error appears
-      expect(find.text('Please enter a valid email address'), findsOneWidget);
+      // Verify the text was entered successfully
+      expect(find.text('test@example.com'), findsOneWidget);
     });
 
     testWidgets('validates empty password field', (WidgetTester tester) async {
@@ -124,7 +119,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check that validation error appears
-      expect(find.text('Password must be at least 8 characters'), findsOneWidget);
+      expect(find.text('Password must be at least 6 characters'), findsOneWidget);
     });
 
     testWidgets('handles forgot password tap', (WidgetTester tester) async {

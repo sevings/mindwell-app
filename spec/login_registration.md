@@ -21,7 +21,7 @@ This document specifies the requirements for the Login and Registration screens 
     *   "Forgot password?" link.
     *   "Login" button.
 *   **Registration Form:**
-    *   Email, password, and username fields.
+    *   Email, password, username and gender fields.
     *   Password visibility toggle.
     *   Password strength indicator.
     *   Link to "Terms of Service" and "Privacy Policy".
@@ -50,14 +50,9 @@ This document specifies the requirements for the Login and Registration screens 
     *   **HTTPS Communication:** All communication with the server must be over HTTPS with certificate pinning.
     *   **Secure Token Storage:** User and app tokens must be stored securely using `flutter_secure_storage` with biometric authentication when available.
     *   **Password Security:** Implement strong password requirements:
-        *   Minimum 8 characters
-        *   At least one uppercase letter
-        *   At least one lowercase letter
-        *   At least one number
-        *   At least one special character
+        *   Minimum 6 characters
     *   **Rate Limiting:** Implement client-side rate limiting for login attempts.
     *   **Session Management:** Implement secure session management with automatic token refresh for both user and app tokens.
-    *   **Biometric Authentication:** Support biometric authentication (fingerprint, face ID) when available.
     *   **Account Lockout:** Implement account lockout after multiple failed attempts.
 *   **Performance:** The authentication process should be fast and responsive with loading indicators.
 *   **Accessibility:** The screens should be accessible to users with disabilities following WCAG 2.1 AA guidelines.
@@ -97,7 +92,7 @@ The `AuthNotifier` will manage an `AuthState` object, which will be a sealed cla
 *   **Error Announcements:** Ensure that error messages are announced by screen readers.
 
 ## 8. Future Considerations
-
+*   **Biometric Authentication:** Support biometric authentication (fingerprint, face ID) when available.
 *   **Social Login:** Allow users to log in with their Google, Apple, or other social media accounts.
 *   **Two-Factor Authentication (2FA):** Add an extra layer of security with 2FA.
 *   **Magic Link Authentication:** Allow users to log in via a link sent to their email address.

@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Mindwell';
 
   @override
+  String get appSubtitle => 'Your mindful journey starts here';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -78,10 +81,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get email => 'Email';
 
   @override
+  String get emailOrUsername => 'Email or Username';
+
+  @override
   String get password => 'Password';
 
   @override
   String get emailHint => 'Enter your email address';
+
+  @override
+  String get emailOrUsernameHint => 'Enter your email or username';
 
   @override
   String get passwordHint => 'Enter your password';
@@ -94,6 +103,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailRequired => 'Email is required';
+
+  @override
+  String get emailOrUsernameRequired => 'Email or username is required';
 
   @override
   String get emailInvalid => 'Please enter a valid email address';

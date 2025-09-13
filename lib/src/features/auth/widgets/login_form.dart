@@ -24,14 +24,14 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   /// Form key for validation and state management
   final _formKey = GlobalKey<FormState>();
   
-  /// Controller for the email field
-  final _emailController = TextEditingController();
+  /// Controller for the email/username field
+  final _emailOrUsernameController = TextEditingController();
   
   /// Controller for the password field
   final _passwordController = TextEditingController();
   
-  /// Focus node for the email field
-  final _emailFocusNode = FocusNode();
+  /// Focus node for the email/username field
+  final _emailOrUsernameFocusNode = FocusNode();
   
   /// Focus node for the password field
   final _passwordFocusNode = FocusNode();
@@ -44,9 +44,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _emailOrUsernameController.dispose();
     _passwordController.dispose();
-    _emailFocusNode.dispose();
+    _emailOrUsernameFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
@@ -57,8 +57,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     final l10n = AppLocalizations.of(context);
     
     // Fallback to default strings if localization is not available
-    final emailLabel = l10n?.email ?? 'Email';
-    final emailHint = l10n?.emailHint ?? 'Enter your email address';
+    final emailOrUsernameLabel = l10n?.emailOrUsername ?? 'Email or Username';
+    final emailOrUsernameHint = l10n?.emailOrUsernameHint ?? 'Enter your email or username';
     final passwordLabel = l10n?.password ?? 'Password';
     final passwordHint = l10n?.passwordHint ?? 'Enter your password';
     final loginButtonText = l10n?.loginButton ?? 'Login';
@@ -91,19 +91,19 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Email field
+          // Email or Username field
           StyledTextField(
-            controller: _emailController,
-            label: emailLabel,
-            hint: emailHint,
-            focusNode: _emailFocusNode,
+            controller: _emailOrUsernameController,
+            label: emailOrUsernameLabel,
+            hint: emailOrUsernameHint,
+            focusNode: _emailOrUsernameFocusNode,
             textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.emailAddress,
-            validator: _validateEmail,
+            keyboardType: TextInputType.text,
+            validator: _validateEmailOrUsername,
             onSubmitted: (_) {
               _passwordFocusNode.requestFocus();
             },
-            prefixIcon: const Icon(Icons.email_outlined),
+            prefixIcon: const Icon(Icons.person_outline),
           ),
           
           const SizedBox(height: 16),
@@ -160,20 +160,14 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     );
   }
 
-  /// Validates the email field.
+  /// Validates the email or username field.
   /// 
   /// Returns an error message if validation fails, null if valid.
-  String? _validateEmail(String? value) {
+  String? _validateEmailOrUsername(String? value) {
     final l10n = AppLocalizations.of(context);
     
     if (value == null || value.trim().isEmpty) {
-      return l10n?.emailRequired ?? 'Email is required';
-    }
-    
-    // Basic email validation regex
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    if (!emailRegex.hasMatch(value.trim())) {
-      return l10n?.emailInvalid ?? 'Please enter a valid email address';
+      return l10n?.emailOrUsernameRequired ?? 'Email or username is required';
     }
     
     return null;
@@ -189,8 +183,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       return l10n?.passwordRequired ?? 'Password is required';
     }
     
-    if (value.length < 8) {
-      return l10n?.passwordTooShort ?? 'Password must be at least 8 characters';
+    if (value.length < 6) {
+      return l10n?.passwordTooShort ?? 'Password must be at least 6 characters';
     }
     
     return null;
@@ -213,7 +207,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
     // Call the authentication provider
     ref.read(authProvider.notifier).login(
-      _emailController.text.trim(),
+      _emailOrUsernameController.text.trim(),
       _passwordController.text,
     );
   }

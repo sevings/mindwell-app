@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
-import '../providers/auth_provider.dart';
+import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/models/auth_state.dart';
 import '../theme/spacing.dart';
 
 /// Navigation drawer widget that displays different content based on authentication state.
@@ -28,9 +29,10 @@ class NavDrawer extends ConsumerWidget {
           
           // Navigation items
           Expanded(
-            child: authState.isAuthenticated
-                ? _buildAuthenticatedContent(context, ref, theme, l10n)
-                : _buildUnauthenticatedContent(context, theme, l10n),
+            child: authState.maybeWhen(
+              authenticated: (_) => _buildAuthenticatedContent(context, ref, theme, l10n),
+              orElse: () => _buildUnauthenticatedContent(context, theme, l10n),
+            ),
           ),
           
           // Footer
@@ -53,9 +55,10 @@ class NavDrawer extends ConsumerWidget {
           bottomRight: Radius.circular(MindwellSpacing.borderRadiusLg),
         ),
       ),
-      child: authState.isAuthenticated
-          ? _buildUserProfile(context, authState, theme)
-          : _buildAppBranding(context, theme),
+      child: authState.maybeWhen(
+        authenticated: (user) => _buildUserProfile(context, authState, theme),
+        orElse: () => _buildAppBranding(context, theme),
+      ),
     );
   }
 
@@ -74,9 +77,12 @@ class NavDrawer extends ConsumerWidget {
           radius: MindwellSpacing.avatarMd / 2,
           backgroundColor: theme.colorScheme.primary,
           child: Text(
-            authState.username?.isNotEmpty == true
-                ? authState.username!.substring(0, 1).toUpperCase()
-                : 'U',
+            authState.maybeWhen(
+              authenticated: (user) => user.name?.isNotEmpty == true
+                  ? user.name!.substring(0, 1).toUpperCase()
+                  : 'U',
+              orElse: () => 'U',
+            ),
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
@@ -87,7 +93,10 @@ class NavDrawer extends ConsumerWidget {
         
         // Username
         Text(
-          authState.username ?? 'User',
+          authState.maybeWhen(
+            authenticated: (user) => user.name ?? 'User',
+            orElse: () => 'User',
+          ),
           style: theme.textTheme.titleLarge?.copyWith(
             color: theme.colorScheme.onPrimaryContainer,
             fontWeight: FontWeight.bold,
@@ -96,13 +105,17 @@ class NavDrawer extends ConsumerWidget {
         const SizedBox(height: MindwellSpacing.xs),
         
         // User ID (optional, for debugging)
-        if (authState.userId != null)
-          Text(
-            'ID: ${authState.userId}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-            ),
-          ),
+        authState.maybeWhen(
+          authenticated: (user) => user.id != null
+              ? Text(
+                  'ID: ${user.id}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                  ),
+                )
+              : const SizedBox.shrink(),
+          orElse: () => const SizedBox.shrink(),
+        ),
       ],
     );
   }
@@ -415,9 +428,10 @@ class NavDrawer extends ConsumerWidget {
           ),
         ),
       ),
-      child: authState.isAuthenticated
-          ? _buildLogoutButton(context, ref, theme, l10n)
-          : _buildAppVersion(context, theme),
+      child: authState.maybeWhen(
+        authenticated: (_) => _buildLogoutButton(context, ref, theme, l10n),
+        orElse: () => _buildAppVersion(context, theme),
+      ),
     );
   }
 

@@ -1,6 +1,10 @@
 {
   "@@locale": "ru",
   "appTitle": "Mindwell",
+  "appSubtitle": "Ваше осознанное путешествие начинается здесь",
+  "@appSubtitle": {
+    "description": "App subtitle text for authentication screen"
+  },
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -92,6 +96,10 @@
   "@email": {
     "description": "Email field label"
   },
+  "emailOrUsername": "Email или имя пользователя",
+  "@emailOrUsername": {
+    "description": "Email or username field label"
+  },
   "password": "Пароль",
   "@password": {
     "description": "Password field label"
@@ -99,6 +107,10 @@
   "emailHint": "Введите ваш email",
   "@emailHint": {
     "description": "Email field hint text"
+  },
+  "emailOrUsernameHint": "Введите ваш email или имя пользователя",
+  "@emailOrUsernameHint": {
+    "description": "Email or username field hint text"
   },
   "passwordHint": "Введите ваш пароль",
   "@passwordHint": {
@@ -115,6 +127,10 @@
   "emailRequired": "Email обязателен",
   "@emailRequired": {
     "description": "Email validation error message"
+  },
+  "emailOrUsernameRequired": "Email или имя пользователя обязательно",
+  "@emailOrUsernameRequired": {
+    "description": "Email or username validation error message"
   },
   "emailInvalid": "Введите корректный email адрес",
   "@emailInvalid": {
@@ -184,11 +200,11 @@
   "@passwordStrengthStrong": {
     "description": "Strong password strength label"
   },
-  "termsOfService": "Условия использования",
+  "termsOfService": "Условиями использования",
   "@termsOfService": {
     "description": "Terms of Service link text"
   },
-  "privacyPolicy": "Политика конфиденциальности",
+  "privacyPolicy": "Политикой конфиденциальности",
   "@privacyPolicy": {
     "description": "Privacy Policy link text"
   },

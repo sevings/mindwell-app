@@ -77,19 +77,24 @@ class AuthScreen extends ConsumerWidget {
             ),
           ),
           child: SafeArea(
-            child: TabBarView(
-              children: [
-                // Login tab content
-                _buildTabContent(
-                  context,
-                  child: const LoginForm(),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: TabBarView(
+                  children: [
+                    // Login tab content
+                    _buildTabContent(
+                      context,
+                      child: const LoginForm(),
+                    ),
+                    // Registration tab content
+                    _buildTabContent(
+                      context,
+                      child: const RegistrationForm(),
+                    ),
+                  ],
                 ),
-                // Registration tab content
-                _buildTabContent(
-                  context,
-                  child: const RegistrationForm(),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -137,7 +142,7 @@ class AuthScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     
     final welcomeText = l10n?.appTitle ?? 'Mindwell';
-    final subtitleText = 'Your mindful journey starts here';
+    final subtitleText = l10n?.appSubtitle ?? 'Your mindful journey starts here';
 
     return Column(
       children: [

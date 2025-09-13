@@ -1,6 +1,10 @@
 {
   "@@locale": "en",
   "appTitle": "Mindwell",
+  "appSubtitle": "Your mindful journey starts here",
+  "@appSubtitle": {
+    "description": "App subtitle text for authentication screen"
+  },
   "home": "Home",
   "newEntry": "New Entry",
   "myEntries": "My Entries",
@@ -26,6 +30,10 @@
   "@email": {
     "description": "Email field label"
   },
+  "emailOrUsername": "Email or Username",
+  "@emailOrUsername": {
+    "description": "Email or username field label"
+  },
   "password": "Password",
   "@password": {
     "description": "Password field label"
@@ -33,6 +41,10 @@
   "emailHint": "Enter your email address",
   "@emailHint": {
     "description": "Email field hint text"
+  },
+  "emailOrUsernameHint": "Enter your email or username",
+  "@emailOrUsernameHint": {
+    "description": "Email or username field hint text"
   },
   "passwordHint": "Enter your password",
   "@passwordHint": {
@@ -49,6 +61,10 @@
   "emailRequired": "Email is required",
   "@emailRequired": {
     "description": "Email validation error message"
+  },
+  "emailOrUsernameRequired": "Email or username is required",
+  "@emailOrUsernameRequired": {
+    "description": "Email or username validation error message"
   },
   "emailInvalid": "Please enter a valid email address",
   "@emailInvalid": {

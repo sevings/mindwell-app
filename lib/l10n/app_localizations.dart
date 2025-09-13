@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Mindwell'**
   String get appTitle;
 
+  /// App subtitle text for authentication screen
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваше осознанное путешествие начинается здесь'**
+  String get appSubtitle;
+
   /// Home screen title
   ///
   /// In ru, this message translates to:
@@ -236,6 +242,12 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get email;
 
+  /// Email or username field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Email или имя пользователя'**
+  String get emailOrUsername;
+
   /// Password field label
   ///
   /// In ru, this message translates to:
@@ -247,6 +259,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Введите ваш email'**
   String get emailHint;
+
+  /// Email or username field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш email или имя пользователя'**
+  String get emailOrUsernameHint;
 
   /// Password field hint text
   ///
@@ -271,6 +289,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Email обязателен'**
   String get emailRequired;
+
+  /// Email or username validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Email или имя пользователя обязательно'**
+  String get emailOrUsernameRequired;
 
   /// Email format validation error message
   ///
@@ -377,13 +401,13 @@ abstract class AppLocalizations {
   /// Terms of Service link text
   ///
   /// In ru, this message translates to:
-  /// **'Условия использования'**
+  /// **'Условиями использования'**
   String get termsOfService;
 
   /// Privacy Policy link text
   ///
   /// In ru, this message translates to:
-  /// **'Политика конфиденциальности'**
+  /// **'Политикой конфиденциальности'**
   String get privacyPolicy;
 
   /// Terms agreement text with placeholders

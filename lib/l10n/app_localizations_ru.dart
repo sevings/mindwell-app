@@ -12,6 +12,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get appTitle => 'Mindwell';
 
   @override
+  String get appSubtitle => 'Ваше осознанное путешествие начинается здесь';
+
+  @override
   String get home => 'Главная';
 
   @override
@@ -78,10 +81,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get email => 'Email';
 
   @override
+  String get emailOrUsername => 'Email или имя пользователя';
+
+  @override
   String get password => 'Пароль';
 
   @override
   String get emailHint => 'Введите ваш email';
+
+  @override
+  String get emailOrUsernameHint => 'Введите ваш email или имя пользователя';
 
   @override
   String get passwordHint => 'Введите ваш пароль';
@@ -94,6 +103,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get emailRequired => 'Email обязателен';
+
+  @override
+  String get emailOrUsernameRequired =>
+      'Email или имя пользователя обязательно';
 
   @override
   String get emailInvalid => 'Введите корректный email адрес';
@@ -149,10 +162,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get passwordStrengthStrong => 'Сильный';
 
   @override
-  String get termsOfService => 'Условия использования';
+  String get termsOfService => 'Условиями использования';
 
   @override
-  String get privacyPolicy => 'Политика конфиденциальности';
+  String get privacyPolicy => 'Политикой конфиденциальности';
 
   @override
   String agreeToTerms(String termsOfService, String privacyPolicy) {
