@@ -30,25 +30,31 @@ class FeedSettingsBottomSheet extends ConsumerStatefulWidget {
 }
 
 class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomSheet> {
-  late FeedSettings _currentSettings;
+  FeedSettings? _currentSettings;
 
   @override
   void initState() {
     super.initState();
-    // Get current settings from the provider
-    final feedState = ref.read(entryFeedProvider(widget.feedType));
-    _currentSettings = feedState.when(
+    // Initialize with null - will be set in build method
+    _currentSettings = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    // Get current settings from the provider state
+    final feedState = ref.watch(entryFeedProvider(widget.feedType));
+    final settings = feedState.when(
       initial: () => FeedSettings.defaultSettings,
       loading: () => FeedSettings.defaultSettings,
       loaded: (entries, hasMore, settings) => settings,
       error: (message, entries) => FeedSettings.defaultSettings,
       empty: () => FeedSettings.defaultSettings,
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
+    // Initialize current settings if not set
+    _currentSettings ??= settings;
     
     return Container(
       padding: const EdgeInsets.all(MindwellSpacing.lg),
@@ -83,7 +89,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
           
           // Display Format Section
           Text(
-            'Display Format',
+            l10n?.displayFormat ?? 'Display Format',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -94,44 +100,50 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
           
           const SizedBox(height: MindwellSpacing.lg),
           
-          // Sort Order Section
-          Text(
-            'Sort Order',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          // Sort Order Section (only for profile feed)
+          if (_shouldShowSortOrder()) ...[
+            Text(
+              l10n?.sortOrder ?? 'Sort Order',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: MindwellSpacing.sm),
-          _buildSortOrderSelector(),
+            const SizedBox(height: MindwellSpacing.sm),
+            _buildSortOrderSelector(),
+            
+            const SizedBox(height: MindwellSpacing.lg),
+          ],
           
-          const SizedBox(height: MindwellSpacing.lg),
-          
-          // Filter Options Section
-          Text(
-            'Filter Options',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          // Source Options Section (only for live and best feeds)
+          if (_shouldShowSourceOptions()) ...[
+            Text(
+              l10n?.sourceOptions ?? 'Source Options',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: MindwellSpacing.sm),
-          _buildFilterOptions(),
+            const SizedBox(height: MindwellSpacing.sm),
+            _buildSourceOptions(),
+            
+            const SizedBox(height: MindwellSpacing.lg),
+          ],
           
-          const SizedBox(height: MindwellSpacing.lg),
-          
-          // Auto-refresh Section
-          Text(
-            'Auto-refresh',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          // Entry Count Section (only for best feed)
+          if (_shouldShowEntryCount()) ...[
+            Text(
+              l10n?.entryCount ?? 'Entry Count',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: MindwellSpacing.sm),
-          _buildAutoRefreshOptions(),
-          
-          const SizedBox(height: MindwellSpacing.lg),
+            const SizedBox(height: MindwellSpacing.sm),
+            _buildEntryCountSelector(),
+            
+            const SizedBox(height: MindwellSpacing.lg),
+          ],
           
           // Apply Button
           SizedBox(
@@ -147,7 +159,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
                 ),
               ),
               child: Text(
-                'Apply Settings',
+                l10n?.applySettings ?? 'Apply Settings',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -165,12 +177,14 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   }
 
   Widget _buildDisplayFormatSelector() {
+    final l10n = AppLocalizations.of(context);
+    
     return Row(
       children: [
         Expanded(
           child: _buildFormatOption(
             DisplayFormat.short,
-            'Short',
+            l10n?.short ?? 'Short',
             Icons.view_module,
           ),
         ),
@@ -178,7 +192,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
         Expanded(
           child: _buildFormatOption(
             DisplayFormat.full,
-            'Full',
+            l10n?.full ?? 'Full',
             Icons.view_list,
           ),
         ),
@@ -187,12 +201,12 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   }
 
   Widget _buildFormatOption(DisplayFormat format, String label, IconData icon) {
-    final isSelected = _currentSettings.displayFormat == format;
+    final isSelected = _currentSettings?.displayFormat == format;
     
     return GestureDetector(
       onTap: () {
         setState(() {
-          _currentSettings = _currentSettings.copyWith(displayFormat: format);
+          _currentSettings = _currentSettings?.copyWith(displayFormat: format);
         });
       },
       child: Container(
@@ -227,19 +241,21 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   }
 
   Widget _buildSortOrderSelector() {
+    final l10n = AppLocalizations.of(context);
+    
     return Column(
       children: [
-        _buildSortOption(SortOrder.newest, 'Newest First'),
+        _buildSortOption(SortOrder.newest, l10n?.newestFirst ?? 'Newest First'),
         const SizedBox(height: MindwellSpacing.sm),
-        _buildSortOption(SortOrder.oldest, 'Oldest First'),
+        _buildSortOption(SortOrder.oldest, l10n?.oldestFirst ?? 'Oldest First'),
         const SizedBox(height: MindwellSpacing.sm),
-        _buildSortOption(SortOrder.best, 'Best First'),
+        _buildSortOption(SortOrder.best, l10n?.bestFirst ?? 'Best First'),
       ],
     );
   }
 
   Widget _buildSortOption(SortOrder order, String label) {
-    final isSelected = _currentSettings.sortOrder == order;
+    final isSelected = _currentSettings?.sortOrder == order;
     
     return ListTile(
       title: Text(label),
@@ -264,7 +280,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
       ),
       onTap: () {
         setState(() {
-          _currentSettings = _currentSettings.copyWith(sortOrder: order);
+          _currentSettings = _currentSettings?.copyWith(sortOrder: order);
         });
       },
       shape: RoundedRectangleBorder(
@@ -273,38 +289,45 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
     );
   }
 
-  Widget _buildFilterOptions() {
+
+  /// Check if sort order should be shown for the current feed type
+  bool _shouldShowSortOrder() {
+    return widget.feedType == FeedType.profile;
+  }
+
+  /// Check if source options should be shown for the current feed type
+  bool _shouldShowSourceOptions() {
+    return widget.feedType == FeedType.live || widget.feedType == FeedType.best;
+  }
+
+  /// Check if entry count should be shown for the current feed type
+  bool _shouldShowEntryCount() {
+    return widget.feedType == FeedType.best;
+  }
+
+  Widget _buildSourceOptions() {
+    final l10n = AppLocalizations.of(context);
+    
     return Column(
       children: [
         SwitchListTile(
-          title: const Text('Images Only'),
-          subtitle: const Text('Show only entries with images'),
-          value: _currentSettings.imagesOnly,
+          title: Text(l10n?.includeTlogs ?? 'Include Tlogs'),
+          subtitle: Text(l10n?.includeTlogsSubtitle ?? 'Show entries from diaries'),
+          value: _currentSettings?.includeTlogs ?? true,
           onChanged: (value) {
             setState(() {
-              _currentSettings = _currentSettings.copyWith(imagesOnly: value);
+              _currentSettings = _currentSettings?.copyWithValidated(includeTlogs: value);
             });
           },
           activeThumbColor: const Color(0xFFFF5E3A),
         ),
         SwitchListTile(
-          title: const Text('Favorites Only'),
-          subtitle: const Text('Show only favorited entries'),
-          value: _currentSettings.favoritesOnly,
+          title: Text(l10n?.includeThemes ?? 'Include Themes'),
+          subtitle: Text(l10n?.includeThemesSubtitle ?? 'Show entries from themes'),
+          value: _currentSettings?.includeThemes ?? true,
           onChanged: (value) {
             setState(() {
-              _currentSettings = _currentSettings.copyWith(favoritesOnly: value);
-            });
-          },
-          activeThumbColor: const Color(0xFFFF5E3A),
-        ),
-        SwitchListTile(
-          title: const Text('Followed Only'),
-          subtitle: const Text('Show only entries from followed users'),
-          value: _currentSettings.followedOnly,
-          onChanged: (value) {
-            setState(() {
-              _currentSettings = _currentSettings.copyWith(followedOnly: value);
+              _currentSettings = _currentSettings?.copyWithValidated(includeThemes: value);
             });
           },
           activeThumbColor: const Color(0xFFFF5E3A),
@@ -313,50 +336,85 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
     );
   }
 
-  Widget _buildAutoRefreshOptions() {
-    return Column(
-      children: [
-        SwitchListTile(
-          title: const Text('Enable Auto-refresh'),
-          subtitle: const Text('Automatically refresh the feed'),
-          value: _currentSettings.autoRefresh,
-          onChanged: (value) {
-            setState(() {
-              _currentSettings = _currentSettings.copyWith(autoRefresh: value);
-            });
-          },
-          activeThumbColor: const Color(0xFFFF5E3A),
-        ),
-        if (_currentSettings.autoRefresh) ...[
+  Widget _buildEntryCountSelector() {
+    final l10n = AppLocalizations.of(context);
+    
+    // Specific entry count options: 10, 20, 30, 50, 100
+    final entryCountOptions = [10, 20, 30, 50, 100];
+    
+    return Container(
+      padding: const EdgeInsets.all(MindwellSpacing.md),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n?.entryCountSubtitle ?? 'Number of entries to display per page',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
           const SizedBox(height: MindwellSpacing.sm),
-          ListTile(
-            title: const Text('Refresh Interval'),
-            subtitle: Text('${_currentSettings.autoRefreshInterval} seconds'),
-            trailing: DropdownButton<int>(
-              value: _currentSettings.autoRefreshInterval,
-              items: const [
-                DropdownMenuItem(value: 15, child: Text('15 seconds')),
-                DropdownMenuItem(value: 30, child: Text('30 seconds')),
-                DropdownMenuItem(value: 60, child: Text('1 minute')),
-                DropdownMenuItem(value: 120, child: Text('2 minutes')),
-                DropdownMenuItem(value: 300, child: Text('5 minutes')),
-              ],
-              onChanged: (value) {
+          DropdownButton<int>(
+            value: _currentSettings?.entriesPerPage ?? 20,
+            isExpanded: true,
+            items: entryCountOptions.map((count) {
+              return DropdownMenuItem<int>(
+                value: count,
+                child: Text(_getEntryCountText(count, l10n)),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
                 setState(() {
-                  _currentSettings = _currentSettings.copyWith(autoRefreshInterval: value!);
+                  _currentSettings = _currentSettings?.copyWith(entriesPerPage: value);
                 });
-              },
+              }
+            },
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+            dropdownColor: Colors.white,
+            icon: const Icon(Icons.arrow_drop_down, color: Color(0xFFFF5E3A)),
+            underline: Container(
+              height: 1,
+              color: const Color(0xFFFF5E3A),
             ),
           ),
         ],
-      ],
+      ),
     );
+  }
+
+  /// Get localized text for entry count options
+  String _getEntryCountText(int count, AppLocalizations? l10n) {
+    switch (count) {
+      case 10:
+        return l10n?.entriesCount10 ?? '10 entries';
+      case 20:
+        return l10n?.entriesCount20 ?? '20 entries';
+      case 30:
+        return l10n?.entriesCount30 ?? '30 entries';
+      case 50:
+        return l10n?.entriesCount50 ?? '50 entries';
+      case 100:
+        return l10n?.entriesCount100 ?? '100 entries';
+      default:
+        return '$count entries';
+    }
   }
 
   void _applySettings() {
     // Update the provider with new settings
-    ref.read(entryFeedProvider(widget.feedType).notifier)
-        .updateSettings(_currentSettings);
+    if (_currentSettings != null) {
+      ref.read(entryFeedProvider(widget.feedType).notifier)
+          .updateSettings(_currentSettings!);
+    }
     
     // Close the bottom sheet
     Navigator.of(context).pop();

@@ -214,4 +214,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get replies => 'Replies';
+
+  @override
+  String get displayFormat => 'Display Format';
+
+  @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get filterOptions => 'Filter Options';
+
+  @override
+  String get autoRefresh => 'Auto-refresh';
+
+  @override
+  String get short => 'Short';
+
+  @override
+  String get full => 'Full';
+
+  @override
+  String get newestFirst => 'Newest First';
+
+  @override
+  String get oldestFirst => 'Oldest First';
+
+  @override
+  String get bestFirst => 'Best First';
+
+  @override
+  String get imagesOnly => 'Images Only';
+
+  @override
+  String get imagesOnlySubtitle => 'Show only entries with images';
+
+  @override
+  String get favoritesOnly => 'Favorites Only';
+
+  @override
+  String get favoritesOnlySubtitle => 'Show only favorited entries';
+
+  @override
+  String get followedOnly => 'Followed Only';
+
+  @override
+  String get followedOnlySubtitle => 'Show only entries from followed users';
+
+  @override
+  String get enableAutoRefresh => 'Enable Auto-refresh';
+
+  @override
+  String get enableAutoRefreshSubtitle => 'Automatically refresh the feed';
+
+  @override
+  String get refreshInterval => 'Refresh Interval';
+
+  @override
+  String get seconds => 'seconds';
+
+  @override
+  String get minute => 'minute';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get applySettings => 'Apply Settings';
+
+  @override
+  String get sourceOptions => 'Source Options';
+
+  @override
+  String get includeTlogs => 'Include Diaries';
+
+  @override
+  String get includeTlogsSubtitle => 'Show entries from user diaries';
+
+  @override
+  String get includeThemes => 'Include Themes';
+
+  @override
+  String get includeThemesSubtitle => 'Show entries from themes';
+
+  @override
+  String get entryCount => 'Entry Count';
+
+  @override
+  String get entryCountSubtitle => 'Number of entries to display per page';
+
+  @override
+  String get entriesCount10 => '10 entries';
+
+  @override
+  String get entriesCount20 => '20 entries';
+
+  @override
+  String get entriesCount30 => '30 entries';
+
+  @override
+  String get entriesCount50 => '50 entries';
+
+  @override
+  String get entriesCount100 => '100 entries';
 }

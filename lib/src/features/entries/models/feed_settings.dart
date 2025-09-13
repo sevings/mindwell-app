@@ -20,6 +20,14 @@ enum SortOrder {
   best,
 }
 
+/// Source options for live and best feeds.
+enum FeedSource {
+  /// Show entries from tlogs (diaries)
+  tlogs,
+  /// Show entries from themes
+  themes,
+}
+
 /// Settings for configuring the entry feed display and behavior.
 /// 
 /// This class uses freezed to ensure immutability and provides
@@ -36,24 +44,56 @@ class FeedSettings with _$FeedSettings {
     /// Sort order for entries
     @Default(SortOrder.newest) SortOrder sortOrder,
     
-    /// Whether to show only entries with images
-    @Default(false) bool imagesOnly,
+    /// Whether to include entries from tlogs (diaries)
+    @Default(true) bool includeTlogs,
     
-    /// Whether to show only favorited entries
-    @Default(false) bool favoritesOnly,
-    
-    /// Whether to show only entries from followed users
-    @Default(false) bool followedOnly,
-    
-    /// Whether to enable auto-refresh
-    @Default(true) bool autoRefresh,
-    
-    /// Auto-refresh interval in seconds
-    @Default(30) int autoRefreshInterval,
+    /// Whether to include entries from themes
+    @Default(true) bool includeThemes,
   }) = _FeedSettings;
 
   const FeedSettings._();
 
   /// Default feed settings
   static const FeedSettings defaultSettings = FeedSettings();
+
+  /// Validate that at least one source is enabled
+  bool get isValidSourceConfiguration {
+    return includeTlogs || includeThemes;
+  }
+
+  /// Create a copy with validation to ensure at least one source is enabled
+  FeedSettings copyWithValidated({
+    int? entriesPerPage,
+    DisplayFormat? displayFormat,
+    SortOrder? sortOrder,
+    bool? includeTlogs,
+    bool? includeThemes,
+  }) {
+    final newTlogs = includeTlogs ?? this.includeTlogs;
+    final newThemes = includeThemes ?? this.includeThemes;
+    
+    // If both would be disabled, keep at least one enabled
+    if (!newTlogs && !newThemes) {
+      // If both are currently enabled, keep tlogs enabled
+      // If only one is currently enabled, keep that one enabled
+      final keepTlogs = this.includeTlogs;
+      final keepThemes = this.includeThemes;
+      
+      return copyWith(
+        entriesPerPage: entriesPerPage ?? this.entriesPerPage,
+        displayFormat: displayFormat ?? this.displayFormat,
+        sortOrder: sortOrder ?? this.sortOrder,
+        includeTlogs: keepTlogs,
+        includeThemes: keepThemes,
+      );
+    }
+    
+    return copyWith(
+      entriesPerPage: entriesPerPage ?? this.entriesPerPage,
+      displayFormat: displayFormat ?? this.displayFormat,
+      sortOrder: sortOrder ?? this.sortOrder,
+      includeTlogs: newTlogs,
+      includeThemes: newThemes,
+    );
+  }
 }

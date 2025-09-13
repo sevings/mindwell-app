@@ -275,85 +275,10 @@ void main() {
     });
   });
 
-  group('FeedSettingsBottomSheet', () {
-    testWidgets('displays all settings options', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          Scaffold(
-            body: FeedSettingsBottomSheet(
-              feedType: FeedType.live,
-            ),
-          ),
-        ),
-      );
+  // Note: FeedSettingsBottomSheet tests are covered in 
+  // test/src/features/entries/widgets/feed_settings_bottom_sheet_test.dart
 
-      await tester.pump();
-
-      // Verify that all major sections are displayed
-      expect(find.text('Настройки'), findsOneWidget); // Settings in Russian
-      expect(find.text('Display Format'), findsOneWidget);
-      expect(find.text('Sort Order'), findsOneWidget);
-      expect(find.text('Filter Options'), findsOneWidget);
-      expect(find.text('Auto-refresh'), findsOneWidget);
-      expect(find.text('Apply Settings'), findsOneWidget);
-    });
-
-    testWidgets('displays display format options', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          Scaffold(
-            body: FeedSettingsBottomSheet(
-              feedType: FeedType.live,
-            ),
-          ),
-        ),
-      );
-
-      await tester.pump();
-
-      // Verify display format options
-      expect(find.text('Short'), findsOneWidget);
-      expect(find.text('Full'), findsOneWidget);
-    });
-
-    testWidgets('displays sort order options', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          Scaffold(
-            body: FeedSettingsBottomSheet(
-              feedType: FeedType.live,
-            ),
-          ),
-        ),
-      );
-
-      await tester.pump();
-
-      // Verify sort order options
-      expect(find.text('Newest First'), findsOneWidget);
-      expect(find.text('Oldest First'), findsOneWidget);
-      expect(find.text('Best First'), findsOneWidget);
-    });
-
-    testWidgets('displays filter options', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          Scaffold(
-            body: FeedSettingsBottomSheet(
-              feedType: FeedType.live,
-            ),
-          ),
-        ),
-      );
-
-      await tester.pump();
-
-      // Verify filter options
-      expect(find.text('Images Only'), findsOneWidget);
-      expect(find.text('Favorites Only'), findsOneWidget);
-      expect(find.text('Followed Only'), findsOneWidget);
-    });
-
+  group('FeedSettingsBottomSheet Integration', () {
     testWidgets('closes when close button is tapped', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(

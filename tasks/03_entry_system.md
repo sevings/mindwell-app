@@ -156,6 +156,12 @@ Create the bottom sheet UI for changing feed display settings.
 ### Implementation Details:
 1.  **Create `feed_settings_bottom_sheet.dart`:**
     *   A bottom sheet to allow users to change the `FeedSettings`.
+    *   The UI should dynamically display options based on the current `FeedType`:
+        *   **Universal (All Feeds):** Display Format (Short/Full).
+        *   **Live Feed:** Source Options (Diaries/Themes).
+        *   **Best Feed:** Source Options (Diaries/Themes), Entry Count (10, 20, 30, 50, 100).
+        *   **Profile Feed:** Sort Order (Newest, Oldest, Best).
+        *   **Friends Feed:** No specific options other than the universal ones.
     *   When settings are changed, call `updateSettings` on the provider.
 
 ### Testing:

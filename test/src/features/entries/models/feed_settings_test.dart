@@ -9,11 +9,8 @@ void main() {
       expect(settings.entriesPerPage, 20);
       expect(settings.displayFormat, DisplayFormat.short);
       expect(settings.sortOrder, SortOrder.newest);
-      expect(settings.imagesOnly, false);
-      expect(settings.favoritesOnly, false);
-      expect(settings.followedOnly, false);
-      expect(settings.autoRefresh, true);
-      expect(settings.autoRefreshInterval, 30);
+      expect(settings.includeTlogs, true);
+      expect(settings.includeThemes, true);
     });
 
     test('should create with custom values', () {
@@ -21,21 +18,15 @@ void main() {
         entriesPerPage: 50,
         displayFormat: DisplayFormat.full,
         sortOrder: SortOrder.best,
-        imagesOnly: true,
-        favoritesOnly: true,
-        followedOnly: true,
-        autoRefresh: false,
-        autoRefreshInterval: 60,
+        includeTlogs: false,
+        includeThemes: true,
       );
 
       expect(settings.entriesPerPage, 50);
       expect(settings.displayFormat, DisplayFormat.full);
       expect(settings.sortOrder, SortOrder.best);
-      expect(settings.imagesOnly, true);
-      expect(settings.favoritesOnly, true);
-      expect(settings.followedOnly, true);
-      expect(settings.autoRefresh, false);
-      expect(settings.autoRefreshInterval, 60);
+      expect(settings.includeTlogs, false);
+      expect(settings.includeThemes, true);
     });
 
     test('should support copyWith', () {
@@ -48,7 +39,8 @@ void main() {
       expect(updated.entriesPerPage, 30);
       expect(updated.displayFormat, DisplayFormat.full);
       expect(updated.sortOrder, SortOrder.newest); // unchanged
-      expect(updated.imagesOnly, false); // unchanged
+      expect(updated.includeTlogs, true); // unchanged
+      expect(updated.includeThemes, true); // unchanged
     });
 
     test('should be immutable', () {
@@ -64,6 +56,36 @@ void main() {
       const manualDefault = FeedSettings();
 
       expect(defaultSettings, equals(manualDefault));
+    });
+
+    test('should validate source configuration', () {
+      const validSettings = FeedSettings(includeTlogs: true, includeThemes: false);
+      const invalidSettings = FeedSettings(includeTlogs: false, includeThemes: false);
+
+      expect(validSettings.isValidSourceConfiguration, isTrue);
+      expect(invalidSettings.isValidSourceConfiguration, isFalse);
+    });
+
+    test('should prevent disabling both sources with copyWithValidated', () {
+      const original = FeedSettings(includeTlogs: true, includeThemes: true);
+      
+      // Try to disable both sources
+      final result = original.copyWithValidated(includeTlogs: false, includeThemes: false);
+      
+      // Should keep at least one source enabled
+      expect(result.isValidSourceConfiguration, isTrue);
+      expect(result.includeTlogs || result.includeThemes, isTrue);
+    });
+
+    test('should allow disabling one source if the other is enabled', () {
+      const original = FeedSettings(includeTlogs: true, includeThemes: true);
+      
+      // Disable only tlogs
+      final result = original.copyWithValidated(includeTlogs: false);
+      
+      expect(result.includeTlogs, isFalse);
+      expect(result.includeThemes, isTrue);
+      expect(result.isValidSourceConfiguration, isTrue);
     });
   });
 
@@ -82,6 +104,15 @@ void main() {
         SortOrder.newest,
         SortOrder.oldest,
         SortOrder.best,
+      ]));
+    });
+  });
+
+  group('FeedSource', () {
+    test('should have correct enum values', () {
+      expect(FeedSource.values, containsAll([
+        FeedSource.tlogs,
+        FeedSource.themes,
       ]));
     });
   });

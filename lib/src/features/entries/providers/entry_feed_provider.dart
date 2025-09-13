@@ -57,7 +57,42 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
         _entriesApi = entriesApi,
         _cacheService = cacheService,
         _feedParameter = feedParameter,
-        super(const EntryFeedState.initial());
+        super(const EntryFeedState.initial()) {
+    _initialize();
+  }
+
+  /// Initialize the notifier by loading settings from cache.
+  Future<void> _initialize() async {
+    await _loadSettingsFromCache();
+  }
+
+  /// Load settings from cache.
+  Future<void> _loadSettingsFromCache() async {
+    try {
+      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final cachedSettings = await _cacheService.getFeedSettings(cacheKey);
+      
+      if (cachedSettings != null) {
+        // Convert the cached map back to FeedSettings
+        _settings = FeedSettings(
+          entriesPerPage: cachedSettings['entriesPerPage'] ?? 20,
+          displayFormat: DisplayFormat.values.firstWhere(
+            (format) => format.name == cachedSettings['displayFormat'],
+            orElse: () => DisplayFormat.short,
+          ),
+          sortOrder: SortOrder.values.firstWhere(
+            (order) => order.name == cachedSettings['sortOrder'],
+            orElse: () => SortOrder.newest,
+          ),
+          includeTlogs: cachedSettings['includeTlogs'] ?? true,
+          includeThemes: cachedSettings['includeThemes'] ?? true,
+        );
+        _logger.info('Loaded settings from cache for ${_feedType.name}');
+      }
+    } catch (e) {
+      _logger.warning('Failed to load settings from cache: $e');
+    }
+  }
 
   /// Fetch the initial entries for the feed.
   /// 
@@ -200,6 +235,25 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     await fetchInitialEntries();
   }
 
+  /// Save current settings to cache.
+  Future<void> _saveSettingsToCache() async {
+    try {
+      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final settingsMap = {
+        'entriesPerPage': _settings.entriesPerPage,
+        'displayFormat': _settings.displayFormat.name,
+        'sortOrder': _settings.sortOrder.name,
+        'includeTlogs': _settings.includeTlogs,
+        'includeThemes': _settings.includeThemes,
+      };
+      
+      await _cacheService.storeFeedSettings(cacheKey, settingsMap);
+      _logger.info('Saved settings to cache for ${_feedType.name}');
+    } catch (e) {
+      _logger.warning('Failed to save settings to cache: $e');
+    }
+  }
+
   /// Update feed settings and refetch data with new settings.
   /// 
   /// [newSettings] - The new feed settings to apply
@@ -208,6 +262,9 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     
     _logger.info('Updating settings for ${_feedType.name}');
     _settings = newSettings;
+    
+    // Save settings to cache
+    await _saveSettingsToCache();
     
     // Clear cache since settings changed
     final cacheKey = _feedType.getCacheKey(_feedParameter);
@@ -233,6 +290,20 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     fetchInitialEntries();
   }
 
+  /// Get the source parameter based on current settings
+  String _getSourceParameter() {
+    if (_settings.includeTlogs && _settings.includeThemes) {
+      return 'all';
+    } else if (_settings.includeTlogs) {
+      return 'users';
+    } else if (_settings.includeThemes) {
+      return 'themes';
+    } else {
+      // If neither is selected, default to all
+      return 'all';
+    }
+  }
+
   /// Fetch entries from the API based on the feed type.
   Future<MwFeed?> _fetchFromApi({String? after, String? before}) async {
     try {
@@ -244,7 +315,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
             limit: _settings.entriesPerPage,
             after: after,
             before: before,
-            source_: 'all',
+            source_: _getSourceParameter(),
             section: section,
           );
           return response.data;
@@ -254,7 +325,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
           final category = _feedParameter?.split('_').last ?? 'month';
           final response = await _entriesApi.entriesBestGet(
             limit: _settings.entriesPerPage,
-            source_: 'all',
+            source_: _getSourceParameter(),
             category: category,
           );
           return response.data;

@@ -279,5 +279,141 @@
   "replies": "Ответы",
   "@replies": {
     "description": "Tab label for replies"
+  },
+  "displayFormat": "Формат отображения",
+  "@displayFormat": {
+    "description": "Display format section title in feed settings"
+  },
+  "sortOrder": "Порядок сортировки",
+  "@sortOrder": {
+    "description": "Sort order section title in feed settings"
+  },
+  "filterOptions": "Параметры фильтрации",
+  "@filterOptions": {
+    "description": "Filter options section title in feed settings"
+  },
+  "autoRefresh": "Автообновление",
+  "@autoRefresh": {
+    "description": "Auto-refresh section title in feed settings"
+  },
+  "short": "Краткий",
+  "@short": {
+    "description": "Short display format option"
+  },
+  "full": "Полный",
+  "@full": {
+    "description": "Full display format option"
+  },
+  "newestFirst": "Сначала новые",
+  "@newestFirst": {
+    "description": "Newest first sort order option"
+  },
+  "oldestFirst": "Сначала старые",
+  "@oldestFirst": {
+    "description": "Oldest first sort order option"
+  },
+  "bestFirst": "Сначала лучшие",
+  "@bestFirst": {
+    "description": "Best first sort order option"
+  },
+  "imagesOnly": "Только с изображениями",
+  "@imagesOnly": {
+    "description": "Images only filter option"
+  },
+  "imagesOnlySubtitle": "Показывать только записи с изображениями",
+  "@imagesOnlySubtitle": {
+    "description": "Images only filter option subtitle"
+  },
+  "favoritesOnly": "Только избранное",
+  "@favoritesOnly": {
+    "description": "Favorites only filter option"
+  },
+  "favoritesOnlySubtitle": "Показывать только избранные записи",
+  "@favoritesOnlySubtitle": {
+    "description": "Favorites only filter option subtitle"
+  },
+  "followedOnly": "Только подписки",
+  "@followedOnly": {
+    "description": "Followed only filter option"
+  },
+  "followedOnlySubtitle": "Показывать только записи от отслеживаемых пользователей",
+  "@followedOnlySubtitle": {
+    "description": "Followed only filter option subtitle"
+  },
+  "enableAutoRefresh": "Включить автообновление",
+  "@enableAutoRefresh": {
+    "description": "Enable auto-refresh option"
+  },
+  "enableAutoRefreshSubtitle": "Автоматически обновлять ленту",
+  "@enableAutoRefreshSubtitle": {
+    "description": "Enable auto-refresh option subtitle"
+  },
+  "refreshInterval": "Интервал обновления",
+  "@refreshInterval": {
+    "description": "Refresh interval setting"
+  },
+  "seconds": "секунд",
+  "@seconds": {
+    "description": "Seconds unit for time intervals"
+  },
+  "minute": "минута",
+  "@minute": {
+    "description": "Minute unit for time intervals"
+  },
+  "minutes": "минут",
+  "@minutes": {
+    "description": "Minutes unit for time intervals"
+  },
+  "applySettings": "Применить настройки",
+  "@applySettings": {
+    "description": "Apply settings button text"
+  },
+  "sourceOptions": "Источники",
+  "@sourceOptions": {
+    "description": "Source options section title in feed settings"
+  },
+  "includeTlogs": "Включить дневники",
+  "@includeTlogs": {
+    "description": "Include diaries option"
+  },
+  "includeTlogsSubtitle": "Показывать записи из дневников пользователей",
+  "@includeTlogsSubtitle": {
+    "description": "Include diaries option subtitle"
+  },
+  "includeThemes": "Включить темы",
+  "@includeThemes": {
+    "description": "Include themes option"
+  },
+  "includeThemesSubtitle": "Показывать записи из тем",
+  "@includeThemesSubtitle": {
+    "description": "Include themes option subtitle"
+  },
+  "entryCount": "Количество записей",
+  "@entryCount": {
+    "description": "Title for entry count section in feed settings"
+  },
+  "entryCountSubtitle": "Количество записей для отображения на странице",
+  "@entryCountSubtitle": {
+    "description": "Subtitle for entry count option"
+  },
+  "entriesCount10": "10 записей",
+  "@entriesCount10": {
+    "description": "Entry count option for 10 entries"
+  },
+  "entriesCount20": "20 записей",
+  "@entriesCount20": {
+    "description": "Entry count option for 20 entries"
+  },
+  "entriesCount30": "30 записей",
+  "@entriesCount30": {
+    "description": "Entry count option for 30 entries"
+  },
+  "entriesCount50": "50 записей",
+  "@entriesCount50": {
+    "description": "Entry count option for 50 entries"
+  },
+  "entriesCount100": "100 записей",
+  "@entriesCount100": {
+    "description": "Entry count option for 100 entries"
   }
 }

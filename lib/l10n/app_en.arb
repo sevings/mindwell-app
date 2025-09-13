@@ -213,5 +213,141 @@
   "replies": "Replies",
   "@replies": {
     "description": "Tab label for replies"
+  },
+  "displayFormat": "Display Format",
+  "@displayFormat": {
+    "description": "Display format section title in feed settings"
+  },
+  "sortOrder": "Sort Order",
+  "@sortOrder": {
+    "description": "Sort order section title in feed settings"
+  },
+  "filterOptions": "Filter Options",
+  "@filterOptions": {
+    "description": "Filter options section title in feed settings"
+  },
+  "autoRefresh": "Auto-refresh",
+  "@autoRefresh": {
+    "description": "Auto-refresh section title in feed settings"
+  },
+  "short": "Short",
+  "@short": {
+    "description": "Short display format option"
+  },
+  "full": "Full",
+  "@full": {
+    "description": "Full display format option"
+  },
+  "newestFirst": "Newest First",
+  "@newestFirst": {
+    "description": "Newest first sort order option"
+  },
+  "oldestFirst": "Oldest First",
+  "@oldestFirst": {
+    "description": "Oldest first sort order option"
+  },
+  "bestFirst": "Best First",
+  "@bestFirst": {
+    "description": "Best first sort order option"
+  },
+  "imagesOnly": "Images Only",
+  "@imagesOnly": {
+    "description": "Images only filter option"
+  },
+  "imagesOnlySubtitle": "Show only entries with images",
+  "@imagesOnlySubtitle": {
+    "description": "Images only filter option subtitle"
+  },
+  "favoritesOnly": "Favorites Only",
+  "@favoritesOnly": {
+    "description": "Favorites only filter option"
+  },
+  "favoritesOnlySubtitle": "Show only favorited entries",
+  "@favoritesOnlySubtitle": {
+    "description": "Favorites only filter option subtitle"
+  },
+  "followedOnly": "Followed Only",
+  "@followedOnly": {
+    "description": "Followed only filter option"
+  },
+  "followedOnlySubtitle": "Show only entries from followed users",
+  "@followedOnlySubtitle": {
+    "description": "Followed only filter option subtitle"
+  },
+  "enableAutoRefresh": "Enable Auto-refresh",
+  "@enableAutoRefresh": {
+    "description": "Enable auto-refresh option"
+  },
+  "enableAutoRefreshSubtitle": "Automatically refresh the feed",
+  "@enableAutoRefreshSubtitle": {
+    "description": "Enable auto-refresh option subtitle"
+  },
+  "refreshInterval": "Refresh Interval",
+  "@refreshInterval": {
+    "description": "Refresh interval setting"
+  },
+  "seconds": "seconds",
+  "@seconds": {
+    "description": "Seconds unit for time intervals"
+  },
+  "minute": "minute",
+  "@minute": {
+    "description": "Minute unit for time intervals"
+  },
+  "minutes": "minutes",
+  "@minutes": {
+    "description": "Minutes unit for time intervals"
+  },
+  "applySettings": "Apply Settings",
+  "@applySettings": {
+    "description": "Apply settings button text"
+  },
+  "sourceOptions": "Source Options",
+  "@sourceOptions": {
+    "description": "Source options section title in feed settings"
+  },
+  "includeTlogs": "Include Diaries",
+  "@includeTlogs": {
+    "description": "Include diaries option"
+  },
+  "includeTlogsSubtitle": "Show entries from user diaries",
+  "@includeTlogsSubtitle": {
+    "description": "Include diaries option subtitle"
+  },
+  "includeThemes": "Include Themes",
+  "@includeThemes": {
+    "description": "Include themes option"
+  },
+  "includeThemesSubtitle": "Show entries from themes",
+  "@includeThemesSubtitle": {
+    "description": "Include themes option subtitle"
+  },
+  "entryCount": "Entry Count",
+  "@entryCount": {
+    "description": "Title for entry count section in feed settings"
+  },
+  "entryCountSubtitle": "Number of entries to display per page",
+  "@entryCountSubtitle": {
+    "description": "Subtitle for entry count option"
+  },
+  "entriesCount10": "10 entries",
+  "@entriesCount10": {
+    "description": "Entry count option for 10 entries"
+  },
+  "entriesCount20": "20 entries",
+  "@entriesCount20": {
+    "description": "Entry count option for 20 entries"
+  },
+  "entriesCount30": "30 entries",
+  "@entriesCount30": {
+    "description": "Entry count option for 30 entries"
+  },
+  "entriesCount50": "50 entries",
+  "@entriesCount50": {
+    "description": "Entry count option for 50 entries"
+  },
+  "entriesCount100": "100 entries",
+  "@entriesCount100": {
+    "description": "Entry count option for 100 entries"
   }
 }

@@ -505,6 +505,210 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Ответы'**
   String get replies;
+
+  /// Display format section title in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Формат отображения'**
+  String get displayFormat;
+
+  /// Sort order section title in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Порядок сортировки'**
+  String get sortOrder;
+
+  /// Filter options section title in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Параметры фильтрации'**
+  String get filterOptions;
+
+  /// Auto-refresh section title in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Автообновление'**
+  String get autoRefresh;
+
+  /// Short display format option
+  ///
+  /// In ru, this message translates to:
+  /// **'Краткий'**
+  String get short;
+
+  /// Full display format option
+  ///
+  /// In ru, this message translates to:
+  /// **'Полный'**
+  String get full;
+
+  /// Newest first sort order option
+  ///
+  /// In ru, this message translates to:
+  /// **'Сначала новые'**
+  String get newestFirst;
+
+  /// Oldest first sort order option
+  ///
+  /// In ru, this message translates to:
+  /// **'Сначала старые'**
+  String get oldestFirst;
+
+  /// Best first sort order option
+  ///
+  /// In ru, this message translates to:
+  /// **'Сначала лучшие'**
+  String get bestFirst;
+
+  /// Images only filter option
+  ///
+  /// In ru, this message translates to:
+  /// **'Только с изображениями'**
+  String get imagesOnly;
+
+  /// Images only filter option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать только записи с изображениями'**
+  String get imagesOnlySubtitle;
+
+  /// Favorites only filter option
+  ///
+  /// In ru, this message translates to:
+  /// **'Только избранное'**
+  String get favoritesOnly;
+
+  /// Favorites only filter option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать только избранные записи'**
+  String get favoritesOnlySubtitle;
+
+  /// Followed only filter option
+  ///
+  /// In ru, this message translates to:
+  /// **'Только подписки'**
+  String get followedOnly;
+
+  /// Followed only filter option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать только записи от отслеживаемых пользователей'**
+  String get followedOnlySubtitle;
+
+  /// Enable auto-refresh option
+  ///
+  /// In ru, this message translates to:
+  /// **'Включить автообновление'**
+  String get enableAutoRefresh;
+
+  /// Enable auto-refresh option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Автоматически обновлять ленту'**
+  String get enableAutoRefreshSubtitle;
+
+  /// Refresh interval setting
+  ///
+  /// In ru, this message translates to:
+  /// **'Интервал обновления'**
+  String get refreshInterval;
+
+  /// Seconds unit for time intervals
+  ///
+  /// In ru, this message translates to:
+  /// **'секунд'**
+  String get seconds;
+
+  /// Minute unit for time intervals
+  ///
+  /// In ru, this message translates to:
+  /// **'минута'**
+  String get minute;
+
+  /// Minutes unit for time intervals
+  ///
+  /// In ru, this message translates to:
+  /// **'минут'**
+  String get minutes;
+
+  /// Apply settings button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Применить настройки'**
+  String get applySettings;
+
+  /// Source options section title in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Источники'**
+  String get sourceOptions;
+
+  /// Include diaries option
+  ///
+  /// In ru, this message translates to:
+  /// **'Включить дневники'**
+  String get includeTlogs;
+
+  /// Include diaries option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать записи из дневников пользователей'**
+  String get includeTlogsSubtitle;
+
+  /// Include themes option
+  ///
+  /// In ru, this message translates to:
+  /// **'Включить темы'**
+  String get includeThemes;
+
+  /// Include themes option subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать записи из тем'**
+  String get includeThemesSubtitle;
+
+  /// Title for entry count section in feed settings
+  ///
+  /// In ru, this message translates to:
+  /// **'Количество записей'**
+  String get entryCount;
+
+  /// Subtitle for entry count option
+  ///
+  /// In ru, this message translates to:
+  /// **'Количество записей для отображения на странице'**
+  String get entryCountSubtitle;
+
+  /// Entry count option for 10 entries
+  ///
+  /// In ru, this message translates to:
+  /// **'10 записей'**
+  String get entriesCount10;
+
+  /// Entry count option for 20 entries
+  ///
+  /// In ru, this message translates to:
+  /// **'20 записей'**
+  String get entriesCount20;
+
+  /// Entry count option for 30 entries
+  ///
+  /// In ru, this message translates to:
+  /// **'30 записей'**
+  String get entriesCount30;
+
+  /// Entry count option for 50 entries
+  ///
+  /// In ru, this message translates to:
+  /// **'50 записей'**
+  String get entriesCount50;
+
+  /// Entry count option for 100 entries
+  ///
+  /// In ru, this message translates to:
+  /// **'100 записей'**
+  String get entriesCount100;
 }
 
 class _AppLocalizationsDelegate

@@ -278,7 +278,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
 
   /// Show the feed settings bottom sheet
   void _showFeedSettings() {
-    final currentFeedType = _feedTypes[_tabController.index];
+    // Use the actual feed type, not derived from tab index
+    final currentFeedType = widget.feedType ?? _feedTypes[_tabController.index];
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

@@ -25,20 +25,11 @@ mixin _$FeedSettings {
   /// Sort order for entries
   SortOrder get sortOrder => throw _privateConstructorUsedError;
 
-  /// Whether to show only entries with images
-  bool get imagesOnly => throw _privateConstructorUsedError;
+  /// Whether to include entries from tlogs (diaries)
+  bool get includeTlogs => throw _privateConstructorUsedError;
 
-  /// Whether to show only favorited entries
-  bool get favoritesOnly => throw _privateConstructorUsedError;
-
-  /// Whether to show only entries from followed users
-  bool get followedOnly => throw _privateConstructorUsedError;
-
-  /// Whether to enable auto-refresh
-  bool get autoRefresh => throw _privateConstructorUsedError;
-
-  /// Auto-refresh interval in seconds
-  int get autoRefreshInterval => throw _privateConstructorUsedError;
+  /// Whether to include entries from themes
+  bool get includeThemes => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $FeedSettingsCopyWith<FeedSettings> get copyWith =>
@@ -55,11 +46,8 @@ abstract class $FeedSettingsCopyWith<$Res> {
       {int entriesPerPage,
       DisplayFormat displayFormat,
       SortOrder sortOrder,
-      bool imagesOnly,
-      bool favoritesOnly,
-      bool followedOnly,
-      bool autoRefresh,
-      int autoRefreshInterval});
+      bool includeTlogs,
+      bool includeThemes});
 }
 
 /// @nodoc
@@ -78,11 +66,8 @@ class _$FeedSettingsCopyWithImpl<$Res, $Val extends FeedSettings>
     Object? entriesPerPage = null,
     Object? displayFormat = null,
     Object? sortOrder = null,
-    Object? imagesOnly = null,
-    Object? favoritesOnly = null,
-    Object? followedOnly = null,
-    Object? autoRefresh = null,
-    Object? autoRefreshInterval = null,
+    Object? includeTlogs = null,
+    Object? includeThemes = null,
   }) {
     return _then(_value.copyWith(
       entriesPerPage: null == entriesPerPage
@@ -97,26 +82,14 @@ class _$FeedSettingsCopyWithImpl<$Res, $Val extends FeedSettings>
           ? _value.sortOrder
           : sortOrder // ignore: cast_nullable_to_non_nullable
               as SortOrder,
-      imagesOnly: null == imagesOnly
-          ? _value.imagesOnly
-          : imagesOnly // ignore: cast_nullable_to_non_nullable
+      includeTlogs: null == includeTlogs
+          ? _value.includeTlogs
+          : includeTlogs // ignore: cast_nullable_to_non_nullable
               as bool,
-      favoritesOnly: null == favoritesOnly
-          ? _value.favoritesOnly
-          : favoritesOnly // ignore: cast_nullable_to_non_nullable
+      includeThemes: null == includeThemes
+          ? _value.includeThemes
+          : includeThemes // ignore: cast_nullable_to_non_nullable
               as bool,
-      followedOnly: null == followedOnly
-          ? _value.followedOnly
-          : followedOnly // ignore: cast_nullable_to_non_nullable
-              as bool,
-      autoRefresh: null == autoRefresh
-          ? _value.autoRefresh
-          : autoRefresh // ignore: cast_nullable_to_non_nullable
-              as bool,
-      autoRefreshInterval: null == autoRefreshInterval
-          ? _value.autoRefreshInterval
-          : autoRefreshInterval // ignore: cast_nullable_to_non_nullable
-              as int,
     ) as $Val);
   }
 }
@@ -133,11 +106,8 @@ abstract class _$$FeedSettingsImplCopyWith<$Res>
       {int entriesPerPage,
       DisplayFormat displayFormat,
       SortOrder sortOrder,
-      bool imagesOnly,
-      bool favoritesOnly,
-      bool followedOnly,
-      bool autoRefresh,
-      int autoRefreshInterval});
+      bool includeTlogs,
+      bool includeThemes});
 }
 
 /// @nodoc
@@ -154,11 +124,8 @@ class __$$FeedSettingsImplCopyWithImpl<$Res>
     Object? entriesPerPage = null,
     Object? displayFormat = null,
     Object? sortOrder = null,
-    Object? imagesOnly = null,
-    Object? favoritesOnly = null,
-    Object? followedOnly = null,
-    Object? autoRefresh = null,
-    Object? autoRefreshInterval = null,
+    Object? includeTlogs = null,
+    Object? includeThemes = null,
   }) {
     return _then(_$FeedSettingsImpl(
       entriesPerPage: null == entriesPerPage
@@ -173,26 +140,14 @@ class __$$FeedSettingsImplCopyWithImpl<$Res>
           ? _value.sortOrder
           : sortOrder // ignore: cast_nullable_to_non_nullable
               as SortOrder,
-      imagesOnly: null == imagesOnly
-          ? _value.imagesOnly
-          : imagesOnly // ignore: cast_nullable_to_non_nullable
+      includeTlogs: null == includeTlogs
+          ? _value.includeTlogs
+          : includeTlogs // ignore: cast_nullable_to_non_nullable
               as bool,
-      favoritesOnly: null == favoritesOnly
-          ? _value.favoritesOnly
-          : favoritesOnly // ignore: cast_nullable_to_non_nullable
+      includeThemes: null == includeThemes
+          ? _value.includeThemes
+          : includeThemes // ignore: cast_nullable_to_non_nullable
               as bool,
-      followedOnly: null == followedOnly
-          ? _value.followedOnly
-          : followedOnly // ignore: cast_nullable_to_non_nullable
-              as bool,
-      autoRefresh: null == autoRefresh
-          ? _value.autoRefresh
-          : autoRefresh // ignore: cast_nullable_to_non_nullable
-              as bool,
-      autoRefreshInterval: null == autoRefreshInterval
-          ? _value.autoRefreshInterval
-          : autoRefreshInterval // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }
@@ -204,11 +159,8 @@ class _$FeedSettingsImpl extends _FeedSettings {
       {this.entriesPerPage = 20,
       this.displayFormat = DisplayFormat.short,
       this.sortOrder = SortOrder.newest,
-      this.imagesOnly = false,
-      this.favoritesOnly = false,
-      this.followedOnly = false,
-      this.autoRefresh = true,
-      this.autoRefreshInterval = 30})
+      this.includeTlogs = true,
+      this.includeThemes = true})
       : super._();
 
   /// Number of entries to load per page
@@ -226,34 +178,19 @@ class _$FeedSettingsImpl extends _FeedSettings {
   @JsonKey()
   final SortOrder sortOrder;
 
-  /// Whether to show only entries with images
+  /// Whether to include entries from tlogs (diaries)
   @override
   @JsonKey()
-  final bool imagesOnly;
+  final bool includeTlogs;
 
-  /// Whether to show only favorited entries
+  /// Whether to include entries from themes
   @override
   @JsonKey()
-  final bool favoritesOnly;
-
-  /// Whether to show only entries from followed users
-  @override
-  @JsonKey()
-  final bool followedOnly;
-
-  /// Whether to enable auto-refresh
-  @override
-  @JsonKey()
-  final bool autoRefresh;
-
-  /// Auto-refresh interval in seconds
-  @override
-  @JsonKey()
-  final int autoRefreshInterval;
+  final bool includeThemes;
 
   @override
   String toString() {
-    return 'FeedSettings(entriesPerPage: $entriesPerPage, displayFormat: $displayFormat, sortOrder: $sortOrder, imagesOnly: $imagesOnly, favoritesOnly: $favoritesOnly, followedOnly: $followedOnly, autoRefresh: $autoRefresh, autoRefreshInterval: $autoRefreshInterval)';
+    return 'FeedSettings(entriesPerPage: $entriesPerPage, displayFormat: $displayFormat, sortOrder: $sortOrder, includeTlogs: $includeTlogs, includeThemes: $includeThemes)';
   }
 
   @override
@@ -267,29 +204,15 @@ class _$FeedSettingsImpl extends _FeedSettings {
                 other.displayFormat == displayFormat) &&
             (identical(other.sortOrder, sortOrder) ||
                 other.sortOrder == sortOrder) &&
-            (identical(other.imagesOnly, imagesOnly) ||
-                other.imagesOnly == imagesOnly) &&
-            (identical(other.favoritesOnly, favoritesOnly) ||
-                other.favoritesOnly == favoritesOnly) &&
-            (identical(other.followedOnly, followedOnly) ||
-                other.followedOnly == followedOnly) &&
-            (identical(other.autoRefresh, autoRefresh) ||
-                other.autoRefresh == autoRefresh) &&
-            (identical(other.autoRefreshInterval, autoRefreshInterval) ||
-                other.autoRefreshInterval == autoRefreshInterval));
+            (identical(other.includeTlogs, includeTlogs) ||
+                other.includeTlogs == includeTlogs) &&
+            (identical(other.includeThemes, includeThemes) ||
+                other.includeThemes == includeThemes));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      entriesPerPage,
-      displayFormat,
-      sortOrder,
-      imagesOnly,
-      favoritesOnly,
-      followedOnly,
-      autoRefresh,
-      autoRefreshInterval);
+  int get hashCode => Object.hash(runtimeType, entriesPerPage, displayFormat,
+      sortOrder, includeTlogs, includeThemes);
 
   @JsonKey(ignore: true)
   @override
@@ -303,11 +226,8 @@ abstract class _FeedSettings extends FeedSettings {
       {final int entriesPerPage,
       final DisplayFormat displayFormat,
       final SortOrder sortOrder,
-      final bool imagesOnly,
-      final bool favoritesOnly,
-      final bool followedOnly,
-      final bool autoRefresh,
-      final int autoRefreshInterval}) = _$FeedSettingsImpl;
+      final bool includeTlogs,
+      final bool includeThemes}) = _$FeedSettingsImpl;
   const _FeedSettings._() : super._();
 
   @override
@@ -324,24 +244,12 @@ abstract class _FeedSettings extends FeedSettings {
   SortOrder get sortOrder;
   @override
 
-  /// Whether to show only entries with images
-  bool get imagesOnly;
+  /// Whether to include entries from tlogs (diaries)
+  bool get includeTlogs;
   @override
 
-  /// Whether to show only favorited entries
-  bool get favoritesOnly;
-  @override
-
-  /// Whether to show only entries from followed users
-  bool get followedOnly;
-  @override
-
-  /// Whether to enable auto-refresh
-  bool get autoRefresh;
-  @override
-
-  /// Auto-refresh interval in seconds
-  int get autoRefreshInterval;
+  /// Whether to include entries from themes
+  bool get includeThemes;
   @override
   @JsonKey(ignore: true)
   _$$FeedSettingsImplCopyWith<_$FeedSettingsImpl> get copyWith =>

@@ -287,4 +287,62 @@ class EntryCacheService {
       return null;
     }
   }
+
+  /// Store feed settings for a specific feed type.
+  /// 
+  /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
+  /// [settings] - The feed settings to store
+  Future<void> storeFeedSettings(String feedType, Map<String, dynamic> settings) async {
+    try {
+      final settingsKey = 'settings_$feedType';
+      final settingsData = {
+        'settings': settings,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      };
+      
+      await _box.put(settingsKey, _serializeMap(settingsData));
+      _logger.fine('Stored settings for $feedType');
+    } catch (e) {
+      _logger.warning('Failed to store settings for $feedType: $e');
+    }
+  }
+
+  /// Retrieve feed settings for a specific feed type.
+  /// 
+  /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
+  /// Returns the stored settings or null if not found
+  Future<Map<String, dynamic>?> getFeedSettings(String feedType) async {
+    try {
+      final settingsKey = 'settings_$feedType';
+      final settingsJson = _box.get(settingsKey);
+      
+      if (settingsJson == null) {
+        return null;
+      }
+      
+      final settingsData = _deserializeMap(settingsJson);
+      if (settingsData == null) {
+        return null;
+      }
+      
+      _logger.fine('Retrieved settings for $feedType');
+      return settingsData['settings'] as Map<String, dynamic>?;
+    } catch (e) {
+      _logger.warning('Failed to retrieve settings for $feedType: $e');
+      return null;
+    }
+  }
+
+  /// Clear feed settings for a specific feed type.
+  /// 
+  /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
+  Future<void> clearFeedSettings(String feedType) async {
+    try {
+      final settingsKey = 'settings_$feedType';
+      await _box.delete(settingsKey);
+      _logger.fine('Cleared settings for $feedType');
+    } catch (e) {
+      _logger.warning('Failed to clear settings for $feedType: $e');
+    }
+  }
 }

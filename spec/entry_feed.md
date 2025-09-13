@@ -40,12 +40,36 @@ The screen will use a `SliverAppBar` with a persistent `TabBar`. A dynamic tab s
 
 ### 3.4. Settings
 
-A bottom sheet will be used to display the settings for the current feed, including:
+A bottom sheet will be used to display settings. The available options will vary depending on the active feed type.
 
-*   **Entries per page:** 10, 20, 30, 50, 100.
-*   **Load from:** Diaries and/or Themes.
-*   **Display format:** Short or Full.
-*   **Sort by:** Newest, Oldest, Best.
+**Universal Options:**
+
+*   **Display Format**: Choose between "Short" and "Full" entry display modes. This option is available for all feed types.
+
+**Feed-Specific Options:**
+
+*   **Live Feed:**
+    *   **Source Options**:
+        *   Include Diaries (API parameter: "users")
+        *   Include Themes (API parameter: "themes")
+        *   *Validation: At least one source must be enabled.*
+
+*   **Best Feed:**
+    *   **Source Options**:
+        *   Include Diaries (API parameter: "users")
+        *   Include Themes (API parameter: "themes")
+        *   *Validation: At least one source must be enabled.*
+    *   **Entry Count**:
+        *   Options: 10, 20, 30, 50, 100 entries.
+
+*   **Profile Feed:**
+    *   **Sort Order**:
+        *   Newest First
+        *   Oldest First
+        *   Best First
+
+*   **Friends Feed:**
+    *   No feed-specific options. Only universal settings apply.
 
 ## 4. Non-Functional Requirements
 

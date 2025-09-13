@@ -216,4 +216,109 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get replies => 'Ответы';
+
+  @override
+  String get displayFormat => 'Формат отображения';
+
+  @override
+  String get sortOrder => 'Порядок сортировки';
+
+  @override
+  String get filterOptions => 'Параметры фильтрации';
+
+  @override
+  String get autoRefresh => 'Автообновление';
+
+  @override
+  String get short => 'Краткий';
+
+  @override
+  String get full => 'Полный';
+
+  @override
+  String get newestFirst => 'Сначала новые';
+
+  @override
+  String get oldestFirst => 'Сначала старые';
+
+  @override
+  String get bestFirst => 'Сначала лучшие';
+
+  @override
+  String get imagesOnly => 'Только с изображениями';
+
+  @override
+  String get imagesOnlySubtitle => 'Показывать только записи с изображениями';
+
+  @override
+  String get favoritesOnly => 'Только избранное';
+
+  @override
+  String get favoritesOnlySubtitle => 'Показывать только избранные записи';
+
+  @override
+  String get followedOnly => 'Только подписки';
+
+  @override
+  String get followedOnlySubtitle =>
+      'Показывать только записи от отслеживаемых пользователей';
+
+  @override
+  String get enableAutoRefresh => 'Включить автообновление';
+
+  @override
+  String get enableAutoRefreshSubtitle => 'Автоматически обновлять ленту';
+
+  @override
+  String get refreshInterval => 'Интервал обновления';
+
+  @override
+  String get seconds => 'секунд';
+
+  @override
+  String get minute => 'минута';
+
+  @override
+  String get minutes => 'минут';
+
+  @override
+  String get applySettings => 'Применить настройки';
+
+  @override
+  String get sourceOptions => 'Источники';
+
+  @override
+  String get includeTlogs => 'Включить дневники';
+
+  @override
+  String get includeTlogsSubtitle =>
+      'Показывать записи из дневников пользователей';
+
+  @override
+  String get includeThemes => 'Включить темы';
+
+  @override
+  String get includeThemesSubtitle => 'Показывать записи из тем';
+
+  @override
+  String get entryCount => 'Количество записей';
+
+  @override
+  String get entryCountSubtitle =>
+      'Количество записей для отображения на странице';
+
+  @override
+  String get entriesCount10 => '10 записей';
+
+  @override
+  String get entriesCount20 => '20 записей';
+
+  @override
+  String get entriesCount30 => '30 записей';
+
+  @override
+  String get entriesCount50 => '50 записей';
+
+  @override
+  String get entriesCount100 => '100 записей';
 }
