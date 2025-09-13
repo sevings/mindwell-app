@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'src/app.dart';
 
 /// Main entry point of the Mindwell application.
@@ -29,6 +30,10 @@ void main() async {
     ),
   );
   
-  // Run the application
-  runApp(const MindWellApp());
+  // Run the application with ProviderScope for state management
+  runApp(
+    const ProviderScope(
+      child: MindWellApp(),
+    ),
+  );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell/src/app.dart';
 import 'package:mindwell/src/core/theme/mindwell_theme.dart';
 
@@ -7,7 +8,11 @@ void main() {
   group('MindWellApp', () {
     testWidgets('should build correctly', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Verify the app builds without errors
       expect(find.byType(MaterialApp), findsOneWidget);
@@ -16,7 +21,11 @@ void main() {
 
     testWidgets('should apply light theme correctly', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -33,7 +42,11 @@ void main() {
 
     testWidgets('should configure localization correctly', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -52,7 +65,11 @@ void main() {
 
     testWidgets('should configure router correctly', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -63,7 +80,11 @@ void main() {
 
     testWidgets('should display home placeholder content', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Verify home content is displayed
       expect(find.text('Лента'), findsOneWidget);
@@ -73,7 +94,11 @@ void main() {
 
     testWidgets('should have correct app title', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -84,7 +109,11 @@ void main() {
 
     testWidgets('should hide debug banner', (WidgetTester tester) async {
       // Build the app
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -97,7 +126,11 @@ void main() {
   group('HomePlaceholder', () {
     testWidgets('should build correctly', (WidgetTester tester) async {
       // Build the app to test the placeholder through the router
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Verify the widget builds without errors
       expect(find.byType(Scaffold), findsOneWidget);
@@ -106,7 +139,11 @@ void main() {
 
     testWidgets('should display all expected content', (WidgetTester tester) async {
       // Build the app to test the placeholder through the router
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Verify all expected content is present
       expect(find.text('Лента'), findsOneWidget);
@@ -116,7 +153,11 @@ void main() {
 
     testWidgets('should center content vertically', (WidgetTester tester) async {
       // Build the app to test the placeholder through the router
-      await tester.pumpWidget(const MindWellApp());
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MindWellApp(),
+        ),
+      );
 
       // Find the center widgets (there should be at least one)
       expect(find.byType(Center), findsWidgets);

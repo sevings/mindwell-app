@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'core/theme/mindwell_theme.dart';
 import 'core/router/app_router.dart';
+import 'features/auth/providers/auth_provider.dart';
 
 /// Main application widget for Mindwell.
 /// 
 /// Configures the MaterialApp with themes, localization, and routing.
-class MindWellApp extends StatelessWidget {
+class MindWellApp extends ConsumerStatefulWidget {
   const MindWellApp({super.key});
+
+  @override
+  ConsumerState<MindWellApp> createState() => _MindWellAppState();
+}
+
+class _MindWellAppState extends ConsumerState<MindWellApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Check authentication status when the app starts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../features/home/screens/home_screen.dart';
+import '../../features/auth/providers/auth_provider.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -12,6 +13,55 @@ class AppRouter {
   /// The main GoRouter instance for the application.
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      // Get the current authentication state
+      final container = ProviderScope.containerOf(context);
+      final authState = container.read(authProvider);
+      
+      // Define protected routes that require authentication
+      const protectedRoutes = ['/', '/profile', '/notifications', '/chat'];
+      
+      // Define unauthenticated routes that should redirect if user is logged in
+      const unauthenticatedRoutes = ['/login', '/register'];
+      
+      final currentPath = state.uri.path;
+      
+      // Handle authentication state
+      return authState.when(
+        initial: () {
+          // If we're still determining auth status, don't redirect yet
+          return null;
+        },
+        loading: () {
+          // If we're still determining auth status, don't redirect yet
+          return null;
+        },
+        authenticated: (user) {
+          // If user is authenticated and trying to access login/register, redirect to home
+          if (unauthenticatedRoutes.contains(currentPath)) {
+            return '/';
+          }
+          // Allow access to protected routes
+          return null;
+        },
+        unauthenticated: () {
+          // If user is not authenticated and trying to access protected routes, redirect to login
+          if (protectedRoutes.contains(currentPath)) {
+            return '/login';
+          }
+          // Allow access to unauthenticated routes
+          return null;
+        },
+        error: (message) {
+          // If user has an error state and trying to access protected routes, redirect to login
+          if (protectedRoutes.contains(currentPath)) {
+            return '/login';
+          }
+          // Allow access to unauthenticated routes
+          return null;
+        },
+      );
+    },
     routes: [
       // Shell route for authenticated users
       ShellRoute(
