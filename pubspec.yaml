@@ -13,14 +13,14 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.8
-  flutter_staggered_grid_view: ^0.6.2
+  flutter_staggered_grid_view: ^0.7.0
 
   # State Management
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
 
   # Routing
-  go_router: ^13.0.0
+  go_router: ^16.2.1
 
   # Networking
   dio: ^5.4.0
@@ -32,7 +32,7 @@ dependencies:
   # Local Storage
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^10.0.0-beta.4
 
   # Image Handling
   cached_network_image: ^3.3.0
@@ -41,7 +41,7 @@ dependencies:
 
   # Dependency Injection
   injectable: ^2.3.2
-  get_it: ^7.6.4
+  get_it: ^8.2.0
 
   # Data Classes & JSON
   freezed_annotation: ^2.4.1
@@ -64,7 +64,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
   # Code Generation
   build_runner: ^2.4.7

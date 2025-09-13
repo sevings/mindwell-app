@@ -23,9 +23,7 @@ void main() async {
   // Initialize Flutter Secure Storage
   // This will be used later for storing authentication tokens
   const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
