@@ -120,10 +120,14 @@ class SemanticColors {
   static const Color info = Color(0xFF3B82F6);
   static const Color infoDark = Color(0xFF2563EB);
   
-  // Additional brand colors
+  // Additional brand colors from common_ui.md specifications
   static const Color teal = Color(0xFF08DDC1);
   static const Color cyan = Color(0xFF2AEBCB);
   static const Color yellow = Color(0xFFFFDC1B);
+  
+  // Additional semantic colors for better UX
+  static const Color error = Color(0xFFEF4444);
+  static const Color errorDark = Color(0xFFDC2626);
 }
 
 /// Extension to provide semantic colors on ColorScheme
@@ -151,4 +155,9 @@ extension MindwellColorSchemeExtension on ColorScheme {
   
   /// Yellow brand color
   Color get yellow => SemanticColors.yellow;
+  
+  /// Error color for the current brightness
+  Color get error => brightness == Brightness.light 
+      ? SemanticColors.error 
+      : SemanticColors.errorDark;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/home/screens/home_screen.dart';
 
 /// Application router configuration using GoRouter.
@@ -14,13 +15,20 @@ class AppRouter {
       // Shell route for authenticated users
       ShellRoute(
         builder: (context, state, child) {
-          return HomeScreen(child: child);
+          return ProviderScope(
+            child: HomeScreen(child: child),
+          );
         },
         routes: [
           GoRoute(
             path: '/',
             name: 'home',
             builder: (context, state) => const _HomeContent(),
+          ),
+          GoRoute(
+            path: '/profile',
+            name: 'profile',
+            builder: (context, state) => const _ProfileContent(),
           ),
           GoRoute(
             path: '/notifications',
@@ -68,13 +76,13 @@ class _HomeContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.home,
+            Icons.article,
             size: 64,
             color: Color(0xFFFF5E3A),
           ),
           SizedBox(height: 16),
           Text(
-            'Home',
+            'Feed',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -82,7 +90,46 @@ class _HomeContent extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Welcome to your mindful journal',
+            'Your mindful journal entries',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Profile content widget.
+/// 
+/// This will be replaced with actual profile content in future tasks.
+class _ProfileContent extends StatelessWidget {
+  const _ProfileContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.person,
+            size: 64,
+            color: Color(0xFFFF5E3A),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Profile',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Your personal profile and settings',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey,

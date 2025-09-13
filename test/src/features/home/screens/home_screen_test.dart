@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell/src/features/home/screens/home_screen.dart';
+import 'package:mindwell/src/core/providers/auth_provider.dart';
 
 void main() {
   group('HomeScreen', () {
@@ -10,34 +12,43 @@ void main() {
       
       // Act
       await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(child: testChild),
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
         ),
       );
       
       // Assert
       expect(find.text('Mindwell'), findsOneWidget);
       expect(find.text('Test Content'), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('displays app bar with correct title', (WidgetTester tester) async {
+    testWidgets('displays platform app bar with correct title', (WidgetTester tester) async {
       // Arrange
       const testChild = Text('Test Content');
       
       // Act
       await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(child: testChild),
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
         ),
       );
       
       // Assert
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.title, isA<Text>());
-      expect((appBar.title as Text).data, equals('Mindwell'));
-      expect(appBar.centerTitle, isTrue);
+      expect(find.text('Mindwell'), findsOneWidget);
+      expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
     });
 
     testWidgets('displays child content in body', (WidgetTester tester) async {
@@ -51,8 +62,14 @@ void main() {
       
       // Act
       await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(child: testChild),
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
         ),
       );
       
@@ -62,14 +79,20 @@ void main() {
       expect(find.byType(Column), findsOneWidget);
     });
 
-    testWidgets('has correct scaffold structure', (WidgetTester tester) async {
+    testWidgets('has correct scaffold structure with navigation components', (WidgetTester tester) async {
       // Arrange
       const testChild = Text('Test Content');
       
       // Act
       await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(child: testChild),
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
         ),
       );
       
@@ -77,9 +100,51 @@ void main() {
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.appBar, isNotNull);
       expect(scaffold.body, isNotNull);
-      expect(scaffold.bottomNavigationBar, isNull);
-      expect(scaffold.drawer, isNull);
-      expect(scaffold.floatingActionButton, isNull);
+      expect(scaffold.bottomNavigationBar, isNotNull);
+      expect(scaffold.drawer, isNotNull);
+      expect(scaffold.floatingActionButton, isNotNull);
+    });
+
+    testWidgets('shows floating action button when authenticated', (WidgetTester tester) async {
+      // Arrange
+      const testChild = Text('Test Content');
+      
+      // Act
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
+        ),
+      );
+      
+      // Assert
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+    });
+
+    testWidgets('hides floating action button when not authenticated', (WidgetTester tester) async {
+      // Arrange
+      const testChild = Text('Test Content');
+      
+      // Act
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(child: testChild),
+          ),
+        ),
+      );
+      
+      // Assert
+      expect(find.byType(FloatingActionButton), findsNothing);
     });
 
     testWidgets('applies theme colors correctly', (WidgetTester tester) async {
@@ -88,22 +153,29 @@ void main() {
       
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            colorScheme: const ColorScheme.light(
-              surface: Colors.blue,
-              onSurface: Colors.white,
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => AuthNotifier()
+              ..login(userId: 'test-user', username: 'testuser')),
+          ],
+          child: MaterialApp(
+            theme: ThemeData(
+              colorScheme: const ColorScheme.light(
+                surface: Colors.blue,
+                onSurface: Colors.white,
+                primary: Colors.orange,
+                onPrimary: Colors.white,
+              ),
             ),
+            home: const HomeScreen(child: testChild),
           ),
-          home: const HomeScreen(child: testChild),
         ),
       );
       
       // Assert
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.backgroundColor, equals(Colors.blue));
-      expect(appBar.foregroundColor, equals(Colors.white));
-      expect(appBar.elevation, equals(0));
+      final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
+      expect(fab.backgroundColor, equals(Colors.orange));
+      expect(fab.foregroundColor, equals(Colors.white));
     });
   });
 }
