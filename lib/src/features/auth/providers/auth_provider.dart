@@ -2,43 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
+import '../../../../config/config.dart';
+import '../../../core/api/api_provider.dart';
 import '../../../core/services/token_storage_service.dart';
 import '../models/auth_state.dart';
-
-/// Provider for the TokenStorageService instance.
-final tokenStorageServiceProvider = Provider<TokenStorageService>((ref) {
-  return TokenStorageService();
-});
-
-/// Provider for the OAuth2Api instance.
-/// 
-/// This provider creates an OAuth2Api instance using the configured Dio client.
-/// The actual Dio configuration will be handled in the API provider.
-final oauth2ApiProvider = Provider<Oauth2Api>((ref) {
-  // This will be configured when the API provider is set up
-  // For now, we'll need to create a basic instance
-  throw UnimplementedError('OAuth2Api provider needs to be configured with proper Dio instance');
-});
-
-/// Provider for the AccountApi instance.
-/// 
-/// This provider creates an AccountApi instance using the configured Dio client.
-/// The actual Dio configuration will be handled in the API provider.
-final accountApiProvider = Provider<AccountApi>((ref) {
-  // This will be configured when the API provider is set up
-  // For now, we'll need to create a basic instance
-  throw UnimplementedError('AccountApi provider needs to be configured with proper Dio instance');
-});
-
-/// Provider for the MeApi instance.
-/// 
-/// This provider creates a MeApi instance using the configured Dio client.
-/// The actual Dio configuration will be handled in the API provider.
-final meApiProvider = Provider<MeApi>((ref) {
-  // This will be configured when the API provider is set up
-  // For now, we'll need to create a basic instance
-  throw UnimplementedError('MeApi provider needs to be configured with proper Dio instance');
-});
 
 /// The main authentication provider that manages the authentication state.
 /// 
@@ -101,7 +68,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Call OAuth2 token endpoint with password grant
       final tokenResponse = await _oauth2Api.oauth2TokenPost(
         grantType: 'password',
-        clientId: 1, // This should be configured in the app config
+        clientId: Config.clientId,
+        clientSecret: Config.clientSecret,
         username: email,
         password: password,
       );
@@ -249,7 +217,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       
       final tokenResponse = await _oauth2Api.oauth2TokenPost(
         grantType: 'refresh_token',
-        clientId: 1, // This should be configured in the app config
+        clientId: Config.clientId,
+        clientSecret: Config.clientSecret,
         refreshToken: refreshToken,
       );
       

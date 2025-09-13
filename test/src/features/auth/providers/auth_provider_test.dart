@@ -49,7 +49,6 @@ void main() {
 
       late MwOAuth2Token mockToken;
       late MwAuthProfile mockUserProfile;
-      late $MwUser expectedUser;
 
       setUp(() {
         mockToken = MwOAuth2Token((b) => b
@@ -68,21 +67,14 @@ void main() {
           ..avatar = null
         );
 
-        expectedUser = $MwUser((b) => b
-          ..id = 1
-          ..name = 'testuser'
-          ..showName = 'Test User'
-          ..isTheme = false
-          ..isOnline = true
-          ..avatar = null
-        );
       });
 
       test('should login successfully with valid credentials', () async {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).thenAnswer((_) async => Response<MwOAuth2Token>(
@@ -107,12 +99,13 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
         
         verify(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).called(1);
@@ -129,7 +122,8 @@ void main() {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).thenAnswer((_) async => Response<MwOAuth2Token>(
@@ -162,7 +156,8 @@ void main() {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).thenThrow(DioException(
@@ -178,19 +173,18 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
-        if (state is AuthState) {
-          // Check that it's an error state with appropriate message
-          expect(state, isA<AuthState>());
-        }
-      });
+        // Check that it's an error state with appropriate message
+        expect(state, isA<AuthState>());
+            });
 
       test('should handle network errors during login', () async {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).thenThrow(DioException(
@@ -203,7 +197,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
     });
@@ -241,7 +235,8 @@ void main() {
         // Mock the login call that happens after registration
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: email,
           password: password,
         )).thenAnswer((_) async => Response<MwOAuth2Token>(
@@ -294,7 +289,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
     });
@@ -400,7 +395,8 @@ void main() {
         when(() => mockTokenStorageService.getRefreshToken()).thenAnswer((_) async => refreshToken);
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'refresh_token',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           refreshToken: refreshToken,
         )).thenAnswer((_) async => Response<MwOAuth2Token>(
           data: MwOAuth2Token((b) => b
@@ -439,7 +435,8 @@ void main() {
         verify(() => mockTokenStorageService.getRefreshToken()).called(1);
         verifyNever(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'refresh_token',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           refreshToken: any(named: 'refreshToken'),
         ));
       });
@@ -449,7 +446,8 @@ void main() {
         when(() => mockTokenStorageService.getRefreshToken()).thenAnswer((_) async => refreshToken);
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'refresh_token',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           refreshToken: refreshToken,
         )).thenThrow(DioException(
           requestOptions: RequestOptions(path: '/oauth2/token'),
@@ -472,7 +470,8 @@ void main() {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: 'test@example.com',
           password: 'wrongpassword',
         )).thenThrow(DioException(
@@ -488,7 +487,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
 
@@ -511,7 +510,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
 
@@ -534,7 +533,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
 
@@ -542,7 +541,8 @@ void main() {
         // Arrange
         when(() => mockOauth2Api.oauth2TokenPost(
           grantType: 'password',
-          clientId: 1,
+          clientId: 1503747774,
+          clientSecret: '',
           username: 'test@example.com',
           password: 'password123',
         )).thenThrow(DioException(
@@ -558,7 +558,7 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        final state = authNotifier.state as AuthState;
+        final state = authNotifier.state;
         expect(state, isA<AuthState>());
       });
     });
