@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/screens/auth_screen.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -22,7 +23,7 @@ class AppRouter {
       const protectedRoutes = ['/', '/profile', '/notifications', '/chat'];
       
       // Define unauthenticated routes that should redirect if user is logged in
-      const unauthenticatedRoutes = ['/login', '/register'];
+      const unauthenticatedRoutes = ['/login'];
       
       final currentPath = state.uri.path;
       
@@ -98,12 +99,7 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const _LoginScreen(),
-      ),
-      GoRoute(
-        path: '/register',
-        name: 'register',
-        builder: (context, state) => const _RegisterScreen(),
+        builder: (context, state) => const AuthScreen(),
       ),
     ],
     
@@ -271,97 +267,6 @@ class _ChatContent extends StatelessWidget {
   }
 }
 
-/// Login screen widget.
-/// 
-/// This will be replaced with actual login screen in future tasks.
-class _LoginScreen extends StatelessWidget {
-  const _LoginScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.login ?? 'Login'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.login,
-              size: 64,
-              color: Color(0xFFFF5E3A),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n?.login ?? 'Login',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Sign in to your account',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Register screen widget.
-/// 
-/// This will be replaced with actual register screen in future tasks.
-class _RegisterScreen extends StatelessWidget {
-  const _RegisterScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.register ?? 'Register'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.person_add,
-              size: 64,
-              color: Color(0xFFFF5E3A),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n?.register ?? 'Register',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Create your account',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Error screen widget for handling navigation errors.
 class _ErrorScreen extends StatelessWidget {
