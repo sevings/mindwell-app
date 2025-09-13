@@ -83,7 +83,7 @@ void main() {
           requestOptions: RequestOptions(path: '/oauth2/token'),
         ));
 
-        when(() => mockTokenStorageService.saveTokens(
+        when(() => mockTokenStorageService.saveUserTokens(
           accessToken: accessToken,
           refreshToken: refreshToken,
         )).thenAnswer((_) async => {});
@@ -110,7 +110,7 @@ void main() {
           password: password,
         )).called(1);
 
-        verify(() => mockTokenStorageService.saveTokens(
+        verify(() => mockTokenStorageService.saveUserTokens(
           accessToken: accessToken,
           refreshToken: refreshToken,
         )).called(1);
@@ -132,7 +132,7 @@ void main() {
           requestOptions: RequestOptions(path: '/oauth2/token'),
         ));
 
-        when(() => mockTokenStorageService.saveTokens(
+        when(() => mockTokenStorageService.saveUserTokens(
           accessToken: accessToken,
           refreshToken: refreshToken,
         )).thenAnswer((_) async => {});
@@ -248,7 +248,7 @@ void main() {
           requestOptions: RequestOptions(path: '/oauth2/token'),
         ));
 
-        when(() => mockTokenStorageService.saveTokens(
+        when(() => mockTokenStorageService.saveUserTokens(
           accessToken: 'access_token_123',
           refreshToken: 'refresh_token_123',
         )).thenAnswer((_) async => {});
@@ -297,19 +297,19 @@ void main() {
     group('Logout', () {
       test('should logout successfully', () async {
         // Arrange
-        when(() => mockTokenStorageService.clearTokens()).thenAnswer((_) async => {});
+        when(() => mockTokenStorageService.clearUserTokens()).thenAnswer((_) async => {});
 
         // Act
         await authNotifier.logout();
 
         // Assert
         expect(authNotifier.state, const AuthState.unauthenticated());
-        verify(() => mockTokenStorageService.clearTokens()).called(1);
+        verify(() => mockTokenStorageService.clearUserTokens()).called(1);
       });
 
       test('should handle logout even if clearing tokens fails', () async {
         // Arrange
-        when(() => mockTokenStorageService.clearTokens()).thenThrow(Exception('Storage error'));
+        when(() => mockTokenStorageService.clearUserTokens()).thenThrow(Exception('Storage error'));
 
         // Act
         await authNotifier.logout();
@@ -335,7 +335,7 @@ void main() {
 
       test('should set authenticated state when tokens exist and user profile is valid', () async {
         // Arrange
-        when(() => mockTokenStorageService.hasTokens()).thenAnswer((_) async => true);
+        when(() => mockTokenStorageService.hasUserTokens()).thenAnswer((_) async => true);
         when(() => mockMeApi.meGet()).thenAnswer((_) async => Response<MwAuthProfile>(
           data: mockUserProfile,
           statusCode: 200,
@@ -347,26 +347,26 @@ void main() {
 
         // Assert
         expect(authNotifier.state, isA<AuthState>());
-        verify(() => mockTokenStorageService.hasTokens()).called(1);
+        verify(() => mockTokenStorageService.hasUserTokens()).called(1);
         verify(() => mockMeApi.meGet()).called(1);
       });
 
       test('should set unauthenticated state when no tokens exist', () async {
         // Arrange
-        when(() => mockTokenStorageService.hasTokens()).thenAnswer((_) async => false);
+        when(() => mockTokenStorageService.hasUserTokens()).thenAnswer((_) async => false);
 
         // Act
         await authNotifier.checkAuthStatus();
 
         // Assert
         expect(authNotifier.state, const AuthState.unauthenticated());
-        verify(() => mockTokenStorageService.hasTokens()).called(1);
+        verify(() => mockTokenStorageService.hasUserTokens()).called(1);
         verifyNever(() => mockMeApi.meGet());
       });
 
       test('should clear tokens and set unauthenticated state when user profile fetch fails', () async {
         // Arrange
-        when(() => mockTokenStorageService.hasTokens()).thenAnswer((_) async => true);
+        when(() => mockTokenStorageService.hasUserTokens()).thenAnswer((_) async => true);
         when(() => mockMeApi.meGet()).thenThrow(DioException(
           requestOptions: RequestOptions(path: '/me'),
           response: Response(
@@ -374,14 +374,14 @@ void main() {
             requestOptions: RequestOptions(path: '/me'),
           ),
         ));
-        when(() => mockTokenStorageService.clearTokens()).thenAnswer((_) async => {});
+        when(() => mockTokenStorageService.clearUserTokens()).thenAnswer((_) async => {});
 
         // Act
         await authNotifier.checkAuthStatus();
 
         // Assert
         expect(authNotifier.state, const AuthState.unauthenticated());
-        verify(() => mockTokenStorageService.clearTokens()).called(1);
+        verify(() => mockTokenStorageService.clearUserTokens()).called(1);
       });
     });
 
@@ -406,7 +406,7 @@ void main() {
           statusCode: 200,
           requestOptions: RequestOptions(path: '/oauth2/token'),
         ));
-        when(() => mockTokenStorageService.saveTokens(
+        when(() => mockTokenStorageService.saveUserTokens(
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
         )).thenAnswer((_) async => {});
@@ -417,7 +417,7 @@ void main() {
         // Assert
         expect(result, true);
         verify(() => mockTokenStorageService.getRefreshToken()).called(1);
-        verify(() => mockTokenStorageService.saveTokens(
+        verify(() => mockTokenStorageService.saveUserTokens(
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
         )).called(1);
@@ -462,6 +462,113 @@ void main() {
 
         // Assert
         expect(result, false);
+      });
+    });
+
+    group('GetAppToken', () {
+      const appToken = 'app_token_123';
+
+      test('should return existing app token when available', () async {
+        // Arrange
+        when(() => mockTokenStorageService.getAppToken()).thenAnswer((_) async => appToken);
+
+        // Act
+        final result = await authNotifier.getAppToken();
+
+        // Assert
+        expect(result, appToken);
+        verify(() => mockTokenStorageService.getAppToken()).called(1);
+        verifyNever(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        ));
+      });
+
+      test('should fetch and save new app token when none exists', () async {
+        // Arrange
+        when(() => mockTokenStorageService.getAppToken()).thenAnswer((_) async => null);
+        when(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        )).thenAnswer((_) async => Response<MwOAuth2Token>(
+          data: MwOAuth2Token((b) => b
+            ..accessToken = appToken
+            ..tokenType = MwOAuth2TokenTokenTypeEnum.bearer
+            ..expiresIn = 3600
+          ),
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/oauth2/token'),
+        ));
+        when(() => mockTokenStorageService.saveAppToken(appToken)).thenAnswer((_) async => {});
+
+        // Act
+        final result = await authNotifier.getAppToken();
+
+        // Assert
+        expect(result, appToken);
+        verify(() => mockTokenStorageService.getAppToken()).called(1);
+        verify(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        )).called(1);
+        verify(() => mockTokenStorageService.saveAppToken(appToken)).called(1);
+      });
+
+      test('should return null when app token fetch fails', () async {
+        // Arrange
+        when(() => mockTokenStorageService.getAppToken()).thenAnswer((_) async => null);
+        when(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        )).thenThrow(DioException(
+          requestOptions: RequestOptions(path: '/oauth2/token'),
+          response: Response(
+            statusCode: 400,
+            requestOptions: RequestOptions(path: '/oauth2/token'),
+          ),
+        ));
+
+        // Act
+        final result = await authNotifier.getAppToken();
+
+        // Assert
+        expect(result, null);
+        verify(() => mockTokenStorageService.getAppToken()).called(1);
+        verify(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        )).called(1);
+        verifyNever(() => mockTokenStorageService.saveAppToken(any()));
+      });
+
+      test('should return null when app token response is invalid', () async {
+        // Arrange
+        when(() => mockTokenStorageService.getAppToken()).thenAnswer((_) async => null);
+        when(() => mockOauth2Api.oauth2TokenPost(
+          grantType: 'client_credentials',
+          clientId: 1503747774,
+          clientSecret: '',
+        )).thenAnswer((_) async => Response<MwOAuth2Token>(
+          data: MwOAuth2Token((b) => b
+            ..accessToken = null // Invalid response
+            ..tokenType = MwOAuth2TokenTokenTypeEnum.bearer
+            ..expiresIn = 3600
+          ),
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/oauth2/token'),
+        ));
+
+        // Act
+        final result = await authNotifier.getAppToken();
+
+        // Assert
+        expect(result, null);
+        verifyNever(() => mockTokenStorageService.saveAppToken(any()));
       });
     });
 

@@ -39,12 +39,16 @@ This document specifies the requirements for the Login and Registration screens 
     *   Upon successful registration, the user will be automatically logged in.
 *   **Forgot Password:**
     *   The `/account/recover` endpoint will be used to initiate the password recovery process.
+*   **App/Anonymous Authentication:**
+    *   On the first startup, the application will obtain an app token from the `/oauth2/token` endpoint using the `client_credentials` grant type.
+    *   This app token will be securely stored and used for all API calls made when a user is not logged in.
+    *   The app token will be refreshed automatically upon expiration.
 
 ## 4. Non-Functional Requirements
 
 *   **Security:**
     *   **HTTPS Communication:** All communication with the server must be over HTTPS with certificate pinning.
-    *   **Secure Token Storage:** Tokens must be stored securely using `flutter_secure_storage` with biometric authentication when available.
+    *   **Secure Token Storage:** User and app tokens must be stored securely using `flutter_secure_storage` with biometric authentication when available.
     *   **Password Security:** Implement strong password requirements:
         *   Minimum 8 characters
         *   At least one uppercase letter
@@ -52,7 +56,7 @@ This document specifies the requirements for the Login and Registration screens 
         *   At least one number
         *   At least one special character
     *   **Rate Limiting:** Implement client-side rate limiting for login attempts.
-    *   **Session Management:** Implement secure session management with automatic token refresh.
+    *   **Session Management:** Implement secure session management with automatic token refresh for both user and app tokens.
     *   **Biometric Authentication:** Support biometric authentication (fingerprint, face ID) when available.
     *   **Account Lockout:** Implement account lockout after multiple failed attempts.
 *   **Performance:** The authentication process should be fast and responsive with loading indicators.
@@ -65,7 +69,7 @@ This document specifies the requirements for the Login and Registration screens 
 
 ## 5. Flutter Implementation Details
 
-*   **API Client:** Use the generated `AccountApi` and `Oauth2Api` directly in the provider.
+*   **API Client:** Use the generated `AccountApi` and `Oauth2Api` directly in the provider. The client must be configured to use the app token for unauthenticated requests and the user token for authenticated requests.
 *   **State Management:** Use a `StateNotifierProvider` from `Riverpod` to manage the authentication state.
 *   **Componentization:**
     *   Reusable `LoginForm` and `RegistrationForm` widgets will be created.
@@ -80,7 +84,7 @@ This document specifies the requirements for the Login and Registration screens 
 
 The `AuthNotifier` will manage an `AuthState` object, which will be a sealed class with the following states:
 
-*   **`Unauthenticated`:** The initial state.
+*   **`Unauthenticated`:** The initial state. When in this state, the application will use a globally available app token for API requests.
 *   **`Authenticating`:** The state when the app is communicating with the server.
 *   **`Authenticated`:** The state when the user is successfully authenticated.
 *   **`AuthError`:** The state when an error occurs.

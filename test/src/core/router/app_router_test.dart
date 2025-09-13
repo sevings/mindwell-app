@@ -12,7 +12,10 @@ import 'package:mindwell_api/mindwell_api.dart';
 /// Mock implementations for testing
 class _MockTokenStorageService implements TokenStorageService {
   @override
-  Future<void> saveTokens({required String accessToken, required String refreshToken}) async {}
+  Future<void> saveUserTokens({required String accessToken, required String refreshToken}) async {}
+
+  @override
+  Future<void> saveAppToken(String appToken) async {}
 
   @override
   Future<String?> getAccessToken() async => null;
@@ -21,10 +24,19 @@ class _MockTokenStorageService implements TokenStorageService {
   Future<String?> getRefreshToken() async => null;
 
   @override
-  Future<bool> hasTokens() async => false;
+  Future<String?> getAppToken() async => null;
 
   @override
-  Future<void> clearTokens() async {}
+  Future<bool> hasUserTokens() async => false;
+
+  @override
+  Future<bool> hasAppToken() async => false;
+
+  @override
+  Future<void> clearUserTokens() async {}
+
+  @override
+  Future<void> clearAppToken() async {}
 }
 
 class _MockOauth2Api implements Oauth2Api {

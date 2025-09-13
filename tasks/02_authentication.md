@@ -7,7 +7,7 @@ Refer to the [Common Guidelines](./00_common_guidelines.md) for architectural an
 ## Task 1: Secure Token Storage & State Model
 
 ### Goal
-Create the service for securely storing authentication tokens and define the `AuthState` data model.
+Create the service for securely storing authentication tokens (both user and app tokens) and define the `AuthState` data model.
 
 ### Files to be Created or Modified:
 *   `lib/src/core/services/token_storage_service.dart` (Create)
@@ -16,7 +16,8 @@ Create the service for securely storing authentication tokens and define the `Au
 ### Implementation Details:
 1.  **Create `token_storage_service.dart`:**
     *   Create a class `TokenStorageService` that uses `flutter_secure_storage`.
-    *   Implement methods: `saveTokens(accessToken, refreshToken)`, `getAccessToken()`, `getRefreshToken()`, `clearTokens()`.
+    *   Implement methods for user tokens: `saveUserTokens(accessToken, refreshToken)`, `getAccessToken()`, `getRefreshToken()`, `clearUserTokens()`.
+    *   Implement methods for the app token: `saveAppToken(appToken)`, `getAppToken()`, `clearAppToken()`.
 2.  **Create `auth_state.dart`:**
     *   Use `freezed` to create a sealed class `AuthState` with the following states:
         *   `initial()`
@@ -28,14 +29,14 @@ Create the service for securely storing authentication tokens and define the `Au
 
 ### Testing:
 *   **Unit Tests:**
-    *   Test the `TokenStorageService` using an in-memory mock of `FlutterSecureStorage`.
+    *   Test the `TokenStorageService` using an in-memory mock of `FlutterSecureStorage` for both user and app tokens.
 
 ---
 
 ## Task 2: Authentication Logic Provider
 
 ### Goal
-Implement the `AuthNotifier` to manage authentication state and business logic.
+Implement the `AuthNotifier` to manage authentication state, business logic, and app token retrieval.
 
 ### Files to be Created or Modified:
 *   `lib/src/features/auth/providers/auth_provider.dart` (Create)
@@ -46,14 +47,16 @@ Implement the `AuthNotifier` to manage authentication state and business logic.
     *   `AuthNotifier` will manage the `AuthState`.
     *   Dependencies: `Oauth2Api`, `AccountApi`, and `TokenStorageService`.
     *   Implement methods:
+        *   `getAppToken()`: A method to be called on app startup. It should check for a stored app token, and if it's missing or invalid, fetch a new one using the `client_credentials` grant type. This token will be used for API calls when the user is not logged in.
         *   `login(String email, String password)`
         *   `register(String username, String email, String password)`
-        *   `logout()`
-        *   `checkAuthStatus()`: A method to check for stored tokens on app startup and update the state accordingly.
+        *   `logout()`: This should clear only the user tokens, leaving the app token intact.
+        *   `checkAuthStatus()`: A method to check for stored user tokens on app startup and update the state accordingly.
 
 ### Testing:
 *   **Unit Tests:**
     *   Test the `AuthNotifier` logic. Mock its dependencies (`Oauth2Api`, `AccountApi`, `TokenStorageService`).
+    *   Verify app token fetching logic.
     *   Verify that the state changes correctly for login success/failure, registration, and logout.
 
 ---
@@ -61,7 +64,7 @@ Implement the `AuthNotifier` to manage authentication state and business logic.
 ## Task 3: API Client Interceptor for Auth
 
 ### Goal
-Configure the API client's `Dio` instance to automatically inject auth tokens and handle token refresh.
+Configure the API client's `Dio` instance to automatically inject the correct auth token (user or app) and handle token refresh.
 
 ### Files to be Created or Modified:
 *   `lib/src/core/api/api_provider.dart` (Modify or Create)
@@ -69,13 +72,15 @@ Configure the API client's `Dio` instance to automatically inject auth tokens an
 ### Implementation Details:
 1.  **Modify `api_provider.dart`:**
     *   Ensure the `Dio` instance used by the API client has an `Interceptor` that:
-        *   Adds the `Authorization: Bearer <token>` header to requests.
-        *   Handles 401 Unauthorized errors by attempting to refresh the token using the refresh token.
-        *   If refresh fails, logs the user out.
+        *   Checks the authentication state (e.g., via `ref.read(authProvider)`).
+        *   If the user is authenticated, it adds the `Authorization: Bearer <accessToken>` header.
+        *   If the user is not authenticated, it adds the `Authorization: Bearer <appToken>` header.
+        *   Handles 401 Unauthorized errors by attempting to refresh the user token (using the refresh token) or re-fetching the app token.
+        *   If refresh fails for a user token, log the user out.
 
 ### Testing:
 *   **Unit Tests:**
-    *   Test the `Dio` interceptor logic for token injection and refresh.
+    *   Test the `Dio` interceptor logic for both user and app token injection and refresh scenarios.
 
 ---
 

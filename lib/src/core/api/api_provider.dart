@@ -55,9 +55,10 @@ final meApiProvider = Provider<MeApi>((ref) {
 /// Authentication interceptor for Dio that handles token injection and refresh.
 /// 
 /// This interceptor:
-/// 1. Automatically adds the Authorization header with the access token
-/// 2. Handles 401 Unauthorized responses by attempting to refresh the token
-/// 3. Logs out the user if token refresh fails
+/// 1. Automatically adds the Authorization header with the appropriate token
+/// 2. Uses user access token if available, otherwise uses app token
+/// 3. Handles 401 Unauthorized responses by attempting to refresh the token
+/// 4. Logs out the user if token refresh fails
 class AuthInterceptor extends Interceptor {
   final TokenStorageService _tokenStorageService;
   
@@ -66,17 +67,30 @@ class AuthInterceptor extends Interceptor {
   })  : _tokenStorageService = tokenStorageService;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Add Authorization header if access token is available
-    _tokenStorageService.getAccessToken().then((accessToken) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    try {
+      // First try to get user access token
+      final accessToken = await _tokenStorageService.getAccessToken();
       if (accessToken != null) {
         options.headers['Authorization'] = 'Bearer $accessToken';
+        handler.next(options);
+        return;
       }
+      
+      // If no user token, try to get app token
+      final appToken = await _tokenStorageService.getAppToken();
+      if (appToken != null) {
+        options.headers['Authorization'] = 'Bearer $appToken';
+        handler.next(options);
+        return;
+      }
+      
+      // If no tokens available, continue without Authorization header
       handler.next(options);
-    }).catchError((error) {
-      // If there's an error getting the token, continue without it
+    } catch (error) {
+      // If there's an error getting tokens, continue without them
       handler.next(options);
-    });
+    }
   }
 
   @override

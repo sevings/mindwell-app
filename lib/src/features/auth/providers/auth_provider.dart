@@ -80,7 +80,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
       
       // Save tokens to secure storage
-      await _tokenStorageService.saveTokens(
+      await _tokenStorageService.saveUserTokens(
         accessToken: token!.accessToken!,
         refreshToken: token.refreshToken!,
       );
@@ -145,11 +145,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Logs out the current user.
   /// 
   /// This method:
-  /// 1. Clears all stored authentication tokens
+  /// 1. Clears only user authentication tokens (keeps app token)
   /// 2. Updates the state to unauthenticated
   Future<void> logout() async {
     try {
-      await _tokenStorageService.clearTokens();
+      await _tokenStorageService.clearUserTokens();
       state = const AuthState.unauthenticated();
     } catch (e) {
       // Even if clearing tokens fails, we should still log out
@@ -160,13 +160,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Checks the authentication status on app startup.
   /// 
   /// This method:
-  /// 1. Checks if tokens exist in secure storage
+  /// 1. Checks if user tokens exist in secure storage
   /// 2. If tokens exist, fetches the current user profile
   /// 3. Updates the state to authenticated or unauthenticated
   Future<void> checkAuthStatus() async {
     try {
-      final hasTokens = await _tokenStorageService.hasTokens();
-      if (!hasTokens) {
+      final hasUserTokens = await _tokenStorageService.hasUserTokens();
+      if (!hasUserTokens) {
         state = const AuthState.unauthenticated();
         return;
       }
@@ -176,7 +176,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final userProfile = userResponse.data;
       if (userProfile == null) {
         // If we can't fetch user profile, clear tokens and logout
-        await _tokenStorageService.clearTokens();
+        await _tokenStorageService.clearUserTokens();
         state = const AuthState.unauthenticated();
         return;
       }
@@ -194,7 +194,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthState.authenticated(user: user);
     } catch (e) {
       // If any error occurs, clear tokens and logout
-      await _tokenStorageService.clearTokens();
+      await _tokenStorageService.clearUserTokens();
       state = const AuthState.unauthenticated();
     }
   }
@@ -227,7 +227,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return false;
       }
       
-      await _tokenStorageService.saveTokens(
+      await _tokenStorageService.saveUserTokens(
         accessToken: token!.accessToken!,
         refreshToken: token.refreshToken!,
       );
@@ -235,6 +235,44 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  /// Gets or fetches the app token for API calls when user is not authenticated.
+  /// 
+  /// This method:
+  /// 1. Checks if an app token is already stored
+  /// 2. If not, fetches a new app token using client_credentials grant
+  /// 3. Saves the app token to secure storage
+  /// 4. Returns the app token
+  /// 
+  /// Returns the app token if successful, null otherwise.
+  Future<String?> getAppToken() async {
+    try {
+      // Check if we already have a valid app token
+      final existingToken = await _tokenStorageService.getAppToken();
+      if (existingToken != null) {
+        return existingToken;
+      }
+      
+      // Fetch new app token using client_credentials grant
+      final tokenResponse = await _oauth2Api.oauth2TokenPost(
+        grantType: 'client_credentials',
+        clientId: Config.clientId,
+        clientSecret: Config.clientSecret,
+      );
+      
+      final token = tokenResponse.data;
+      if (token?.accessToken == null) {
+        return null;
+      }
+      
+      // Save the app token to secure storage
+      await _tokenStorageService.saveAppToken(token!.accessToken!);
+      
+      return token.accessToken!;
+    } catch (e) {
+      return null;
     }
   }
 

@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mindwell/src/features/auth/widgets/registration_form.dart';
 import 'package:mindwell/src/core/widgets/indicators/password_strength_indicator.dart';
-import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
-import 'package:mindwell/src/features/auth/models/auth_state.dart';
 
 void main() {
   group('RegistrationForm', () {

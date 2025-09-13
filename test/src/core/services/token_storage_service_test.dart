@@ -16,7 +16,7 @@ void main() {
       tokenStorageService = TokenStorageService(storage: mockStorage);
     });
 
-    group('saveTokens', () {
+    group('saveUserTokens', () {
       test('should save both access and refresh tokens', () async {
         // Arrange
         const accessToken = 'test_access_token';
@@ -28,7 +28,7 @@ void main() {
             )).thenAnswer((_) async {});
 
         // Act
-        await tokenStorageService.saveTokens(
+        await tokenStorageService.saveUserTokens(
           accessToken: accessToken,
           refreshToken: refreshToken,
         );
@@ -56,7 +56,7 @@ void main() {
 
         // Act & Assert
         expect(
-          () => tokenStorageService.saveTokens(
+          () => tokenStorageService.saveUserTokens(
             accessToken: accessToken,
             refreshToken: refreshToken,
           ),
@@ -147,14 +147,14 @@ void main() {
       });
     });
 
-    group('clearTokens', () {
+    group('clearUserTokens', () {
       test('should remove both access and refresh tokens', () async {
         // Arrange
         when(() => mockStorage.delete(key: any(named: 'key')))
             .thenAnswer((_) async {});
 
         // Act
-        await tokenStorageService.clearTokens();
+        await tokenStorageService.clearUserTokens();
 
         // Assert
         verify(() => mockStorage.delete(key: 'access_token')).called(1);
@@ -168,13 +168,13 @@ void main() {
 
         // Act & Assert
         expect(
-          () => tokenStorageService.clearTokens(),
+          () => tokenStorageService.clearUserTokens(),
           throwsException,
         );
       });
     });
 
-    group('hasTokens', () {
+    group('hasUserTokens', () {
       test('should return true when both tokens exist', () async {
         // Arrange
         when(() => mockStorage.read(key: 'access_token'))
@@ -183,7 +183,7 @@ void main() {
             .thenAnswer((_) async => 'refresh_token');
 
         // Act
-        final result = await tokenStorageService.hasTokens();
+        final result = await tokenStorageService.hasUserTokens();
 
         // Assert
         expect(result, isTrue);
@@ -197,7 +197,7 @@ void main() {
             .thenAnswer((_) async => 'refresh_token');
 
         // Act
-        final result = await tokenStorageService.hasTokens();
+        final result = await tokenStorageService.hasUserTokens();
 
         // Assert
         expect(result, isFalse);
@@ -211,7 +211,7 @@ void main() {
             .thenAnswer((_) async => null);
 
         // Act
-        final result = await tokenStorageService.hasTokens();
+        final result = await tokenStorageService.hasUserTokens();
 
         // Assert
         expect(result, isFalse);
@@ -225,7 +225,137 @@ void main() {
             .thenAnswer((_) async => null);
 
         // Act
-        final result = await tokenStorageService.hasTokens();
+        final result = await tokenStorageService.hasUserTokens();
+
+        // Assert
+        expect(result, isFalse);
+      });
+    });
+
+    group('saveAppToken', () {
+      test('should save app token', () async {
+        // Arrange
+        const appToken = 'test_app_token';
+
+        when(() => mockStorage.write(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            )).thenAnswer((_) async {});
+
+        // Act
+        await tokenStorageService.saveAppToken(appToken);
+
+        // Assert
+        verify(() => mockStorage.write(
+              key: 'app_token',
+              value: appToken,
+            )).called(1);
+      });
+
+      test('should handle storage write errors gracefully', () async {
+        // Arrange
+        const appToken = 'test_app_token';
+
+        when(() => mockStorage.write(
+              key: any(named: 'key'),
+              value: any(named: 'value'),
+            )).thenThrow(Exception('Storage write failed'));
+
+        // Act & Assert
+        expect(
+          () => tokenStorageService.saveAppToken(appToken),
+          throwsException,
+        );
+      });
+    });
+
+    group('getAppToken', () {
+      test('should return app token when it exists', () async {
+        // Arrange
+        const expectedToken = 'test_app_token';
+        when(() => mockStorage.read(key: 'app_token'))
+            .thenAnswer((_) async => expectedToken);
+
+        // Act
+        final result = await tokenStorageService.getAppToken();
+
+        // Assert
+        expect(result, equals(expectedToken));
+        verify(() => mockStorage.read(key: 'app_token')).called(1);
+      });
+
+      test('should return null when app token does not exist', () async {
+        // Arrange
+        when(() => mockStorage.read(key: 'app_token'))
+            .thenAnswer((_) async => null);
+
+        // Act
+        final result = await tokenStorageService.getAppToken();
+
+        // Assert
+        expect(result, isNull);
+        verify(() => mockStorage.read(key: 'app_token')).called(1);
+      });
+
+      test('should handle storage read errors gracefully', () async {
+        // Arrange
+        when(() => mockStorage.read(key: 'app_token'))
+            .thenThrow(Exception('Storage read failed'));
+
+        // Act & Assert
+        expect(
+          () => tokenStorageService.getAppToken(),
+          throwsException,
+        );
+      });
+    });
+
+    group('clearAppToken', () {
+      test('should remove app token', () async {
+        // Arrange
+        when(() => mockStorage.delete(key: any(named: 'key')))
+            .thenAnswer((_) async {});
+
+        // Act
+        await tokenStorageService.clearAppToken();
+
+        // Assert
+        verify(() => mockStorage.delete(key: 'app_token')).called(1);
+      });
+
+      test('should handle storage delete errors gracefully', () async {
+        // Arrange
+        when(() => mockStorage.delete(key: any(named: 'key')))
+            .thenThrow(Exception('Storage delete failed'));
+
+        // Act & Assert
+        expect(
+          () => tokenStorageService.clearAppToken(),
+          throwsException,
+        );
+      });
+    });
+
+    group('hasAppToken', () {
+      test('should return true when app token exists', () async {
+        // Arrange
+        when(() => mockStorage.read(key: 'app_token'))
+            .thenAnswer((_) async => 'app_token');
+
+        // Act
+        final result = await tokenStorageService.hasAppToken();
+
+        // Assert
+        expect(result, isTrue);
+      });
+
+      test('should return false when app token does not exist', () async {
+        // Arrange
+        when(() => mockStorage.read(key: 'app_token'))
+            .thenAnswer((_) async => null);
+
+        // Act
+        final result = await tokenStorageService.hasAppToken();
 
         // Assert
         expect(result, isFalse);
