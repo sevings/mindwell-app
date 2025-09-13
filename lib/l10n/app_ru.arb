@@ -87,5 +87,45 @@
   "feed": "Лента",
   "@feed": {
     "description": "Feed/home content title"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Пароль",
+  "@password": {
+    "description": "Password field label"
+  },
+  "emailHint": "Введите ваш email",
+  "@emailHint": {
+    "description": "Email field hint text"
+  },
+  "passwordHint": "Введите ваш пароль",
+  "@passwordHint": {
+    "description": "Password field hint text"
+  },
+  "loginButton": "Войти",
+  "@loginButton": {
+    "description": "Login button text"
+  },
+  "forgotPassword": "Забыли пароль?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "emailRequired": "Email обязателен",
+  "@emailRequired": {
+    "description": "Email validation error message"
+  },
+  "emailInvalid": "Введите корректный email адрес",
+  "@emailInvalid": {
+    "description": "Email format validation error message"
+  },
+  "passwordRequired": "Пароль обязателен",
+  "@passwordRequired": {
+    "description": "Password validation error message"
+  },
+  "passwordTooShort": "Пароль должен содержать минимум 8 символов",
+  "@passwordTooShort": {
+    "description": "Password length validation error message"
   }
 }

@@ -73,4 +73,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feed => 'Feed';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get emailHint => 'Enter your email address';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get loginButton => 'Login';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get emailInvalid => 'Please enter a valid email address';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 8 characters';
 }

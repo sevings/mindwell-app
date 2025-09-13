@@ -73,4 +73,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get feed => 'Лента';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get emailHint => 'Введите ваш email';
+
+  @override
+  String get passwordHint => 'Введите ваш пароль';
+
+  @override
+  String get loginButton => 'Войти';
+
+  @override
+  String get forgotPassword => 'Забыли пароль?';
+
+  @override
+  String get emailRequired => 'Email обязателен';
+
+  @override
+  String get emailInvalid => 'Введите корректный email адрес';
+
+  @override
+  String get passwordRequired => 'Пароль обязателен';
+
+  @override
+  String get passwordTooShort => 'Пароль должен содержать минимум 8 символов';
 }

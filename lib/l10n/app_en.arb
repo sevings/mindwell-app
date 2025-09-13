@@ -21,5 +21,45 @@
   "goHome": "Go Home",
   "somethingWentWrong": "Something went wrong",
   "unknownError": "Unknown error occurred",
-  "feed": "Feed"
+  "feed": "Feed",
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "emailHint": "Enter your email address",
+  "@emailHint": {
+    "description": "Email field hint text"
+  },
+  "passwordHint": "Enter your password",
+  "@passwordHint": {
+    "description": "Password field hint text"
+  },
+  "loginButton": "Login",
+  "@loginButton": {
+    "description": "Login button text"
+  },
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "emailRequired": "Email is required",
+  "@emailRequired": {
+    "description": "Email validation error message"
+  },
+  "emailInvalid": "Please enter a valid email address",
+  "@emailInvalid": {
+    "description": "Email format validation error message"
+  },
+  "passwordRequired": "Password is required",
+  "@passwordRequired": {
+    "description": "Password validation error message"
+  },
+  "passwordTooShort": "Password must be at least 8 characters",
+  "@passwordTooShort": {
+    "description": "Password length validation error message"
+  }
 }

@@ -229,6 +229,66 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Лента'**
   String get feed;
+
+  /// Email field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// Password field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль'**
+  String get password;
+
+  /// Email field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш email'**
+  String get emailHint;
+
+  /// Password field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш пароль'**
+  String get passwordHint;
+
+  /// Login button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти'**
+  String get loginButton;
+
+  /// Forgot password link text
+  ///
+  /// In ru, this message translates to:
+  /// **'Забыли пароль?'**
+  String get forgotPassword;
+
+  /// Email validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Email обязателен'**
+  String get emailRequired;
+
+  /// Email format validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите корректный email адрес'**
+  String get emailInvalid;
+
+  /// Password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль обязателен'**
+  String get passwordRequired;
+
+  /// Password length validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль должен содержать минимум 8 символов'**
+  String get passwordTooShort;
 }
 
 class _AppLocalizationsDelegate
