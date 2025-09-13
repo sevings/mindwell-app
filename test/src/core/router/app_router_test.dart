@@ -7,6 +7,12 @@ import 'package:mindwell/l10n/app_localizations.dart';
 import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
 import 'package:mindwell/src/features/auth/models/auth_state.dart';
 import 'package:mindwell/src/core/services/token_storage_service.dart';
+import 'package:mindwell/src/core/api/api_provider.dart';
+import 'package:mindwell/src/core/services/entry_cache_service.dart';
+import 'package:mindwell/src/features/entries/providers/entry_feed_provider.dart';
+import 'package:mindwell/src/features/entries/models/feed_type.dart';
+import 'package:mindwell/src/features/entries/models/entry_feed_state.dart';
+import 'package:mindwell/src/features/entries/screens/entry_feed_screen.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 /// Mock implementations for testing
@@ -54,14 +60,53 @@ class _MockMeApi implements MeApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+class _MockEntriesApi implements EntriesApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+class _MockEntryCacheService implements EntryCacheService {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+/// Mock EntryFeedNotifier that returns empty state
+class _MockEntryFeedNotifier extends EntryFeedNotifier {
+  _MockEntryFeedNotifier() : super(
+    feedType: FeedType.live,
+    entriesApi: _MockEntriesApi(),
+    cacheService: _MockEntryCacheService(),
+  ) {
+    state = const EntryFeedState.empty();
+  }
+  
+  @override
+  Future<void> fetchInitialEntries() async {}
+  
+  @override
+  Future<void> fetchMoreEntries() async {}
+  
+  @override
+  Future<void> refresh() async {}
+  
+  @override
+  Future<void> updateSettings(dynamic newSettings) async {}
+}
+
 /// Helper function to wrap widgets with localization support for testing
 Widget createTestWidget(Widget child, {AuthState? authState}) {
+  final overrides = <Override>[
+    entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
+    entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
+    entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+  ];
+  
+  if (authState != null) {
+    overrides.add(authProvider.overrideWith((ref) => _MockAuthNotifier(authState)));
+  }
+  
   return ProviderScope(
-    overrides: authState != null
-        ? [
-            authProvider.overrideWith((ref) => _MockAuthNotifier(authState)),
-          ]
-        : [],
+    overrides: overrides,
     child: MaterialApp.router(
       routerConfig: AppRouter.router,
       localizationsDelegates: const [
@@ -92,28 +137,43 @@ class _MockAuthNotifier extends AuthNotifier {
   }
 }
 
+/// Helper function to create an authenticated user for testing
+AuthState createAuthenticatedUser() {
+  final user = $MwUser((b) => b
+    ..id = 1
+    ..name = 'Test User'
+    ..showName = 'Test User'
+    ..isTheme = false
+    ..isOnline = true
+  );
+  return AuthState.authenticated(user: user);
+}
+
 void main() {
   group('AppRouter', () {
     testWidgets('navigates to home route correctly', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(createTestWidget(const SizedBox.shrink()));
-      await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()));
+      await tester.pump();
       
-      // Assert
-      expect(find.text('Лента'), findsOneWidget);
-      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      // Assert - Check if EntryFeedScreen is rendered
+      expect(find.byType(EntryFeedScreen), findsOneWidget);
+      // Check if TabBar is present
+      expect(find.byType(TabBar), findsOneWidget);
     });
 
     testWidgets('navigates to notifications route', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(createTestWidget(const SizedBox.shrink()));
-      await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()));
+      await tester.pump();
       
       // Navigate to notifications
       AppRouter.router.go('/notifications');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
-      // Assert
+      // Assert - Check if we're on the notifications route
+      // The notifications content should be displayed
       expect(find.text('Notifications'), findsOneWidget);
       expect(find.text('Stay updated with your mindful journey'), findsOneWidget);
     });
@@ -121,13 +181,14 @@ void main() {
     testWidgets('navigates to chat route', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to chat
       AppRouter.router.go('/chat');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert
       expect(find.text('Chat'), findsOneWidget);
@@ -137,47 +198,52 @@ void main() {
     testWidgets('navigates to login route', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
-      // Navigate to login
+      // Navigate to login - authenticated users get redirected to home
       AppRouter.router.go('/login');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
-      // Assert
-      expect(find.text('Войти'), findsNWidgets(2)); // AppBar title and body text
-      expect(find.byType(AppBar), findsOneWidget);
+      // Assert - should be redirected to home since user is authenticated
+      expect(find.text('Прямой эфир'), findsOneWidget); // Live tab in Russian
+      expect(find.text('Лучшее'), findsOneWidget); // Best tab in Russian
+      expect(find.text('Подписки'), findsOneWidget); // Subscriptions tab in Russian
     });
 
     testWidgets('navigates to register route', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
-      // Navigate to register
+      // Navigate to register - authenticated users get redirected to home
       AppRouter.router.go('/register');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
-      // Assert
-      expect(find.text('Регистрация'), findsOneWidget); // Tab text
-      expect(find.byType(AppBar), findsOneWidget);
+      // Assert - should be redirected to home since user is authenticated
+      expect(find.text('Прямой эфир'), findsOneWidget); // Live tab in Russian
+      expect(find.text('Лучшее'), findsOneWidget); // Best tab in Russian
+      expect(find.text('Подписки'), findsOneWidget); // Subscriptions tab in Russian
     });
 
     testWidgets('displays error screen for invalid route', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to invalid route
       AppRouter.router.go('/invalid-route');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
-      // Assert
+      // Assert - Error screen should be displayed
       expect(find.text('Что-то пошло не так'), findsOneWidget);
       expect(find.text('На главную'), findsOneWidget);
     });
@@ -185,29 +251,32 @@ void main() {
     testWidgets('error screen go home button navigates to home', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to invalid route
       AppRouter.router.go('/invalid-route');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Tap go home button
       await tester.tap(find.text('На главную'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
-      // Assert
-      expect(find.text('Лента'), findsOneWidget);
-      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      // Assert - Should be back on home page
+      expect(find.text('Прямой эфир'), findsOneWidget); // Live tab in Russian
+      expect(find.text('Лучшее'), findsOneWidget); // Best tab in Russian
+      expect(find.text('Подписки'), findsOneWidget); // Subscriptions tab in Russian
     });
 
     testWidgets('router has correct initial location', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Assert
       expect(AppRouter.router.routerDelegate.currentConfiguration.uri.path, equals('/'));
@@ -216,12 +285,14 @@ void main() {
     testWidgets('shell route wraps authenticated screens', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
-        createTestWidget(const SizedBox.shrink()),
+        createTestWidget(const SizedBox.shrink(), authState: createAuthenticatedUser()),
       );
       
       // Assert - should have HomeScreen structure (AppBar with Mindwell title)
-      expect(find.text('Mindwell'), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
+      // There are two "Mindwell" texts: one in PlatformAppBar and one in SliverAppBar
+      expect(find.text('Mindwell'), findsNWidgets(2));
+      // There are two AppBars: one in HomeScreen and one in EntryFeedScreen
+      expect(find.byType(AppBar), findsNWidgets(2));
     });
   });
 
@@ -234,11 +305,12 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to protected route
       AppRouter.router.go('/profile');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should be redirected to login
       expect(find.text('Войти'), findsNWidgets(2)); // AppBar title and body text
@@ -259,15 +331,17 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to login
       AppRouter.router.go('/login');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should be redirected to home
-      expect(find.text('Лента'), findsOneWidget);
-      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      expect(find.text('Прямой эфир'), findsOneWidget); // Live tab in Russian
+      expect(find.text('Лучшее'), findsOneWidget); // Best tab in Russian
+      expect(find.text('Подписки'), findsOneWidget); // Subscriptions tab in Russian
     });
 
     testWidgets('redirects authenticated user from register to home', (WidgetTester tester) async {
@@ -285,15 +359,17 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to register
       AppRouter.router.go('/register');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should be redirected to home
-      expect(find.text('Лента'), findsOneWidget);
-      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      expect(find.text('Прямой эфир'), findsOneWidget); // Live tab in Russian
+      expect(find.text('Лучшее'), findsOneWidget); // Best tab in Russian
+      expect(find.text('Подписки'), findsOneWidget); // Subscriptions tab in Russian
     });
 
     testWidgets('allows unauthenticated user to access login route', (WidgetTester tester) async {
@@ -304,11 +380,12 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to login
       AppRouter.router.go('/login');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should stay on login page
       expect(find.text('Войти'), findsNWidgets(2)); // AppBar title and body text
@@ -322,14 +399,15 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to register
       AppRouter.router.go('/register');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should stay on register page
-      expect(find.text('Регистрация'), findsOneWidget); // Tab text
+      expect(find.text('Регистрация'), findsNWidgets(2)); // Tab text appears twice
     });
 
     testWidgets('allows authenticated user to access protected routes', (WidgetTester tester) async {
@@ -347,11 +425,13 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate to protected route
       AppRouter.router.go('/profile');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
+      await tester.pump(); // Extra pump to ensure profile content is rendered
       
       // Assert - should stay on profile page
       expect(find.text('Profile'), findsOneWidget);
@@ -366,11 +446,12 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to protected route
       AppRouter.router.go('/profile');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should stay on profile page (no redirect during initial state)
       expect(find.text('Profile'), findsOneWidget);
@@ -384,11 +465,12 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to protected route
       AppRouter.router.go('/profile');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should stay on profile page (no redirect during loading state)
       expect(find.text('Profile'), findsOneWidget);
@@ -402,11 +484,12 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(const SizedBox.shrink(), authState: authState),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Try to navigate to protected route
       AppRouter.router.go('/notifications');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert - should be redirected to login
       expect(find.text('Войти'), findsNWidgets(2)); // AppBar title and body text

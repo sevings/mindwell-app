@@ -353,14 +353,31 @@ class CachedPostImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget imageWidget = CachedImage(
-      imageUrl: imageUrl,
-      width: width,
-      height: width != null ? width! / aspectRatio : null,
-      fit: BoxFit.cover,
-      borderRadius: borderRadius,
-      useSkeletonLoader: useSkeletonLoader,
-    );
+    Widget imageWidget;
+    
+    // Handle infinite width case to avoid infinite height constraints
+    if (width == double.infinity) {
+      imageWidget = AspectRatio(
+        aspectRatio: aspectRatio,
+        child: CachedImage(
+          imageUrl: imageUrl,
+          width: width,
+          height: null, // Let AspectRatio handle the height
+          fit: BoxFit.cover,
+          borderRadius: borderRadius,
+          useSkeletonLoader: useSkeletonLoader,
+        ),
+      );
+    } else {
+      imageWidget = CachedImage(
+        imageUrl: imageUrl,
+        width: width,
+        height: width != null ? width! / aspectRatio : null,
+        fit: BoxFit.cover,
+        borderRadius: borderRadius,
+        useSkeletonLoader: useSkeletonLoader,
+      );
+    }
     
     if (onTap != null) {
       imageWidget = GestureDetector(
