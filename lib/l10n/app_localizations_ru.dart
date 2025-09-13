@@ -186,4 +186,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get genderFemale => 'Женский';
+
+  @override
+  String get invited => 'Приглашенные';
+
+  @override
+  String get waiting => 'Ожидающие';
+
+  @override
+  String get discussed => 'Обсуждаемое';
+
+  @override
+  String get week => 'Неделя';
+
+  @override
+  String get month => 'Месяц';
+
+  @override
+  String get year => 'Год';
+
+  @override
+  String get friends => 'Друзья';
+
+  @override
+  String get watching => 'Отслеживаемые';
+
+  @override
+  String get entries => 'Записи';
+
+  @override
+  String get replies => 'Ответы';
 }

@@ -190,7 +190,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.myEntries,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to user's entries
+            context.go('/feed/my-entries');
           },
           theme: theme,
         ),
@@ -200,7 +200,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.subscriptions,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to subscriptions
+            context.go('/feed/subscriptions');
           },
           theme: theme,
         ),
@@ -210,7 +210,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.live,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to live feed
+            context.go('/feed/live');
           },
           theme: theme,
         ),
@@ -220,7 +220,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.best,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to best entries
+            context.go('/feed/best');
           },
           theme: theme,
         ),
@@ -338,7 +338,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.live,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to live feed
+            context.go('/feed/live');
           },
           theme: theme,
         ),
@@ -348,7 +348,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.best,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to best entries
+            context.go('/feed/best');
           },
           theme: theme,
         ),

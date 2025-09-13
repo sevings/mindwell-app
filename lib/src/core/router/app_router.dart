@@ -6,6 +6,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/auth_screen.dart';
 import '../../features/entries/screens/entry_feed_screen.dart';
+import '../../features/entries/models/feed_type.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -14,14 +15,14 @@ import '../../features/entries/screens/entry_feed_screen.dart';
 class AppRouter {
   /// The main GoRouter instance for the application.
   static final GoRouter router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/feed/live',
     redirect: (context, state) {
       // Get the current authentication state
       final container = ProviderScope.containerOf(context);
       final authState = container.read(authProvider);
       
       // Define protected routes that require authentication
-      const protectedRoutes = ['/', '/profile', '/notifications', '/chat'];
+      const protectedRoutes = ['/', '/profile', '/notifications', '/chat', '/feed/subscriptions', '/feed/my-entries'];
       
       // Define unauthenticated routes that should redirect if user is logged in
       const unauthenticatedRoutes = ['/login', '/register'];
@@ -39,9 +40,9 @@ class AppRouter {
           return null;
         },
         authenticated: (user) {
-          // If user is authenticated and trying to access login/register, redirect to home
+          // If user is authenticated and trying to access login/register, redirect to live feed
           if (unauthenticatedRoutes.contains(currentPath)) {
-            return '/';
+            return '/feed/live';
           }
           // Allow access to protected routes
           return null;
@@ -51,7 +52,7 @@ class AppRouter {
           if (protectedRoutes.contains(currentPath)) {
             return '/login';
           }
-          // Allow access to unauthenticated routes
+          // Allow access to unauthenticated routes (including public feeds)
           return null;
         },
         error: (message) {
@@ -76,7 +77,7 @@ class AppRouter {
           GoRoute(
             path: '/',
             name: 'home',
-            builder: (context, state) => const EntryFeedScreen(),
+            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.live),
           ),
           GoRoute(
             path: '/profile',
@@ -113,6 +114,39 @@ class AppRouter {
               final entryId = state.pathParameters['id']!;
               return _EntryDetailContent(entryId: entryId);
             },
+          ),
+          // Protected feed type routes (require authentication)
+          GoRoute(
+            path: '/feed/subscriptions',
+            name: 'subscriptionsFeed',
+            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.friends),
+          ),
+          GoRoute(
+            path: '/feed/my-entries',
+            name: 'myEntriesFeed',
+            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.profile),
+          ),
+        ],
+      ),
+      
+      // Public shell route for feeds accessible without authentication
+      ShellRoute(
+        builder: (context, state, child) {
+          return ProviderScope(
+            child: HomeScreen(child: child),
+          );
+        },
+        routes: [
+          // Public feed routes (accessible without authentication)
+          GoRoute(
+            path: '/feed/live',
+            name: 'liveFeed',
+            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.live),
+          ),
+          GoRoute(
+            path: '/feed/best',
+            name: 'bestFeed',
+            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.best),
           ),
         ],
       ),

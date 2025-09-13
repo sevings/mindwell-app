@@ -238,20 +238,24 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     try {
       switch (_feedType) {
         case FeedType.live:
+          // Extract section from feed parameter (entries, waiting, comments)
+          final section = _feedParameter?.split('_').last ?? 'entries';
           final response = await _entriesApi.entriesLiveGet(
             limit: _settings.entriesPerPage,
             after: after,
             before: before,
             source_: 'all',
-            section: 'entries',
+            section: section,
           );
           return response.data;
           
         case FeedType.best:
+          // Extract category from feed parameter (week, month, year)
+          final category = _feedParameter?.split('_').last ?? 'month';
           final response = await _entriesApi.entriesBestGet(
             limit: _settings.entriesPerPage,
             source_: 'all',
-            category: _settings.sortOrder == SortOrder.best ? 'month' : 'all',
+            category: category,
           );
           return response.data;
           

@@ -53,9 +53,13 @@ Create the state notifier provider to manage the logic for fetching and paginati
 
 ### Implementation Details:
 1.  **Create `entry_feed_provider.dart`:**
-    *   Create a `StateNotifierProvider` that takes a `FeedType` (e.g., `live`, `best`, `profile`) as a parameter.
+    *   Create a `StateNotifierProvider` that takes a `FeedType` (e.g., `live`, `best`, `profile`) and other relevant parameters (like `userId` for profile).
     *   The notifier will manage the `EntryFeedState`.
     *   Dependencies: The relevant API (e.g., `TlogApi`, `UsersApi`) and `EntryCacheService`.
+    *   API calls from the provider must include the correct parameters based on the selected feed and tab:
+        *   **Best Feed:** Pass a `category` parameter (`week`, `month`, `year`).
+        *   **Live Feed:** Pass a `section` parameter (`entries`, `waiting`, `comments`).
+        *   **Profile Feed:** Correctly pass the `userId`, especially for the "My Entries" view.
     *   Implement methods:
         *   `fetchInitialEntries()`: Fetches the first page from the API or cache.
         *   `fetchMoreEntries()`: Implements infinite scrolling.
@@ -125,8 +129,11 @@ Build the main screen for the entry feed, including tabbed navigation for differ
 
 ### Implementation Details:
 1.  **Create `entry_feed_screen.dart`:**
-    *   The main screen with a `SliverAppBar` and a `TabBar` for different feed types (`Live`, `Best`, etc.).
-    *   The `TabBarView` will contain `EntryList` widgets for each feed type.
+    *   The main screen will have a dynamic tab system. The tabs displayed in the `SliverAppBar`'s `TabBar` will change based on the context (e.g., which main feed is selected from navigation).
+    *   **Live Feed Tabs:** Invited, Waiting, Discussed.
+    *   **Best Feed Tabs:** Week, Month, Year.
+    *   **Subscriptions Feed Tabs:** Entries, Replies.
+    *   The `TabBarView` will contain `EntryList` widgets configured for each specific tab.
     *   Include a `FloatingActionButton` to navigate to the entry editor.
     *   Add a menu button to open the `FeedSettingsBottomSheet`.
 2.  **Modify `app_router.dart`:**

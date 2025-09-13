@@ -184,4 +184,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genderFemale => 'Female';
+
+  @override
+  String get invited => 'Invited';
+
+  @override
+  String get waiting => 'Waiting';
+
+  @override
+  String get discussed => 'Discussed';
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get friends => 'Friends';
+
+  @override
+  String get watching => 'Watching';
+
+  @override
+  String get entries => 'Entries';
+
+  @override
+  String get replies => 'Replies';
 }

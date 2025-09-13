@@ -14,12 +14,12 @@ This document outlines the technical specifications for the Entry Feed screen in
 
 ### 3.1. Tabbed Navigation
 
-The screen will use a `SliverAppBar` with a persistent `TabBar` to switch between different feed types. The available tabs will depend on the context.
+The screen will use a `SliverAppBar` with a persistent `TabBar`. A dynamic tab system will be implemented, where each feed type has its own specific tab configuration.
 
-*   **Live:** Real-time feed of entries.
-*   **Best:** Highly-rated entries.
-*   **Followings:** Entries from followed users.
-*   **Profile:** Entries from a specific user or theme.
+*   **Live Feed Tabs:** Invited, Waiting, Discussed (corresponding to API sections: `entries`, `waiting`, `comments`).
+*   **Best Feed Tabs:** Week, Month, Year (corresponding to API categories: `week`, `month`, `year`).
+*   **Subscriptions Feed Tabs:** Entries, Replies (from friends and watched users/themes).
+*   **Profile Feed:** Displays entries for a specific user or "My Entries".
 
 ### 3.2. UI Elements
 
@@ -65,6 +65,12 @@ A bottom sheet will be used to display the settings for the current feed, includ
     *   `CustomScrollView`, `SliverAppBar`, `TabBar`, and `TabBarView`.
     *   `flutter_staggered_grid_view` for the masonry layout.
     *   `FloatingActionButton`.
+
+### 5.1. API Integration Updates
+
+*   **Best Feed**: API requests will include a `category` parameter (`week`, `month`, `year`) based on the selected tab.
+*   **Live Feed**: API requests will include a `section` parameter (`entries`, `waiting`, `comments`) based on the selected tab.
+*   **Profile Feed**: Fixed user ID parameter passing for "My Entries" functionality.
 
 ## 6. State Management
 

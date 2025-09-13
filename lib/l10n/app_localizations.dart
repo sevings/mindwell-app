@@ -445,6 +445,66 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Женский'**
   String get genderFemale;
+
+  /// Tab label for invited entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашенные'**
+  String get invited;
+
+  /// Tab label for waiting entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидающие'**
+  String get waiting;
+
+  /// Tab label for discussed entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Обсуждаемое'**
+  String get discussed;
+
+  /// Tab label for weekly best entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Неделя'**
+  String get week;
+
+  /// Tab label for monthly best entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Месяц'**
+  String get month;
+
+  /// Tab label for yearly best entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Год'**
+  String get year;
+
+  /// Tab label for friends entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Друзья'**
+  String get friends;
+
+  /// Tab label for watching entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Отслеживаемые'**
+  String get watching;
+
+  /// Tab label for entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Записи'**
+  String get entries;
+
+  /// Tab label for replies
+  ///
+  /// In ru, this message translates to:
+  /// **'Ответы'**
+  String get replies;
 }
 
 class _AppLocalizationsDelegate

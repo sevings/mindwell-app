@@ -575,7 +575,7 @@ void main() {
           tag: null,
           query: null,
           source_: 'all',
-          category: 'all',
+          category: 'month',
         )).called(1);
       });
 

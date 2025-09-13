@@ -239,5 +239,45 @@
   "genderFemale": "Женский",
   "@genderFemale": {
     "description": "Female gender option"
+  },
+  "invited": "Приглашенные",
+  "@invited": {
+    "description": "Tab label for invited entries"
+  },
+  "waiting": "Ожидающие",
+  "@waiting": {
+    "description": "Tab label for waiting entries"
+  },
+  "discussed": "Обсуждаемое",
+  "@discussed": {
+    "description": "Tab label for discussed entries"
+  },
+  "week": "Неделя",
+  "@week": {
+    "description": "Tab label for weekly best entries"
+  },
+  "month": "Месяц",
+  "@month": {
+    "description": "Tab label for monthly best entries"
+  },
+  "year": "Год",
+  "@year": {
+    "description": "Tab label for yearly best entries"
+  },
+  "friends": "Друзья",
+  "@friends": {
+    "description": "Tab label for friends entries"
+  },
+  "watching": "Отслеживаемые",
+  "@watching": {
+    "description": "Tab label for watching entries"
+  },
+  "entries": "Записи",
+  "@entries": {
+    "description": "Tab label for entries"
+  },
+  "replies": "Ответы",
+  "@replies": {
+    "description": "Tab label for replies"
   }
 }

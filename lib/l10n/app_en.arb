@@ -173,5 +173,45 @@
   "genderFemale": "Female",
   "@genderFemale": {
     "description": "Female gender option"
+  },
+  "invited": "Invited",
+  "@invited": {
+    "description": "Tab label for invited entries"
+  },
+  "waiting": "Waiting",
+  "@waiting": {
+    "description": "Tab label for waiting entries"
+  },
+  "discussed": "Discussed",
+  "@discussed": {
+    "description": "Tab label for discussed entries"
+  },
+  "week": "Week",
+  "@week": {
+    "description": "Tab label for weekly best entries"
+  },
+  "month": "Month",
+  "@month": {
+    "description": "Tab label for monthly best entries"
+  },
+  "year": "Year",
+  "@year": {
+    "description": "Tab label for yearly best entries"
+  },
+  "friends": "Friends",
+  "@friends": {
+    "description": "Tab label for friends entries"
+  },
+  "watching": "Watching",
+  "@watching": {
+    "description": "Tab label for watching entries"
+  },
+  "entries": "Entries",
+  "@entries": {
+    "description": "Tab label for entries"
+  },
+  "replies": "Replies",
+  "@replies": {
+    "description": "Tab label for replies"
   }
 }
