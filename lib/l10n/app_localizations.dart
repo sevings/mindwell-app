@@ -709,6 +709,90 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'100 записей'**
   String get entriesCount100;
+
+  /// Entry detail screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Детали записи'**
+  String get entryDetail;
+
+  /// Comments section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Комментарии'**
+  String get comments;
+
+  /// Button to load more comments
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузить ещё'**
+  String get loadMoreComments;
+
+  /// Button to display specific number of comments
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать {count} комментариев'**
+  String displayComments(int count);
+
+  /// Add comment button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить комментарий'**
+  String get addComment;
+
+  /// Comment input field hint
+  ///
+  /// In ru, this message translates to:
+  /// **'Напишите ваш комментарий...'**
+  String get commentHint;
+
+  /// Vote button accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Голосовать'**
+  String get vote;
+
+  /// Favorite button accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'В избранное'**
+  String get favorite;
+
+  /// Upvote button accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Плюс'**
+  String get upvote;
+
+  /// Downvote button accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Минус'**
+  String get downvote;
+
+  /// Previous entry navigation button
+  ///
+  /// In ru, this message translates to:
+  /// **'Предыдущая запись'**
+  String get previousEntry;
+
+  /// Next entry navigation button
+  ///
+  /// In ru, this message translates to:
+  /// **'Следующая запись'**
+  String get nextEntry;
+
+  /// Message when there are no comments
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет комментариев'**
+  String get noComments;
+
+  /// Loading comments message
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка комментариев...'**
+  String get loadingComments;
 }
 
 class _AppLocalizationsDelegate

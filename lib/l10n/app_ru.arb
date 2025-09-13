@@ -415,5 +415,66 @@
   "entriesCount100": "100 записей",
   "@entriesCount100": {
     "description": "Entry count option for 100 entries"
+  },
+  "entryDetail": "Детали записи",
+  "@entryDetail": {
+    "description": "Entry detail screen title"
+  },
+  "comments": "Комментарии",
+  "@comments": {
+    "description": "Comments section title"
+  },
+  "loadMoreComments": "Загрузить ещё",
+  "@loadMoreComments": {
+    "description": "Button to load more comments"
+  },
+  "displayComments": "Показать {count} комментариев",
+  "@displayComments": {
+    "description": "Button to display specific number of comments",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addComment": "Добавить комментарий",
+  "@addComment": {
+    "description": "Add comment button text"
+  },
+  "commentHint": "Напишите ваш комментарий...",
+  "@commentHint": {
+    "description": "Comment input field hint"
+  },
+  "vote": "Голосовать",
+  "@vote": {
+    "description": "Vote button accessibility label"
+  },
+  "favorite": "В избранное",
+  "@favorite": {
+    "description": "Favorite button accessibility label"
+  },
+  "upvote": "Плюс",
+  "@upvote": {
+    "description": "Upvote button accessibility label"
+  },
+  "downvote": "Минус",
+  "@downvote": {
+    "description": "Downvote button accessibility label"
+  },
+  "previousEntry": "Предыдущая запись",
+  "@previousEntry": {
+    "description": "Previous entry navigation button"
+  },
+  "nextEntry": "Следующая запись",
+  "@nextEntry": {
+    "description": "Next entry navigation button"
+  },
+  "noComments": "Пока нет комментариев",
+  "@noComments": {
+    "description": "Message when there are no comments"
+  },
+  "loadingComments": "Загрузка комментариев...",
+  "@loadingComments": {
+    "description": "Loading comments message"
   }
 }

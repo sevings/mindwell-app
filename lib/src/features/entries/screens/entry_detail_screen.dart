@@ -1,0 +1,755 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
+import 'package:mindwell_api/mindwell_api.dart';
+
+import '../../../../l10n/app_localizations.dart';
+import '../../../core/widgets/images/cached_image.dart';
+import '../../../core/widgets/loaders/skeleton_loader.dart';
+import '../providers/entry_detail_provider.dart';
+
+/// Screen that displays a single entry in detail with comments and interaction options.
+/// 
+/// This screen uses a CustomScrollView with SliverAppBar for a modern, collapsible
+/// header effect. It displays the full entry content, author information, images,
+/// tags, and comments with voting and favoriting capabilities.
+class EntryDetailScreen extends ConsumerStatefulWidget {
+  /// The ID of the entry to display
+  final int entryId;
+
+  const EntryDetailScreen({
+    super.key,
+    required this.entryId,
+  });
+
+  @override
+  ConsumerState<EntryDetailScreen> createState() => _EntryDetailScreenState();
+}
+
+class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
+  final TextEditingController _commentController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent - 200) {
+      // Load more comments when near bottom
+      ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final entryState = ref.watch(entryDetailProvider(widget.entryId));
+
+    return Scaffold(
+      body: entryState.when(
+        initial: () => _buildLoadingState(context),
+        loading: () => _buildLoadingState(context),
+        loaded: (entry, comments, hasMoreComments, isLoadingComments) => 
+          _buildLoadedState(context, l10n, entry, comments, hasMoreComments, isLoadingComments),
+        error: (message, entry) => _buildErrorState(context, l10n, message, entry),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 200.0,
+          pinned: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: SkeletonLoader(
+              child: Container(
+                height: 20,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            background: SkeletonLoader(
+              child: Container(
+                color: Colors.grey[300],
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Author info skeleton
+                Row(
+                  children: [
+                    const SkeletonAvatar(size: 40),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SkeletonLoader(
+                            child: Container(
+                              height: 16,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          SkeletonLoader(
+                            child: Container(
+                              height: 14,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Content skeleton
+                const SkeletonText(lines: 8),
+                const SizedBox(height: 16),
+                // Action buttons skeleton
+                Row(
+                  children: [
+                    SkeletonLoader(
+                      child: Container(
+                        height: 40,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SkeletonLoader(
+                      child: Container(
+                        height: 40,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadedState(
+    BuildContext context,
+    AppLocalizations? l10n,
+    MwEntry entry,
+    List<MwComment> comments,
+    bool hasMoreComments,
+    bool isLoadingComments,
+  ) {
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 200.0,
+          pinned: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text(
+              entry.title ?? '',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            background: _buildAppBarBackground(entry),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAuthorInfo(entry),
+                const SizedBox(height: 16),
+                _buildEntryContent(entry),
+                const SizedBox(height: 16),
+                _buildActionButtons(entry),
+                const SizedBox(height: 24),
+                _buildCommentsSection(l10n, comments, hasMoreComments, isLoadingComments),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBarBackground(MwEntry entry) {
+    // If entry has images, use the first one as background
+    final images = entry.images;
+    if (images != null && images.isNotEmpty) {
+      final firstImage = images.first;
+      final imageUrl = firstImage.medium?.url ?? 
+                      firstImage.small?.url ?? 
+                      firstImage.thumbnail?.url ?? 
+                      firstImage.large?.url;
+      
+      if (imageUrl != null) {
+        return CachedImage(
+          imageUrl: imageUrl,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        );
+      }
+    }
+    
+    // Default gradient background
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFF5E3A),
+            Color(0xFFFF8A65),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAuthorInfo(MwEntry entry) {
+    final author = entry.author;
+    if (author == null) return const SizedBox.shrink();
+
+    return Row(
+      children: [
+        CachedAvatar(
+          imageUrl: _getAvatarUrl(author.avatar),
+          size: 40,
+          fallbackText: author.name?.isNotEmpty == true 
+              ? author.name!.substring(0, 1).toUpperCase()
+              : '?',
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                author.name ?? 'Unknown',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (entry.createdAt != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  _formatTimestamp(entry.createdAt!),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEntryContent(MwEntry entry) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Entry content with HTML rendering
+        if (entry.content != null && entry.content!.isNotEmpty) ...[
+          Html(
+            data: entry.content!,
+            style: {
+              "body": Style(
+                margin: Margins.zero,
+                padding: HtmlPaddings.zero,
+                fontSize: FontSize(16),
+                lineHeight: const LineHeight(1.5),
+              ),
+              "p": Style(
+                margin: Margins.only(bottom: 12),
+              ),
+              "h1, h2, h3, h4, h5, h6": Style(
+                margin: Margins.only(top: 16, bottom: 8),
+                fontWeight: FontWeight.bold,
+              ),
+              "img": Style(
+                width: Width(100, Unit.percent),
+                height: Height.auto(),
+              ),
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+        
+        // Images gallery
+        if (entry.images != null && entry.images!.isNotEmpty) ...[
+          _buildImageGallery(entry.images!.toList()),
+          const SizedBox(height: 16),
+        ],
+        
+        // Tags
+        if (entry.tags != null && entry.tags!.isNotEmpty) ...[
+          _buildTags(entry.tags!.toList()),
+          const SizedBox(height: 16),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildImageGallery(List<MwImage> images) {
+    if (images.length == 1) {
+      final imageUrl = _getImageUrl(images.first);
+      if (imageUrl != null) {
+        return CachedPostImage(
+          imageUrl: imageUrl,
+          width: double.infinity,
+          aspectRatio: 16 / 9,
+          onTap: () => _openImageGallery(images, 0),
+        );
+      }
+    }
+    
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 1,
+      ),
+      itemCount: images.length,
+      itemBuilder: (context, index) {
+        final imageUrl = _getImageUrl(images[index]);
+        if (imageUrl != null) {
+          return CachedPostImage(
+            imageUrl: imageUrl,
+            borderRadius: 8,
+            onTap: () => _openImageGallery(images, index),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  String? _getImageUrl(MwImage image) {
+    return image.medium?.url ?? 
+           image.small?.url ?? 
+           image.thumbnail?.url ?? 
+           image.large?.url;
+  }
+
+  String? _getAvatarUrl(MwAvatar? avatar) {
+    if (avatar == null) return null;
+    return avatar.x92 ?? avatar.x124 ?? avatar.x42;
+  }
+
+  Widget _buildTags(List<String> tags) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: tags.map((tag) => _buildTag(tag)).toList(),
+    );
+  }
+
+  Widget _buildTag(String tag) {
+    return GestureDetector(
+      onTap: () => _onTagTapped(tag),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          '#$tag',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(MwEntry entry) {
+    final rating = entry.rating;
+    final upvotes = rating?.upCount ?? 0;
+    final downvotes = rating?.downCount ?? 0;
+    final score = upvotes - downvotes;
+
+    return Row(
+      children: [
+        // Vote buttons
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => _onVote(true),
+              icon: const Icon(Icons.thumb_up_outlined),
+              tooltip: AppLocalizations.of(context)?.upvote ?? 'Upvote',
+            ),
+            Text(
+              score.toString(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            IconButton(
+              onPressed: () => _onVote(false),
+              icon: const Icon(Icons.thumb_down_outlined),
+              tooltip: AppLocalizations.of(context)?.downvote ?? 'Downvote',
+            ),
+          ],
+        ),
+        const SizedBox(width: 16),
+        // Favorite button
+        IconButton(
+          onPressed: _onToggleFavorite,
+          icon: const Icon(Icons.favorite_border),
+          tooltip: AppLocalizations.of(context)?.favorite ?? 'Favorite',
+        ),
+        const Spacer(),
+        // Comments count
+        Row(
+          children: [
+            const Icon(Icons.comment_outlined, size: 16),
+            const SizedBox(width: 4),
+            Text(
+              entry.commentCount?.toString() ?? '0',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCommentsSection(
+    AppLocalizations? l10n,
+    List<MwComment> comments,
+    bool hasMoreComments,
+    bool isLoadingComments,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.comments ?? 'Comments',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        
+        // Add comment form
+        _buildAddCommentForm(l10n),
+        const SizedBox(height: 16),
+        
+        // Load more comments button
+        if (hasMoreComments && comments.isNotEmpty) ...[
+          Center(
+            child: TextButton(
+              onPressed: isLoadingComments ? null : _loadMoreComments,
+              child: isLoadingComments
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n?.loadMoreComments ?? 'Load more'),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        
+        // Comments list
+        if (comments.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text(
+                l10n?.noComments ?? 'No comments yet',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          )
+        else
+          ...comments.map((comment) => _buildCommentItem(comment)),
+      ],
+    );
+  }
+
+  Widget _buildAddCommentForm(AppLocalizations? l10n) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          TextField(
+            controller: _commentController,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: l10n?.commentHint ?? 'Write your comment...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.all(12),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: _addComment,
+              child: Text(l10n?.addComment ?? 'Add comment'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentItem(MwComment comment) {
+    final author = comment.author;
+    if (author == null) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CachedAvatar(
+                imageUrl: _getAvatarUrl(author.avatar),
+                size: 32,
+                fallbackText: author.name?.isNotEmpty == true 
+                    ? author.name!.substring(0, 1).toUpperCase()
+                    : '?',
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      author.name ?? 'Unknown',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (comment.createdAt != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        _formatTimestamp(comment.createdAt!),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (comment.content != null && comment.content!.isNotEmpty) ...[
+            Html(
+              data: comment.content!,
+              style: {
+                "body": Style(
+                  margin: Margins.zero,
+                  padding: HtmlPaddings.zero,
+                  fontSize: FontSize(14),
+                  lineHeight: const LineHeight(1.4),
+                ),
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+          // Comment rating
+          if (comment.rating != null) ...[
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => _onCommentVote(comment, true),
+                  icon: const Icon(Icons.thumb_up_outlined, size: 16),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  padding: EdgeInsets.zero,
+                ),
+                Text(
+                  (comment.rating!.upCount ?? 0).toString(),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => _onCommentVote(comment, false),
+                  icon: const Icon(Icons.thumb_down_outlined, size: 16),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  padding: EdgeInsets.zero,
+                ),
+                Text(
+                  (comment.rating!.downCount ?? 0).toString(),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(
+    BuildContext context,
+    AppLocalizations? l10n,
+    String message,
+    MwEntry? entry,
+  ) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n?.somethingWentWrong ?? 'Something went wrong',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => ref.read(entryDetailProvider(widget.entryId).notifier).refresh(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatTimestamp(double timestamp) {
+    final date = DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays > 0) {
+      return DateFormat('MMM d, y').format(date);
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
+  void _onVote(bool isUpvote) {
+    ref.read(entryDetailProvider(widget.entryId).notifier).voteEntry(isUpvote);
+  }
+
+  void _onToggleFavorite() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).toggleFavorite();
+  }
+
+  void _onTagTapped(String tag) {
+    // TODO: Navigate to filtered entries by tag
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Tag tapped: $tag')),
+    );
+  }
+
+  void _openImageGallery(List<MwImage> images, int initialIndex) {
+    // TODO: Implement fullscreen image gallery
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Opening image gallery at index $initialIndex')),
+    );
+  }
+
+  void _loadMoreComments() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
+  }
+
+  void _addComment() {
+    final content = _commentController.text.trim();
+    if (content.isEmpty) return;
+
+    ref.read(entryDetailProvider(widget.entryId).notifier).addComment(content);
+    _commentController.clear();
+  }
+
+  void _onCommentVote(MwComment comment, bool isUpvote) {
+    // TODO: Implement comment voting
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Comment vote: ${isUpvote ? 'up' : 'down'}')),
+    );
+  }
+}

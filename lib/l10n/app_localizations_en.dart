@@ -316,4 +316,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get entriesCount100 => '100 entries';
+
+  @override
+  String get entryDetail => 'Entry Detail';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String get loadMoreComments => 'Load more';
+
+  @override
+  String displayComments(int count) {
+    return 'Display $count comments';
+  }
+
+  @override
+  String get addComment => 'Add comment';
+
+  @override
+  String get commentHint => 'Write your comment...';
+
+  @override
+  String get vote => 'Vote';
+
+  @override
+  String get favorite => 'Favorite';
+
+  @override
+  String get upvote => 'Upvote';
+
+  @override
+  String get downvote => 'Downvote';
+
+  @override
+  String get previousEntry => 'Previous entry';
+
+  @override
+  String get nextEntry => 'Next entry';
+
+  @override
+  String get noComments => 'No comments yet';
+
+  @override
+  String get loadingComments => 'Loading comments...';
 }

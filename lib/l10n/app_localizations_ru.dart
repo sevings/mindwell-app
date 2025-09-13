@@ -321,4 +321,48 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get entriesCount100 => '100 записей';
+
+  @override
+  String get entryDetail => 'Детали записи';
+
+  @override
+  String get comments => 'Комментарии';
+
+  @override
+  String get loadMoreComments => 'Загрузить ещё';
+
+  @override
+  String displayComments(int count) {
+    return 'Показать $count комментариев';
+  }
+
+  @override
+  String get addComment => 'Добавить комментарий';
+
+  @override
+  String get commentHint => 'Напишите ваш комментарий...';
+
+  @override
+  String get vote => 'Голосовать';
+
+  @override
+  String get favorite => 'В избранное';
+
+  @override
+  String get upvote => 'Плюс';
+
+  @override
+  String get downvote => 'Минус';
+
+  @override
+  String get previousEntry => 'Предыдущая запись';
+
+  @override
+  String get nextEntry => 'Следующая запись';
+
+  @override
+  String get noComments => 'Пока нет комментариев';
+
+  @override
+  String get loadingComments => 'Загрузка комментариев...';
 }

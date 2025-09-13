@@ -349,5 +349,66 @@
   "entriesCount100": "100 entries",
   "@entriesCount100": {
     "description": "Entry count option for 100 entries"
+  },
+  "entryDetail": "Entry Detail",
+  "@entryDetail": {
+    "description": "Entry detail screen title"
+  },
+  "comments": "Comments",
+  "@comments": {
+    "description": "Comments section title"
+  },
+  "loadMoreComments": "Load more",
+  "@loadMoreComments": {
+    "description": "Button to load more comments"
+  },
+  "displayComments": "Display {count} comments",
+  "@displayComments": {
+    "description": "Button to display specific number of comments",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addComment": "Add comment",
+  "@addComment": {
+    "description": "Add comment button text"
+  },
+  "commentHint": "Write your comment...",
+  "@commentHint": {
+    "description": "Comment input field hint"
+  },
+  "vote": "Vote",
+  "@vote": {
+    "description": "Vote button accessibility label"
+  },
+  "favorite": "Favorite",
+  "@favorite": {
+    "description": "Favorite button accessibility label"
+  },
+  "upvote": "Upvote",
+  "@upvote": {
+    "description": "Upvote button accessibility label"
+  },
+  "downvote": "Downvote",
+  "@downvote": {
+    "description": "Downvote button accessibility label"
+  },
+  "previousEntry": "Previous entry",
+  "@previousEntry": {
+    "description": "Previous entry navigation button"
+  },
+  "nextEntry": "Next entry",
+  "@nextEntry": {
+    "description": "Next entry navigation button"
+  },
+  "noComments": "No comments yet",
+  "@noComments": {
+    "description": "Message when there are no comments"
+  },
+  "loadingComments": "Loading comments...",
+  "@loadingComments": {
+    "description": "Loading comments message"
   }
 }
