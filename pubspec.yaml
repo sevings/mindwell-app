@@ -45,6 +45,7 @@ dependencies:
 
   # Data Classes & JSON
   freezed_annotation: ^2.4.1
+  built_collection: ^5.1.1
 
   # Internationalization & Formatting
   intl: ^0.20.2
