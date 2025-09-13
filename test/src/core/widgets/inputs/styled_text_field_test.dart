@@ -9,7 +9,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Label',
               hint: 'Test Hint',
@@ -95,11 +95,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
-              prefixIcon: const Icon(Icons.person),
-              suffixIcon: const Icon(Icons.clear),
+              prefixIcon: Icon(Icons.person),
+              suffixIcon: Icon(Icons.clear),
             ),
           ),
         ),
@@ -113,7 +113,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               prefixText: '\$',
@@ -131,7 +131,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               enabled: false,
@@ -148,7 +148,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               readOnly: true,
@@ -166,7 +166,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Password Field',
               obscureText: true,
@@ -184,7 +184,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Email Field',
               keyboardType: TextInputType.emailAddress,
@@ -201,7 +201,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               textInputAction: TextInputAction.search,
@@ -218,7 +218,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               maxLength: 10,
@@ -235,7 +235,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               maxLines: 5,
@@ -252,7 +252,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               minLines: 3,
@@ -275,7 +275,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Original Label',
               decoration: customDecoration,
@@ -292,7 +292,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
             ),
@@ -308,7 +308,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.darkTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
             ),
@@ -613,7 +613,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               hint: 'Enter test value',
@@ -630,7 +630,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: MindwellTheme.lightTheme,
-          home: Scaffold(
+          home: const Scaffold(
             body: StyledTextField(
               label: 'Test Field',
               enabled: false,

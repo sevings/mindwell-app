@@ -84,5 +84,6 @@ For each task, please follow these steps:
 2.  **Identify Files:** Determine which files need to be created or modified. The task description will often provide a list.
 3.  **Implement the Feature:** Write the necessary Dart code, following all the guidelines above.
 4.  **Write Tests:** Create corresponding tests for the new or modified code.
-5.  **Run Analysis:** Execute `flutter analyze` and fix all reported issues before proceeding.
-6.  **Verify:** Ensure the implementation is correct and all tests pass.
+5.  **Apply Automatic Fixes:** Run `dart fix --apply` to automatically fix common linting issues.
+6.  **Run Analysis:** Execute `flutter analyze` and fix all remaining reported issues before proceeding.
+7.  **Verify:** Ensure the implementation is correct and all tests pass.
