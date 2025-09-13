@@ -58,6 +58,12 @@ final entriesApiProvider = Provider<EntriesApi>((ref) {
   return api.getEntriesApi();
 });
 
+/// Provider for the CommentsApi instance.
+final commentsApiProvider = Provider<CommentsApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getCommentsApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 /// 
 /// This interceptor:
