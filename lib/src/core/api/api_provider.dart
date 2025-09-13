@@ -52,6 +52,12 @@ final meApiProvider = Provider<MeApi>((ref) {
   return api.getMeApi();
 });
 
+/// Provider for the EntriesApi instance.
+final entriesApiProvider = Provider<EntriesApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getEntriesApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 /// 
 /// This interceptor:
