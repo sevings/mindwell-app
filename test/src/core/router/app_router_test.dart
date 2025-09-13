@@ -150,7 +150,7 @@ void main() {
       await tester.pumpAndSettle();
       
       // Assert
-      expect(find.text('Регистрация'), findsNWidgets(2)); // AppBar title and body text
+      expect(find.text('Регистрация'), findsOneWidget); // Tab text
       expect(find.byType(AppBar), findsOneWidget);
     });
 
@@ -317,7 +317,7 @@ void main() {
       await tester.pumpAndSettle();
       
       // Assert - should stay on register page
-      expect(find.text('Регистрация'), findsNWidgets(2)); // AppBar title and body text
+      expect(find.text('Регистрация'), findsOneWidget); // Tab text
     });
 
     testWidgets('allows authenticated user to access protected routes', (WidgetTester tester) async {

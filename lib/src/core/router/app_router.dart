@@ -23,7 +23,7 @@ class AppRouter {
       const protectedRoutes = ['/', '/profile', '/notifications', '/chat'];
       
       // Define unauthenticated routes that should redirect if user is logged in
-      const unauthenticatedRoutes = ['/login'];
+      const unauthenticatedRoutes = ['/login', '/register'];
       
       final currentPath = state.uri.path;
       
@@ -99,7 +99,12 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const AuthScreen(),
+        builder: (context, state) => const AuthScreen(initialTabIndex: 0),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const AuthScreen(initialTabIndex: 1),
       ),
     ],
     

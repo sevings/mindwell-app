@@ -12,7 +12,14 @@ import '../widgets/registration_form.dart';
 /// and TabBarView to manage the form switching.
 class AuthScreen extends ConsumerWidget {
   /// Creates an authentication screen.
-  const AuthScreen({super.key});
+  const AuthScreen({
+    super.key,
+    this.initialTabIndex = 0,
+  });
+
+  /// The initial tab index to show when the screen loads.
+  /// 0 for login tab, 1 for registration tab.
+  final int initialTabIndex;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,6 +34,7 @@ class AuthScreen extends ConsumerWidget {
 
     return DefaultTabController(
       length: 2,
+      initialIndex: initialTabIndex,
       child: Scaffold(
         appBar: AppBar(
           title: Text(appTitle),

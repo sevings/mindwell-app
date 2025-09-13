@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../lib/src/features/auth/widgets/login_form.dart';
-import '../../../../../lib/src/features/auth/providers/auth_provider.dart';
-import '../../../../../lib/src/features/auth/models/auth_state.dart';
+import 'package:mindwell/src/features/auth/widgets/login_form.dart';
 
 void main() {
   group('LoginForm', () {

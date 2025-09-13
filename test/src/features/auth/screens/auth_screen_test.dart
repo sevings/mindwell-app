@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../lib/src/features/auth/screens/auth_screen.dart';
-import '../../../../../lib/src/features/auth/widgets/login_form.dart';
-import '../../../../../lib/src/features/auth/widgets/registration_form.dart';
+import 'package:mindwell/src/features/auth/screens/auth_screen.dart';
+import 'package:mindwell/src/features/auth/widgets/login_form.dart';
+import 'package:mindwell/src/features/auth/widgets/registration_form.dart';
 
 void main() {
   group('AuthScreen', () {

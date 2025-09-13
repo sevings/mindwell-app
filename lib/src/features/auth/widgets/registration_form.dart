@@ -89,18 +89,18 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
     final l10n = AppLocalizations.of(context);
     
     // Fallback to default strings if localization is not available
-    final usernameLabel = l10n?.username?.toString() ?? 'Username';
-    final usernameHint = l10n?.usernameHint?.toString() ?? 'Enter your username';
-    final emailLabel = l10n?.email?.toString() ?? 'Email';
-    final emailHint = l10n?.emailHint?.toString() ?? 'Enter your email address';
-    final passwordLabel = l10n?.password?.toString() ?? 'Password';
-    final passwordHint = l10n?.passwordHint?.toString() ?? 'Enter your password';
-    final confirmPasswordLabel = l10n?.confirmPassword?.toString() ?? 'Confirm Password';
-    final confirmPasswordHint = l10n?.confirmPasswordHint?.toString() ?? 'Confirm your password';
-    final registerButtonText = l10n?.registerButton?.toString() ?? 'Register';
-    final passwordStrengthLabel = l10n?.passwordStrength?.toString() ?? 'Password Strength';
-    final genderLabel = l10n?.gender?.toString() ?? 'Gender';
-    final genderHint = l10n?.genderHint?.toString() ?? 'Select your gender';
+    final usernameLabel = l10n?.username.toString() ?? 'Username';
+    final usernameHint = l10n?.usernameHint.toString() ?? 'Enter your username';
+    final emailLabel = l10n?.email.toString() ?? 'Email';
+    final emailHint = l10n?.emailHint.toString() ?? 'Enter your email address';
+    final passwordLabel = l10n?.password.toString() ?? 'Password';
+    final passwordHint = l10n?.passwordHint.toString() ?? 'Enter your password';
+    final confirmPasswordLabel = l10n?.confirmPassword.toString() ?? 'Confirm Password';
+    final confirmPasswordHint = l10n?.confirmPasswordHint.toString() ?? 'Confirm your password';
+    final registerButtonText = l10n?.registerButton.toString() ?? 'Register';
+    final passwordStrengthLabel = l10n?.passwordStrength.toString() ?? 'Password Strength';
+    final genderLabel = l10n?.gender.toString() ?? 'Gender';
+    final genderHint = l10n?.genderHint.toString() ?? 'Select your gender';
 
     // Listen to auth state changes and handle accordingly
     ref.listen<AuthState>(authProvider, (previous, next) {
@@ -257,12 +257,12 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     
-    final genderNotSet = l10n?.genderNotSet?.toString() ?? 'Not set';
-    final genderMale = l10n?.genderMale?.toString() ?? 'Male';
-    final genderFemale = l10n?.genderFemale?.toString() ?? 'Female';
+    final genderNotSet = l10n?.genderNotSet.toString() ?? 'Not set';
+    final genderMale = l10n?.genderMale.toString() ?? 'Male';
+    final genderFemale = l10n?.genderFemale.toString() ?? 'Female';
     
     return DropdownButtonFormField<String>(
-      value: _selectedGender,
+      initialValue: _selectedGender,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -317,9 +317,43 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     
-    final termsText = l10n?.termsOfService?.toString() ?? 'Terms of Service';
-    final privacyText = l10n?.privacyPolicy?.toString() ?? 'Privacy Policy';
-    final agreementText = l10n?.agreeToTerms?.toString() ?? 'By registering, you agree to our Terms of Service and Privacy Policy';
+    final termsText = l10n?.termsOfService.toString() ?? 'Terms of Service';
+    final privacyText = l10n?.privacyPolicy.toString() ?? 'Privacy Policy';
+    final agreementText = l10n?.agreeToTerms.toString() ?? 'By registering, you agree to our Terms of Service and Privacy Policy';
+    
+    // Replace placeholders in the agreement text
+    final processedText = agreementText
+        .replaceAll('{termsOfService}', termsText)
+        .replaceAll('{privacyPolicy}', privacyText);
+    
+    // Split the text by the terms and privacy text to create clickable links
+    final parts = processedText.split(termsText);
+    if (parts.length < 2) {
+      // Fallback if splitting fails
+      return Text(
+        processedText,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    
+    final beforeTerms = parts[0];
+    final afterTerms = parts[1];
+    
+    final privacyParts = afterTerms.split(privacyText);
+    if (privacyParts.length < 2) {
+      // Fallback if splitting fails
+      return Text(
+        processedText,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    
+    final betweenTermsAndPrivacy = privacyParts[0];
+    final afterPrivacy = privacyParts[1];
     
     return RichText(
       text: TextSpan(
@@ -327,12 +361,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
           color: colorScheme.onSurfaceVariant,
         ),
         children: [
-          TextSpan(
-            text: agreementText
-                .replaceAll('{termsOfService}', termsText)
-                .replaceAll('{privacyPolicy}', privacyText)
-                .split(termsText)[0],
-          ),
+          TextSpan(text: beforeTerms),
           TextSpan(
             text: termsText,
             style: TextStyle(
@@ -341,11 +370,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
             ),
             // TODO: Add onTap handler for Terms of Service
           ),
-          TextSpan(
-            text: agreementText
-                .split(termsText)[1]
-                .split(privacyText)[0],
-          ),
+          TextSpan(text: betweenTermsAndPrivacy),
           TextSpan(
             text: privacyText,
             style: TextStyle(
@@ -354,9 +379,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
             ),
             // TODO: Add onTap handler for Privacy Policy
           ),
-          TextSpan(
-            text: agreementText.split(privacyText)[1],
-          ),
+          TextSpan(text: afterPrivacy),
         ],
       ),
     );
@@ -376,19 +399,19 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
     final l10n = AppLocalizations.of(context);
     
     if (value == null || value.trim().isEmpty) {
-      return l10n?.usernameRequired?.toString() ?? 'Username is required';
+      return l10n?.usernameRequired.toString() ?? 'Username is required';
     }
     
     final trimmedValue = value.trim();
     
     if (trimmedValue.length < 3) {
-      return l10n?.usernameTooShort?.toString() ?? 'Username must be at least 3 characters';
+      return l10n?.usernameTooShort.toString() ?? 'Username must be at least 3 characters';
     }
     
     // Username can only contain letters, numbers, and underscores
     final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
     if (!usernameRegex.hasMatch(trimmedValue)) {
-      return l10n?.usernameInvalid?.toString() ?? 'Username can only contain letters, numbers, and underscores';
+      return l10n?.usernameInvalid.toString() ?? 'Username can only contain letters, numbers, and underscores';
     }
     
     return null;
@@ -437,11 +460,11 @@ class _RegistrationFormState extends ConsumerState<RegistrationForm> {
     final l10n = AppLocalizations.of(context);
     
     if (value == null || value.isEmpty) {
-      return l10n?.confirmPasswordRequired?.toString() ?? 'Please confirm your password';
+      return l10n?.confirmPasswordRequired.toString() ?? 'Please confirm your password';
     }
     
     if (value != _passwordController.text) {
-      return l10n?.passwordsDoNotMatch?.toString() ?? 'Passwords do not match';
+      return l10n?.passwordsDoNotMatch.toString() ?? 'Passwords do not match';
     }
     
     return null;

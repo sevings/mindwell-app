@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../lib/src/core/widgets/indicators/password_strength_indicator.dart';
+import 'package:mindwell/src/core/widgets/indicators/password_strength_indicator.dart';
 
 void main() {
   group('PasswordStrengthIndicator', () {
