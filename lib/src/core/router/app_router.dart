@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../features/home/screens/home_screen.dart';
 
 /// Application router configuration using GoRouter.
@@ -71,25 +72,26 @@ class _HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final l10n = AppLocalizations.of(context);
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.article,
             size: 64,
             color: Color(0xFFFF5E3A),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            'Feed',
-            style: TextStyle(
+            l10n?.feed ?? 'Feed',
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             'Your mindful journal entries',
             style: TextStyle(
               fontSize: 16,
@@ -227,30 +229,31 @@ class _LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text(l10n?.login ?? 'Login'),
         centerTitle: true,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.login,
               size: 64,
               color: Color(0xFFFF5E3A),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Login',
-              style: TextStyle(
+              l10n?.login ?? 'Login',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'Sign in to your account',
               style: TextStyle(
                 fontSize: 16,
@@ -272,30 +275,31 @@ class _RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text(l10n?.register ?? 'Register'),
         centerTitle: true,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.person_add,
               size: 64,
               color: Color(0xFFFF5E3A),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Register',
-              style: TextStyle(
+              l10n?.register ?? 'Register',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'Create your account',
               style: TextStyle(
                 fontSize: 16,
@@ -319,9 +323,10 @@ class _ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Error'),
+        title: Text(l10n?.error ?? 'Error'),
         centerTitle: true,
       ),
       body: Center(
@@ -334,16 +339,16 @@ class _ErrorScreen extends StatelessWidget {
               color: Colors.red,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Something went wrong',
-              style: TextStyle(
+            Text(
+              l10n?.somethingWentWrong ?? 'Something went wrong',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              error?.toString() ?? 'Unknown error occurred',
+              error?.toString() ?? (l10n?.unknownError ?? 'Unknown error occurred'),
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -353,7 +358,7 @@ class _ErrorScreen extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => context.go('/'),
-              child: const Text('Go Home'),
+              child: Text(l10n?.goHome ?? 'Go Home'),
             ),
           ],
         ),

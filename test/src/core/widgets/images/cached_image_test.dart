@@ -138,15 +138,13 @@ void main() {
     });
 
     testWidgets('shows retry button on error when enabled', (WidgetTester tester) async {
-      bool retryPressed = false;
-      
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: CachedImage(
               imageUrl: testImageUrl,
               showRetryOnError: true,
-              onRetry: () => retryPressed = true,
+              onRetry: () {},
             ),
           ),
         ),
@@ -467,15 +465,13 @@ void main() {
 
   group('CachedImage Error Handling', () {
     testWidgets('shows error widget with retry button when image fails', (WidgetTester tester) async {
-      bool retryPressed = false;
-      
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: CachedImage(
               imageUrl: 'https://invalid-url.com/nonexistent.jpg',
               showRetryOnError: true,
-              onRetry: () => retryPressed = true,
+              onRetry: () {},
             ),
           ),
         ),

@@ -81,6 +81,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  # Internationalization
+  generate: true
+
   # Add assets directory for images, icons, etc.
   # assets:
   #   - assets/images/

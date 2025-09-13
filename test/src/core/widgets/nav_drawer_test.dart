@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mindwell/src/core/widgets/nav_drawer.dart';
 import 'package:mindwell/src/core/providers/auth_provider.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+
+/// Helper function to wrap widgets with localization support for testing
+Widget createTestWidgetWithLocalization(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [
+      Locale('ru', ''),
+      Locale('en', ''),
+    ],
+    locale: const Locale('ru', ''),
+    home: child,
+  );
+}
 
 void main() {
   group('NavDrawer', () {
@@ -13,8 +33,8 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -33,12 +53,12 @@ void main() {
       expect(find.text('testuser'), findsOneWidget);
       
       // Check that key navigation items exist
-      expect(find.text('New Entry'), findsOneWidget);
-      expect(find.text('My Entries'), findsOneWidget);
-      expect(find.text('Subscriptions'), findsOneWidget);
-      expect(find.text('Live'), findsOneWidget);
-      expect(find.text('Best'), findsOneWidget);
-      expect(find.text('Logout'), findsOneWidget);
+      expect(find.text('Новая запись'), findsOneWidget);
+      expect(find.text('Мои записи'), findsOneWidget);
+      expect(find.text('Подписки'), findsOneWidget);
+      expect(find.text('Прямой эфир'), findsOneWidget);
+      expect(find.text('Лучшее'), findsOneWidget);
+      expect(find.text('Выйти'), findsOneWidget);
     });
 
     testWidgets('renders correctly when not authenticated', (WidgetTester tester) async {
@@ -47,8 +67,8 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => AuthNotifier()),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -68,10 +88,10 @@ void main() {
       expect(find.text('Your mindful journal'), findsOneWidget);
       
       // Check that key navigation items exist
-      expect(find.text('Login'), findsOneWidget);
-      expect(find.text('Register'), findsOneWidget);
-      expect(find.text('Live'), findsOneWidget);
-      expect(find.text('Best'), findsOneWidget);
+      expect(find.text('Войти'), findsOneWidget);
+      expect(find.text('Регистрация'), findsOneWidget);
+      expect(find.text('Прямой эфир'), findsOneWidget);
+      expect(find.text('Лучшее'), findsOneWidget);
       expect(find.text('Mindwell v1.0.0'), findsOneWidget);
     });
 
@@ -82,8 +102,8 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -108,8 +128,8 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => AuthNotifier()),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -136,8 +156,8 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => authNotifier),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -153,7 +173,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify logout button is present
-      expect(find.text('Logout'), findsOneWidget);
+      expect(find.text('Выйти'), findsOneWidget);
     });
 
     testWidgets('displays all navigation items when authenticated', (WidgetTester tester) async {
@@ -163,8 +183,8 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -180,11 +200,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify key navigation items are displayed
-      expect(find.text('New Entry'), findsOneWidget);
-      expect(find.text('My Entries'), findsOneWidget);
-      expect(find.text('Subscriptions'), findsOneWidget);
-      expect(find.text('Live'), findsOneWidget);
-      expect(find.text('Best'), findsOneWidget);
+      expect(find.text('Новая запись'), findsOneWidget);
+      expect(find.text('Мои записи'), findsOneWidget);
+      expect(find.text('Подписки'), findsOneWidget);
+      expect(find.text('Прямой эфир'), findsOneWidget);
+      expect(find.text('Лучшее'), findsOneWidget);
     });
 
     testWidgets('shows user ID when available', (WidgetTester tester) async {
@@ -194,8 +214,8 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user-123', username: 'testuser')),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),
@@ -220,8 +240,8 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: '')),
           ],
-          child: const MaterialApp(
-            home: Scaffold(
+          child: createTestWidgetWithLocalization(
+            const Scaffold(
               drawer: NavDrawer(),
               body: Center(child: Text('Test Body')),
             ),

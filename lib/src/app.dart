@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import 'core/theme/mindwell_theme.dart';
 import 'core/router/app_router.dart';
 
@@ -22,6 +23,7 @@ class MindWellApp extends StatelessWidget {
       
       // Localization configuration
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

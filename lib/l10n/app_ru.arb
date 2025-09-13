@@ -1,0 +1,91 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Mindwell",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "home": "Главная",
+  "@home": {
+    "description": "Home screen title"
+  },
+  "newEntry": "Новая запись",
+  "@newEntry": {
+    "description": "New entry menu item"
+  },
+  "myEntries": "Мои записи",
+  "@myEntries": {
+    "description": "My entries menu item"
+  },
+  "subscriptions": "Подписки",
+  "@subscriptions": {
+    "description": "Subscriptions menu item"
+  },
+  "live": "Прямой эфир",
+  "@live": {
+    "description": "Live feed menu item"
+  },
+  "best": "Лучшее",
+  "@best": {
+    "description": "Best content menu item"
+  },
+  "tlogs": "Тлоги",
+  "@tlogs": {
+    "description": "Tlogs menu item"
+  },
+  "themes": "Темы",
+  "@themes": {
+    "description": "Themes menu item"
+  },
+  "settings": "Настройки",
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  "help": "Помощь",
+  "@help": {
+    "description": "Help menu item"
+  },
+  "news": "Новости",
+  "@news": {
+    "description": "News menu item"
+  },
+  "rules": "Правила",
+  "@rules": {
+    "description": "Rules menu item"
+  },
+  "about": "О приложении",
+  "@about": {
+    "description": "About menu item"
+  },
+  "login": "Войти",
+  "@login": {
+    "description": "Login button/menu item"
+  },
+  "register": "Регистрация",
+  "@register": {
+    "description": "Register button/menu item"
+  },
+  "logout": "Выйти",
+  "@logout": {
+    "description": "Logout button"
+  },
+  "error": "Ошибка",
+  "@error": {
+    "description": "Error screen title"
+  },
+  "goHome": "На главную",
+  "@goHome": {
+    "description": "Go home button"
+  },
+  "somethingWentWrong": "Что-то пошло не так",
+  "@somethingWentWrong": {
+    "description": "Error message when something goes wrong"
+  },
+  "unknownError": "Произошла неизвестная ошибка",
+  "@unknownError": {
+    "description": "Message for unknown errors"
+  },
+  "feed": "Лента",
+  "@feed": {
+    "description": "Feed/home content title"
+  }
+}

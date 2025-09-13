@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/platform_app_bar.dart';
 import '../../../core/widgets/bottom_nav_bar.dart';
 import '../../../core/widgets/nav_drawer.dart';
@@ -26,11 +27,12 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       // Platform-aware app bar
       appBar: PlatformAppBar(
-        title: const Text('Mindwell'),
+        title: Text(l10n?.appTitle ?? 'Mindwell'),
         centerTitle: true,
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
@@ -52,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: Navigate to settings screen
             },
-            tooltip: 'Settings',
+            tooltip: l10n?.settings ?? 'Settings',
           ),
         ],
       ),

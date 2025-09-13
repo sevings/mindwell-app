@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../theme/spacing.dart';
 
@@ -16,6 +17,7 @@ class NavDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Drawer(
       backgroundColor: theme.colorScheme.surface,
@@ -27,12 +29,12 @@ class NavDrawer extends ConsumerWidget {
           // Navigation items
           Expanded(
             child: authState.isAuthenticated
-                ? _buildAuthenticatedContent(context, ref, theme)
-                : _buildUnauthenticatedContent(context, theme),
+                ? _buildAuthenticatedContent(context, ref, theme, l10n)
+                : _buildUnauthenticatedContent(context, theme, l10n),
           ),
           
           // Footer
-          _buildDrawerFooter(context, authState, ref, theme),
+          _buildDrawerFooter(context, authState, ref, theme, l10n),
         ],
       ),
     );
@@ -153,6 +155,7 @@ class NavDrawer extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ThemeData theme,
+    AppLocalizations l10n,
   ) {
     return ListView(
       padding: EdgeInsets.zero,
@@ -161,7 +164,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.add_circle_outline,
-          title: 'New Entry',
+          title: l10n.newEntry,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to new entry screen
@@ -171,7 +174,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.article_outlined,
-          title: 'My Entries',
+          title: l10n.myEntries,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to user's entries
@@ -181,7 +184,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.subscriptions_outlined,
-          title: 'Subscriptions',
+          title: l10n.subscriptions,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to subscriptions
@@ -191,7 +194,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.live_tv_outlined,
-          title: 'Live',
+          title: l10n.live,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to live feed
@@ -201,7 +204,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.star_outline,
-          title: 'Best',
+          title: l10n.best,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to best entries
@@ -211,7 +214,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.timeline_outlined,
-          title: 'Tlogs',
+          title: l10n.tlogs,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to tlogs
@@ -221,7 +224,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.palette_outlined,
-          title: 'Themes',
+          title: l10n.themes,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to themes
@@ -235,7 +238,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.settings_outlined,
-          title: 'Settings',
+          title: l10n.settings,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to settings screen
@@ -245,7 +248,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.help_outline,
-          title: 'Help',
+          title: l10n.help,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Open website link
@@ -255,7 +258,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.newspaper_outlined,
-          title: 'News',
+          title: l10n.news,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to 'mindwell' user profile entries
@@ -265,7 +268,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.rule_outlined,
-          title: 'Rules',
+          title: l10n.rules,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Open website link
@@ -275,7 +278,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.info_outline,
-          title: 'About',
+          title: l10n.about,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to about screen
@@ -287,7 +290,7 @@ class NavDrawer extends ConsumerWidget {
   }
 
   /// Builds the navigation content for unauthenticated users.
-  Widget _buildUnauthenticatedContent(BuildContext context, ThemeData theme) {
+  Widget _buildUnauthenticatedContent(BuildContext context, ThemeData theme, AppLocalizations l10n) {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -295,7 +298,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.login_outlined,
-          title: 'Login',
+          title: l10n.login,
           onTap: () {
             Navigator.of(context).pop();
             context.go('/login');
@@ -305,7 +308,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.person_add_outlined,
-          title: 'Register',
+          title: l10n.register,
           onTap: () {
             Navigator.of(context).pop();
             context.go('/register');
@@ -319,7 +322,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.live_tv_outlined,
-          title: 'Live',
+          title: l10n.live,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to live feed
@@ -329,7 +332,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.star_outline,
-          title: 'Best',
+          title: l10n.best,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to best entries
@@ -343,7 +346,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.settings_outlined,
-          title: 'Settings',
+          title: l10n.settings,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to settings screen
@@ -353,7 +356,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.help_outline,
-          title: 'Help',
+          title: l10n.help,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Open website link
@@ -363,7 +366,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.newspaper_outlined,
-          title: 'News',
+          title: l10n.news,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to 'mindwell' user profile entries
@@ -373,7 +376,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.rule_outlined,
-          title: 'Rules',
+          title: l10n.rules,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Open website link
@@ -383,7 +386,7 @@ class NavDrawer extends ConsumerWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.info_outline,
-          title: 'About',
+          title: l10n.about,
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to about screen
@@ -400,6 +403,7 @@ class NavDrawer extends ConsumerWidget {
     AuthState authState,
     WidgetRef ref,
     ThemeData theme,
+    AppLocalizations l10n,
   ) {
     return Container(
       padding: MindwellEdgeInsets.md,
@@ -412,7 +416,7 @@ class NavDrawer extends ConsumerWidget {
         ),
       ),
       child: authState.isAuthenticated
-          ? _buildLogoutButton(context, ref, theme)
+          ? _buildLogoutButton(context, ref, theme, l10n)
           : _buildAppVersion(context, theme),
     );
   }
@@ -422,6 +426,7 @@ class NavDrawer extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ThemeData theme,
+    AppLocalizations l10n,
   ) {
     return SizedBox(
       width: double.infinity,
@@ -432,7 +437,7 @@ class NavDrawer extends ConsumerWidget {
           context.go('/login');
         },
         icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
+        label: Text(l10n.logout),
         style: OutlinedButton.styleFrom(
           foregroundColor: theme.colorScheme.error,
           side: BorderSide(color: theme.colorScheme.error),

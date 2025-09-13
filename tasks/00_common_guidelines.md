@@ -59,6 +59,7 @@ You must use the following technologies and packages as specified in the archite
     *   Use `flutter_localizations` and the `intl` package.
     *   All user-facing strings must be placed in `.arb` files (`lib/l10n/`).
     *   The default language is Russian (`ru`), with English (`en`) as the secondary language.
+    *   Every visible to user string must have Russian translation.
 
 ## 4. Code Style and Quality
 

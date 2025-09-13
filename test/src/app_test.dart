@@ -40,7 +40,7 @@ void main() {
       
       // Verify localization delegates are configured
       expect(materialApp.localizationsDelegates, isNotNull);
-      expect(materialApp.localizationsDelegates!.length, equals(3));
+      expect(materialApp.localizationsDelegates!.length, equals(4));
       
       // Verify supported locales
       expect(materialApp.supportedLocales, contains(const Locale('ru', '')));
@@ -65,11 +65,10 @@ void main() {
       // Build the app
       await tester.pumpWidget(const MindWellApp());
 
-      // Verify home placeholder content is displayed
-      expect(find.text('Welcome to Mindwell'), findsOneWidget);
-      expect(find.text('Your mindful journaling companion'), findsOneWidget);
-      expect(find.text('App structure is being set up...'), findsOneWidget);
-      expect(find.byIcon(Icons.psychology), findsOneWidget);
+      // Verify home content is displayed
+      expect(find.text('Лента'), findsOneWidget);
+      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      expect(find.byIcon(Icons.article), findsOneWidget);
     });
 
     testWidgets('should have correct app title', (WidgetTester tester) async {
@@ -102,7 +101,7 @@ void main() {
 
       // Verify the widget builds without errors
       expect(find.byType(Scaffold), findsOneWidget);
-      expect(find.text('Welcome to Mindwell'), findsOneWidget);
+      expect(find.text('Лента'), findsOneWidget);
     });
 
     testWidgets('should display all expected content', (WidgetTester tester) async {
@@ -110,10 +109,9 @@ void main() {
       await tester.pumpWidget(const MindWellApp());
 
       // Verify all expected content is present
-      expect(find.text('Welcome to Mindwell'), findsOneWidget);
-      expect(find.text('Your mindful journaling companion'), findsOneWidget);
-      expect(find.text('App structure is being set up...'), findsOneWidget);
-      expect(find.byIcon(Icons.psychology), findsOneWidget);
+      expect(find.text('Лента'), findsOneWidget);
+      expect(find.text('Your mindful journal entries'), findsOneWidget);
+      expect(find.byIcon(Icons.article), findsOneWidget);
     });
 
     testWidgets('should center content vertically', (WidgetTester tester) async {
