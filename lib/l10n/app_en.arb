@@ -58,8 +58,104 @@
   "@passwordRequired": {
     "description": "Password validation error message"
   },
-  "passwordTooShort": "Password must be at least 8 characters",
+  "passwordTooShort": "Password must be at least 6 characters",
   "@passwordTooShort": {
     "description": "Password length validation error message"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Username field label"
+  },
+  "usernameHint": "Enter your username",
+  "@usernameHint": {
+    "description": "Username field hint text"
+  },
+  "usernameRequired": "Username is required",
+  "@usernameRequired": {
+    "description": "Username validation error message"
+  },
+  "usernameTooShort": "Username must be at least 3 characters",
+  "@usernameTooShort": {
+    "description": "Username length validation error message"
+  },
+  "usernameInvalid": "Username can only contain letters, numbers, and underscores",
+  "@usernameInvalid": {
+    "description": "Username format validation error message"
+  },
+  "registerButton": "Register",
+  "@registerButton": {
+    "description": "Register button text"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  "confirmPasswordHint": "Confirm your password",
+  "@confirmPasswordHint": {
+    "description": "Confirm password field hint text"
+  },
+  "confirmPasswordRequired": "Please confirm your password",
+  "@confirmPasswordRequired": {
+    "description": "Confirm password validation error message"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password confirmation validation error message"
+  },
+  "passwordStrength": "Password Strength",
+  "@passwordStrength": {
+    "description": "Password strength indicator label"
+  },
+  "passwordStrengthWeak": "Weak",
+  "@passwordStrengthWeak": {
+    "description": "Weak password strength label"
+  },
+  "passwordStrengthMedium": "Medium",
+  "@passwordStrengthMedium": {
+    "description": "Medium password strength label"
+  },
+  "passwordStrengthStrong": "Strong",
+  "@passwordStrengthStrong": {
+    "description": "Strong password strength label"
+  },
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {
+    "description": "Terms of Service link text"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy Policy link text"
+  },
+  "agreeToTerms": "By registering, you agree to our {termsOfService} and {privacyPolicy}",
+  "@agreeToTerms": {
+    "description": "Terms agreement text with placeholders",
+    "placeholders": {
+      "termsOfService": {
+        "type": "String"
+      },
+      "privacyPolicy": {
+        "type": "String"
+      }
+    }
+  },
+  "gender": "Gender",
+  "@gender": {
+    "description": "Gender field label"
+  },
+  "genderHint": "Select your gender",
+  "@genderHint": {
+    "description": "Gender field hint text"
+  },
+  "genderNotSet": "Not set",
+  "@genderNotSet": {
+    "description": "Gender default option"
+  },
+  "genderMale": "Male",
+  "@genderMale": {
+    "description": "Male gender option"
+  },
+  "genderFemale": "Female",
+  "@genderFemale": {
+    "description": "Female gender option"
   }
 }

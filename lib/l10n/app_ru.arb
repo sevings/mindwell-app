@@ -124,8 +124,104 @@
   "@passwordRequired": {
     "description": "Password validation error message"
   },
-  "passwordTooShort": "Пароль должен содержать минимум 8 символов",
+  "passwordTooShort": "Пароль должен содержать минимум 6 символов",
   "@passwordTooShort": {
     "description": "Password length validation error message"
+  },
+  "username": "Имя пользователя",
+  "@username": {
+    "description": "Username field label"
+  },
+  "usernameHint": "Введите ваше имя пользователя",
+  "@usernameHint": {
+    "description": "Username field hint text"
+  },
+  "usernameRequired": "Имя пользователя обязательно",
+  "@usernameRequired": {
+    "description": "Username validation error message"
+  },
+  "usernameTooShort": "Имя пользователя должно содержать минимум 3 символа",
+  "@usernameTooShort": {
+    "description": "Username length validation error message"
+  },
+  "usernameInvalid": "Имя пользователя может содержать только буквы, цифры и подчеркивания",
+  "@usernameInvalid": {
+    "description": "Username format validation error message"
+  },
+  "registerButton": "Зарегистрироваться",
+  "@registerButton": {
+    "description": "Register button text"
+  },
+  "confirmPassword": "Подтвердите пароль",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  "confirmPasswordHint": "Подтвердите ваш пароль",
+  "@confirmPasswordHint": {
+    "description": "Confirm password field hint text"
+  },
+  "confirmPasswordRequired": "Пожалуйста, подтвердите ваш пароль",
+  "@confirmPasswordRequired": {
+    "description": "Confirm password validation error message"
+  },
+  "passwordsDoNotMatch": "Пароли не совпадают",
+  "@passwordsDoNotMatch": {
+    "description": "Password confirmation validation error message"
+  },
+  "passwordStrength": "Надежность пароля",
+  "@passwordStrength": {
+    "description": "Password strength indicator label"
+  },
+  "passwordStrengthWeak": "Слабый",
+  "@passwordStrengthWeak": {
+    "description": "Weak password strength label"
+  },
+  "passwordStrengthMedium": "Средний",
+  "@passwordStrengthMedium": {
+    "description": "Medium password strength label"
+  },
+  "passwordStrengthStrong": "Сильный",
+  "@passwordStrengthStrong": {
+    "description": "Strong password strength label"
+  },
+  "termsOfService": "Условия использования",
+  "@termsOfService": {
+    "description": "Terms of Service link text"
+  },
+  "privacyPolicy": "Политика конфиденциальности",
+  "@privacyPolicy": {
+    "description": "Privacy Policy link text"
+  },
+  "agreeToTerms": "Регистрируясь, вы соглашаетесь с нашими {termsOfService} и {privacyPolicy}",
+  "@agreeToTerms": {
+    "description": "Terms agreement text with placeholders",
+    "placeholders": {
+      "termsOfService": {
+        "type": "String"
+      },
+      "privacyPolicy": {
+        "type": "String"
+      }
+    }
+  },
+  "gender": "Пол",
+  "@gender": {
+    "description": "Gender field label"
+  },
+  "genderHint": "Выберите ваш пол",
+  "@genderHint": {
+    "description": "Gender field hint text"
+  },
+  "genderNotSet": "Не указан",
+  "@genderNotSet": {
+    "description": "Gender default option"
+  },
+  "genderMale": "Мужской",
+  "@genderMale": {
+    "description": "Male gender option"
+  },
+  "genderFemale": "Женский",
+  "@genderFemale": {
+    "description": "Female gender option"
   }
 }

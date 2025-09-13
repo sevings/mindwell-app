@@ -102,5 +102,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordRequired => 'Password is required';
 
   @override
-  String get passwordTooShort => 'Password must be at least 8 characters';
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get usernameHint => 'Enter your username';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get usernameTooShort => 'Username must be at least 3 characters';
+
+  @override
+  String get usernameInvalid =>
+      'Username can only contain letters, numbers, and underscores';
+
+  @override
+  String get registerButton => 'Register';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get confirmPasswordHint => 'Confirm your password';
+
+  @override
+  String get confirmPasswordRequired => 'Please confirm your password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordStrength => 'Password Strength';
+
+  @override
+  String get passwordStrengthWeak => 'Weak';
+
+  @override
+  String get passwordStrengthMedium => 'Medium';
+
+  @override
+  String get passwordStrengthStrong => 'Strong';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String agreeToTerms(String termsOfService, String privacyPolicy) {
+    return 'By registering, you agree to our $termsOfService and $privacyPolicy';
+  }
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderHint => 'Select your gender';
+
+  @override
+  String get genderNotSet => 'Not set';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
 }

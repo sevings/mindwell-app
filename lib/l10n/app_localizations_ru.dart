@@ -102,5 +102,75 @@ class AppLocalizationsRu extends AppLocalizations {
   String get passwordRequired => 'Пароль обязателен';
 
   @override
-  String get passwordTooShort => 'Пароль должен содержать минимум 8 символов';
+  String get passwordTooShort => 'Пароль должен содержать минимум 6 символов';
+
+  @override
+  String get username => 'Имя пользователя';
+
+  @override
+  String get usernameHint => 'Введите ваше имя пользователя';
+
+  @override
+  String get usernameRequired => 'Имя пользователя обязательно';
+
+  @override
+  String get usernameTooShort =>
+      'Имя пользователя должно содержать минимум 3 символа';
+
+  @override
+  String get usernameInvalid =>
+      'Имя пользователя может содержать только буквы, цифры и подчеркивания';
+
+  @override
+  String get registerButton => 'Зарегистрироваться';
+
+  @override
+  String get confirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get confirmPasswordHint => 'Подтвердите ваш пароль';
+
+  @override
+  String get confirmPasswordRequired => 'Пожалуйста, подтвердите ваш пароль';
+
+  @override
+  String get passwordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get passwordStrength => 'Надежность пароля';
+
+  @override
+  String get passwordStrengthWeak => 'Слабый';
+
+  @override
+  String get passwordStrengthMedium => 'Средний';
+
+  @override
+  String get passwordStrengthStrong => 'Сильный';
+
+  @override
+  String get termsOfService => 'Условия использования';
+
+  @override
+  String get privacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String agreeToTerms(String termsOfService, String privacyPolicy) {
+    return 'Регистрируясь, вы соглашаетесь с нашими $termsOfService и $privacyPolicy';
+  }
+
+  @override
+  String get gender => 'Пол';
+
+  @override
+  String get genderHint => 'Выберите ваш пол';
+
+  @override
+  String get genderNotSet => 'Не указан';
+
+  @override
+  String get genderMale => 'Мужской';
+
+  @override
+  String get genderFemale => 'Женский';
 }

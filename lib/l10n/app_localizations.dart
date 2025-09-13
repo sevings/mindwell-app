@@ -287,8 +287,140 @@ abstract class AppLocalizations {
   /// Password length validation error message
   ///
   /// In ru, this message translates to:
-  /// **'Пароль должен содержать минимум 8 символов'**
+  /// **'Пароль должен содержать минимум 6 символов'**
   String get passwordTooShort;
+
+  /// Username field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя пользователя'**
+  String get username;
+
+  /// Username field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваше имя пользователя'**
+  String get usernameHint;
+
+  /// Username validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя пользователя обязательно'**
+  String get usernameRequired;
+
+  /// Username length validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя пользователя должно содержать минимум 3 символа'**
+  String get usernameTooShort;
+
+  /// Username format validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя пользователя может содержать только буквы, цифры и подчеркивания'**
+  String get usernameInvalid;
+
+  /// Register button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Зарегистрироваться'**
+  String get registerButton;
+
+  /// Confirm password field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите пароль'**
+  String get confirmPassword;
+
+  /// Confirm password field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите ваш пароль'**
+  String get confirmPasswordHint;
+
+  /// Confirm password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, подтвердите ваш пароль'**
+  String get confirmPasswordRequired;
+
+  /// Password confirmation validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароли не совпадают'**
+  String get passwordsDoNotMatch;
+
+  /// Password strength indicator label
+  ///
+  /// In ru, this message translates to:
+  /// **'Надежность пароля'**
+  String get passwordStrength;
+
+  /// Weak password strength label
+  ///
+  /// In ru, this message translates to:
+  /// **'Слабый'**
+  String get passwordStrengthWeak;
+
+  /// Medium password strength label
+  ///
+  /// In ru, this message translates to:
+  /// **'Средний'**
+  String get passwordStrengthMedium;
+
+  /// Strong password strength label
+  ///
+  /// In ru, this message translates to:
+  /// **'Сильный'**
+  String get passwordStrengthStrong;
+
+  /// Terms of Service link text
+  ///
+  /// In ru, this message translates to:
+  /// **'Условия использования'**
+  String get termsOfService;
+
+  /// Privacy Policy link text
+  ///
+  /// In ru, this message translates to:
+  /// **'Политика конфиденциальности'**
+  String get privacyPolicy;
+
+  /// Terms agreement text with placeholders
+  ///
+  /// In ru, this message translates to:
+  /// **'Регистрируясь, вы соглашаетесь с нашими {termsOfService} и {privacyPolicy}'**
+  String agreeToTerms(String termsOfService, String privacyPolicy);
+
+  /// Gender field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Пол'**
+  String get gender;
+
+  /// Gender field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите ваш пол'**
+  String get genderHint;
+
+  /// Gender default option
+  ///
+  /// In ru, this message translates to:
+  /// **'Не указан'**
+  String get genderNotSet;
+
+  /// Male gender option
+  ///
+  /// In ru, this message translates to:
+  /// **'Мужской'**
+  String get genderMale;
+
+  /// Female gender option
+  ///
+  /// In ru, this message translates to:
+  /// **'Женский'**
+  String get genderFemale;
 }
 
 class _AppLocalizationsDelegate
