@@ -13,10 +13,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -47,10 +47,10 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => AuthNotifier()),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -82,10 +82,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -108,10 +108,10 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => AuthNotifier()),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -136,10 +136,10 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => authNotifier),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -163,10 +163,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -194,10 +194,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user-123', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),
@@ -220,10 +220,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: '')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              drawer: const NavDrawer(),
-              body: const Center(child: Text('Test Body')),
+              drawer: NavDrawer(),
+              body: Center(child: Text('Test Body')),
             ),
           ),
         ),

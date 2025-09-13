@@ -13,10 +13,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              body: const Center(child: Text('Test Body')),
-              bottomNavigationBar: const PlatformBottomNavBar(currentIndex: 0),
+              body: Center(child: Text('Test Body')),
+              bottomNavigationBar: PlatformBottomNavBar(currentIndex: 0),
             ),
           ),
         ),
@@ -35,10 +35,10 @@ void main() {
           overrides: [
             authProvider.overrideWith((ref) => AuthNotifier()),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              body: const Center(child: Text('Test Body')),
-              bottomNavigationBar: const PlatformBottomNavBar(currentIndex: 0),
+              body: Center(child: Text('Test Body')),
+              bottomNavigationBar: PlatformBottomNavBar(currentIndex: 0),
             ),
           ),
         ),
@@ -54,10 +54,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              body: const Center(child: Text('Test Body')),
-              bottomNavigationBar: const PlatformBottomNavBar(currentIndex: 1),
+              body: Center(child: Text('Test Body')),
+              bottomNavigationBar: PlatformBottomNavBar(currentIndex: 1),
             ),
           ),
         ),
@@ -74,10 +74,10 @@ void main() {
             authProvider.overrideWith((ref) => AuthNotifier()
               ..login(userId: 'test-user', username: 'testuser')),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
-              body: const Center(child: Text('Test Body')),
-              bottomNavigationBar: const PlatformBottomNavBar(currentIndex: 0),
+              body: Center(child: Text('Test Body')),
+              bottomNavigationBar: PlatformBottomNavBar(currentIndex: 0),
             ),
           ),
         ),

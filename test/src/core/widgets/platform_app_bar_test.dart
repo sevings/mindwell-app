@@ -6,12 +6,12 @@ void main() {
   group('PlatformAppBar', () {
     testWidgets('renders correctly with title', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            appBar: const PlatformAppBar(
+            appBar: PlatformAppBar(
               title: Text('Test Title'),
             ),
-            body: const Center(child: Text('Test Body')),
+            body: Center(child: Text('Test Body')),
           ),
         ),
       );
@@ -22,9 +22,9 @@ void main() {
 
     testWidgets('renders with actions', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            appBar: const PlatformAppBar(
+            appBar: PlatformAppBar(
               title: Text('Test Title'),
               actions: [
                 IconButton(
@@ -33,7 +33,7 @@ void main() {
                 ),
               ],
             ),
-            body: const Center(child: Text('Test Body')),
+            body: Center(child: Text('Test Body')),
           ),
         ),
       );
@@ -44,13 +44,13 @@ void main() {
 
     testWidgets('renders with custom leading widget', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            appBar: const PlatformAppBar(
+            appBar: PlatformAppBar(
               title: Text('Test Title'),
               leading: Icon(Icons.menu),
             ),
-            body: const Center(child: Text('Test Body')),
+            body: Center(child: Text('Test Body')),
           ),
         ),
       );
@@ -67,14 +67,14 @@ void main() {
 
     testWidgets('applies custom colors', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            appBar: const PlatformAppBar(
+            appBar: PlatformAppBar(
               title: Text('Test Title'),
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            body: const Center(child: Text('Test Body')),
+            body: Center(child: Text('Test Body')),
           ),
         ),
       );
