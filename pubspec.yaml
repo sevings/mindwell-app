@@ -26,6 +26,8 @@ dependencies:
   dio: ^5.4.0
   retrofit: ^4.0.3
   json_annotation: ^4.8.1
+  mindwell_api:
+    path: api/
 
   # Local Storage
   hive: ^2.2.3
