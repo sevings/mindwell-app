@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../core/theme/spacing.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../models/feed_type.dart';
+import '../models/feed_settings.dart';
 import '../providers/entry_feed_provider.dart';
 import 'entry_card_full.dart';
+import 'entry_card_short.dart';
 
-/// A widget that displays a list of entries in full format.
+/// A widget that displays a list of entries in different formats.
 /// 
 /// This widget:
 /// - Takes a [FeedType] and displays the correct list format
 /// - Watches the [entryFeedProvider] and displays the list of entries
 /// - Uses [ListView.builder] for the full format
+/// - Uses [MasonryGridView] for the short format (masonry layout)
 /// - Implements infinite scrolling by calling [fetchMoreEntries] when the user nears the end
 /// - Implements pull-to-refresh
 /// - Shows [SkeletonLoader] widgets while loading
@@ -143,6 +147,27 @@ class _EntryListState extends ConsumerState<EntryList> {
 
   /// Builds the loading state with skeleton loaders
   Widget _buildLoadingState() {
+    final feedState = ref.read(entryFeedProvider(widget.feedType));
+    
+    // Determine display format from feed state (default to full for loading)
+    DisplayFormat displayFormat = DisplayFormat.full;
+    feedState.when(
+      initial: () {},
+      loading: () {},
+      loaded: (entries, hasMore, settings) => displayFormat = settings.displayFormat,
+      error: (message, entries) {},
+      empty: () {},
+    );
+    
+    if (displayFormat == DisplayFormat.short) {
+      return _buildShortFormatSkeletonGrid();
+    } else {
+      return _buildFullFormatSkeletonList();
+    }
+  }
+
+  /// Builds the full format skeleton loading list
+  Widget _buildFullFormatSkeletonList() {
     return ListView.builder(
       controller: _scrollController,
       padding: EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
@@ -151,9 +176,60 @@ class _EntryListState extends ConsumerState<EntryList> {
     );
   }
 
+  /// Builds the short format skeleton loading grid
+  Widget _buildShortFormatSkeletonGrid() {
+    final skeletonCount = _getCrossAxisCount() * 3; // 3 rows of skeletons
+    
+    return MasonryGridView.count(
+      controller: _scrollController,
+      crossAxisCount: _getCrossAxisCount(),
+      mainAxisSpacing: MindwellSpacing.xs,
+      crossAxisSpacing: MindwellSpacing.xs,
+      padding: EdgeInsets.symmetric(
+        horizontal: MindwellSpacing.sm,
+        vertical: MindwellSpacing.sm,
+      ),
+      itemCount: skeletonCount,
+      itemBuilder: (context, index) => _buildSkeletonCardShort(),
+    );
+  }
+
   /// Builds the loaded state with actual entries
   Widget _buildLoadedState(List<MwEntry> entries, bool hasMore) {
-    Widget listView = ListView.builder(
+    final feedState = ref.read(entryFeedProvider(widget.feedType));
+    
+    // Determine display format from feed state
+    DisplayFormat displayFormat = DisplayFormat.full; // default
+    feedState.when(
+      initial: () {},
+      loading: () {},
+      loaded: (entries, hasMore, settings) => displayFormat = settings.displayFormat,
+      error: (message, entries) {},
+      empty: () {},
+    );
+    
+    Widget content;
+    
+    if (displayFormat == DisplayFormat.short) {
+      content = _buildShortFormatGrid(entries, hasMore);
+    } else {
+      content = _buildFullFormatList(entries, hasMore);
+    }
+
+    // Wrap with RefreshIndicator if pull-to-refresh is enabled
+    if (widget.enablePullToRefresh) {
+      return RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: content,
+      );
+    }
+
+    return content;
+  }
+
+  /// Builds the full format list view
+  Widget _buildFullFormatList(List<MwEntry> entries, bool hasMore) {
+    return ListView.builder(
       controller: _scrollController,
       padding: EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
       itemCount: entries.length + (hasMore ? 1 : 0), // +1 for loading indicator
@@ -170,16 +246,49 @@ class _EntryListState extends ConsumerState<EntryList> {
         );
       },
     );
+  }
 
-    // Wrap with RefreshIndicator if pull-to-refresh is enabled
-    if (widget.enablePullToRefresh) {
-      return RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: listView,
+  /// Builds the short format masonry grid view
+  Widget _buildShortFormatGrid(List<MwEntry> entries, bool hasMore) {
+    final items = <Widget>[];
+    
+    // Add entry cards
+    for (int i = 0; i < entries.length; i++) {
+      final entry = entries[i];
+      items.add(
+        EntryCardShort(
+          key: ValueKey('entry_${entry.id}'),
+          entry: entry,
+        ),
       );
     }
+    
+    // Add loading indicator if there are more entries
+    if (hasMore) {
+      items.add(_buildLoadingMoreIndicator());
+    }
+    
+    return MasonryGridView.count(
+      controller: _scrollController,
+      crossAxisCount: _getCrossAxisCount(),
+      mainAxisSpacing: MindwellSpacing.xs,
+      crossAxisSpacing: MindwellSpacing.xs,
+      padding: EdgeInsets.symmetric(
+        horizontal: MindwellSpacing.sm,
+        vertical: MindwellSpacing.sm,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) => items[index],
+    );
+  }
 
-    return listView;
+  /// Determines the number of columns for the masonry grid based on screen width
+  int _getCrossAxisCount() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth > 1200) return 4; // Large screens
+    if (screenWidth > 800) return 3;  // Medium screens
+    if (screenWidth > 600) return 2;  // Small tablets
+    return 1; // Mobile phones
   }
 
   /// Builds the error state
@@ -271,7 +380,7 @@ class _EntryListState extends ConsumerState<EntryList> {
     );
   }
 
-  /// Builds a skeleton card for loading state
+  /// Builds a skeleton card for loading state (full format)
   Widget _buildSkeletonCard() {
     return SkeletonLoader(
       child: Card(
@@ -343,6 +452,95 @@ class _EntryListState extends ConsumerState<EntryList> {
                     width: 32.0,
                     height: 32.0,
                     borderRadius: 16.0,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds a skeleton card for loading state (short format)
+  Widget _buildSkeletonCardShort() {
+    return SkeletonLoader(
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: EdgeInsets.all(MindwellSpacing.sm),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header skeleton
+              Row(
+                children: [
+                  SkeletonAvatar(size: 32.0),
+                  SizedBox(width: MindwellSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SkeletonText(
+                          lines: 1,
+                          lineHeight: 14.0,
+                          lineWidths: [0.6],
+                        ),
+                        SizedBox(height: 2.0),
+                        SkeletonText(
+                          lines: 1,
+                          lineHeight: 10.0,
+                          lineWidths: [0.4],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: MindwellSpacing.sm),
+              // Title skeleton
+              SkeletonText(
+                lines: 1,
+                lineHeight: 16.0,
+                lineWidths: [0.8],
+              ),
+              SizedBox(height: 4.0),
+              // Content skeleton (shorter for short format)
+              SkeletonText(
+                lines: 2,
+                lineHeight: 14.0,
+                lineSpacing: 2.0,
+                lineWidths: [1.0, 0.8],
+              ),
+              SizedBox(height: MindwellSpacing.sm),
+              // Optional image skeleton (randomly show)
+              if ((DateTime.now().millisecondsSinceEpoch % 3) == 0) ...[
+                SkeletonBox(
+                  width: double.infinity,
+                  height: 120.0,
+                  borderRadius: 8.0,
+                ),
+                SizedBox(height: MindwellSpacing.sm),
+              ],
+              // Footer skeleton
+              Row(
+                children: [
+                  SkeletonBox(
+                    width: 40.0,
+                    height: 16.0,
+                    borderRadius: 8.0,
+                  ),
+                  SizedBox(width: MindwellSpacing.sm),
+                  SkeletonBox(
+                    width: 40.0,
+                    height: 16.0,
+                    borderRadius: 8.0,
+                  ),
+                  const Spacer(),
+                  SkeletonBox(
+                    width: 60.0,
+                    height: 16.0,
+                    borderRadius: 8.0,
                   ),
                 ],
               ),
