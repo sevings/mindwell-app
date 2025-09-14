@@ -70,6 +70,12 @@ final imagesApiProvider = Provider<ImagesApi>((ref) {
   return api.getImagesApi();
 });
 
+/// Provider for the ThemesApi instance.
+final themesApiProvider = Provider<ThemesApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getThemesApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 /// 
 /// This interceptor:

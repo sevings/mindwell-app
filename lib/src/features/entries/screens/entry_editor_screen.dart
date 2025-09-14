@@ -18,9 +18,13 @@ class EntryEditorScreen extends ConsumerStatefulWidget {
   /// The ID of the entry being edited, or null for new entries.
   final int? entryId;
 
+  /// The name of the theme for theme entries, or null for personal entries.
+  final String? themeName;
+
   const EntryEditorScreen({
     super.key,
     this.entryId,
+    this.themeName,
   });
 
   @override
@@ -47,7 +51,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
 
   void _onContentChanged() {
     final content = _quillController.document.toPlainText();
-    ref.read(entryEditorProvider(widget.entryId).notifier).updateContent(content);
+    ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateContent(content);
   }
 
   @override
@@ -63,7 +67,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
   /// Preview the entry by saving it as a draft and navigating to preview.
   Future<void> _previewEntry() async {
     try {
-      await ref.read(entryEditorProvider(widget.entryId).notifier).previewEntry();
+      await ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).previewEntry();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +83,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
   /// Publish the entry.
   Future<void> _publishEntry() async {
     try {
-      await ref.read(entryEditorProvider(widget.entryId).notifier).publishEntry();
+      await ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).publishEntry();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,14 +99,14 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(entryEditorProvider(widget.entryId));
+    final entryState = ref.watch(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)));
     
     // Listen to state changes and update controllers
-    ref.listen<EntryEditorState>(entryEditorProvider(widget.entryId), (previous, next) {
+    ref.listen<EntryEditorState>(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)), (previous, next) {
       next.when(
         initial: () {},
         loading: () {},
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
           // Update title controller if it's different
           if (_titleController.text != title) {
             _titleController.text = title;
@@ -158,7 +162,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
                       label: l10n?.retry ?? 'Retry',
                       textColor: Colors.white,
                       onPressed: () {
-                        ref.read(entryEditorProvider(widget.entryId).notifier).clearError();
+                        ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).clearError();
                       },
                     )
                   : null,
@@ -185,14 +189,14 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
               showEntrySettingsBottomSheet(
                 context: context,
                 entryId: widget.entryId,
-                isThemeEntry: false, // TODO: Pass theme entry info when available
+                isThemeEntry: widget.themeName != null,
               );
             },
             tooltip: l10n?.settings ?? 'Settings',
           ),
           // Preview button
           entryState.maybeWhen(
-            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
               return IconButton(
                 icon: const Icon(Icons.preview),
                 onPressed: title.trim().isNotEmpty && content.trim().isNotEmpty ? () {
@@ -209,7 +213,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
           ),
           // Publish button
           entryState.maybeWhen(
-            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
               final canPublish = title.trim().isNotEmpty && content.trim().isNotEmpty;
               return TextButton(
                 onPressed: canPublish ? () {
@@ -264,7 +268,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
       body: entryState.when(
         initial: () => const Center(child: CircularProgressIndicator()),
         loading: () => const Center(child: CircularProgressIndicator()),
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => _buildEditingContent(),
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => _buildEditingContent(),
         publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
         success: (entry) => _buildSuccessContent(),
         preview: (entry) => _buildPreviewContent(),
@@ -274,12 +278,12 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
   }
 
   Widget _buildEditingContent() {
-    final entryState = ref.watch(entryEditorProvider(widget.entryId));
+    final entryState = ref.watch(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)));
     
     return entryState.when(
       initial: () => const Center(child: CircularProgressIndicator()),
       loading: () => const Center(child: CircularProgressIndicator()),
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         _buildEditingForm(tags, images),
       publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
       success: (entry) => const Center(child: CircularProgressIndicator()),
@@ -308,7 +312,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
               ),
             ),
             onChanged: (value) {
-              ref.read(entryEditorProvider(widget.entryId).notifier).updateTitle(value);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTitle(value);
             },
           ),
         ),
@@ -321,12 +325,12 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             onRemoveTag: (tag) {
               final currentTags = List<String>.from(tags);
               currentTags.remove(tag);
-              ref.read(entryEditorProvider(widget.entryId).notifier).updateTags(currentTags);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
             },
             onAddTag: (tag) {
               final currentTags = List<String>.from(tags);
               currentTags.add(tag);
-              ref.read(entryEditorProvider(widget.entryId).notifier).updateTags(currentTags);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
             },
           ),
         ),
@@ -339,10 +343,10 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
           child: ImageManager(
             imageIds: images,
             onRemoveImage: (imageId) {
-              ref.read(entryEditorProvider(widget.entryId).notifier).removeImage(imageId);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).removeImage(imageId);
             },
             onAddImages: (files) {
-              ref.read(entryEditorProvider(widget.entryId).notifier).uploadImages(files);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).uploadImages(files);
             },
           ),
         ),
@@ -377,7 +381,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
 
   Widget _buildPublishingContent(double uploadProgress) {
     final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(entryEditorProvider(widget.entryId));
+    final entryState = ref.watch(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)));
     
     return entryState.maybeWhen(
       publishing: (isUploadingImages, progress) => Center(
@@ -534,7 +538,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             if (canRetry) ...[
               ElevatedButton.icon(
                 onPressed: () {
-                  ref.read(entryEditorProvider(widget.entryId).notifier).retryLastOperation();
+                  ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).retryLastOperation();
                 },
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n?.retry ?? 'Retry'),

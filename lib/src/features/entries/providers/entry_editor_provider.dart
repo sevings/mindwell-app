@@ -10,18 +10,22 @@ import '../models/entry_editor_state.dart';
 
 /// Provider for the EntryEditorNotifier that manages the state of entry editing.
 /// 
-/// Takes an optional [entryId] as a parameter to create separate providers for each entry.
+/// Takes an optional [entryId] and [themeName] as parameters to create separate providers for each entry.
 /// If [entryId] is null, it's for creating a new entry.
-final entryEditorProvider = StateNotifierProvider.family<EntryEditorNotifier, EntryEditorState, int?>(
-  (ref, entryId) {
+/// If [themeName] is provided, it's for creating a theme entry.
+final entryEditorProvider = StateNotifierProvider.family<EntryEditorNotifier, EntryEditorState, ({int? entryId, String? themeName})>(
+  (ref, params) {
     final entriesApi = ref.read(entriesApiProvider);
     final meApi = ref.read(meApiProvider);
+    final themesApi = ref.read(themesApiProvider);
     final imageUploadService = ref.read(imageUploadServiceProvider);
     
     return EntryEditorNotifier(
-      entryId: entryId,
+      entryId: params.entryId,
+      themeName: params.themeName,
       entriesApi: entriesApi,
       meApi: meApi,
+      themesApi: themesApi,
       imageUploadService: imageUploadService,
     );
   },
@@ -38,8 +42,10 @@ final entryEditorProvider = StateNotifierProvider.family<EntryEditorNotifier, En
 /// - Error handling and state management
 class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   final int? _entryId;
+  final String? _themeName;
   final EntriesApi _entriesApi;
   final MeApi _meApi;
+  final ThemesApi _themesApi;
   final ImageUploadService _imageUploadService;
   final Logger _logger = Logger('EntryEditorNotifier');
   
@@ -47,12 +53,16 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
 
   EntryEditorNotifier({
     required int? entryId,
+    required String? themeName,
     required EntriesApi entriesApi,
     required MeApi meApi,
+    required ThemesApi themesApi,
     required ImageUploadService imageUploadService,
   })  : _entryId = entryId,
+        _themeName = themeName,
         _entriesApi = entriesApi,
         _meApi = meApi,
+        _themesApi = themesApi,
         _imageUploadService = imageUploadService,
         super(const EntryEditorState.initial()) {
     _initialize();
@@ -67,7 +77,9 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       await _loadExistingEntry();
     } else {
       // Start with empty editing state for new entry
-      state = const EntryEditorState.editing();
+      state = EntryEditorState.editing(
+        themeName: _themeName,
+      );
     }
   }
 
@@ -102,6 +114,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         images: entry.images?.map((img) => img.id ?? 0).where((id) => id > 0).toList() ?? [],
         entryId: _entryId,
         hasUnsavedChanges: false,
+        themeName: _themeName,
+        isAnonymous: false, // Will be determined from entry data if available
       );
       
     } catch (e, stackTrace) {
@@ -118,7 +132,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(title: title, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (oldTitle, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (oldTitle, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -132,6 +146,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -145,7 +161,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(content: content, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, oldContent, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, oldContent, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -159,6 +175,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -172,7 +190,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(tags: tags, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, oldTags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, oldTags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -186,6 +204,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -199,7 +219,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(privacy: privacy, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, oldPrivacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, oldPrivacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -213,6 +233,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -226,7 +248,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(isCommentable: isCommentable, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, oldIsCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, oldIsCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -240,6 +262,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -253,7 +277,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(isVotable: isVotable, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, oldIsVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, oldIsVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -267,6 +291,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -280,7 +306,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(inLive: inLive, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, oldInLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, oldInLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -294,6 +320,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -307,7 +335,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(isShared: isShared, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, oldIsShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, oldIsShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -321,6 +349,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -334,7 +364,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(isDraft: isDraft, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, oldIsDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, oldIsDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -348,10 +378,41 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
       preview: (entry) => EntryEditorState.editing(isDraft: isDraft, hasUnsavedChanges: true),
+      error: (message, canRetry) => state,
+    );
+  }
+
+  /// Update the anonymous setting (only for theme entries).
+  void updateIsAnonymous(bool isAnonymous) {
+    state = state.when(
+      initial: () => EntryEditorState.editing(isAnonymous: isAnonymous, hasUnsavedChanges: true),
+      loading: () => state,
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, oldIsAnonymous) => 
+        EntryEditorState.editing(
+          title: title,
+          content: content,
+          tags: tags,
+          privacy: privacy,
+          isCommentable: isCommentable,
+          isVotable: isVotable,
+          inLive: inLive,
+          isShared: isShared,
+          isDraft: isDraft,
+          images: images,
+          entryId: entryId,
+          hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
+        ),
+      publishing: (isUploadingImages, uploadProgress) => state,
+      success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(isAnonymous: isAnonymous, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -361,7 +422,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(images: [imageId], hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -375,6 +436,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: [...images, imageId],
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -388,7 +451,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => state,
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -402,6 +465,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images.where((id) => id != imageId).toList(),
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -415,7 +480,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => EntryEditorState.editing(images: images, hasUnsavedChanges: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, oldImages, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, oldImages, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         EntryEditorState.editing(
           title: title,
           content: content,
@@ -429,6 +494,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: images,
           entryId: entryId,
           hasUnsavedChanges: true,
+          themeName: themeName,
+          isAnonymous: isAnonymous,
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -447,7 +514,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     state = state.when(
       initial: () => const EntryEditorState.publishing(isUploadingImages: true),
       loading: () => state,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
         const EntryEditorState.publishing(isUploadingImages: true),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
@@ -476,7 +543,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         // Add uploaded images to current images
         final currentState = state;
         final currentImages = currentState.maybeWhen(
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => images,
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => images,
           orElse: () => <int>[],
         );
         
@@ -487,8 +554,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       // Return to editing state
       final currentState = state;
       final editingData = currentState.maybeWhen(
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
-          (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId, hasUnsavedChanges: hasUnsavedChanges),
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
+          (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId, hasUnsavedChanges: hasUnsavedChanges, themeName: themeName, isAnonymous: isAnonymous),
         orElse: () => null,
       );
       
@@ -506,6 +573,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           images: editingData.images,
           entryId: editingData.entryId,
           hasUnsavedChanges: editingData.hasUnsavedChanges,
+          themeName: editingData.themeName,
+          isAnonymous: editingData.isAnonymous,
         );
       } else {
         state = const EntryEditorState.editing();
@@ -530,8 +599,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     final editingData = currentState.when(
       initial: () => null,
       loading: () => null,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
-        (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId),
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
+        (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId, themeName: themeName, isAnonymous: isAnonymous),
       publishing: (isUploadingImages, uploadProgress) => null,
       success: (entry) => null,
       preview: (entry) => null,
@@ -621,28 +690,49 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
 
   /// Create a new entry.
   Future<MwEntry?> _createNewEntry(
-    ({String title, String content, List<String> tags, String privacy, bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft, List<int> images, int? entryId}) editingData, 
+    ({String title, String content, List<String> tags, String privacy, bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft, List<int> images, int? entryId, String? themeName, bool isAnonymous}) editingData, 
     bool isDraft
   ) async {
-    final response = await _meApi.meTlogPost(
-      content: editingData.content,
-      privacy: editingData.privacy,
-      title: editingData.title,
-      images: editingData.images.isNotEmpty ? BuiltSet<int>(editingData.images) : null,
-      tags: editingData.tags.isNotEmpty ? BuiltSet<String>(editingData.tags) : null,
-      isCommentable: editingData.isCommentable,
-      isVotable: editingData.isVotable,
-      inLive: editingData.inLive,
-      isShared: editingData.isShared,
-      isDraft: isDraft,
-    );
-    
-    return response.data;
+    if (editingData.themeName != null) {
+      // Create theme entry
+      final response = await _themesApi.themesNameTlogPost(
+        name: editingData.themeName!,
+        content: editingData.content,
+        privacy: editingData.privacy,
+        title: editingData.title,
+        images: editingData.images.isNotEmpty ? BuiltSet<int>(editingData.images) : null,
+        tags: editingData.tags.isNotEmpty ? BuiltSet<String>(editingData.tags) : null,
+        isCommentable: editingData.isCommentable,
+        isVotable: editingData.isVotable,
+        inLive: editingData.inLive,
+        isShared: editingData.isShared,
+        isDraft: isDraft,
+        isAnonymous: editingData.isAnonymous,
+      );
+      
+      return response.data;
+    } else {
+      // Create personal entry
+      final response = await _meApi.meTlogPost(
+        content: editingData.content,
+        privacy: editingData.privacy,
+        title: editingData.title,
+        images: editingData.images.isNotEmpty ? BuiltSet<int>(editingData.images) : null,
+        tags: editingData.tags.isNotEmpty ? BuiltSet<String>(editingData.tags) : null,
+        isCommentable: editingData.isCommentable,
+        isVotable: editingData.isVotable,
+        inLive: editingData.inLive,
+        isShared: editingData.isShared,
+        isDraft: isDraft,
+      );
+      
+      return response.data;
+    }
   }
 
   /// Update an existing entry.
   Future<MwEntry?> _updateExistingEntry(
-    ({String title, String content, List<String> tags, String privacy, bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft, List<int> images, int? entryId}) editingData, 
+    ({String title, String content, List<String> tags, String privacy, bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft, List<int> images, int? entryId, String? themeName, bool isAnonymous}) editingData, 
     bool isDraft
   ) async {
     if (editingData.entryId == null) return null;
@@ -679,8 +769,8 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     final editingData = currentState.when(
       initial: () => null,
       loading: () => null,
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
-        (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId),
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
+        (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId, themeName: themeName, isAnonymous: isAnonymous),
       publishing: (isUploadingImages, uploadProgress) => null,
       success: (entry) => null,
       preview: (entry) => null,
@@ -754,7 +844,9 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     if (_entryId != null) {
       _loadExistingEntry();
     } else {
-      state = const EntryEditorState.editing();
+      state = EntryEditorState.editing(
+        themeName: _themeName,
+      );
     }
   }
 
@@ -768,7 +860,9 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       if (_entryId != null) {
         _loadExistingEntry();
       } else {
-        state = const EntryEditorState.editing();
+        state = EntryEditorState.editing(
+          themeName: _themeName,
+        );
       }
     }
   }
@@ -780,7 +874,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     currentState.when(
       initial: () {},
       loading: () {},
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {},
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {},
       publishing: (isUploadingImages, uploadProgress) {},
       success: (entry) {},
       preview: (entry) {},
@@ -796,7 +890,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   /// Check if the current state has unsaved changes.
   bool get hasUnsavedChanges {
     return state.maybeWhen(
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => hasUnsavedChanges,
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => hasUnsavedChanges,
       orElse: () => false,
     );
   }

@@ -30,6 +30,9 @@ class MockEntryEditorNotifier extends StateNotifier<EntryEditorState> implements
   Future<void> updateIsDraft(bool isDraft) async {}
   
   @override
+  Future<void> updateIsAnonymous(bool isAnonymous) async {}
+  
+  @override
   Future<void> updateTitle(String title) async {}
   
   @override
@@ -93,6 +96,7 @@ void main() {
         inLive: true,
         isShared: false,
         isDraft: false,
+        isAnonymous: false,
       );
     });
 
@@ -102,7 +106,7 @@ void main() {
     }) {
       return ProviderScope(
         overrides: [
-          entryEditorProvider(entryId).overrideWith((ref) => mockNotifier),
+          entryEditorProvider((entryId: entryId, themeName: null)).overrideWith((ref) => mockNotifier),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -191,6 +195,7 @@ void main() {
         inLive: true,
         isShared: false,
         isDraft: false,
+        isAnonymous: false,
       );
 
       // Set a larger screen size to avoid overflow
@@ -200,7 +205,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            entryEditorProvider(null).overrideWith((ref) => mockNotifier),
+            entryEditorProvider((entryId: null, themeName: null)).overrideWith((ref) => mockNotifier),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -28,13 +28,13 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(entryEditorProvider(entryId));
+    final entryState = ref.watch(entryEditorProvider((entryId: entryId, themeName: null)));
     
     return entryState.when(
       initial: () => const SizedBox.shrink(),
       loading: () => const SizedBox.shrink(),
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
-        _buildSettingsSheet(context, ref, l10n, privacy, isCommentable, isVotable, inLive, isShared, isDraft),
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
+        _buildSettingsSheet(context, ref, l10n, privacy, isCommentable, isVotable, inLive, isShared, isDraft, isAnonymous),
       publishing: (isUploadingImages, uploadProgress) => const SizedBox.shrink(),
       success: (entry) => const SizedBox.shrink(),
       preview: (entry) => const SizedBox.shrink(),
@@ -52,6 +52,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     bool inLive,
     bool isShared,
     bool isDraft,
+    bool isAnonymous,
   ) {
     return Container(
       padding: EdgeInsets.only(
@@ -99,7 +100,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           
           // Anonymous Posting Section (only for theme entries)
           if (isThemeEntry) 
-            _buildAnonymousSection(context, ref, l10n, isDraft),
+            _buildAnonymousSection(context, ref, l10n, isAnonymous),
           
           // Bottom padding for safe area
           SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
@@ -162,7 +163,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowComments ?? 'Allow Comments',
           l10n?.allowCommentsSubtitle ?? 'Let others comment on this entry',
           isCommentable,
-          (value) => ref.read(entryEditorProvider(entryId).notifier).updateIsCommentable(value),
+          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsCommentable(value),
           Icons.comment_outlined,
           key: const ValueKey('allowComments'),
         ),
@@ -173,7 +174,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowVotes ?? 'Allow Votes',
           l10n?.allowVotesSubtitle ?? 'Let others vote on this entry',
           isVotable,
-          (value) => ref.read(entryEditorProvider(entryId).notifier).updateIsVotable(value),
+          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsVotable(value),
           Icons.how_to_vote_outlined,
           key: const ValueKey('allowVotes'),
         ),
@@ -198,7 +199,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.postInLive ?? 'Post in Live Feed',
           l10n?.postInLiveSubtitle ?? 'Show this entry in the live feed',
           inLive,
-          (value) => ref.read(entryEditorProvider(entryId).notifier).updateInLive(value),
+          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateInLive(value),
           Icons.live_tv_outlined,
           key: const ValueKey('postInLive'),
         ),
@@ -209,7 +210,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowSharing ?? 'Allow Sharing',
           l10n?.allowSharingSubtitle ?? 'Let others share this entry',
           isShared,
-          (value) => ref.read(entryEditorProvider(entryId).notifier).updateIsShared(value),
+          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsShared(value),
           Icons.share_outlined,
           key: const ValueKey('allowSharing'),
         ),
@@ -221,7 +222,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations? l10n,
-    bool isDraft,
+    bool isAnonymous,
   ) {
     return _buildSection(
       title: 'Posting Options',
@@ -232,8 +233,8 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n,
           l10n?.postAnonymously ?? 'Post Anonymously',
           l10n?.postAnonymouslySubtitle ?? 'Hide your identity when posting in themes',
-          isDraft,
-          (value) => ref.read(entryEditorProvider(entryId).notifier).updateIsDraft(value),
+          isAnonymous,
+          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsAnonymous(value),
           Icons.visibility_off_outlined,
           key: const ValueKey('postAnonymously'),
         ),
@@ -277,7 +278,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     return ListTile(
       leading: GestureDetector(
         onTap: () {
-          ref.read(entryEditorProvider(entryId).notifier).updatePrivacy(privacyValue);
+          ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updatePrivacy(privacyValue);
         },
         child: Container(
           width: 24,
@@ -301,7 +302,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
       ),
       title: Text(title),
       onTap: () {
-        ref.read(entryEditorProvider(entryId).notifier).updatePrivacy(privacyValue);
+        ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updatePrivacy(privacyValue);
       },
     );
   }

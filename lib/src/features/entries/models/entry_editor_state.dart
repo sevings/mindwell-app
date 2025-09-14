@@ -29,6 +29,8 @@ sealed class EntryEditorState with _$EntryEditorState {
   /// [images] List of image IDs attached to the entry
   /// [entryId] ID of the entry being edited (null for new entries)
   /// [hasUnsavedChanges] Whether there are unsaved changes
+  /// [themeName] The name of the theme for theme entries (null for personal entries)
+  /// [isAnonymous] Whether to post anonymously (only for theme entries)
   const factory EntryEditorState.editing({
     @Default('') String title,
     @Default('') String content,
@@ -42,6 +44,8 @@ sealed class EntryEditorState with _$EntryEditorState {
     @Default([]) List<int> images,
     int? entryId,
     @Default(false) bool hasUnsavedChanges,
+    String? themeName,
+    @Default(false) bool isAnonymous,
   }) = _Editing;
 
   /// Publishing state when the entry is being saved/published

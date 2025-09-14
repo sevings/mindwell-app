@@ -32,7 +32,9 @@ mixin _$EntryEditorState {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -57,7 +59,9 @@ mixin _$EntryEditorState {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -82,7 +86,9 @@ mixin _$EntryEditorState {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -197,7 +203,9 @@ class _$InitialImpl implements _Initial {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -225,7 +233,9 @@ class _$InitialImpl implements _Initial {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -253,7 +263,9 @@ class _$InitialImpl implements _Initial {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -370,7 +382,9 @@ class _$LoadingImpl implements _Loading {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -398,7 +412,9 @@ class _$LoadingImpl implements _Loading {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -426,7 +442,9 @@ class _$LoadingImpl implements _Loading {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -509,7 +527,9 @@ abstract class _$$EditingImplCopyWith<$Res> {
       bool isDraft,
       List<int> images,
       int? entryId,
-      bool hasUnsavedChanges});
+      bool hasUnsavedChanges,
+      String? themeName,
+      bool isAnonymous});
 }
 
 /// @nodoc
@@ -535,6 +555,8 @@ class __$$EditingImplCopyWithImpl<$Res>
     Object? images = null,
     Object? entryId = freezed,
     Object? hasUnsavedChanges = null,
+    Object? themeName = freezed,
+    Object? isAnonymous = null,
   }) {
     return _then(_$EditingImpl(
       title: null == title
@@ -585,6 +607,14 @@ class __$$EditingImplCopyWithImpl<$Res>
           ? _value.hasUnsavedChanges
           : hasUnsavedChanges // ignore: cast_nullable_to_non_nullable
               as bool,
+      themeName: freezed == themeName
+          ? _value.themeName
+          : themeName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isAnonymous: null == isAnonymous
+          ? _value.isAnonymous
+          : isAnonymous // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -604,7 +634,9 @@ class _$EditingImpl implements _Editing {
       this.isDraft = false,
       final List<int> images = const [],
       this.entryId,
-      this.hasUnsavedChanges = false})
+      this.hasUnsavedChanges = false,
+      this.themeName,
+      this.isAnonymous = false})
       : _tags = tags,
         _images = images;
 
@@ -655,10 +687,15 @@ class _$EditingImpl implements _Editing {
   @override
   @JsonKey()
   final bool hasUnsavedChanges;
+  @override
+  final String? themeName;
+  @override
+  @JsonKey()
+  final bool isAnonymous;
 
   @override
   String toString() {
-    return 'EntryEditorState.editing(title: $title, content: $content, tags: $tags, privacy: $privacy, isCommentable: $isCommentable, isVotable: $isVotable, inLive: $inLive, isShared: $isShared, isDraft: $isDraft, images: $images, entryId: $entryId, hasUnsavedChanges: $hasUnsavedChanges)';
+    return 'EntryEditorState.editing(title: $title, content: $content, tags: $tags, privacy: $privacy, isCommentable: $isCommentable, isVotable: $isVotable, inLive: $inLive, isShared: $isShared, isDraft: $isDraft, images: $images, entryId: $entryId, hasUnsavedChanges: $hasUnsavedChanges, themeName: $themeName, isAnonymous: $isAnonymous)';
   }
 
   @override
@@ -681,7 +718,11 @@ class _$EditingImpl implements _Editing {
             const DeepCollectionEquality().equals(other._images, _images) &&
             (identical(other.entryId, entryId) || other.entryId == entryId) &&
             (identical(other.hasUnsavedChanges, hasUnsavedChanges) ||
-                other.hasUnsavedChanges == hasUnsavedChanges));
+                other.hasUnsavedChanges == hasUnsavedChanges) &&
+            (identical(other.themeName, themeName) ||
+                other.themeName == themeName) &&
+            (identical(other.isAnonymous, isAnonymous) ||
+                other.isAnonymous == isAnonymous));
   }
 
   @override
@@ -698,7 +739,9 @@ class _$EditingImpl implements _Editing {
       isDraft,
       const DeepCollectionEquality().hash(_images),
       entryId,
-      hasUnsavedChanges);
+      hasUnsavedChanges,
+      themeName,
+      isAnonymous);
 
   @JsonKey(ignore: true)
   @override
@@ -723,7 +766,9 @@ class _$EditingImpl implements _Editing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -731,8 +776,21 @@ class _$EditingImpl implements _Editing {
     required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
-    return editing(title, content, tags, privacy, isCommentable, isVotable,
-        inLive, isShared, isDraft, images, entryId, hasUnsavedChanges);
+    return editing(
+        title,
+        content,
+        tags,
+        privacy,
+        isCommentable,
+        isVotable,
+        inLive,
+        isShared,
+        isDraft,
+        images,
+        entryId,
+        hasUnsavedChanges,
+        themeName,
+        isAnonymous);
   }
 
   @override
@@ -752,7 +810,9 @@ class _$EditingImpl implements _Editing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -772,7 +832,9 @@ class _$EditingImpl implements _Editing {
         isDraft,
         images,
         entryId,
-        hasUnsavedChanges);
+        hasUnsavedChanges,
+        themeName,
+        isAnonymous);
   }
 
   @override
@@ -792,7 +854,9 @@ class _$EditingImpl implements _Editing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -801,8 +865,21 @@ class _$EditingImpl implements _Editing {
     required TResult orElse(),
   }) {
     if (editing != null) {
-      return editing(title, content, tags, privacy, isCommentable, isVotable,
-          inLive, isShared, isDraft, images, entryId, hasUnsavedChanges);
+      return editing(
+          title,
+          content,
+          tags,
+          privacy,
+          isCommentable,
+          isVotable,
+          inLive,
+          isShared,
+          isDraft,
+          images,
+          entryId,
+          hasUnsavedChanges,
+          themeName,
+          isAnonymous);
     }
     return orElse();
   }
@@ -867,7 +944,9 @@ abstract class _Editing implements EntryEditorState {
       final bool isDraft,
       final List<int> images,
       final int? entryId,
-      final bool hasUnsavedChanges}) = _$EditingImpl;
+      final bool hasUnsavedChanges,
+      final String? themeName,
+      final bool isAnonymous}) = _$EditingImpl;
 
   String get title;
   String get content;
@@ -881,6 +960,8 @@ abstract class _Editing implements EntryEditorState {
   List<int> get images;
   int? get entryId;
   bool get hasUnsavedChanges;
+  String? get themeName;
+  bool get isAnonymous;
   @JsonKey(ignore: true)
   _$$EditingImplCopyWith<_$EditingImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -978,7 +1059,9 @@ class _$PublishingImpl implements _Publishing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -1006,7 +1089,9 @@ class _$PublishingImpl implements _Publishing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -1034,7 +1119,9 @@ class _$PublishingImpl implements _Publishing {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -1185,7 +1272,9 @@ class _$SuccessImpl implements _Success {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -1213,7 +1302,9 @@ class _$SuccessImpl implements _Success {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -1241,7 +1332,9 @@ class _$SuccessImpl implements _Success {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -1389,7 +1482,9 @@ class _$PreviewImpl implements _Preview {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -1417,7 +1512,9 @@ class _$PreviewImpl implements _Preview {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -1445,7 +1542,9 @@ class _$PreviewImpl implements _Preview {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
@@ -1603,7 +1702,9 @@ class _$ErrorImpl implements _Error {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)
         editing,
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
@@ -1631,7 +1732,9 @@ class _$ErrorImpl implements _Error {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
@@ -1659,7 +1762,9 @@ class _$ErrorImpl implements _Error {
             bool isDraft,
             List<int> images,
             int? entryId,
-            bool hasUnsavedChanges)?
+            bool hasUnsavedChanges,
+            String? themeName,
+            bool isAnonymous)?
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,

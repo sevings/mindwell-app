@@ -102,6 +102,14 @@ class AppRouter {
             builder: (context, state) => const EntryEditorScreen(),
           ),
           GoRoute(
+            path: '/themes/:themeName/entries/new',
+            name: 'newThemeEntry',
+            builder: (context, state) {
+              final themeName = Uri.decodeComponent(state.pathParameters['themeName']!);
+              return EntryEditorScreen(themeName: themeName);
+            },
+          ),
+          GoRoute(
             path: '/entries/:id/edit',
             name: 'editEntry',
             builder: (context, state) {

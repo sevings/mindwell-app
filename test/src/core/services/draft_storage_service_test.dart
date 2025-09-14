@@ -160,7 +160,7 @@ void main() {
         result!.when(
           initial: () => fail('Expected editing state'),
           loading: () => fail('Expected editing state'),
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
             expect(title, equals('Test Title'));
             expect(content, equals('Test content'));
             expect(tags, equals(['tag1']));
@@ -214,7 +214,7 @@ void main() {
         result!.when(
           initial: () => fail('Expected editing state'),
           loading: () => fail('Expected editing state'),
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
             expect(title, equals('Test Title'));
             expect(content, equals('')); // default
             expect(tags, equals([])); // default

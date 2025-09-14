@@ -54,7 +54,7 @@ class DraftStorageService {
         loading: () {
           _logger.fine('Skipping draft save - loading state');
         },
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
           if (!hasUnsavedChanges) {
             _logger.fine('Skipping draft save - no unsaved changes');
             return;
@@ -167,7 +167,7 @@ class DraftStorageService {
       return draft.when(
         initial: () => null,
         loading: () => null,
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
           return {
             'hasTitle': title.isNotEmpty,
             'hasContent': content.isNotEmpty,

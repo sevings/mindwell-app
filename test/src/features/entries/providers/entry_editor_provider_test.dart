@@ -10,6 +10,7 @@ import 'package:mindwell/src/core/services/image_upload_service.dart';
 
 class MockEntriesApi extends Mock implements EntriesApi {}
 class MockMeApi extends Mock implements MeApi {}
+class MockThemesApi extends Mock implements ThemesApi {}
 class MockMwEntry extends Mock implements MwEntry {}
 class MockImageUploadService extends Mock implements ImageUploadService {}
 
@@ -17,12 +18,14 @@ void main() {
   group('EntryEditorNotifier', () {
     late MockEntriesApi mockEntriesApi;
     late MockMeApi mockMeApi;
+    late MockThemesApi mockThemesApi;
     late MockImageUploadService mockImageUploadService;
     late EntryEditorNotifier notifier;
 
     setUp(() {
       mockEntriesApi = MockEntriesApi();
       mockMeApi = MockMeApi();
+      mockThemesApi = MockThemesApi();
       mockImageUploadService = MockImageUploadService();
     });
 
@@ -30,8 +33,10 @@ void main() {
       setUp(() {
         notifier = EntryEditorNotifier(
           entryId: null,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
       });
@@ -44,7 +49,7 @@ void main() {
         
         // Check that we're in editing state
         final isEditing = notifier.state.maybeWhen(
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => true,
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => true,
           orElse: () => false,
         );
         expect(isEditing, isTrue);
@@ -54,7 +59,7 @@ void main() {
         notifier.updateTitle('Test Title');
         
         final hasUnsavedChanges = notifier.state.maybeWhen(
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => hasUnsavedChanges,
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => hasUnsavedChanges,
           orElse: () => false,
         );
         expect(hasUnsavedChanges, isTrue);
@@ -64,7 +69,7 @@ void main() {
         notifier.updateContent('Test Content');
         
         final hasUnsavedChanges = notifier.state.maybeWhen(
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => hasUnsavedChanges,
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => hasUnsavedChanges,
           orElse: () => false,
         );
         expect(hasUnsavedChanges, isTrue);
@@ -74,7 +79,7 @@ void main() {
         notifier.updateTags(['tag1', 'tag2']);
         
         final hasUnsavedChanges = notifier.state.maybeWhen(
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => hasUnsavedChanges,
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => hasUnsavedChanges,
           orElse: () => false,
         );
         expect(hasUnsavedChanges, isTrue);
@@ -209,8 +214,10 @@ void main() {
       setUp(() {
         notifier = EntryEditorNotifier(
           entryId: null,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
       });
@@ -230,8 +237,10 @@ void main() {
         
         final notifierWithId = EntryEditorNotifier(
           entryId: 123,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
         expect(notifierWithId.entryId, equals(123));
@@ -242,8 +251,10 @@ void main() {
         
         final notifierWithId = EntryEditorNotifier(
           entryId: 123,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
         expect(notifierWithId.isEditingExisting, isTrue);
@@ -254,8 +265,10 @@ void main() {
       setUp(() {
         notifier = EntryEditorNotifier(
           entryId: null,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
       });
@@ -396,8 +409,10 @@ void main() {
         // Set up notifier for existing entry
         notifier = EntryEditorNotifier(
           entryId: 123,
+          themeName: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
         );
         
@@ -454,6 +469,188 @@ void main() {
           inLive: true,
           isShared: false,
         )).called(1);
+      });
+    });
+
+    group('Theme Entry Creation', () {
+      setUp(() {
+        notifier = EntryEditorNotifier(
+          entryId: null,
+          themeName: 'test-theme',
+          entriesApi: mockEntriesApi,
+          meApi: mockMeApi,
+          themesApi: mockThemesApi,
+          imageUploadService: mockImageUploadService,
+        );
+      });
+
+      test('should initialize with theme name for theme entry', () async {
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        expect(notifier.state, isA<EntryEditorState>());
+        
+        // Check that we're in editing state with theme name
+        final isEditing = notifier.state.maybeWhen(
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => themeName == 'test-theme',
+          orElse: () => false,
+        );
+        expect(isEditing, isTrue);
+      });
+
+      test('should update anonymous setting for theme entries', () {
+        notifier.updateIsAnonymous(true);
+        
+        final isAnonymous = notifier.state.maybeWhen(
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => isAnonymous,
+          orElse: () => false,
+        );
+        expect(isAnonymous, isTrue);
+      });
+
+      test('should successfully create theme entry', () async {
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        final mockEntry = MockMwEntry();
+        when(() => mockThemesApi.themesNameTlogPost(
+          name: 'test-theme',
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+          isDraft: any(named: 'isDraft'),
+          isAnonymous: any(named: 'isAnonymous'),
+        )).thenAnswer((_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/themes/test-theme/tlog'),
+        ));
+
+        notifier.updateTitle('Test Theme Entry');
+        notifier.updateContent('Test Theme Content');
+        notifier.updateIsAnonymous(true);
+        
+        await notifier.publishEntry();
+        
+        final isSuccess = notifier.state.maybeWhen(
+          success: (entry) => true,
+          orElse: () => false,
+        );
+        expect(isSuccess, isTrue);
+        
+        verify(() => mockThemesApi.themesNameTlogPost(
+          name: 'test-theme',
+          content: 'Test Theme Content',
+          privacy: 'all',
+          title: 'Test Theme Entry',
+          images: null,
+          tags: null,
+          isCommentable: true,
+          isVotable: true,
+          inLive: true,
+          isShared: false,
+          isDraft: false,
+          isAnonymous: true,
+        )).called(1);
+      });
+
+      test('should create theme entry preview', () async {
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        final mockEntry = MockMwEntry();
+        when(() => mockEntry.id).thenReturn(456);
+        when(() => mockEntry.title).thenReturn('Test Theme Entry');
+        when(() => mockEntry.content).thenReturn('Test Theme Content');
+        
+        when(() => mockThemesApi.themesNameTlogPost(
+          name: 'test-theme',
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+          isDraft: true, // Should be true for preview
+          isAnonymous: any(named: 'isAnonymous'),
+        )).thenAnswer((_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/themes/test-theme/tlog'),
+        ));
+
+        notifier.updateTitle('Test Theme Entry');
+        notifier.updateContent('Test Theme Content');
+        notifier.updateIsAnonymous(false);
+        
+        await notifier.previewEntry();
+        
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
+          orElse: () => false,
+        );
+        expect(isPreview, isTrue);
+        
+        verify(() => mockThemesApi.themesNameTlogPost(
+          name: 'test-theme',
+          content: 'Test Theme Content',
+          privacy: 'all',
+          title: 'Test Theme Entry',
+          images: null,
+          tags: null,
+          isCommentable: true,
+          isVotable: true,
+          inLive: true,
+          isShared: false,
+          isDraft: true,
+          isAnonymous: false,
+        )).called(1);
+      });
+
+      test('should show error when theme API call fails', () async {
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        when(() => mockThemesApi.themesNameTlogPost(
+          name: 'test-theme',
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+          isDraft: any(named: 'isDraft'),
+          isAnonymous: any(named: 'isAnonymous'),
+        )).thenThrow(Exception('Theme API Error'));
+
+        notifier.updateTitle('Test Theme Entry');
+        notifier.updateContent('Test Theme Content');
+        
+        await notifier.publishEntry();
+        
+        final isError = notifier.state.maybeWhen(
+          error: (message, canRetry) => true,
+          orElse: () => false,
+        );
+        expect(isError, isTrue);
+        
+        final errorMessage = notifier.state.maybeWhen(
+          error: (message, canRetry) => message,
+          orElse: () => '',
+        );
+        expect(errorMessage, contains('Failed to publish entry'));
       });
     });
   });
