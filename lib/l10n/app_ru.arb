@@ -557,6 +557,18 @@
   "@addTag": {
     "description": "Add tag button tooltip"
   },
+  "used": "использован",
+  "@used": {
+    "description": "Word used to indicate tag usage count"
+  },
+  "time": "раз",
+  "@time": {
+    "description": "Singular form of time unit"
+  },
+  "times": "раз",
+  "@times": {
+    "description": "Plural form of time unit"
+  },
   "draftSaved": "Черновик сохранен",
   "@draftSaved": {
     "description": "Success message when draft is saved"

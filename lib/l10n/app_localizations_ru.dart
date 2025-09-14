@@ -428,6 +428,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addTag => 'Добавить тег';
 
   @override
+  String get used => 'использован';
+
+  @override
+  String get time => 'раз';
+
+  @override
+  String get times => 'раз';
+
+  @override
   String get draftSaved => 'Черновик сохранен';
 
   @override

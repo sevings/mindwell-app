@@ -914,6 +914,24 @@ abstract class AppLocalizations {
   /// **'Добавить тег'**
   String get addTag;
 
+  /// Word used to indicate tag usage count
+  ///
+  /// In ru, this message translates to:
+  /// **'использован'**
+  String get used;
+
+  /// Singular form of time unit
+  ///
+  /// In ru, this message translates to:
+  /// **'раз'**
+  String get time;
+
+  /// Plural form of time unit
+  ///
+  /// In ru, this message translates to:
+  /// **'раз'**
+  String get times;
+
   /// Success message when draft is saved
   ///
   /// In ru, this message translates to:

@@ -423,6 +423,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addTag => 'Add Tag';
 
   @override
+  String get used => 'used';
+
+  @override
+  String get time => 'time';
+
+  @override
+  String get times => 'times';
+
+  @override
   String get draftSaved => 'Draft saved';
 
   @override

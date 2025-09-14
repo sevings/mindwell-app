@@ -491,6 +491,18 @@
   "@addTag": {
     "description": "Add tag button tooltip"
   },
+  "used": "used",
+  "@used": {
+    "description": "Word used to indicate tag usage count"
+  },
+  "time": "time",
+  "@time": {
+    "description": "Singular form of time unit"
+  },
+  "times": "times",
+  "@times": {
+    "description": "Plural form of time unit"
+  },
   "draftSaved": "Draft saved",
   "@draftSaved": {
     "description": "Success message when draft is saved"
