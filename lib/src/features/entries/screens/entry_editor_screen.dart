@@ -354,42 +354,6 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
           ),
         ),
         
-        // Tag manager
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: TagManager(
-            tags: tags,
-            onRemoveTag: (tag) {
-              final currentTags = List<String>.from(tags);
-              currentTags.remove(tag);
-              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
-            },
-            onAddTag: (tag) {
-              final currentTags = List<String>.from(tags);
-              currentTags.add(tag);
-              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
-            },
-          ),
-        ),
-        
-        const SizedBox(height: 16),
-        
-        // Image manager
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ImageManager(
-            imageIds: images,
-            onRemoveImage: (imageId) {
-              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).removeImage(imageId);
-            },
-            onAddImages: (files) {
-              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).uploadImages(files);
-            },
-          ),
-        ),
-        
-        const SizedBox(height: 16),
-        
         // Rich text editor
         Expanded(
           child: Column(
@@ -410,6 +374,40 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+        
+        // Image manager
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ImageManager(
+            imageIds: images,
+            onRemoveImage: (imageId) {
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).removeImage(imageId);
+            },
+            onAddImages: (files) {
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).uploadImages(files);
+            },
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Tag manager
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TagManager(
+            tags: tags,
+            onRemoveTag: (tag) {
+              final currentTags = List<String>.from(tags);
+              currentTags.remove(tag);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
+            },
+            onAddTag: (tag) {
+              final currentTags = List<String>.from(tags);
+              currentTags.add(tag);
+              ref.read(entryEditorProvider((entryId: widget.entryId, themeName: widget.themeName)).notifier).updateTags(currentTags);
+            },
           ),
         ),
       ],
