@@ -94,31 +94,51 @@ Build the reusable UI components for displaying a single entry in different form
 
 ---
 
-## Task 5: Entry List Widget
+## Task 5: Basic Entry List Layout & State
 
 ### Goal
-Create a widget that displays a list of entries, supporting different layouts, infinite scrolling, and pull-to-refresh.
+Create a widget that displays a list of entries, supporting different layouts and handling loading/data states.
 
 ### Files to be Created or Modified:
 *   `lib/src/features/entries/widgets/entry_list.dart` (Create)
 
 ### Implementation Details:
 1.  **Create `entry_list.dart`:**
-    *   A widget that takes a `FeedType` and displays the correct list format.
-    *   It will watch the `entryFeedProvider` and display the list of entries.
+    *   A widget that takes a `FeedType` and watches the `entryFeedProvider`.
     *   Use `flutter_staggered_grid_view` for the "short" format (masonry layout).
     *   Use a `ListView.builder` for the "full" format.
-    *   Implement infinite scrolling by calling `fetchMoreEntries` when the user nears the end of the list.
-    *   Implement pull-to-refresh.
-    *   Show `SkeletonLoader` widgets while loading.
+    *   Show `SkeletonLoader` widgets while the provider is in a loading state.
+    *   Display the list of entries when loaded, and handle empty/error states appropriately.
 
 ### Testing:
 *   **Widget Tests:**
-    *   Test `EntryList` by mocking the `entryFeedProvider`. Verify that it displays the correct list, handles loading/error states, and triggers fetch/refresh calls.
+    *   Test `EntryList` by mocking the `entryFeedProvider`. Verify that it displays the correct layout and handles loading, loaded, empty, and error states.
 
 ---
 
-## Task 6: Entry Feed Screen
+## Task 6: Entry List Interactions (Scroll/Refresh)
+
+### Goal
+Implement infinite scrolling and pull-to-refresh functionality in the entry list widget.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/widgets/entry_list.dart` (Modify)
+
+### Implementation Details:
+1.  **Implement Infinite Scrolling:**
+    *   Detect when the user scrolls near the end of the list.
+    *   Call the `fetchMoreEntries` method on the provider to load the next page of data.
+2.  **Implement Pull-to-Refresh:**
+    *   Wrap the list view in a `RefreshIndicator`.
+    *   Trigger the `refresh` method on the provider when the user pulls down to refresh.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify that scrolling to the end and pulling to refresh trigger the correct methods on the mocked provider.
+
+---
+
+## Task 7: Entry Feed Screen with Dynamic Tabs
 
 ### Goal
 Build the main screen for the entry feed, including tabbed navigation for different feed types.
@@ -129,23 +149,42 @@ Build the main screen for the entry feed, including tabbed navigation for differ
 
 ### Implementation Details:
 1.  **Create `entry_feed_screen.dart`:**
-    *   The main screen will have a dynamic tab system. The tabs displayed in the `SliverAppBar`'s `TabBar` will change based on the context (e.g., which main feed is selected from navigation).
+    *   The main screen will have a dynamic tab system. The tabs displayed in the `SliverAppBar`'s `TabBar` will change based on the context.
     *   **Live Feed Tabs:** Invited, Waiting, Discussed.
     *   **Best Feed Tabs:** Week, Month, Year.
     *   **Subscriptions Feed Tabs:** Entries, Replies.
     *   The `TabBarView` will contain `EntryList` widgets configured for each specific tab.
-    *   Include a `FloatingActionButton` to navigate to the entry editor.
-    *   Add a menu button to open the `FeedSettingsBottomSheet`.
 2.  **Modify `app_router.dart`:**
     *   Set the `EntryFeedScreen` as the home route (`/`).
 
 ### Testing:
 *   **Widget Tests:**
-    *   Test `EntryFeedScreen` to ensure tabs and navigation work.
+    *   Test `EntryFeedScreen` to ensure tabs are created correctly for different feed types and that navigation between them works.
 
 ---
 
-## Task 7: Feed Settings UI
+## Task 8: Entry Feed Actions (FAB & Settings)
+
+### Goal
+Add the Floating Action Button and the settings menu to the entry feed screen.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_feed_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Add Floating Action Button:**
+    *   Include a `FloatingActionButton` to navigate to the entry editor screen.
+2.  **Add Settings Menu:**
+    *   Add a menu button to the `SliverAppBar` that opens the `FeedSettingsBottomSheet`.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify that tapping the FAB navigates to the editor route.
+    *   Verify that tapping the menu button opens the settings bottom sheet.
+
+---
+
+## Task 9: Feed Settings UI
 
 ### Goal
 Create the bottom sheet UI for changing feed display settings.
@@ -170,7 +209,7 @@ Create the bottom sheet UI for changing feed display settings.
 
 ---
 
-## Task 8: Entry Detail State and Provider
+## Task 10: Entry Detail State and Provider
 
 ### Goal
 Set up the state management for viewing a single entry's details.
@@ -189,10 +228,10 @@ Set up the state management for viewing a single entry's details.
 
 ---
 
-## Task 9: Entry Detail Screen UI
+## Task 11: Entry Detail Screen Layout
 
 ### Goal
-Create the screen that displays the full content of a single entry.
+Create the core layout and content display for the entry detail screen.
 
 ### Files to be Created or Modified:
 *   `lib/src/features/entries/screens/entry_detail_screen.dart` (Create)
@@ -203,19 +242,57 @@ Create the screen that displays the full content of a single entry.
     *   Use a `CustomScrollView` and `SliverAppBar` for a collapsing header effect with the entry title.
     *   Display author info, timestamp, and tags.
     *   Use the `flutter_html` package to render the entry's HTML content.
-    *   Display a gallery for attached images.
-    *   Include the `CommentList` and `AddCommentForm`.
-    *   Add buttons for voting and favoriting, with optimistic UI updates.
 2.  **Modify `app_router.dart`:**
     *   Add a `GoRoute` for `/entries/:id` that builds the `EntryDetailScreen`.
 
 ### Testing:
 *   **Widget Tests:**
-    *   Test the `EntryDetailScreen` with a mocked provider to verify all content (HTML, comments, etc.) is rendered correctly.
+    *   Test the `EntryDetailScreen` with a mocked provider to verify that the title, author info, and HTML content are rendered correctly.
 
 ---
 
-## Task 10: Comment Display Widgets
+## Task 12: Entry Detail Image Gallery and Interactions
+
+### Goal
+Add the image gallery display and user interaction buttons (vote, favorite) to the entry detail screen.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Display Image Gallery:**
+    *   In `entry_detail_screen.dart`, display a gallery for any images attached to the entry.
+2.  **Add Interaction Buttons:**
+    *   Include buttons for voting and favoriting the entry.
+    *   Implement optimistic UI updates when these buttons are pressed, reflecting the change immediately while the API call is in progress.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify the image gallery is displayed.
+    *   Test that tapping the vote/favorite buttons triggers the correct provider methods and updates the UI optimistically.
+
+---
+
+## Task 13: Entry Detail Comments Integration
+
+### Goal
+Integrate the comment list and the "add comment" form into the entry detail screen.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Integrate Comment Widgets:**
+    *   Add the `CommentList` widget to the `entry_detail_screen.dart` to display the comment thread.
+    *   Add the `AddCommentForm` widget to allow users to post new comments.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify that the `CommentList` and `AddCommentForm` are present on the screen when testing with a mocked provider that returns comment data.
+
+---
+
+## Task 14: Comment Display Widgets
 
 ### Goal
 Build the widgets for displaying a list of comments and individual comment items.
@@ -235,7 +312,7 @@ Build the widgets for displaying a list of comments and individual comment items
 
 ---
 
-## Task 11: Add Comment Form
+## Task 15: Add Comment Form
 
 ### Goal
 Create the form for users to add new comments to an entry.
@@ -253,7 +330,7 @@ Create the form for users to add new comments to an entry.
 
 ---
 
-## Task 12: Entry Editor State and Provider
+## Task 16: Entry Editor State and Provider
 
 ### Goal
 Set up the state management for the entry editor.
@@ -273,7 +350,7 @@ Set up the state management for the entry editor.
 
 ---
 
-## Task 13: Draft Storage Service
+## Task 17: Draft Storage Service
 
 ### Goal
 Implement a service to automatically save and load entry drafts.
@@ -291,10 +368,10 @@ Implement a service to automatically save and load entry drafts.
 
 ---
 
-## Task 14: Entry Editor Screen
+## Task 18: Entry Editor Core UI
 
 ### Goal
-Implement the rich text editor UI for creating and editing entries.
+Implement the basic layout and rich text editor for the entry editor screen.
 
 ### Files to be Created or Modified:
 *   `lib/src/features/entries/screens/entry_editor_screen.dart` (Create)
@@ -302,22 +379,61 @@ Implement the rich text editor UI for creating and editing entries.
 
 ### Implementation Details:
 1.  **Create `entry_editor_screen.dart`:**
-    *   Set up the screen layout with a title `TextField` and the editor.
+    *   Set up the screen layout with a title `TextField`.
     *   Integrate the `flutter_quill` package for the rich text editor and its toolbar.
-    *   Implement image picking (using `image_picker`) and embedding into the editor.
-    *   Create UI for managing tags.
-    *   Add "Preview" and "Publish" buttons. "Publish" should trigger the provider to upload images (if any) and then post the entry data.
-    *   Show loading indicators during publishing.
 2.  **Modify `app_router.dart`:**
     *   Add `GoRoute`s for `/entries/new` and `/entries/:id/edit`.
 
 ### Testing:
 *   **Widget Tests:**
-    *   Test the `EntryEditorScreen`. Mock the provider and verify that the Quill editor is present and that publishing actions call the correct provider methods.
+    *   Test the `EntryEditorScreen`. Mock the provider and verify that the Quill editor is present.
 
 ---
 
-## Task 15: Long Press Context Menu
+## Task 19: Entry Editor Image and Tag Management
+
+### Goal
+Implement the UI for managing images and tags within the entry editor.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_editor_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Implement Image Management:**
+    *   Integrate `image_picker` to allow users to select images from their gallery or camera.
+    *   Implement functionality to embed the selected images into the `flutter_quill` editor.
+2.  **Implement Tag Management:**
+    *   Create UI for adding, displaying (as chips), and removing tags for the entry.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify that the image picker can be launched and that the tag management UI works as expected.
+
+---
+
+## Task 20: Entry Editor Publishing Logic
+
+### Goal
+Implement the publishing functionality, including state management and API calls.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_editor_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Add Action Buttons:**
+    *   Add "Preview" and "Publish" buttons to the UI.
+2.  **Implement Publishing Flow:**
+    *   Connect the "Publish" button to the `entry_editor_provider`.
+    *   The provider method should handle uploading new images and then posting the entry data to the API.
+    *   The screen should listen to the provider's state and show loading indicators during the publishing process.
+
+### Testing:
+*   **Widget Tests:**
+    *   Verify that tapping the "Publish" button calls the correct provider method. Test the UI's response to loading and error states from the provider.
+
+---
+
+## Task 21: Long Press Context Menu
 
 ### Goal
 Implement a context menu that appears on long-press, offering actions like Pin, Follow, Edit, Delete, and Complain, based on user permissions.
@@ -342,7 +458,7 @@ Implement a context menu that appears on long-press, offering actions like Pin, 
 
 ---
 
-## Task 16: Adjacent Entry Navigation
+## Task 22: Adjacent Entry Navigation
 
 ### Goal
 Allow users to navigate to the previous and next entries directly from the entry detail screen.
@@ -366,7 +482,7 @@ Allow users to navigate to the previous and next entries directly from the entry
 
 ---
 
-## Task 17: Fullscreen Image Gallery
+## Task 23: Fullscreen Image Gallery
 
 ### Goal
 Implement a fullscreen, swipeable image gallery for viewing entry images with zoom capabilities.
@@ -390,7 +506,7 @@ Implement a fullscreen, swipeable image gallery for viewing entry images with zo
 
 ---
 
-## Task 18: Tag Navigation
+## Task 24: Tag Navigation
 
 ### Goal
 Allow users to tap on a tag to navigate to a feed of entries filtered by that tag.
