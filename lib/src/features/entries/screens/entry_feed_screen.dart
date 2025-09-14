@@ -22,7 +22,10 @@ class EntryFeedScreen extends ConsumerStatefulWidget {
   /// The specific feed type to display. If null, shows all feed types in tabs.
   final FeedType? feedType;
   
-  const EntryFeedScreen({super.key, this.feedType});
+  /// Optional tag filter to show only entries with this tag
+  final String? tagFilter;
+  
+  const EntryFeedScreen({super.key, this.feedType, this.tagFilter});
 
   @override
   ConsumerState<EntryFeedScreen> createState() => _EntryFeedScreenState();
@@ -235,8 +238,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
           controller: _tabController,
           children: _feedTypes.map((feedType) {
             return EntryList(
-              key: ValueKey('${feedType.name}_${_tabController.index}'),
+              key: ValueKey('${feedType.name}_${_tabController.index}_${widget.tagFilter ?? 'no_tag'}'),
               feedType: feedType,
+              feedParameter: widget.tagFilter,
               enablePullToRefresh: true,
               enableInfiniteScroll: true,
             );
@@ -262,18 +266,31 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
 
   /// Get the localized display name for a feed type
   String _getFeedTypeDisplayName(FeedType feedType, AppLocalizations? l10n) {
+    String baseName;
     switch (feedType) {
       case FeedType.live:
-        return l10n?.live ?? 'Live';
+        baseName = l10n?.live ?? 'Live';
+        break;
       case FeedType.best:
-        return l10n?.best ?? 'Best';
+        baseName = l10n?.best ?? 'Best';
+        break;
       case FeedType.friends:
-        return l10n?.subscriptions ?? 'Friends';
+        baseName = l10n?.subscriptions ?? 'Friends';
+        break;
       case FeedType.profile:
-        return l10n?.myEntries ?? 'Profile';
+        baseName = l10n?.myEntries ?? 'Profile';
+        break;
       case FeedType.theme:
-        return l10n?.themes ?? 'Themes';
+        baseName = l10n?.themes ?? 'Themes';
+        break;
     }
+    
+    // Add tag filter to the title if present
+    if (widget.tagFilter != null) {
+      return '#${widget.tagFilter} - $baseName';
+    }
+    
+    return baseName;
   }
 
   /// Show the feed settings bottom sheet
@@ -445,9 +462,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         ];
       },
       body: EntryList(
-        key: ValueKey('${feedType.name}_single_${feedParameter ?? 'default'}'),
+        key: ValueKey('${feedType.name}_single_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}'),
         feedType: feedType,
-        feedParameter: feedParameter,
+        feedParameter: widget.tagFilter ?? feedParameter,
         enablePullToRefresh: true,
         enableInfiniteScroll: true,
       ),
@@ -610,9 +627,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         controller: _tabController,
         children: tabConfigs.map((tabConfig) {
           return EntryList(
-            key: ValueKey('${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}'),
+            key: ValueKey('${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}'),
             feedType: feedType,
-            feedParameter: '${feedParameter ?? ''}_${tabConfig.value}',
+            feedParameter: widget.tagFilter ?? '${feedParameter ?? ''}_${tabConfig.value}',
             enablePullToRefresh: true,
             enableInfiniteScroll: true,
           );

@@ -47,16 +47,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
   String? _nextAfter;
   bool _isLoadingMore = false;
   String? _feedParameter; // For profile/theme feeds
+  String? _tagFilter; // For tag-filtered feeds
 
   EntryFeedNotifier({
     required FeedType feedType,
     required EntriesApi entriesApi,
     required EntryCacheService cacheService,
     String? feedParameter,
+    String? tagFilter,
   })  : _feedType = feedType,
         _entriesApi = entriesApi,
         _cacheService = cacheService,
         _feedParameter = feedParameter,
+        _tagFilter = tagFilter,
         super(const EntryFeedState.initial()) {
     _initialize();
   }
@@ -66,10 +69,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     await _loadSettingsFromCache();
   }
 
+  /// Get the cache key for this feed configuration.
+  String _getCacheKey() {
+    final baseKey = _feedType.getCacheKey(_feedParameter);
+    if (_tagFilter != null) {
+      return '${baseKey}_tag_$_tagFilter';
+    }
+    return baseKey;
+  }
+
   /// Load settings from cache.
   Future<void> _loadSettingsFromCache() async {
     try {
-      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final cacheKey = _getCacheKey();
       final cachedSettings = await _cacheService.getFeedSettings(cacheKey);
       
       if (cachedSettings != null) {
@@ -114,7 +126,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     
     try {
       // Try to load from cache first
-      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final cacheKey = _getCacheKey();
       final cachedEntries = await _cacheService.getEntries(cacheKey, page: 1);
       
       if (cachedEntries != null && cachedEntries.isNotEmpty) {
@@ -155,7 +167,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
       _logger.severe('Failed to fetch initial entries', e, stackTrace);
       
       // If we have cached data, show it with an error
-      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final cacheKey = _getCacheKey();
       final cachedEntries = await _cacheService.getEntries(cacheKey, page: 1);
       
       if (cachedEntries != null && cachedEntries.isNotEmpty) {
@@ -199,7 +211,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
         final allEntries = [...currentState.entries, ...newEntries];
         
         // Cache the new page
-        final cacheKey = _feedType.getCacheKey(_feedParameter);
+        final cacheKey = _getCacheKey();
         final pageNumber = (allEntries.length / _settings.entriesPerPage).ceil();
         await _cacheService.storeEntries(cacheKey, newEntries, page: pageNumber);
         
@@ -225,7 +237,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     _logger.info('Refreshing feed for ${_feedType.name}');
     
     // Clear cache for this feed type
-    final cacheKey = _feedType.getCacheKey(_feedParameter);
+    final cacheKey = _getCacheKey();
     await _cacheService.clearFeedCache(cacheKey);
     
     // Reset pagination
@@ -238,7 +250,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
   /// Save current settings to cache.
   Future<void> _saveSettingsToCache() async {
     try {
-      final cacheKey = _feedType.getCacheKey(_feedParameter);
+      final cacheKey = _getCacheKey();
       final settingsMap = {
         'entriesPerPage': _settings.entriesPerPage,
         'displayFormat': _settings.displayFormat.name,
@@ -267,7 +279,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     await _saveSettingsToCache();
     
     // Clear cache since settings changed
-    final cacheKey = _feedType.getCacheKey(_feedParameter);
+    final cacheKey = _getCacheKey();
     await _cacheService.clearFeedCache(cacheKey);
     
     // Reset pagination
@@ -284,6 +296,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
     if (_feedParameter == parameter) return;
     
     _feedParameter = parameter;
+    
+    // Clear current state and fetch new data
+    state = const EntryFeedState.initial();
+    fetchInitialEntries();
+  }
+
+  /// Set the tag filter for tag-filtered feeds.
+  /// 
+  /// [tag] - The tag to filter entries by
+  void setTagFilter(String? tag) {
+    if (_tagFilter == tag) return;
+    
+    _tagFilter = tag;
     
     // Clear current state and fetch new data
     state = const EntryFeedState.initial();
@@ -315,6 +340,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
             limit: _settings.entriesPerPage,
             after: after,
             before: before,
+            tag: _tagFilter,
             source_: _getSourceParameter(),
             section: section,
           );
@@ -325,6 +351,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
           final category = _feedParameter?.split('_').last ?? 'month';
           final response = await _entriesApi.entriesBestGet(
             limit: _settings.entriesPerPage,
+            tag: _tagFilter,
             source_: _getSourceParameter(),
             category: category,
           );

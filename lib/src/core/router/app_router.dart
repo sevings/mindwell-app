@@ -128,6 +128,17 @@ class AppRouter {
             name: 'myEntriesFeed',
             builder: (context, state) => const EntryFeedScreen(feedType: FeedType.profile),
           ),
+          GoRoute(
+            path: '/tags/:tagName',
+            name: 'tagFeed',
+            builder: (context, state) {
+              final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
+              return EntryFeedScreen(
+                feedType: FeedType.live,
+                tagFilter: tagName,
+              );
+            },
+          ),
         ],
       ),
       
@@ -149,6 +160,17 @@ class AppRouter {
             path: '/feed/best',
             name: 'bestFeed',
             builder: (context, state) => const EntryFeedScreen(feedType: FeedType.best),
+          ),
+          GoRoute(
+            path: '/tags/:tagName',
+            name: 'tagFeed',
+            builder: (context, state) {
+              final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
+              return EntryFeedScreen(
+                feedType: FeedType.live,
+                tagFilter: tagName,
+              );
+            },
           ),
         ],
       ),

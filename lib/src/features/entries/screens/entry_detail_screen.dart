@@ -609,10 +609,8 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onTagTapped(String tag) {
-    // TODO: Navigate to filtered entries by tag
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tag tapped: $tag')),
-    );
+    // Navigate to tag-filtered feed
+    context.push('/tags/${Uri.encodeComponent(tag)}');
   }
 
   void _openImageGallery(List<MwImage> images, int initialIndex) {

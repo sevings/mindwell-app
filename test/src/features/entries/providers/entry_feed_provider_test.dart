@@ -548,6 +548,199 @@ void main() {
       });
     });
 
+    group('setTagFilter', () {
+      test('should update tag filter and refetch data', () async {
+        when(() => mockEntriesApi.entriesLiveGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          source_: any(named: 'source_'),
+          section: any(named: 'section'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.live,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+        );
+
+        // Set initial state first
+        notifier.state = EntryFeedState.loaded(
+          entries: [MockMwEntry()],
+          hasMore: true,
+          settings: FeedSettings.defaultSettings,
+        );
+
+        notifier.setTagFilter('flutter');
+
+        // Should reset to initial state immediately, then start loading
+        final stateAfterSet = notifier.state.when(
+          initial: () => 'initial',
+          loading: () => 'loading',
+          loaded: (entries, hasMore, settings) => 'loaded',
+          error: (message, entries) => 'error',
+          empty: () => 'empty',
+        );
+        expect(['initial', 'loading'].contains(stateAfterSet), isTrue);
+        
+        // Wait for the async fetch to complete
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        // Should now be in loaded state with new data
+        expect(isLoadedState(notifier.state), isTrue);
+      });
+
+      test('should not refetch if tag filter is the same', () async {
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.live,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          tagFilter: 'flutter',
+        );
+
+        // Set initial state first
+        notifier.state = EntryFeedState.loaded(
+          entries: [MockMwEntry()],
+          hasMore: true,
+          settings: FeedSettings.defaultSettings,
+        );
+
+        notifier.setTagFilter('flutter');
+
+        // Should not change state since tag is the same
+        expect(isLoadedState(notifier.state), isTrue);
+      });
+    });
+
+    group('tag filtering', () {
+      test('should include tag parameter in live feed API call', () async {
+        when(() => mockEntriesApi.entriesLiveGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          source_: any(named: 'source_'),
+          section: any(named: 'section'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.live,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          tagFilter: 'flutter',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockEntriesApi.entriesLiveGet(
+          limit: 20,
+          after: null,
+          before: null,
+          tag: 'flutter',
+          source_: 'all',
+          section: 'entries',
+        )).called(1);
+      });
+
+      test('should include tag parameter in best feed API call', () async {
+        when(() => mockEntriesApi.entriesBestGet(
+          limit: any(named: 'limit'),
+          tag: any(named: 'tag'),
+          query: any(named: 'query'),
+          source_: any(named: 'source_'),
+          category: any(named: 'category'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.best,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          tagFilter: 'dart',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockEntriesApi.entriesBestGet(
+          limit: 20,
+          tag: 'dart',
+          query: null,
+          source_: 'all',
+          category: 'month',
+        )).called(1);
+      });
+
+      test('should use tag filter in cache key', () async {
+        when(() => mockCacheService.getEntries(any(), page: any(named: 'page')))
+            .thenAnswer((_) async => null);
+        
+        when(() => mockEntriesApi.entriesLiveGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          source_: any(named: 'source_'),
+          section: any(named: 'section'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.live,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          tagFilter: 'flutter',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        // Verify cache was accessed with tag-specific key
+        verify(() => mockCacheService.getEntries('live_tag_flutter', page: 1)).called(1);
+        verify(() => mockCacheService.storeEntries('live_tag_flutter', mockEntries, page: 1)).called(1);
+      });
+
+      test('should clear tag-specific cache on refresh', () async {
+        when(() => mockEntriesApi.entriesLiveGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          source_: any(named: 'source_'),
+          section: any(named: 'section'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.live,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          tagFilter: 'flutter',
+        );
+
+        await notifier.refresh();
+
+        // Verify tag-specific cache was cleared
+        verify(() => mockCacheService.clearFeedCache('live_tag_flutter')).called(1);
+      });
+    });
+
     group('different feed types', () {
       test('should call correct API method for best feed', () async {
         when(() => mockEntriesApi.entriesBestGet(

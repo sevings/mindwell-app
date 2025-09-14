@@ -67,7 +67,13 @@ class _EntryListState extends ConsumerState<EntryList> {
     if (widget.feedParameter != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final notifier = ref.read(entryFeedProvider(widget.feedType).notifier);
-        notifier.setFeedParameter(widget.feedParameter);
+        // Check if the parameter is a tag filter (starts with # or is a simple tag name)
+        if (widget.feedParameter!.startsWith('#') || 
+            (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-'))) {
+          notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
+        } else {
+          notifier.setFeedParameter(widget.feedParameter);
+        }
       });
     }
     
@@ -90,7 +96,14 @@ class _EntryListState extends ConsumerState<EntryList> {
     // Update feed parameter if it changed
     if (widget.feedParameter != oldWidget.feedParameter) {
       final notifier = ref.read(entryFeedProvider(widget.feedType).notifier);
-      notifier.setFeedParameter(widget.feedParameter);
+      // Check if the parameter is a tag filter (starts with # or is a simple tag name)
+      if (widget.feedParameter != null && 
+          (widget.feedParameter!.startsWith('#') || 
+           (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-')))) {
+        notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
+      } else {
+        notifier.setFeedParameter(widget.feedParameter);
+      }
     }
   }
 
