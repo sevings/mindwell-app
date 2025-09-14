@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/entry_editor_provider.dart';
 import '../models/entry_editor_state.dart';
+import '../widgets/image_manager.dart';
+import '../widgets/tag_manager.dart';
 
 /// Screen for creating and editing entries.
 /// 
@@ -37,10 +39,19 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
     _titleController = TextEditingController();
     _titleFocusNode = FocusNode();
     _contentFocusNode = FocusNode();
+    
+    // Listen to content changes
+    _quillController.addListener(_onContentChanged);
+  }
+
+  void _onContentChanged() {
+    final content = _quillController.document.toPlainText();
+    ref.read(entryEditorProvider(widget.entryId).notifier).updateContent(content);
   }
 
   @override
   void dispose() {
+    _quillController.removeListener(_onContentChanged);
     _quillController.dispose();
     _titleController.dispose();
     _titleFocusNode.dispose();
@@ -154,6 +165,20 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
   }
 
   Widget _buildEditingContent() {
+    final entryState = ref.watch(entryEditorProvider(widget.entryId));
+    
+    return entryState.when(
+      initial: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+        _buildEditingForm(tags, images),
+      publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
+      success: (entry) => const Center(child: CircularProgressIndicator()),
+      error: (message, canRetry) => _buildErrorContent(message, canRetry),
+    );
+  }
+
+  Widget _buildEditingForm(List<String> tags, List<int> images) {
     final l10n = AppLocalizations.of(context);
     
     return Column(
@@ -177,6 +202,42 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             },
           ),
         ),
+        
+        // Tag manager
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TagManager(
+            tags: tags,
+            onRemoveTag: (tag) {
+              final currentTags = List<String>.from(tags);
+              currentTags.remove(tag);
+              ref.read(entryEditorProvider(widget.entryId).notifier).updateTags(currentTags);
+            },
+            onAddTag: (tag) {
+              final currentTags = List<String>.from(tags);
+              currentTags.add(tag);
+              ref.read(entryEditorProvider(widget.entryId).notifier).updateTags(currentTags);
+            },
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Image manager
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ImageManager(
+            imageIds: images,
+            onRemoveImage: (imageId) {
+              ref.read(entryEditorProvider(widget.entryId).notifier).removeImage(imageId);
+            },
+            onAddImages: (files) {
+              ref.read(entryEditorProvider(widget.entryId).notifier).uploadImages(files);
+            },
+          ),
+        ),
+        
+        const SizedBox(height: 16),
         
         // Rich text editor
         Expanded(

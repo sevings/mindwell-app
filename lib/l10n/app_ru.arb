@@ -520,5 +520,41 @@
   "goBack": "Назад",
   "@goBack": {
     "description": "Go back button text"
+  },
+  "camera": "Камера",
+  "@camera": {
+    "description": "Camera option for image picker"
+  },
+  "gallery": "Галерея",
+  "@gallery": {
+    "description": "Gallery option for image picker"
+  },
+  "images": "Изображения",
+  "@images": {
+    "description": "Images section title"
+  },
+  "addImages": "Добавить изображения",
+  "@addImages": {
+    "description": "Add images button tooltip"
+  },
+  "invalidTagFormat": "Неверный формат тега. Используйте только буквы, цифры, дефисы и подчеркивания.",
+  "@invalidTagFormat": {
+    "description": "Error message for invalid tag format"
+  },
+  "duplicateTag": "Этот тег уже существует.",
+  "@duplicateTag": {
+    "description": "Error message for duplicate tag"
+  },
+  "tagLimitReached": "Достигнуто максимальное количество тегов.",
+  "@tagLimitReached": {
+    "description": "Error message when tag limit is reached"
+  },
+  "tags": "Теги",
+  "@tags": {
+    "description": "Tags section title"
+  },
+  "addTag": "Добавить тег",
+  "@addTag": {
+    "description": "Add tag button tooltip"
   }
 }

@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:built_collection/built_collection.dart';
 
 import '../../../core/api/api_provider.dart';
+import '../../../core/services/image_upload_service.dart';
 import '../models/entry_editor_state.dart';
 
 /// Provider for the EntryEditorNotifier that manages the state of entry editing.
@@ -14,11 +16,13 @@ final entryEditorProvider = StateNotifierProvider.family<EntryEditorNotifier, En
   (ref, entryId) {
     final entriesApi = ref.read(entriesApiProvider);
     final meApi = ref.read(meApiProvider);
+    final imageUploadService = ref.read(imageUploadServiceProvider);
     
     return EntryEditorNotifier(
       entryId: entryId,
       entriesApi: entriesApi,
       meApi: meApi,
+      imageUploadService: imageUploadService,
     );
   },
 );
@@ -36,6 +40,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   final int? _entryId;
   final EntriesApi _entriesApi;
   final MeApi _meApi;
+  final ImageUploadService _imageUploadService;
   final Logger _logger = Logger('EntryEditorNotifier');
   
   bool _isInitialized = false;
@@ -44,9 +49,11 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     required int? entryId,
     required EntriesApi entriesApi,
     required MeApi meApi,
+    required ImageUploadService imageUploadService,
   })  : _entryId = entryId,
         _entriesApi = entriesApi,
         _meApi = meApi,
+        _imageUploadService = imageUploadService,
         super(const EntryEditorState.initial()) {
     _initialize();
   }
@@ -416,6 +423,88 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       success: (entry) => state,
       error: (message, canRetry) => state,
     );
+  }
+
+  /// Upload images and add them to the entry.
+  Future<void> uploadImages(List<File> files) async {
+    if (files.isEmpty) return;
+    
+    _logger.info('Starting upload of ${files.length} images');
+    
+    // Update state to show uploading
+    state = state.when(
+      initial: () => const EntryEditorState.publishing(isUploadingImages: true),
+      loading: () => state,
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+        const EntryEditorState.publishing(isUploadingImages: true),
+      publishing: (isUploadingImages, uploadProgress) => state,
+      success: (entry) => state,
+      error: (message, canRetry) => state,
+    );
+    
+    try {
+      final uploadedImages = await _imageUploadService.uploadImages(
+        files,
+        onProgress: (progress) {
+          state = EntryEditorState.publishing(
+            isUploadingImages: true,
+            uploadProgress: progress,
+          );
+        },
+      );
+      
+      // Filter out failed uploads (null values)
+      final successfulUploads = uploadedImages
+          .where((image) => image != null)
+          .map((image) => image!.id!)
+          .toList();
+      
+      if (successfulUploads.isNotEmpty) {
+        // Add uploaded images to current images
+        final currentState = state;
+        final currentImages = currentState.maybeWhen(
+          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => images,
+          orElse: () => <int>[],
+        );
+        
+        updateImages([...currentImages, ...successfulUploads]);
+        _logger.info('Successfully uploaded ${successfulUploads.length} images');
+      }
+      
+      // Return to editing state
+      final currentState = state;
+      final editingData = currentState.maybeWhen(
+        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+          (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId, hasUnsavedChanges: hasUnsavedChanges),
+        orElse: () => null,
+      );
+      
+      if (editingData != null) {
+        state = EntryEditorState.editing(
+          title: editingData.title,
+          content: editingData.content,
+          tags: editingData.tags,
+          privacy: editingData.privacy,
+          isCommentable: editingData.isCommentable,
+          isVotable: editingData.isVotable,
+          inLive: editingData.inLive,
+          isShared: editingData.isShared,
+          isDraft: editingData.isDraft,
+          images: editingData.images,
+          entryId: editingData.entryId,
+          hasUnsavedChanges: editingData.hasUnsavedChanges,
+        );
+      } else {
+        state = const EntryEditorState.editing();
+      }
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to upload images', e, stackTrace);
+      state = EntryEditorState.error(
+        message: 'Failed to upload images: ${e.toString()}',
+        canRetry: true,
+      );
+    }
   }
 
   /// Publish or save the entry.

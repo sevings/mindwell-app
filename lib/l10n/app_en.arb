@@ -454,5 +454,41 @@
   "goBack": "Go Back",
   "@goBack": {
     "description": "Go back button text"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option for image picker"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option for image picker"
+  },
+  "images": "Images",
+  "@images": {
+    "description": "Images section title"
+  },
+  "addImages": "Add Images",
+  "@addImages": {
+    "description": "Add images button tooltip"
+  },
+  "invalidTagFormat": "Invalid tag format. Use letters, numbers, hyphens, and underscores only.",
+  "@invalidTagFormat": {
+    "description": "Error message for invalid tag format"
+  },
+  "duplicateTag": "This tag already exists.",
+  "@duplicateTag": {
+    "description": "Error message for duplicate tag"
+  },
+  "tagLimitReached": "Maximum number of tags reached.",
+  "@tagLimitReached": {
+    "description": "Error message when tag limit is reached"
+  },
+  "tags": "Tags",
+  "@tags": {
+    "description": "Tags section title"
+  },
+  "addTag": "Add Tag",
+  "@addTag": {
+    "description": "Add tag button tooltip"
   }
 }

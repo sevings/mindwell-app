@@ -5,20 +5,24 @@ import 'package:dio/dio.dart';
 
 import 'package:mindwell/src/features/entries/models/entry_editor_state.dart';
 import 'package:mindwell/src/features/entries/providers/entry_editor_provider.dart';
+import 'package:mindwell/src/core/services/image_upload_service.dart';
 
 class MockEntriesApi extends Mock implements EntriesApi {}
 class MockMeApi extends Mock implements MeApi {}
 class MockMwEntry extends Mock implements MwEntry {}
+class MockImageUploadService extends Mock implements ImageUploadService {}
 
 void main() {
   group('EntryEditorNotifier', () {
     late MockEntriesApi mockEntriesApi;
     late MockMeApi mockMeApi;
+    late MockImageUploadService mockImageUploadService;
     late EntryEditorNotifier notifier;
 
     setUp(() {
       mockEntriesApi = MockEntriesApi();
       mockMeApi = MockMeApi();
+      mockImageUploadService = MockImageUploadService();
     });
 
     group('New Entry Creation', () {
@@ -27,6 +31,7 @@ void main() {
           entryId: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
         );
       });
 
@@ -205,6 +210,7 @@ void main() {
           entryId: null,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
         );
       });
 
@@ -225,6 +231,7 @@ void main() {
           entryId: 123,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
         );
         expect(notifierWithId.entryId, equals(123));
       });
@@ -236,6 +243,7 @@ void main() {
           entryId: 123,
           entriesApi: mockEntriesApi,
           meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
         );
         expect(notifierWithId.isEditingExisting, isTrue);
       });

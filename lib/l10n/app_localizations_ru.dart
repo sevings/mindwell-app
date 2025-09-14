@@ -398,4 +398,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get goBack => 'Назад';
+
+  @override
+  String get camera => 'Камера';
+
+  @override
+  String get gallery => 'Галерея';
+
+  @override
+  String get images => 'Изображения';
+
+  @override
+  String get addImages => 'Добавить изображения';
+
+  @override
+  String get invalidTagFormat =>
+      'Неверный формат тега. Используйте только буквы, цифры, дефисы и подчеркивания.';
+
+  @override
+  String get duplicateTag => 'Этот тег уже существует.';
+
+  @override
+  String get tagLimitReached => 'Достигнуто максимальное количество тегов.';
+
+  @override
+  String get tags => 'Теги';
+
+  @override
+  String get addTag => 'Добавить тег';
 }

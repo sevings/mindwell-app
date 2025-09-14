@@ -393,4 +393,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goBack => 'Go Back';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get images => 'Images';
+
+  @override
+  String get addImages => 'Add Images';
+
+  @override
+  String get invalidTagFormat =>
+      'Invalid tag format. Use letters, numbers, hyphens, and underscores only.';
+
+  @override
+  String get duplicateTag => 'This tag already exists.';
+
+  @override
+  String get tagLimitReached => 'Maximum number of tags reached.';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get addTag => 'Add Tag';
 }

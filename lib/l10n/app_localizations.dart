@@ -859,6 +859,60 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Назад'**
   String get goBack;
+
+  /// Camera option for image picker
+  ///
+  /// In ru, this message translates to:
+  /// **'Камера'**
+  String get camera;
+
+  /// Gallery option for image picker
+  ///
+  /// In ru, this message translates to:
+  /// **'Галерея'**
+  String get gallery;
+
+  /// Images section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Изображения'**
+  String get images;
+
+  /// Add images button tooltip
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить изображения'**
+  String get addImages;
+
+  /// Error message for invalid tag format
+  ///
+  /// In ru, this message translates to:
+  /// **'Неверный формат тега. Используйте только буквы, цифры, дефисы и подчеркивания.'**
+  String get invalidTagFormat;
+
+  /// Error message for duplicate tag
+  ///
+  /// In ru, this message translates to:
+  /// **'Этот тег уже существует.'**
+  String get duplicateTag;
+
+  /// Error message when tag limit is reached
+  ///
+  /// In ru, this message translates to:
+  /// **'Достигнуто максимальное количество тегов.'**
+  String get tagLimitReached;
+
+  /// Tags section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Теги'**
+  String get tags;
+
+  /// Add tag button tooltip
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить тег'**
+  String get addTag;
 }
 
 class _AppLocalizationsDelegate

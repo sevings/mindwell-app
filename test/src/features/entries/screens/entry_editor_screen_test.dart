@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -348,6 +349,11 @@ class MockEntryEditorNotifier extends StateNotifier<EntryEditorState> implements
 
   @override
   void updateImages(List<int> images) {
+    // Mock implementation - will be verified by mocktail
+  }
+
+  @override
+  Future<void> uploadImages(List<File> files) async {
     // Mock implementation - will be verified by mocktail
   }
 
