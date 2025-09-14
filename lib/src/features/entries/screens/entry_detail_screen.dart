@@ -7,6 +7,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
+import '../../comments/widgets/comment_list.dart';
 import '../providers/entry_detail_provider.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
@@ -488,38 +489,19 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         _buildAddCommentForm(l10n),
         const SizedBox(height: 16),
         
-        // Load more comments button
-        if (hasMoreComments && comments.isNotEmpty) ...[
-          Center(
-            child: TextButton(
-              onPressed: isLoadingComments ? null : _loadMoreComments,
-              child: isLoadingComments
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n?.loadMoreComments ?? 'Load more'),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-        
-        // Comments list
-        if (comments.isEmpty)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                l10n?.noComments ?? 'No comments yet',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-          )
-        else
-          ...comments.map((comment) => _buildCommentItem(comment)),
+        // Comments list using the new CommentList widget
+        CommentList(
+          comments: comments,
+          hasMore: hasMoreComments,
+          isLoading: isLoadingComments,
+          showVoting: true,
+          showEntryTitles: false, // Not needed in entry detail context
+          onCommentTap: (comment) => _onCommentTap(comment),
+          onAuthorTap: (author) => _onAuthorTap(author),
+          onUpvote: (comment) => _onCommentVote(comment, true),
+          onDownvote: (comment) => _onCommentVote(comment, false),
+          onLoadMore: _loadMoreComments,
+        ),
       ],
     );
   }
@@ -557,101 +539,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     );
   }
 
-  Widget _buildCommentItem(MwComment comment) {
-    final author = comment.author;
-    if (author == null) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CachedAvatar(
-                imageUrl: _getAvatarUrl(author.avatar),
-                size: 32,
-                fallbackText: author.name?.isNotEmpty == true 
-                    ? author.name!.substring(0, 1).toUpperCase()
-                    : '?',
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      author.name ?? 'Unknown',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (comment.createdAt != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        _formatTimestamp(comment.createdAt!),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (comment.content != null && comment.content!.isNotEmpty) ...[
-            Html(
-              data: comment.content!,
-              style: {
-                "body": Style(
-                  margin: Margins.zero,
-                  padding: HtmlPaddings.zero,
-                  fontSize: FontSize(14),
-                  lineHeight: const LineHeight(1.4),
-                ),
-              },
-            ),
-            const SizedBox(height: 12),
-          ],
-          // Comment rating
-          if (comment.rating != null) ...[
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => _onCommentVote(comment, true),
-                  icon: const Icon(Icons.thumb_up_outlined, size: 16),
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  padding: EdgeInsets.zero,
-                ),
-                Text(
-                  (comment.rating!.upCount ?? 0).toString(),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => _onCommentVote(comment, false),
-                  icon: const Icon(Icons.thumb_down_outlined, size: 16),
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  padding: EdgeInsets.zero,
-                ),
-                Text(
-                  (comment.rating!.downCount ?? 0).toString(),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 
   Widget _buildErrorState(
     BuildContext context,
@@ -744,6 +631,18 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
     ref.read(entryDetailProvider(widget.entryId).notifier).addComment(content);
     _commentController.clear();
+  }
+
+  void _onCommentTap(MwComment comment) {
+    // In entry detail context, tapping a comment doesn't need to do anything special
+    // since we're already viewing the entry. Could be used for highlighting or other features.
+  }
+
+  void _onAuthorTap(MwUser author) {
+    // TODO: Navigate to user profile
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Navigate to ${author.name ?? 'Unknown'}\'s profile')),
+    );
   }
 
   void _onCommentVote(MwComment comment, bool isUpvote) {

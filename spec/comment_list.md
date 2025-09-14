@@ -28,8 +28,6 @@ This document outlines the technical specifications for the Comment List screen 
 *   **Tap on Comment:** Navigates to the Entry Detail screen and scrolls to the corresponding comment.
 *   **Tap on Author:** Tapping the author's avatar or name navigates to their profile screen.
 *   **Upvote/Downvote:** Tapping the vote buttons updates the rating with immediate visual feedback (optimistic UI) and makes an API call in the background.
-*   **Pull to refresh:** Loads newer comments.
-*   **Infinite scroll:** Loads older comments.
 
 ### 3.3. Data Requirements
 
