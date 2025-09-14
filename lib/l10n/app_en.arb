@@ -598,5 +598,65 @@
   "untitled": "Untitled",
   "@untitled": {
     "description": "Default title for entries without a title"
+  },
+  "entrySettings": "Entry Settings",
+  "@entrySettings": {
+    "description": "Entry settings bottom sheet title"
+  },
+  "privacyLevel": "Privacy Level",
+  "@privacyLevel": {
+    "description": "Privacy level setting title"
+  },
+  "privacyAll": "Public",
+  "@privacyAll": {
+    "description": "Public privacy level option"
+  },
+  "privacyFriends": "Friends Only",
+  "@privacyFriends": {
+    "description": "Friends only privacy level option"
+  },
+  "privacyPrivate": "Private",
+  "@privacyPrivate": {
+    "description": "Private privacy level option"
+  },
+  "allowComments": "Allow Comments",
+  "@allowComments": {
+    "description": "Allow comments setting title"
+  },
+  "allowCommentsSubtitle": "Let others comment on this entry",
+  "@allowCommentsSubtitle": {
+    "description": "Allow comments setting subtitle"
+  },
+  "allowVotes": "Allow Votes",
+  "@allowVotes": {
+    "description": "Allow votes setting title"
+  },
+  "allowVotesSubtitle": "Let others vote on this entry",
+  "@allowVotesSubtitle": {
+    "description": "Allow votes setting subtitle"
+  },
+  "postInLive": "Post in Live Feed",
+  "@postInLive": {
+    "description": "Post in live feed setting title"
+  },
+  "postInLiveSubtitle": "Show this entry in the live feed",
+  "@postInLiveSubtitle": {
+    "description": "Post in live feed setting subtitle"
+  },
+  "allowSharing": "Allow Sharing",
+  "@allowSharing": {
+    "description": "Allow sharing setting title"
+  },
+  "allowSharingSubtitle": "Let others share this entry",
+  "@allowSharingSubtitle": {
+    "description": "Allow sharing setting subtitle"
+  },
+  "postAnonymously": "Post Anonymously",
+  "@postAnonymously": {
+    "description": "Post anonymously setting title"
+  },
+  "postAnonymouslySubtitle": "Hide your identity when posting in themes",
+  "@postAnonymouslySubtitle": {
+    "description": "Post anonymously setting subtitle"
   }
 }

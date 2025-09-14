@@ -664,5 +664,65 @@
   "untitled": "Без названия",
   "@untitled": {
     "description": "Default title for entries without a title"
+  },
+  "entrySettings": "Настройки записи",
+  "@entrySettings": {
+    "description": "Entry settings bottom sheet title"
+  },
+  "privacyLevel": "Уровень приватности",
+  "@privacyLevel": {
+    "description": "Privacy level setting title"
+  },
+  "privacyAll": "Публично",
+  "@privacyAll": {
+    "description": "Public privacy level option"
+  },
+  "privacyFriends": "Только друзья",
+  "@privacyFriends": {
+    "description": "Friends only privacy level option"
+  },
+  "privacyPrivate": "Приватно",
+  "@privacyPrivate": {
+    "description": "Private privacy level option"
+  },
+  "allowComments": "Разрешить комментарии",
+  "@allowComments": {
+    "description": "Allow comments setting title"
+  },
+  "allowCommentsSubtitle": "Позволить другим комментировать эту запись",
+  "@allowCommentsSubtitle": {
+    "description": "Allow comments setting subtitle"
+  },
+  "allowVotes": "Разрешить голосование",
+  "@allowVotes": {
+    "description": "Allow votes setting title"
+  },
+  "allowVotesSubtitle": "Позволить другим голосовать за эту запись",
+  "@allowVotesSubtitle": {
+    "description": "Allow votes setting subtitle"
+  },
+  "postInLive": "Опубликовать в прямой эфир",
+  "@postInLive": {
+    "description": "Post in live feed setting title"
+  },
+  "postInLiveSubtitle": "Показать эту запись в прямом эфире",
+  "@postInLiveSubtitle": {
+    "description": "Post in live feed setting subtitle"
+  },
+  "allowSharing": "Разрешить поделиться",
+  "@allowSharing": {
+    "description": "Allow sharing setting title"
+  },
+  "allowSharingSubtitle": "Позволить другим поделиться этой записью",
+  "@allowSharingSubtitle": {
+    "description": "Allow sharing setting subtitle"
+  },
+  "postAnonymously": "Опубликовать анонимно",
+  "@postAnonymously": {
+    "description": "Post anonymously setting title"
+  },
+  "postAnonymouslySubtitle": "Скрыть вашу личность при публикации в темах",
+  "@postAnonymouslySubtitle": {
+    "description": "Post anonymously setting subtitle"
   }
 }

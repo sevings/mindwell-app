@@ -508,4 +508,51 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get untitled => 'Без названия';
+
+  @override
+  String get entrySettings => 'Настройки записи';
+
+  @override
+  String get privacyLevel => 'Уровень приватности';
+
+  @override
+  String get privacyAll => 'Публично';
+
+  @override
+  String get privacyFriends => 'Только друзья';
+
+  @override
+  String get privacyPrivate => 'Приватно';
+
+  @override
+  String get allowComments => 'Разрешить комментарии';
+
+  @override
+  String get allowCommentsSubtitle =>
+      'Позволить другим комментировать эту запись';
+
+  @override
+  String get allowVotes => 'Разрешить голосование';
+
+  @override
+  String get allowVotesSubtitle => 'Позволить другим голосовать за эту запись';
+
+  @override
+  String get postInLive => 'Опубликовать в прямой эфир';
+
+  @override
+  String get postInLiveSubtitle => 'Показать эту запись в прямом эфире';
+
+  @override
+  String get allowSharing => 'Разрешить поделиться';
+
+  @override
+  String get allowSharingSubtitle => 'Позволить другим поделиться этой записью';
+
+  @override
+  String get postAnonymously => 'Опубликовать анонимно';
+
+  @override
+  String get postAnonymouslySubtitle =>
+      'Скрыть вашу личность при публикации в темах';
 }

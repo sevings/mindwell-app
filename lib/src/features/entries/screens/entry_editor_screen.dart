@@ -8,6 +8,7 @@ import '../providers/entry_editor_provider.dart';
 import '../models/entry_editor_state.dart';
 import '../widgets/image_manager.dart';
 import '../widgets/tag_manager.dart';
+import '../widgets/entry_settings_bottom_sheet.dart';
 
 /// Screen for creating and editing entries.
 /// 
@@ -188,6 +189,18 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         backgroundColor: const Color(0xFFFF5E3A),
         foregroundColor: Colors.white,
         actions: [
+          // Settings button
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              showEntrySettingsBottomSheet(
+                context: context,
+                entryId: widget.entryId,
+                isThemeEntry: false, // TODO: Pass theme entry info when available
+              );
+            },
+            tooltip: l10n?.settings ?? 'Settings',
+          ),
           // Preview button
           entryState.maybeWhen(
             editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {

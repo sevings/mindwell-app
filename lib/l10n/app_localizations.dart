@@ -1075,6 +1075,96 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Без названия'**
   String get untitled;
+
+  /// Entry settings bottom sheet title
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки записи'**
+  String get entrySettings;
+
+  /// Privacy level setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень приватности'**
+  String get privacyLevel;
+
+  /// Public privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Публично'**
+  String get privacyAll;
+
+  /// Friends only privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Только друзья'**
+  String get privacyFriends;
+
+  /// Private privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Приватно'**
+  String get privacyPrivate;
+
+  /// Allow comments setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить комментарии'**
+  String get allowComments;
+
+  /// Allow comments setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Позволить другим комментировать эту запись'**
+  String get allowCommentsSubtitle;
+
+  /// Allow votes setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить голосование'**
+  String get allowVotes;
+
+  /// Allow votes setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Позволить другим голосовать за эту запись'**
+  String get allowVotesSubtitle;
+
+  /// Post in live feed setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Опубликовать в прямой эфир'**
+  String get postInLive;
+
+  /// Post in live feed setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать эту запись в прямом эфире'**
+  String get postInLiveSubtitle;
+
+  /// Allow sharing setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить поделиться'**
+  String get allowSharing;
+
+  /// Allow sharing setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Позволить другим поделиться этой записью'**
+  String get allowSharingSubtitle;
+
+  /// Post anonymously setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Опубликовать анонимно'**
+  String get postAnonymously;
+
+  /// Post anonymously setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Скрыть вашу личность при публикации в темах'**
+  String get postAnonymouslySubtitle;
 }
 
 class _AppLocalizationsDelegate

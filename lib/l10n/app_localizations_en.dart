@@ -503,4 +503,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get untitled => 'Untitled';
+
+  @override
+  String get entrySettings => 'Entry Settings';
+
+  @override
+  String get privacyLevel => 'Privacy Level';
+
+  @override
+  String get privacyAll => 'Public';
+
+  @override
+  String get privacyFriends => 'Friends Only';
+
+  @override
+  String get privacyPrivate => 'Private';
+
+  @override
+  String get allowComments => 'Allow Comments';
+
+  @override
+  String get allowCommentsSubtitle => 'Let others comment on this entry';
+
+  @override
+  String get allowVotes => 'Allow Votes';
+
+  @override
+  String get allowVotesSubtitle => 'Let others vote on this entry';
+
+  @override
+  String get postInLive => 'Post in Live Feed';
+
+  @override
+  String get postInLiveSubtitle => 'Show this entry in the live feed';
+
+  @override
+  String get allowSharing => 'Allow Sharing';
+
+  @override
+  String get allowSharingSubtitle => 'Let others share this entry';
+
+  @override
+  String get postAnonymously => 'Post Anonymously';
+
+  @override
+  String get postAnonymouslySubtitle =>
+      'Hide your identity when posting in themes';
 }
