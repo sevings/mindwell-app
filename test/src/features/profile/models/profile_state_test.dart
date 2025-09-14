@@ -5,14 +5,14 @@ import 'package:mindwell/src/features/profile/models/profile_state.dart';
 
 void main() {
   group('ProfileState', () {
-    late $MwUser mockUser;
+    late $MwProfile mockUser;
     late MwBadge mockBadge;
     late MwImage mockImage;
     late MwTagListDataInner mockTag;
     late MwCalendar mockCalendar;
 
     setUp(() {
-      mockUser = $MwUser((b) => b
+      mockUser = $MwProfile((b) => b
         ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'

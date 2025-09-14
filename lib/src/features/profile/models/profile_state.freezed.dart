@@ -21,7 +21,7 @@ mixin _$ProfileState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            $MwUser user,
+            MwProfile user,
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
@@ -34,8 +34,12 @@ mixin _$ProfileState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult? Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData)?
         loaded,
     TResult? Function(String message)? error,
   }) =>
@@ -44,7 +48,7 @@ mixin _$ProfileState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
+    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
             List<MwTagListDataInner> tags, MwCalendar? calendarData)?
         loaded,
     TResult Function(String message)? error,
@@ -137,7 +141,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            $MwUser user,
+            MwProfile user,
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
@@ -153,8 +157,12 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult? Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -166,7 +174,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
+    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
             List<MwTagListDataInner> tags, MwCalendar? calendarData)?
         loaded,
     TResult Function(String message)? error,
@@ -261,7 +269,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            $MwUser user,
+            MwProfile user,
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
@@ -277,8 +285,12 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult? Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -290,7 +302,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
+    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
             List<MwTagListDataInner> tags, MwCalendar? calendarData)?
         loaded,
     TResult Function(String message)? error,
@@ -351,7 +363,7 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       __$$LoadedImplCopyWithImpl<$Res>;
   @useResult
   $Res call(
-      {$MwUser user,
+      {MwProfile user,
       List<MwBadge> badges,
       List<MwImage> images,
       List<MwTagListDataInner> tags,
@@ -379,7 +391,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
       user: null == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
-              as $MwUser,
+              as MwProfile,
       badges: null == badges
           ? _value._badges
           : badges // ignore: cast_nullable_to_non_nullable
@@ -414,7 +426,7 @@ class _$LoadedImpl implements _Loaded {
         _tags = tags;
 
   @override
-  final $MwUser user;
+  final MwProfile user;
   final List<MwBadge> _badges;
   @override
   @JsonKey()
@@ -484,7 +496,7 @@ class _$LoadedImpl implements _Loaded {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            $MwUser user,
+            MwProfile user,
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
@@ -500,8 +512,12 @@ class _$LoadedImpl implements _Loaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult? Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -513,7 +529,7 @@ class _$LoadedImpl implements _Loaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
+    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
             List<MwTagListDataInner> tags, MwCalendar? calendarData)?
         loaded,
     TResult Function(String message)? error,
@@ -565,13 +581,13 @@ class _$LoadedImpl implements _Loaded {
 
 abstract class _Loaded implements ProfileState {
   const factory _Loaded(
-      {required final $MwUser user,
+      {required final MwProfile user,
       final List<MwBadge> badges,
       final List<MwImage> images,
       final List<MwTagListDataInner> tags,
       final MwCalendar? calendarData}) = _$LoadedImpl;
 
-  $MwUser get user;
+  MwProfile get user;
   List<MwBadge> get badges;
   List<MwImage> get images;
   List<MwTagListDataInner> get tags;
@@ -648,7 +664,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            $MwUser user,
+            MwProfile user,
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
@@ -664,8 +680,12 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult? Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -677,7 +697,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function($MwUser user, List<MwBadge> badges, List<MwImage> images,
+    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
             List<MwTagListDataInner> tags, MwCalendar? calendarData)?
         loaded,
     TResult Function(String message)? error,

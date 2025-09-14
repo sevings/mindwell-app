@@ -23,7 +23,7 @@ sealed class ProfileState with _$ProfileState {
   /// [tags] List of tags used by the user with their counts.
   /// [calendarData] Calendar data showing user activity over time.
   const factory ProfileState.loaded({
-    required $MwUser user,
+    required MwProfile user,
     @Default([]) List<MwBadge> badges,
     @Default([]) List<MwImage> images,
     @Default([]) List<MwTagListDataInner> tags,
