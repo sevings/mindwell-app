@@ -422,5 +422,37 @@
   "commentAlreadyExists": "This comment already exists",
   "@commentAlreadyExists": {
     "description": "Error message when trying to post a duplicate comment"
+  },
+  "editEntry": "Edit Entry",
+  "@editEntry": {
+    "description": "Edit entry screen title"
+  },
+  "preview": "Preview",
+  "@preview": {
+    "description": "Preview button text"
+  },
+  "publish": "Publish",
+  "@publish": {
+    "description": "Publish button text"
+  },
+  "entryTitle": "Entry title",
+  "@entryTitle": {
+    "description": "Entry title field hint"
+  },
+  "entryContent": "Write your entry content here...",
+  "@entryContent": {
+    "description": "Entry content field placeholder"
+  },
+  "publishing": "Publishing...",
+  "@publishing": {
+    "description": "Publishing status message"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "goBack": "Go Back",
+  "@goBack": {
+    "description": "Go back button text"
   }
 }

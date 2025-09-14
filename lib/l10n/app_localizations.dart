@@ -811,6 +811,54 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Этот комментарий уже существует'**
   String get commentAlreadyExists;
+
+  /// Edit entry screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать запись'**
+  String get editEntry;
+
+  /// Preview button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Предпросмотр'**
+  String get preview;
+
+  /// Publish button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Опубликовать'**
+  String get publish;
+
+  /// Entry title field hint
+  ///
+  /// In ru, this message translates to:
+  /// **'Заголовок записи'**
+  String get entryTitle;
+
+  /// Entry content field placeholder
+  ///
+  /// In ru, this message translates to:
+  /// **'Напишите содержание вашей записи здесь...'**
+  String get entryContent;
+
+  /// Publishing status message
+  ///
+  /// In ru, this message translates to:
+  /// **'Публикация...'**
+  String get publishing;
+
+  /// Retry button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Повторить'**
+  String get retry;
+
+  /// Go back button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Назад'**
+  String get goBack;
 }
 
 class _AppLocalizationsDelegate

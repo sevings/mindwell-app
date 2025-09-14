@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import '../../l10n/app_localizations.dart';
 import 'core/theme/mindwell_theme.dart';
 import 'core/router/app_router.dart';
@@ -43,6 +44,7 @@ class _MindWellAppState extends ConsumerState<MindWellApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('ru', ''), // Russian (default)

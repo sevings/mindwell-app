@@ -41,6 +41,9 @@ dependencies:
 
   # HTML Rendering
   flutter_html: ^3.0.0-beta.2
+  
+  # Rich Text Editor
+  flutter_quill: ^11.4.2
 
   # Dependency Injection
   injectable: ^2.3.2

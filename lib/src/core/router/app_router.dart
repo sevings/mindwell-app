@@ -7,6 +7,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/auth_screen.dart';
 import '../../features/entries/screens/entry_feed_screen.dart';
 import '../../features/entries/screens/entry_detail_screen.dart';
+import '../../features/entries/screens/entry_editor_screen.dart';
 import '../../features/entries/models/feed_type.dart';
 
 /// Application router configuration using GoRouter.
@@ -98,14 +99,14 @@ class AppRouter {
           GoRoute(
             path: '/entries/new',
             name: 'newEntry',
-            builder: (context, state) => const _NewEntryContent(),
+            builder: (context, state) => const EntryEditorScreen(),
           ),
           GoRoute(
             path: '/entries/:id/edit',
             name: 'editEntry',
             builder: (context, state) {
-              final entryId = state.pathParameters['id']!;
-              return _EditEntryContent(entryId: entryId);
+              final entryId = int.parse(state.pathParameters['id']!);
+              return EntryEditorScreen(entryId: entryId);
             },
           ),
           GoRoute(
@@ -290,100 +291,6 @@ class _ChatContent extends StatelessWidget {
   }
 }
 
-/// New entry content widget.
-/// 
-/// This will be replaced with actual entry editor in future tasks.
-class _NewEntryContent extends StatelessWidget {
-  const _NewEntryContent();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.newEntry ?? 'New Entry'),
-        backgroundColor: const Color(0xFFFF5E3A),
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.edit,
-              size: 64,
-              color: Color(0xFFFF5E3A),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Entry Editor',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Create your mindful entry here',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Edit entry content widget.
-/// 
-/// This will be replaced with actual entry editor in future tasks.
-class _EditEntryContent extends StatelessWidget {
-  const _EditEntryContent({required this.entryId});
-
-  final String entryId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Entry'),
-        backgroundColor: const Color(0xFFFF5E3A),
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.edit,
-              size: 64,
-              color: Color(0xFFFF5E3A),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Edit Entry',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Editing entry: $entryId',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 
 

@@ -183,7 +183,7 @@ void main() {
       
       // Verify localization delegates are configured
       expect(materialApp.localizationsDelegates, isNotNull);
-      expect(materialApp.localizationsDelegates!.length, equals(4));
+      expect(materialApp.localizationsDelegates!.length, equals(5));
       
       // Verify supported locales
       expect(materialApp.supportedLocales, contains(const Locale('ru', '')));

@@ -369,4 +369,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commentAlreadyExists => 'This comment already exists';
+
+  @override
+  String get editEntry => 'Edit Entry';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get publish => 'Publish';
+
+  @override
+  String get entryTitle => 'Entry title';
+
+  @override
+  String get entryContent => 'Write your entry content here...';
+
+  @override
+  String get publishing => 'Publishing...';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get goBack => 'Go Back';
 }

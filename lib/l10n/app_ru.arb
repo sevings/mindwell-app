@@ -488,5 +488,37 @@
   "commentAlreadyExists": "Этот комментарий уже существует",
   "@commentAlreadyExists": {
     "description": "Error message when trying to post a duplicate comment"
+  },
+  "editEntry": "Редактировать запись",
+  "@editEntry": {
+    "description": "Edit entry screen title"
+  },
+  "preview": "Предпросмотр",
+  "@preview": {
+    "description": "Preview button text"
+  },
+  "publish": "Опубликовать",
+  "@publish": {
+    "description": "Publish button text"
+  },
+  "entryTitle": "Заголовок записи",
+  "@entryTitle": {
+    "description": "Entry title field hint"
+  },
+  "entryContent": "Напишите содержание вашей записи здесь...",
+  "@entryContent": {
+    "description": "Entry content field placeholder"
+  },
+  "publishing": "Публикация...",
+  "@publishing": {
+    "description": "Publishing status message"
+  },
+  "retry": "Повторить",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "goBack": "Назад",
+  "@goBack": {
+    "description": "Go back button text"
   }
 }

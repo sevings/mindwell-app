@@ -374,4 +374,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commentAlreadyExists => 'Этот комментарий уже существует';
+
+  @override
+  String get editEntry => 'Редактировать запись';
+
+  @override
+  String get preview => 'Предпросмотр';
+
+  @override
+  String get publish => 'Опубликовать';
+
+  @override
+  String get entryTitle => 'Заголовок записи';
+
+  @override
+  String get entryContent => 'Напишите содержание вашей записи здесь...';
+
+  @override
+  String get publishing => 'Публикация...';
+
+  @override
+  String get retry => 'Повторить';
+
+  @override
+  String get goBack => 'Назад';
 }
