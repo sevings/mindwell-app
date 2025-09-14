@@ -530,3 +530,73 @@ Allow users to tap on a tag to navigate to a feed of entries filtered by that ta
 ### Testing:
 *   **Widget Tests:** Test that tapping a tag navigates to the `EntryFeedScreen` with the correct filter parameter.
 *   **Unit Tests:** Test that the `entryFeedProvider` correctly fetches tagged entries when the filter is applied.
+
+---
+
+## Task 25: Implement Entry Settings Bottom Sheet
+
+### Goal
+Implement the UI for changing entry settings like privacy, comments, votes, live feed, and sharing settings.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/widgets/entry_settings_bottom_sheet.dart` (Create)
+*   `lib/src/features/entries/screens/entry_editor_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Create `entry_settings_bottom_sheet.dart`:**
+    *   Create a bottom sheet widget that displays controls for all entry settings mentioned in the `entry_editor.md` spec.
+    *   This includes privacy level, comment/vote settings, "Post in Live", "Allow Sharing", and the anonymous toggle.
+2.  **Integrate with Editor Screen:**
+    *   Add a button to the `entry_editor_screen.dart` that opens this bottom sheet.
+    *   Changes made in the bottom sheet should update the state in the `EntryEditorProvider`.
+
+### Testing:
+*   **Widget Tests:** Test the `EntrySettingsBottomSheet` to ensure controls are displayed correctly and that interactions update the provider state.
+
+---
+
+## Task 26: Complete Preview Functionality
+
+### Goal
+Implement the preview functionality, allowing users to see how their entry will look before publishing.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/providers/entry_editor_provider.dart` (Modify)
+*   `lib/src/features/entries/screens/entry_editor_screen.dart` (Modify)
+*   `lib/src/core/router/app_router.dart` (Modify)
+
+### Implementation Details:
+1.  **Provider Logic:**
+    *   In `entry_editor_provider.dart`, implement a `previewEntry` method.
+    *   This method will call the same API endpoint used for publishing, but with an `isDraft=true` flag.
+2.  **UI Integration:**
+    *   Connect the "Preview" button in `entry_editor_screen.dart` to call the `previewEntry` method.
+    *   On a successful response, navigate the user to the `EntryDetailScreen` to show the preview of the draft. This might require a special route or parameter to indicate it's a preview.
+
+### Testing:
+*   **Unit Tests:** Test the `previewEntry` logic in the `EntryEditorNotifier`.
+*   **Widget Tests:** Verify that tapping the preview button triggers the provider method and navigates correctly on success.
+
+---
+
+## Task 27: Add Theme Entry Support
+
+### Goal
+Allow users to create entries within a specific theme, with an option to post anonymously.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/providers/entry_editor_provider.dart` (Modify)
+*   `lib/src/features/entries/screens/entry_editor_screen.dart` (Modify)
+
+### Implementation Details:
+1.  **Update Editor Screen:**
+    *   Modify `entry_editor_screen.dart` to accept an optional `themeName` parameter.
+    *   If `themeName` is provided, the "Post Anonymously" toggle should be visible in the Entry Settings.
+2.  **Update Provider Logic:**
+    *   In `entry_editor_provider.dart`, when publishing, check if a `themeName` is present.
+    *   If it is, use the `/themes/{name}/tlog` API endpoint instead of the user's personal Tlog endpoint (`/me/tlog`).
+    *   Pass the value of the "Post Anonymously" setting to the API.
+
+### Testing:
+*   **Unit Tests:** Test the provider's logic to ensure it calls the correct API endpoint based on whether a theme is provided.
+*   **Widget Tests:** Verify the "Post Anonymously" toggle is shown only when creating an entry in a theme.
