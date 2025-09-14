@@ -835,5 +835,97 @@
   "entryTitle": "Entry title",
   "@entryTitle": {
     "description": "Entry title accessibility label"
+  },
+  "calendar": "Calendar",
+  "@calendar": {
+    "description": "Calendar section title"
+  },
+  "monday": "Monday",
+  "@monday": {
+    "description": "Monday day name"
+  },
+  "tuesday": "Tuesday",
+  "@tuesday": {
+    "description": "Tuesday day name"
+  },
+  "wednesday": "Wednesday",
+  "@wednesday": {
+    "description": "Wednesday day name"
+  },
+  "thursday": "Thursday",
+  "@thursday": {
+    "description": "Thursday day name"
+  },
+  "friday": "Friday",
+  "@friday": {
+    "description": "Friday day name"
+  },
+  "saturday": "Saturday",
+  "@saturday": {
+    "description": "Saturday day name"
+  },
+  "sunday": "Sunday",
+  "@sunday": {
+    "description": "Sunday day name"
+  },
+  "january": "January",
+  "@january": {
+    "description": "January month name"
+  },
+  "february": "February",
+  "@february": {
+    "description": "February month name"
+  },
+  "march": "March",
+  "@march": {
+    "description": "March month name"
+  },
+  "april": "April",
+  "@april": {
+    "description": "April month name"
+  },
+  "may": "May",
+  "@may": {
+    "description": "May month name"
+  },
+  "june": "June",
+  "@june": {
+    "description": "June month name"
+  },
+  "july": "July",
+  "@july": {
+    "description": "July month name"
+  },
+  "august": "August",
+  "@august": {
+    "description": "August month name"
+  },
+  "september": "September",
+  "@september": {
+    "description": "September month name"
+  },
+  "october": "October",
+  "@october": {
+    "description": "October month name"
+  },
+  "november": "November",
+  "@november": {
+    "description": "November month name"
+  },
+  "december": "December",
+  "@december": {
+    "description": "December month name"
+  },
+  "oneEntry": "1 entry",
+  "@oneEntry": {
+    "description": "Single entry count"
+  },
+  "entries": "entries",
+  "@entries": {
+    "description": "Multiple entries count"
+  },
+  "untitledEntry": "Untitled entry",
+  "@untitledEntry": {
+    "description": "Default title for entries without title"
   }
 }

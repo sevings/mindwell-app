@@ -494,10 +494,10 @@ abstract class AppLocalizations {
   /// **'Отслеживаемые'**
   String get watching;
 
-  /// Tab label for entries
+  /// Multiple entries count
   ///
   /// In ru, this message translates to:
-  /// **'Записи'**
+  /// **'записей'**
   String get entries;
 
   /// Tab label for replies
@@ -1417,6 +1417,138 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Пока нет записей'**
   String get noEntries;
+
+  /// Calendar section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Календарь'**
+  String get calendar;
+
+  /// Monday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Понедельник'**
+  String get monday;
+
+  /// Tuesday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Вторник'**
+  String get tuesday;
+
+  /// Wednesday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Среда'**
+  String get wednesday;
+
+  /// Thursday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Четверг'**
+  String get thursday;
+
+  /// Friday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Пятница'**
+  String get friday;
+
+  /// Saturday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Суббота'**
+  String get saturday;
+
+  /// Sunday day name
+  ///
+  /// In ru, this message translates to:
+  /// **'Воскресенье'**
+  String get sunday;
+
+  /// January month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Январь'**
+  String get january;
+
+  /// February month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Февраль'**
+  String get february;
+
+  /// March month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Март'**
+  String get march;
+
+  /// April month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Апрель'**
+  String get april;
+
+  /// May month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Май'**
+  String get may;
+
+  /// June month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Июнь'**
+  String get june;
+
+  /// July month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Июль'**
+  String get july;
+
+  /// August month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Август'**
+  String get august;
+
+  /// September month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Сентябрь'**
+  String get september;
+
+  /// October month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Октябрь'**
+  String get october;
+
+  /// November month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Ноябрь'**
+  String get november;
+
+  /// December month name
+  ///
+  /// In ru, this message translates to:
+  /// **'Декабрь'**
+  String get december;
+
+  /// Single entry count
+  ///
+  /// In ru, this message translates to:
+  /// **'1 запись'**
+  String get oneEntry;
+
+  /// Default title for entries without title
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись без заголовка'**
+  String get untitledEntry;
 }
 
 class _AppLocalizationsDelegate

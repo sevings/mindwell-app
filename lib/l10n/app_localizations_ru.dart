@@ -212,7 +212,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get watching => 'Отслеживаемые';
 
   @override
-  String get entries => 'Записи';
+  String get entries => 'записей';
 
   @override
   String get replies => 'Ответы';
@@ -686,4 +686,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noEntries => 'Пока нет записей';
+
+  @override
+  String get calendar => 'Календарь';
+
+  @override
+  String get monday => 'Понедельник';
+
+  @override
+  String get tuesday => 'Вторник';
+
+  @override
+  String get wednesday => 'Среда';
+
+  @override
+  String get thursday => 'Четверг';
+
+  @override
+  String get friday => 'Пятница';
+
+  @override
+  String get saturday => 'Суббота';
+
+  @override
+  String get sunday => 'Воскресенье';
+
+  @override
+  String get january => 'Январь';
+
+  @override
+  String get february => 'Февраль';
+
+  @override
+  String get march => 'Март';
+
+  @override
+  String get april => 'Апрель';
+
+  @override
+  String get may => 'Май';
+
+  @override
+  String get june => 'Июнь';
+
+  @override
+  String get july => 'Июль';
+
+  @override
+  String get august => 'Август';
+
+  @override
+  String get september => 'Сентябрь';
+
+  @override
+  String get october => 'Октябрь';
+
+  @override
+  String get november => 'Ноябрь';
+
+  @override
+  String get december => 'Декабрь';
+
+  @override
+  String get oneEntry => '1 запись';
+
+  @override
+  String get untitledEntry => 'Запись без заголовка';
 }
