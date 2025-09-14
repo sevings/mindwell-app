@@ -1165,6 +1165,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Скрыть вашу личность при публикации в темах'**
   String get postAnonymouslySubtitle;
+
+  /// Success message when preview is created
+  ///
+  /// In ru, this message translates to:
+  /// **'Предварительный просмотр создан успешно!'**
+  String get previewCreated;
+
+  /// Redirecting to preview message
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенаправление к предварительному просмотру...'**
+  String get redirectingToPreview;
+
+  /// Preview mode indicator text
+  ///
+  /// In ru, this message translates to:
+  /// **'Режим предварительного просмотра - Взаимодействие отключено'**
+  String get previewMode;
+
+  /// Preview mode comments disabled message
+  ///
+  /// In ru, this message translates to:
+  /// **'Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.'**
+  String get previewModeCommentsDisabled;
 }
 
 class _AppLocalizationsDelegate

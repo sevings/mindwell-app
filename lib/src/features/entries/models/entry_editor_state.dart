@@ -60,6 +60,13 @@ sealed class EntryEditorState with _$EntryEditorState {
     required MwEntry entry,
   }) = _Success;
 
+  /// Preview state when the entry has been saved as draft for preview
+  /// 
+  /// [entry] The draft entry created for preview
+  const factory EntryEditorState.preview({
+    required MwEntry entry,
+  }) = _Preview;
+
   /// Error state when saving/publishing fails
   /// 
   /// [message] The error message describing what went wrong

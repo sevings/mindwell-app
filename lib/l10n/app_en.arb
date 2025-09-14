@@ -658,5 +658,21 @@
   "postAnonymouslySubtitle": "Hide your identity when posting in themes",
   "@postAnonymouslySubtitle": {
     "description": "Post anonymously setting subtitle"
+  },
+  "previewCreated": "Preview created successfully!",
+  "@previewCreated": {
+    "description": "Success message when preview is created"
+  },
+  "redirectingToPreview": "Redirecting to preview...",
+  "@redirectingToPreview": {
+    "description": "Redirecting to preview message"
+  },
+  "previewMode": "Preview Mode - Interactions Disabled",
+  "@previewMode": {
+    "description": "Preview mode indicator text"
+  },
+  "previewModeCommentsDisabled": "Comments are disabled in preview mode. Publish the entry to enable comments.",
+  "@previewModeCommentsDisabled": {
+    "description": "Preview mode comments disabled message"
   }
 }

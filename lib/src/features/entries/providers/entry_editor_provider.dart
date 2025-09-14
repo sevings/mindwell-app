@@ -135,6 +135,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(title: title, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -161,6 +162,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(content: content, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -187,6 +189,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(tags: tags, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -213,6 +216,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(privacy: privacy, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -239,6 +243,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(isCommentable: isCommentable, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -265,6 +270,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(isVotable: isVotable, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -291,6 +297,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(inLive: inLive, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -317,6 +324,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(isShared: isShared, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -343,6 +351,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(isDraft: isDraft, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -369,6 +378,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(images: [imageId], hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -395,6 +405,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -421,6 +432,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => EntryEditorState.editing(images: images, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
     );
   }
@@ -439,6 +451,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         const EntryEditorState.publishing(isUploadingImages: true),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
+      preview: (entry) => const EntryEditorState.publishing(isUploadingImages: true),
       error: (message, canRetry) => state,
     );
     
@@ -521,6 +534,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId),
       publishing: (isUploadingImages, uploadProgress) => null,
       success: (entry) => null,
+      preview: (entry) => null,
       error: (message, canRetry) => null,
     );
     
@@ -654,6 +668,87 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     await publishEntry(isDraft: true);
   }
 
+  /// Preview the entry by saving it as a draft.
+  /// 
+  /// This method saves the current entry as a draft and returns the created entry
+  /// for preview purposes. The entry can then be viewed in the entry detail screen.
+  Future<void> previewEntry() async {
+    final currentState = state;
+    
+    // Get current editing state
+    final editingData = currentState.when(
+      initial: () => null,
+      loading: () => null,
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => 
+        (title: title, content: content, tags: tags, privacy: privacy, isCommentable: isCommentable, isVotable: isVotable, inLive: inLive, isShared: isShared, isDraft: isDraft, images: images, entryId: entryId),
+      publishing: (isUploadingImages, uploadProgress) => null,
+      success: (entry) => null,
+      preview: (entry) => null,
+      error: (message, canRetry) => null,
+    );
+    
+    if (editingData == null) return;
+    
+    // Validate required fields
+    if (editingData.title.trim().isEmpty) {
+      state = EntryEditorState.error(
+        message: 'Title is required for preview',
+        canRetry: false,
+      );
+      return;
+    }
+    
+    if (editingData.content.trim().isEmpty) {
+      state = EntryEditorState.error(
+        message: 'Content is required for preview',
+        canRetry: false,
+      );
+      return;
+    }
+    
+    _logger.info('Creating preview of entry');
+    
+    try {
+      // Check if there are any new images that need to be uploaded
+      final hasNewImages = editingData.images.isNotEmpty;
+      
+      if (hasNewImages) {
+        // Start with image upload phase
+        state = const EntryEditorState.publishing(isUploadingImages: true, uploadProgress: 0.0);
+        
+        // Upload images first
+        await _uploadImagesForPublishing(editingData.images);
+      }
+      
+      // Switch to publishing phase
+      state = const EntryEditorState.publishing(isUploadingImages: false, uploadProgress: 0.0);
+      
+      MwEntry? result;
+      
+      if (editingData.entryId != null) {
+        // Update existing entry as draft for preview
+        result = await _updateExistingEntry(editingData, true);
+      } else {
+        // Create new entry as draft for preview
+        result = await _createNewEntry(editingData, true);
+      }
+      
+      if (result != null) {
+        _logger.info('Successfully created preview for entry ${result.id}');
+        state = EntryEditorState.preview(entry: result);
+      } else {
+        throw Exception('Failed to create preview - no data returned');
+      }
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to create preview', e, stackTrace);
+      state = EntryEditorState.error(
+        message: 'Failed to create preview: ${e.toString()}',
+        canRetry: true,
+      );
+    }
+  }
+
   /// Reset the editor to initial state.
   void reset() {
     if (_entryId != null) {
@@ -688,6 +783,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {},
       publishing: (isUploadingImages, uploadProgress) {},
       success: (entry) {},
+      preview: (entry) {},
       error: (message, canRetry) async {
         if (canRetry) {
           // Try to republish the entry

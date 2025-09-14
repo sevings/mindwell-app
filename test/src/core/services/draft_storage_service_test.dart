@@ -168,6 +168,7 @@ void main() {
           },
           publishing: (isUploadingImages, uploadProgress) => fail('Expected editing state'),
           success: (entry) => fail('Expected editing state'),
+          preview: (entry) => fail('Expected editing state'),
           error: (message, canRetry) => fail('Expected editing state'),
         );
       });
@@ -229,6 +230,7 @@ void main() {
           },
           publishing: (isUploadingImages, uploadProgress) => fail('Expected editing state'),
           success: (entry) => fail('Expected editing state'),
+          preview: (entry) => fail('Expected editing state'),
           error: (message, canRetry) => fail('Expected editing state'),
         );
       });

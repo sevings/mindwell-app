@@ -555,4 +555,19 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get postAnonymouslySubtitle =>
       'Скрыть вашу личность при публикации в темах';
+
+  @override
+  String get previewCreated => 'Предварительный просмотр создан успешно!';
+
+  @override
+  String get redirectingToPreview =>
+      'Перенаправление к предварительному просмотру...';
+
+  @override
+  String get previewMode =>
+      'Режим предварительного просмотра - Взаимодействие отключено';
+
+  @override
+  String get previewModeCommentsDisabled =>
+      'Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.';
 }

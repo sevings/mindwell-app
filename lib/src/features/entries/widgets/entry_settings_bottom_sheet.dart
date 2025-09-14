@@ -37,6 +37,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
         _buildSettingsSheet(context, ref, l10n, privacy, isCommentable, isVotable, inLive, isShared, isDraft),
       publishing: (isUploadingImages, uploadProgress) => const SizedBox.shrink(),
       success: (entry) => const SizedBox.shrink(),
+      preview: (entry) => const SizedBox.shrink(),
       error: (message, canRetry) => const SizedBox.shrink(),
     );
   }

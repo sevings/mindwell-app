@@ -114,7 +114,11 @@ class AppRouter {
             name: 'entryDetail',
             builder: (context, state) {
               final entryId = int.parse(state.pathParameters['id']!);
-              return EntryDetailScreen(entryId: entryId);
+              final isPreview = state.uri.queryParameters['preview'] == 'true';
+              return EntryDetailScreen(
+                entryId: entryId,
+                isPreview: isPreview,
+              );
             },
           ),
           // Protected feed type routes (require authentication)
@@ -160,6 +164,18 @@ class AppRouter {
             path: '/feed/best',
             name: 'bestFeed',
             builder: (context, state) => const EntryFeedScreen(feedType: FeedType.best),
+          ),
+          GoRoute(
+            path: '/entries/:id',
+            name: 'entryDetail',
+            builder: (context, state) {
+              final entryId = int.parse(state.pathParameters['id']!);
+              final isPreview = state.uri.queryParameters['preview'] == 'true';
+              return EntryDetailScreen(
+                entryId: entryId,
+                isPreview: isPreview,
+              );
+            },
           ),
           GoRoute(
             path: '/tags/:tagName',

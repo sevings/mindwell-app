@@ -549,4 +549,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get postAnonymouslySubtitle =>
       'Hide your identity when posting in themes';
+
+  @override
+  String get previewCreated => 'Preview created successfully!';
+
+  @override
+  String get redirectingToPreview => 'Redirecting to preview...';
+
+  @override
+  String get previewMode => 'Preview Mode - Interactions Disabled';
+
+  @override
+  String get previewModeCommentsDisabled =>
+      'Comments are disabled in preview mode. Publish the entry to enable comments.';
 }

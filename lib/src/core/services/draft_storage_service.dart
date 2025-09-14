@@ -81,6 +81,9 @@ class DraftStorageService {
         success: (entry) {
           _logger.fine('Skipping draft save - success state');
         },
+        preview: (entry) {
+          _logger.fine('Skipping draft save - preview state');
+        },
         error: (message, canRetry) {
           _logger.fine('Skipping draft save - error state');
         },
@@ -178,6 +181,7 @@ class DraftStorageService {
         },
         publishing: (isUploadingImages, uploadProgress) => null,
         success: (entry) => null,
+        preview: (entry) => null,
         error: (message, canRetry) => null,
       );
     } catch (e) {

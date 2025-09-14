@@ -62,37 +62,13 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
 
   /// Preview the entry by saving it as a draft and navigating to preview.
   Future<void> _previewEntry() async {
-    final l10n = AppLocalizations.of(context);
-    
     try {
-      // Save as draft first
-      await ref.read(entryEditorProvider(widget.entryId).notifier).saveDraft();
-      
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n?.draftSaved ?? 'Draft saved'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-      
-      // TODO: Navigate to preview screen when implemented
-      // For now, just show a message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n?.preview ?? 'Preview functionality coming soon'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      await ref.read(entryEditorProvider(widget.entryId).notifier).previewEntry();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save draft: ${e.toString()}'),
+            content: Text('Failed to create preview: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -157,6 +133,19 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             // New entry - go to the newly created entry
             context.go('/entries/${entry.id}');
           }
+        },
+        preview: (entry) {
+          // Show success message and navigate to preview
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n?.previewCreated ?? 'Preview created successfully!'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          
+          // Navigate to the entry detail screen to show the preview
+          context.go('/entries/${entry.id}?preview=true');
         },
         error: (message, canRetry) {
           // Show error snackbar
@@ -278,6 +267,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => _buildEditingContent(),
         publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
         success: (entry) => _buildSuccessContent(),
+        preview: (entry) => _buildPreviewContent(),
         error: (message, canRetry) => _buildErrorContent(message, canRetry),
       ),
     );
@@ -293,6 +283,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         _buildEditingForm(tags, images),
       publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
       success: (entry) => const Center(child: CircularProgressIndicator()),
+      preview: (entry) => const Center(child: CircularProgressIndicator()),
       error: (message, canRetry) => _buildErrorContent(message, canRetry),
     );
   }
@@ -454,6 +445,46 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             const SizedBox(height: 8),
             Text(
               l10n?.redirecting ?? 'Redirecting...',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewContent() {
+    final l10n = AppLocalizations.of(context);
+    
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.visibility,
+              size: 64,
+              color: Colors.blue,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n?.previewCreated ?? 'Preview Created!',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n?.redirectingToPreview ?? 'Redirecting to preview...',
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,

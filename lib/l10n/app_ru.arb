@@ -724,5 +724,21 @@
   "postAnonymouslySubtitle": "Скрыть вашу личность при публикации в темах",
   "@postAnonymouslySubtitle": {
     "description": "Post anonymously setting subtitle"
+  },
+  "previewCreated": "Предварительный просмотр создан успешно!",
+  "@previewCreated": {
+    "description": "Success message when preview is created"
+  },
+  "redirectingToPreview": "Перенаправление к предварительному просмотру...",
+  "@redirectingToPreview": {
+    "description": "Redirecting to preview message"
+  },
+  "previewMode": "Режим предварительного просмотра - Взаимодействие отключено",
+  "@previewMode": {
+    "description": "Preview mode indicator text"
+  },
+  "previewModeCommentsDisabled": "Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.",
+  "@previewModeCommentsDisabled": {
+    "description": "Preview mode comments disabled message"
   }
 }

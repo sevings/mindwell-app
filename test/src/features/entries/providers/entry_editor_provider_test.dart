@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:dio/dio.dart';
+import 'package:built_collection/built_collection.dart';
 
 import 'package:mindwell/src/features/entries/models/entry_editor_state.dart';
 import 'package:mindwell/src/features/entries/providers/entry_editor_provider.dart';
@@ -246,6 +247,213 @@ void main() {
           imageUploadService: mockImageUploadService,
         );
         expect(notifierWithId.isEditingExisting, isTrue);
+      });
+    });
+
+    group('Preview Functionality', () {
+      setUp(() {
+        notifier = EntryEditorNotifier(
+          entryId: null,
+          entriesApi: mockEntriesApi,
+          meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
+        );
+      });
+
+      test('should create preview successfully for new entry', () async {
+        // Set up editing state with content
+        notifier.updateTitle('Test Title');
+        notifier.updateContent('Test Content');
+        
+        // Mock successful API response
+        final mockEntry = MockMwEntry();
+        when(() => mockEntry.id).thenReturn(123);
+        when(() => mockEntry.title).thenReturn('Test Title');
+        when(() => mockEntry.content).thenReturn('Test Content');
+        
+        when(() => mockMeApi.meTlogPost(
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+          isDraft: true, // Should be true for preview
+        )).thenAnswer((_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/me/tlog'),
+        ));
+        
+        // Call previewEntry
+        await notifier.previewEntry();
+        
+        // Should be in preview state
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
+          orElse: () => false,
+        );
+        expect(isPreview, isTrue);
+        
+        // Verify API was called with draft=true
+        verify(() => mockMeApi.meTlogPost(
+          content: 'Test Content',
+          privacy: 'all',
+          title: 'Test Title',
+          images: null,
+          tags: null,
+          isCommentable: true,
+          isVotable: true,
+          inLive: true,
+          isShared: false,
+          isDraft: true,
+        )).called(1);
+      });
+
+      test('should fail preview when title is empty', () async {
+        // Set up editing state without title
+        notifier.updateContent('Test Content');
+        
+        // Call previewEntry
+        await notifier.previewEntry();
+        
+        // Should be in error state
+        final isError = notifier.state.maybeWhen(
+          error: (message, canRetry) => message == 'Title is required for preview',
+          orElse: () => false,
+        );
+        expect(isError, isTrue);
+      });
+
+      test('should fail preview when content is empty', () async {
+        // Set up editing state without content
+        notifier.updateTitle('Test Title');
+        
+        // Call previewEntry
+        await notifier.previewEntry();
+        
+        // Should be in error state
+        final isError = notifier.state.maybeWhen(
+          error: (message, canRetry) => message == 'Content is required for preview',
+          orElse: () => false,
+        );
+        expect(isError, isTrue);
+      });
+
+      test('should handle API error during preview creation', () async {
+        // Set up editing state
+        notifier.updateTitle('Test Title');
+        notifier.updateContent('Test Content');
+        
+        // Mock API error
+        when(() => mockMeApi.meTlogPost(
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+          isDraft: true,
+        )).thenThrow(Exception('API Error'));
+        
+        // Call previewEntry
+        await notifier.previewEntry();
+        
+        // Should be in error state
+        final isError = notifier.state.maybeWhen(
+          error: (message, canRetry) => message.contains('Failed to create preview'),
+          orElse: () => false,
+        );
+        expect(isError, isTrue);
+      });
+
+      test('should create preview for existing entry', () async {
+        // Mock the initial entry loading
+        final mockExistingEntry = MockMwEntry();
+        when(() => mockExistingEntry.id).thenReturn(123);
+        when(() => mockExistingEntry.title).thenReturn('Original Title');
+        when(() => mockExistingEntry.content).thenReturn('Original Content');
+        when(() => mockExistingEntry.editContent).thenReturn('Original Content');
+        when(() => mockExistingEntry.tags).thenReturn(BuiltList<String>([]));
+        when(() => mockExistingEntry.privacy).thenReturn(MwEntryPrivacyEnum.all);
+        when(() => mockExistingEntry.isCommentable).thenReturn(true);
+        when(() => mockExistingEntry.inLive).thenReturn(true);
+        when(() => mockExistingEntry.isShared).thenReturn(false);
+        when(() => mockExistingEntry.images).thenReturn(BuiltList<MwImage>([]));
+        
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer((_) async => Response<MwEntry>(
+          data: mockExistingEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/entries/123'),
+        ));
+        
+        // Set up notifier for existing entry
+        notifier = EntryEditorNotifier(
+          entryId: 123,
+          entriesApi: mockEntriesApi,
+          meApi: mockMeApi,
+          imageUploadService: mockImageUploadService,
+        );
+        
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 200));
+        
+        // Update the entry content
+        notifier.updateTitle('Updated Title');
+        notifier.updateContent('Updated Content');
+        
+        // Mock successful API response for updating existing entry
+        final mockUpdatedEntry = MockMwEntry();
+        when(() => mockUpdatedEntry.id).thenReturn(123);
+        when(() => mockUpdatedEntry.title).thenReturn('Updated Title');
+        when(() => mockUpdatedEntry.content).thenReturn('Updated Content');
+        
+        when(() => mockEntriesApi.entriesIdPut(
+          id: 123,
+          content: any(named: 'content'),
+          privacy: any(named: 'privacy'),
+          title: any(named: 'title'),
+          images: any(named: 'images'),
+          tags: any(named: 'tags'),
+          isCommentable: any(named: 'isCommentable'),
+          isVotable: any(named: 'isVotable'),
+          inLive: any(named: 'inLive'),
+          isShared: any(named: 'isShared'),
+        )).thenAnswer((_) async => Response<MwEntry>(
+          data: mockUpdatedEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/entries/123'),
+        ));
+        
+        // Call previewEntry
+        await notifier.previewEntry();
+        
+        // Should be in preview state
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
+          orElse: () => false,
+        );
+        expect(isPreview, isTrue);
+        
+        // Verify API was called for updating existing entry
+        verify(() => mockEntriesApi.entriesIdPut(
+          id: 123,
+          content: 'Updated Content',
+          privacy: 'all',
+          title: 'Updated Title',
+          images: null,
+          tags: null,
+          isCommentable: true,
+          isVotable: true,
+          inLive: true,
+          isShared: false,
+        )).called(1);
       });
     });
   });

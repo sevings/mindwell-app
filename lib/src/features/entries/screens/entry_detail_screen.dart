@@ -23,10 +23,14 @@ import 'image_gallery_screen.dart';
 class EntryDetailScreen extends ConsumerStatefulWidget {
   /// The ID of the entry to display
   final int entryId;
+  
+  /// Whether this is a preview mode (showing a draft entry)
+  final bool isPreview;
 
   const EntryDetailScreen({
     super.key,
     required this.entryId,
+    this.isPreview = false,
   });
 
   @override
@@ -188,9 +192,16 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       controller: _scrollController,
       slivers: [
         SliverAppBar(
-          expandedHeight: 200.0,
+          expandedHeight: widget.isPreview ? 240.0 : 200.0,
           pinned: true,
-          actions: [
+          actions: widget.isPreview ? [
+            // In preview mode, show a back button instead of context menu
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => context.pop(),
+              tooltip: 'Back to editor',
+            ),
+          ] : [
             EntryContextMenu(
               entry: entry,
               onPin: () => _onPinEntry(),
@@ -205,13 +216,58 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             ),
           ],
           flexibleSpace: FlexibleSpaceBar(
-            title: Text(
-              entry.title ?? '',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            title: widget.isPreview 
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.visibility,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              AppLocalizations.of(context)?.preview ?? 'Preview',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Flexible(
+                        child: Text(
+                          entry.title ?? '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    entry.title ?? '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
             background: _buildAppBarBackground(entry),
           ),
         ),
@@ -233,7 +289,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                   onNextTap: () => _onAdjacentEntryTap(adjacentEntries?.newer),
                 ),
                 const SizedBox(height: 24),
-                _buildCommentsSection(l10n, comments, hasMoreComments, isLoadingComments),
+                widget.isPreview 
+                    ? _buildPreviewCommentsSection()
+                    : _buildCommentsSection(l10n, comments, hasMoreComments, isLoadingComments),
               ],
             ),
           ),
@@ -446,6 +504,40 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final downvotes = rating?.downCount ?? 0;
     final score = upvotes - downvotes;
 
+    // In preview mode, disable all interactive buttons
+    if (widget.isPreview) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Colors.orange.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.visibility,
+              color: Colors.orange,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              AppLocalizations.of(context)?.previewMode ?? 'Preview Mode - Interactions Disabled',
+              style: TextStyle(
+                color: Colors.orange.shade700,
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Row(
       children: [
         // Vote buttons
@@ -489,6 +581,53 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildPreviewCommentsSection() {
+    final l10n = AppLocalizations.of(context);
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.orange.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.comment_outlined,
+                color: Colors.orange,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n?.comments ?? 'Comments',
+                style: TextStyle(
+                  color: Colors.orange.shade700,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n?.previewModeCommentsDisabled ?? 'Comments are disabled in preview mode. Publish the entry to enable comments.',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

@@ -37,6 +37,7 @@ mixin _$EntryEditorState {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -61,6 +62,7 @@ mixin _$EntryEditorState {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -84,6 +86,7 @@ mixin _$EntryEditorState {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) =>
@@ -95,6 +98,7 @@ mixin _$EntryEditorState {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -105,6 +109,7 @@ mixin _$EntryEditorState {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -115,6 +120,7 @@ mixin _$EntryEditorState {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) =>
@@ -196,6 +202,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return initial();
@@ -223,6 +230,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return initial?.call();
@@ -249,6 +257,7 @@ class _$InitialImpl implements _Initial {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -266,6 +275,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return initial(this);
@@ -279,6 +289,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return initial?.call(this);
@@ -292,6 +303,7 @@ class _$InitialImpl implements _Initial {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -363,6 +375,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return loading();
@@ -390,6 +403,7 @@ class _$LoadingImpl implements _Loading {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return loading?.call();
@@ -416,6 +430,7 @@ class _$LoadingImpl implements _Loading {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -433,6 +448,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return loading(this);
@@ -446,6 +462,7 @@ class _$LoadingImpl implements _Loading {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return loading?.call(this);
@@ -459,6 +476,7 @@ class _$LoadingImpl implements _Loading {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -710,6 +728,7 @@ class _$EditingImpl implements _Editing {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return editing(title, content, tags, privacy, isCommentable, isVotable,
@@ -738,6 +757,7 @@ class _$EditingImpl implements _Editing {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return editing?.call(
@@ -776,6 +796,7 @@ class _$EditingImpl implements _Editing {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -794,6 +815,7 @@ class _$EditingImpl implements _Editing {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return editing(this);
@@ -807,6 +829,7 @@ class _$EditingImpl implements _Editing {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return editing?.call(this);
@@ -820,6 +843,7 @@ class _$EditingImpl implements _Editing {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -959,6 +983,7 @@ class _$PublishingImpl implements _Publishing {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return publishing(isUploadingImages, uploadProgress);
@@ -986,6 +1011,7 @@ class _$PublishingImpl implements _Publishing {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return publishing?.call(isUploadingImages, uploadProgress);
@@ -1012,6 +1038,7 @@ class _$PublishingImpl implements _Publishing {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -1029,6 +1056,7 @@ class _$PublishingImpl implements _Publishing {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return publishing(this);
@@ -1042,6 +1070,7 @@ class _$PublishingImpl implements _Publishing {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return publishing?.call(this);
@@ -1055,6 +1084,7 @@ class _$PublishingImpl implements _Publishing {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -1160,6 +1190,7 @@ class _$SuccessImpl implements _Success {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return success(entry);
@@ -1187,6 +1218,7 @@ class _$SuccessImpl implements _Success {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return success?.call(entry);
@@ -1213,6 +1245,7 @@ class _$SuccessImpl implements _Success {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -1230,6 +1263,7 @@ class _$SuccessImpl implements _Success {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return success(this);
@@ -1243,6 +1277,7 @@ class _$SuccessImpl implements _Success {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return success?.call(this);
@@ -1256,6 +1291,7 @@ class _$SuccessImpl implements _Success {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -1272,6 +1308,210 @@ abstract class _Success implements EntryEditorState {
   MwEntry get entry;
   @JsonKey(ignore: true)
   _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$PreviewImplCopyWith<$Res> {
+  factory _$$PreviewImplCopyWith(
+          _$PreviewImpl value, $Res Function(_$PreviewImpl) then) =
+      __$$PreviewImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({MwEntry entry});
+}
+
+/// @nodoc
+class __$$PreviewImplCopyWithImpl<$Res>
+    extends _$EntryEditorStateCopyWithImpl<$Res, _$PreviewImpl>
+    implements _$$PreviewImplCopyWith<$Res> {
+  __$$PreviewImplCopyWithImpl(
+      _$PreviewImpl _value, $Res Function(_$PreviewImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? entry = null,
+  }) {
+    return _then(_$PreviewImpl(
+      entry: null == entry
+          ? _value.entry
+          : entry // ignore: cast_nullable_to_non_nullable
+              as MwEntry,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$PreviewImpl implements _Preview {
+  const _$PreviewImpl({required this.entry});
+
+  @override
+  final MwEntry entry;
+
+  @override
+  String toString() {
+    return 'EntryEditorState.preview(entry: $entry)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PreviewImpl &&
+            (identical(other.entry, entry) || other.entry == entry));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, entry);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PreviewImplCopyWith<_$PreviewImpl> get copyWith =>
+      __$$PreviewImplCopyWithImpl<_$PreviewImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(
+            String title,
+            String content,
+            List<String> tags,
+            String privacy,
+            bool isCommentable,
+            bool isVotable,
+            bool inLive,
+            bool isShared,
+            bool isDraft,
+            List<int> images,
+            int? entryId,
+            bool hasUnsavedChanges)
+        editing,
+    required TResult Function(bool isUploadingImages, double uploadProgress)
+        publishing,
+    required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
+    required TResult Function(String message, bool canRetry) error,
+  }) {
+    return preview(entry);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(
+            String title,
+            String content,
+            List<String> tags,
+            String privacy,
+            bool isCommentable,
+            bool isVotable,
+            bool inLive,
+            bool isShared,
+            bool isDraft,
+            List<int> images,
+            int? entryId,
+            bool hasUnsavedChanges)?
+        editing,
+    TResult? Function(bool isUploadingImages, double uploadProgress)?
+        publishing,
+    TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
+    TResult? Function(String message, bool canRetry)? error,
+  }) {
+    return preview?.call(entry);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(
+            String title,
+            String content,
+            List<String> tags,
+            String privacy,
+            bool isCommentable,
+            bool isVotable,
+            bool inLive,
+            bool isShared,
+            bool isDraft,
+            List<int> images,
+            int? entryId,
+            bool hasUnsavedChanges)?
+        editing,
+    TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
+    TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
+    TResult Function(String message, bool canRetry)? error,
+    required TResult orElse(),
+  }) {
+    if (preview != null) {
+      return preview(entry);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_Loading value) loading,
+    required TResult Function(_Editing value) editing,
+    required TResult Function(_Publishing value) publishing,
+    required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
+    required TResult Function(_Error value) error,
+  }) {
+    return preview(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_Loading value)? loading,
+    TResult? Function(_Editing value)? editing,
+    TResult? Function(_Publishing value)? publishing,
+    TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
+    TResult? Function(_Error value)? error,
+  }) {
+    return preview?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_Loading value)? loading,
+    TResult Function(_Editing value)? editing,
+    TResult Function(_Publishing value)? publishing,
+    TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
+    TResult Function(_Error value)? error,
+    required TResult orElse(),
+  }) {
+    if (preview != null) {
+      return preview(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _Preview implements EntryEditorState {
+  const factory _Preview({required final MwEntry entry}) = _$PreviewImpl;
+
+  MwEntry get entry;
+  @JsonKey(ignore: true)
+  _$$PreviewImplCopyWith<_$PreviewImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1368,6 +1608,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function(bool isUploadingImages, double uploadProgress)
         publishing,
     required TResult Function(MwEntry entry) success,
+    required TResult Function(MwEntry entry) preview,
     required TResult Function(String message, bool canRetry) error,
   }) {
     return error(message, canRetry);
@@ -1395,6 +1636,7 @@ class _$ErrorImpl implements _Error {
     TResult? Function(bool isUploadingImages, double uploadProgress)?
         publishing,
     TResult? Function(MwEntry entry)? success,
+    TResult? Function(MwEntry entry)? preview,
     TResult? Function(String message, bool canRetry)? error,
   }) {
     return error?.call(message, canRetry);
@@ -1421,6 +1663,7 @@ class _$ErrorImpl implements _Error {
         editing,
     TResult Function(bool isUploadingImages, double uploadProgress)? publishing,
     TResult Function(MwEntry entry)? success,
+    TResult Function(MwEntry entry)? preview,
     TResult Function(String message, bool canRetry)? error,
     required TResult orElse(),
   }) {
@@ -1438,6 +1681,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function(_Editing value) editing,
     required TResult Function(_Publishing value) publishing,
     required TResult Function(_Success value) success,
+    required TResult Function(_Preview value) preview,
     required TResult Function(_Error value) error,
   }) {
     return error(this);
@@ -1451,6 +1695,7 @@ class _$ErrorImpl implements _Error {
     TResult? Function(_Editing value)? editing,
     TResult? Function(_Publishing value)? publishing,
     TResult? Function(_Success value)? success,
+    TResult? Function(_Preview value)? preview,
     TResult? Function(_Error value)? error,
   }) {
     return error?.call(this);
@@ -1464,6 +1709,7 @@ class _$ErrorImpl implements _Error {
     TResult Function(_Editing value)? editing,
     TResult Function(_Publishing value)? publishing,
     TResult Function(_Success value)? success,
+    TResult Function(_Preview value)? preview,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
