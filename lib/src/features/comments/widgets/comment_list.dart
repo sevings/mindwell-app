@@ -64,6 +64,18 @@ class CommentList extends StatelessWidget {
   
   /// The separator widget (if showSeparator is true)
   final Widget? separator;
+  
+  /// Callback when edit action is triggered from context menu
+  final void Function(MwComment comment)? onEditComment;
+  
+  /// Callback when delete action is triggered from context menu
+  final void Function(MwComment comment)? onDeleteComment;
+  
+  /// Callback when complain action is triggered from context menu
+  final void Function(MwComment comment)? onComplainComment;
+  
+  /// Whether to show context menu on comments
+  final bool showContextMenu;
 
   const CommentList({
     super.key,
@@ -84,6 +96,10 @@ class CommentList extends StatelessWidget {
     this.padding,
     this.showSeparator = false,
     this.separator,
+    this.onEditComment,
+    this.onDeleteComment,
+    this.onComplainComment,
+    this.showContextMenu = false,
   });
 
   @override
@@ -117,6 +133,10 @@ class CommentList extends StatelessWidget {
                       : null,
                   onUpvote: onUpvote != null ? () => onUpvote!(comment) : null,
                   onDownvote: onDownvote != null ? () => onDownvote!(comment) : null,
+                  onEdit: onEditComment != null ? () => onEditComment!(comment) : null,
+                  onDelete: onDeleteComment != null ? () => onDeleteComment!(comment) : null,
+                  onComplain: onComplainComment != null ? () => onComplainComment!(comment) : null,
+                  showContextMenu: showContextMenu,
                 );
               },
             ),

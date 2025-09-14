@@ -576,5 +576,89 @@
   "redirecting": "Перенаправление...",
   "@redirecting": {
     "description": "Redirecting message"
+  },
+  "pin": "Закрепить",
+  "@pin": {
+    "description": "Pin entry action"
+  },
+  "unpin": "Открепить",
+  "@unpin": {
+    "description": "Unpin entry action"
+  },
+  "follow": "Отслеживать",
+  "@follow": {
+    "description": "Follow entry action"
+  },
+  "unfollow": "Не отслеживать",
+  "@unfollow": {
+    "description": "Unfollow entry action"
+  },
+  "edit": "Редактировать",
+  "@edit": {
+    "description": "Edit action"
+  },
+  "delete": "Удалить",
+  "@delete": {
+    "description": "Delete action"
+  },
+  "complain": "Пожаловаться",
+  "@complain": {
+    "description": "Complain action"
+  },
+  "share": "Поделиться",
+  "@share": {
+    "description": "Share action"
+  },
+  "copyLink": "Копировать ссылку",
+  "@copyLink": {
+    "description": "Copy link action"
+  },
+  "entryActions": "Действия с записью",
+  "@entryActions": {
+    "description": "Entry actions menu title"
+  },
+  "commentActions": "Действия с комментарием",
+  "@commentActions": {
+    "description": "Comment actions menu title"
+  },
+  "confirmDelete": "Вы уверены, что хотите удалить эту запись?",
+  "@confirmDelete": {
+    "description": "Confirmation message for deleting entry"
+  },
+  "confirmDeleteComment": "Вы уверены, что хотите удалить этот комментарий?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting comment"
+  },
+  "entryDeleted": "Запись успешно удалена",
+  "@entryDeleted": {
+    "description": "Success message when entry is deleted"
+  },
+  "commentDeleted": "Комментарий успешно удален",
+  "@commentDeleted": {
+    "description": "Success message when comment is deleted"
+  },
+  "entryPinned": "Запись закреплена",
+  "@entryPinned": {
+    "description": "Success message when entry is pinned"
+  },
+  "entryUnpinned": "Запись откреплена",
+  "@entryUnpinned": {
+    "description": "Success message when entry is unpinned"
+  },
+  "entryFollowed": "Теперь отслеживаете эту запись",
+  "@entryFollowed": {
+    "description": "Success message when entry is followed"
+  },
+  "entryUnfollowed": "Больше не отслеживаете эту запись",
+  "@entryUnfollowed": {
+    "description": "Success message when entry is unfollowed"
+  },
+  "linkCopied": "Ссылка скопирована в буфер обмена",
+  "@linkCopied": {
+    "description": "Success message when link is copied"
+  },
+  "complaintSubmitted": "Жалоба успешно отправлена",
+  "@complaintSubmitted": {
+    "description": "Success message when complaint is submitted"
   }
 }

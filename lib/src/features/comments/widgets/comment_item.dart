@@ -5,6 +5,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
+import 'comment_context_menu.dart';
 
 /// A widget that displays a single comment with author information, content, and voting options.
 /// 
@@ -43,6 +44,18 @@ class CommentItem extends StatelessWidget {
   
   /// Custom margin for the comment
   final EdgeInsetsGeometry? margin;
+  
+  /// Callback when edit action is triggered from context menu
+  final VoidCallback? onEdit;
+  
+  /// Callback when delete action is triggered from context menu
+  final VoidCallback? onDelete;
+  
+  /// Callback when complain action is triggered from context menu
+  final VoidCallback? onComplain;
+  
+  /// Whether to show context menu on long press
+  final bool showContextMenu;
 
   const CommentItem({
     super.key,
@@ -57,6 +70,10 @@ class CommentItem extends StatelessWidget {
     this.isVoting = false,
     this.padding,
     this.margin,
+    this.onEdit,
+    this.onDelete,
+    this.onComplain,
+    this.showContextMenu = false,
   });
 
   @override
@@ -70,6 +87,7 @@ class CommentItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          onLongPress: showContextMenu ? () => _showContextMenu(context) : null,
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: padding ?? const EdgeInsets.all(16),
@@ -80,7 +98,24 @@ class CommentItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(context, author),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildHeader(context, author),
+                    ),
+                    if (showContextMenu) ...[
+                      const SizedBox(width: 8),
+                      CommentContextMenu(
+                        comment: comment,
+                        onEdit: onEdit,
+                        onDelete: onDelete,
+                        onComplain: onComplain,
+                        onUpvote: onUpvote,
+                        onDownvote: onDownvote,
+                      ),
+                    ],
+                  ],
+                ),
                 if (showEntryTitle && entryTitle != null) ...[
                   const SizedBox(height: 8),
                   _buildEntryTitle(context),
@@ -313,5 +348,130 @@ class CommentItem extends StatelessWidget {
     } else {
       return 'Just now';
     }
+  }
+
+  void _showContextMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final rights = comment.rights;
+    
+    if (rights == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+            Text(
+              l10n?.commentActions ?? 'Comment Actions',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (rights.vote == true) ...[
+              ListTile(
+                leading: const Icon(Icons.thumb_up_outlined),
+                title: Text(l10n?.upvote ?? 'Upvote'),
+                onTap: () {
+                  Navigator.pop(context);
+                  onUpvote?.call();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.thumb_down_outlined),
+                title: Text(l10n?.downvote ?? 'Downvote'),
+                onTap: () {
+                  Navigator.pop(context);
+                  onDownvote?.call();
+                },
+              ),
+            ],
+            if (rights.edit == true) ...[
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: Text(l10n?.edit ?? 'Edit'),
+                onTap: () {
+                  Navigator.pop(context);
+                  onEdit?.call();
+                },
+              ),
+            ],
+            if (rights.delete == true) ...[
+              ListTile(
+                leading: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                title: Text(
+                  l10n?.delete ?? 'Delete',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context);
+                },
+              ),
+            ],
+            if (rights.complain == true) ...[
+              ListTile(
+                leading: Icon(
+                  Icons.report,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                title: Text(
+                  l10n?.complain ?? 'Complain',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  onComplain?.call();
+                },
+              ),
+            ],
+          ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n?.delete ?? 'Delete'),
+        content: Text(l10n?.confirmDeleteComment ?? 'Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n?.goBack ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onDelete?.call();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n?.delete ?? 'Delete'),
+          ),
+        ],
+      ),
+    );
   }
 }

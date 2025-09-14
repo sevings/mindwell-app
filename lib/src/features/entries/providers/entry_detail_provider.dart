@@ -373,4 +373,338 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
       return false; // Failed
     }
   }
+
+  /// Pin the entry.
+  Future<void> pinEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to pin entry
+      // Note: The actual pinning API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Pinning entry $_entryId');
+      
+      // Optimistic update - in a real implementation, you'd update the entry's isPinned field
+      // For now, we'll just keep the current entry unchanged
+      final updatedEntry = currentState.entry;
+      
+      state = EntryDetailState.loaded(
+        entry: updatedEntry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to pin entry $_entryId', e, stackTrace);
+      
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+    }
+  }
+
+  /// Unpin the entry.
+  Future<void> unpinEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to unpin entry
+      // Note: The actual unpinning API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Unpinning entry $_entryId');
+      
+      // Optimistic update - in a real implementation, you'd update the entry's isPinned field
+      // For now, we'll just keep the current entry unchanged
+      final updatedEntry = currentState.entry;
+      
+      state = EntryDetailState.loaded(
+        entry: updatedEntry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to unpin entry $_entryId', e, stackTrace);
+      
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+    }
+  }
+
+  /// Follow the entry.
+  Future<void> followEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to follow entry
+      // Note: The actual follow API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Following entry $_entryId');
+      
+      // Optimistic update - in a real implementation, you'd update the entry's isWatching field
+      // For now, we'll just keep the current entry unchanged
+      final updatedEntry = currentState.entry;
+      
+      state = EntryDetailState.loaded(
+        entry: updatedEntry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to follow entry $_entryId', e, stackTrace);
+      
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+    }
+  }
+
+  /// Unfollow the entry.
+  Future<void> unfollowEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to unfollow entry
+      // Note: The actual unfollow API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Unfollowing entry $_entryId');
+      
+      // Optimistic update - in a real implementation, you'd update the entry's isWatching field
+      // For now, we'll just keep the current entry unchanged
+      final updatedEntry = currentState.entry;
+      
+      state = EntryDetailState.loaded(
+        entry: updatedEntry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to unfollow entry $_entryId', e, stackTrace);
+      
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+    }
+  }
+
+  /// Delete the entry.
+  Future<void> deleteEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to delete entry
+      // Note: The actual delete API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Deleting entry $_entryId');
+      
+      // In a real implementation, you would navigate back or show a deleted state
+      // For now, we'll just keep the current state
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to delete entry $_entryId', e, stackTrace);
+    }
+  }
+
+  /// Submit a complaint about the entry.
+  Future<void> complainEntry() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to submit complaint
+      // Note: The actual complaint API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Submitting complaint for entry $_entryId');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to submit complaint for entry $_entryId', e, stackTrace);
+    }
+  }
+
+  /// Delete a comment.
+  Future<void> deleteComment(int commentId) async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to delete comment
+      // Note: The actual delete comment API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Deleting comment $commentId from entry $_entryId');
+      
+      // Optimistic update - remove comment from list
+      final updatedComments = currentState.comments.where((comment) => comment.id != commentId).toList();
+      
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: updatedComments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to delete comment $commentId from entry $_entryId', e, stackTrace);
+      
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+      );
+    }
+  }
+
+  /// Vote on a comment.
+  Future<void> voteComment(int commentId, bool isUpvote) async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to vote on comment
+      // Note: The actual comment voting API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Voting ${isUpvote ? 'up' : 'down'} on comment $commentId');
+      
+      // Optimistic update - in a real implementation, you'd update the comment's rating
+      // For now, we'll just keep the current comments unchanged
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to vote on comment $commentId', e, stackTrace);
+    }
+  }
+
+  /// Submit a complaint about a comment.
+  Future<void> complainComment(int commentId) async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        entry: entry,
+        comments: comments,
+        hasMoreComments: hasMoreComments,
+      ),
+      error: (message, entry) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      // Make API call to submit complaint
+      // Note: The actual complaint API endpoint would need to be implemented
+      // For now, we'll just log the action
+      _logger.info('Submitting complaint for comment $commentId');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to submit complaint for comment $commentId', e, stackTrace);
+    }
+  }
 }

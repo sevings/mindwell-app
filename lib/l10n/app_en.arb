@@ -510,5 +510,89 @@
   "redirecting": "Redirecting...",
   "@redirecting": {
     "description": "Redirecting message"
+  },
+  "pin": "Pin",
+  "@pin": {
+    "description": "Pin entry action"
+  },
+  "unpin": "Unpin",
+  "@unpin": {
+    "description": "Unpin entry action"
+  },
+  "follow": "Follow",
+  "@follow": {
+    "description": "Follow entry action"
+  },
+  "unfollow": "Unfollow",
+  "@unfollow": {
+    "description": "Unfollow entry action"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit action"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete action"
+  },
+  "complain": "Complain",
+  "@complain": {
+    "description": "Complain action"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "Share action"
+  },
+  "copyLink": "Copy Link",
+  "@copyLink": {
+    "description": "Copy link action"
+  },
+  "entryActions": "Entry Actions",
+  "@entryActions": {
+    "description": "Entry actions menu title"
+  },
+  "commentActions": "Comment Actions",
+  "@commentActions": {
+    "description": "Comment actions menu title"
+  },
+  "confirmDelete": "Are you sure you want to delete this entry?",
+  "@confirmDelete": {
+    "description": "Confirmation message for deleting entry"
+  },
+  "confirmDeleteComment": "Are you sure you want to delete this comment?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting comment"
+  },
+  "entryDeleted": "Entry deleted successfully",
+  "@entryDeleted": {
+    "description": "Success message when entry is deleted"
+  },
+  "commentDeleted": "Comment deleted successfully",
+  "@commentDeleted": {
+    "description": "Success message when comment is deleted"
+  },
+  "entryPinned": "Entry pinned",
+  "@entryPinned": {
+    "description": "Success message when entry is pinned"
+  },
+  "entryUnpinned": "Entry unpinned",
+  "@entryUnpinned": {
+    "description": "Success message when entry is unpinned"
+  },
+  "entryFollowed": "Now following this entry",
+  "@entryFollowed": {
+    "description": "Success message when entry is followed"
+  },
+  "entryUnfollowed": "No longer following this entry",
+  "@entryUnfollowed": {
+    "description": "Success message when entry is unfollowed"
+  },
+  "linkCopied": "Link copied to clipboard",
+  "@linkCopied": {
+    "description": "Success message when link is copied"
+  },
+  "complaintSubmitted": "Complaint submitted successfully",
+  "@complaintSubmitted": {
+    "description": "Success message when complaint is submitted"
   }
 }

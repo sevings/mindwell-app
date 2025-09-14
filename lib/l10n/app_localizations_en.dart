@@ -436,4 +436,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get redirecting => 'Redirecting...';
+
+  @override
+  String get pin => 'Pin';
+
+  @override
+  String get unpin => 'Unpin';
+
+  @override
+  String get follow => 'Follow';
+
+  @override
+  String get unfollow => 'Unfollow';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get complain => 'Complain';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get copyLink => 'Copy Link';
+
+  @override
+  String get entryActions => 'Entry Actions';
+
+  @override
+  String get commentActions => 'Comment Actions';
+
+  @override
+  String get confirmDelete => 'Are you sure you want to delete this entry?';
+
+  @override
+  String get confirmDeleteComment =>
+      'Are you sure you want to delete this comment?';
+
+  @override
+  String get entryDeleted => 'Entry deleted successfully';
+
+  @override
+  String get commentDeleted => 'Comment deleted successfully';
+
+  @override
+  String get entryPinned => 'Entry pinned';
+
+  @override
+  String get entryUnpinned => 'Entry unpinned';
+
+  @override
+  String get entryFollowed => 'Now following this entry';
+
+  @override
+  String get entryUnfollowed => 'No longer following this entry';
+
+  @override
+  String get linkCopied => 'Link copied to clipboard';
+
+  @override
+  String get complaintSubmitted => 'Complaint submitted successfully';
 }

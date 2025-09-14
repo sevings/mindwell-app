@@ -441,4 +441,68 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get redirecting => 'Перенаправление...';
+
+  @override
+  String get pin => 'Закрепить';
+
+  @override
+  String get unpin => 'Открепить';
+
+  @override
+  String get follow => 'Отслеживать';
+
+  @override
+  String get unfollow => 'Не отслеживать';
+
+  @override
+  String get edit => 'Редактировать';
+
+  @override
+  String get delete => 'Удалить';
+
+  @override
+  String get complain => 'Пожаловаться';
+
+  @override
+  String get share => 'Поделиться';
+
+  @override
+  String get copyLink => 'Копировать ссылку';
+
+  @override
+  String get entryActions => 'Действия с записью';
+
+  @override
+  String get commentActions => 'Действия с комментарием';
+
+  @override
+  String get confirmDelete => 'Вы уверены, что хотите удалить эту запись?';
+
+  @override
+  String get confirmDeleteComment =>
+      'Вы уверены, что хотите удалить этот комментарий?';
+
+  @override
+  String get entryDeleted => 'Запись успешно удалена';
+
+  @override
+  String get commentDeleted => 'Комментарий успешно удален';
+
+  @override
+  String get entryPinned => 'Запись закреплена';
+
+  @override
+  String get entryUnpinned => 'Запись откреплена';
+
+  @override
+  String get entryFollowed => 'Теперь отслеживаете эту запись';
+
+  @override
+  String get entryUnfollowed => 'Больше не отслеживаете эту запись';
+
+  @override
+  String get linkCopied => 'Ссылка скопирована в буфер обмена';
+
+  @override
+  String get complaintSubmitted => 'Жалоба успешно отправлена';
 }

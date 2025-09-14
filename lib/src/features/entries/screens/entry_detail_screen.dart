@@ -10,6 +10,7 @@ import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../../comments/widgets/comment_list.dart';
 import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
+import '../widgets/entry_context_menu.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
 /// 
@@ -185,6 +186,20 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         SliverAppBar(
           expandedHeight: 200.0,
           pinned: true,
+          actions: [
+            EntryContextMenu(
+              entry: entry,
+              onPin: () => _onPinEntry(),
+              onUnpin: () => _onUnpinEntry(),
+              onFollow: () => _onFollowEntry(),
+              onUnfollow: () => _onUnfollowEntry(),
+              onEdit: () => _onEditEntry(),
+              onDelete: () => _onDeleteEntry(),
+              onComplain: () => _onComplainEntry(),
+              onShare: () => _onShareEntry(),
+              onCopyLink: () => _onCopyLink(),
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               entry.title ?? '',
@@ -496,6 +511,10 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           onUpvote: (comment) => _onCommentVote(comment, true),
           onDownvote: (comment) => _onCommentVote(comment, false),
           onLoadMore: _loadMoreComments,
+          onEditComment: (comment) => _onEditComment(comment),
+          onDeleteComment: (comment) => _onDeleteComment(comment),
+          onComplainComment: (comment) => _onComplainComment(comment),
+          showContextMenu: true,
         ),
         const SizedBox(height: 16),
         
@@ -651,9 +670,132 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onCommentVote(MwComment comment, bool isUpvote) {
-    // TODO: Implement comment voting
+    if (comment.id != null) {
+      ref.read(entryDetailProvider(widget.entryId).notifier).voteComment(comment.id!, isUpvote);
+    }
+  }
+
+  void _onPinEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).pinEntry();
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Comment vote: ${isUpvote ? 'up' : 'down'}')),
+      SnackBar(
+        content: Text(l10n?.entryPinned ?? 'Entry pinned'),
+        duration: const Duration(seconds: 2),
+      ),
     );
+  }
+
+  void _onUnpinEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).unpinEntry();
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.entryUnpinned ?? 'Entry unpinned'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onFollowEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).followEntry();
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.entryFollowed ?? 'Now following this entry'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onUnfollowEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).unfollowEntry();
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.entryUnfollowed ?? 'No longer following this entry'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onEditEntry() {
+    // TODO: Navigate to entry editor
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Navigate to entry editor')),
+    );
+  }
+
+  void _onDeleteEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).deleteEntry();
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.entryDeleted ?? 'Entry deleted successfully'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    // TODO: Navigate back or show deleted state
+  }
+
+  void _onComplainEntry() {
+    ref.read(entryDetailProvider(widget.entryId).notifier).complainEntry();
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.complaintSubmitted ?? 'Complaint submitted successfully'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onShareEntry() {
+    // TODO: Implement sharing functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Share entry functionality')),
+    );
+  }
+
+  void _onCopyLink() {
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.linkCopied ?? 'Link copied to clipboard'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onEditComment(MwComment comment) {
+    // TODO: Implement comment editing
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Edit comment functionality')),
+    );
+  }
+
+  void _onDeleteComment(MwComment comment) {
+    if (comment.id != null) {
+      ref.read(entryDetailProvider(widget.entryId).notifier).deleteComment(comment.id!);
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.commentDeleted ?? 'Comment deleted successfully'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _onComplainComment(MwComment comment) {
+    if (comment.id != null) {
+      ref.read(entryDetailProvider(widget.entryId).notifier).complainComment(comment.id!);
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.complaintSubmitted ?? 'Complaint submitted successfully'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 }

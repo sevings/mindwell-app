@@ -943,6 +943,132 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Перенаправление...'**
   String get redirecting;
+
+  /// Pin entry action
+  ///
+  /// In ru, this message translates to:
+  /// **'Закрепить'**
+  String get pin;
+
+  /// Unpin entry action
+  ///
+  /// In ru, this message translates to:
+  /// **'Открепить'**
+  String get unpin;
+
+  /// Follow entry action
+  ///
+  /// In ru, this message translates to:
+  /// **'Отслеживать'**
+  String get follow;
+
+  /// Unfollow entry action
+  ///
+  /// In ru, this message translates to:
+  /// **'Не отслеживать'**
+  String get unfollow;
+
+  /// Edit action
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать'**
+  String get edit;
+
+  /// Delete action
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get delete;
+
+  /// Complain action
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожаловаться'**
+  String get complain;
+
+  /// Share action
+  ///
+  /// In ru, this message translates to:
+  /// **'Поделиться'**
+  String get share;
+
+  /// Copy link action
+  ///
+  /// In ru, this message translates to:
+  /// **'Копировать ссылку'**
+  String get copyLink;
+
+  /// Entry actions menu title
+  ///
+  /// In ru, this message translates to:
+  /// **'Действия с записью'**
+  String get entryActions;
+
+  /// Comment actions menu title
+  ///
+  /// In ru, this message translates to:
+  /// **'Действия с комментарием'**
+  String get commentActions;
+
+  /// Confirmation message for deleting entry
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите удалить эту запись?'**
+  String get confirmDelete;
+
+  /// Confirmation message for deleting comment
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите удалить этот комментарий?'**
+  String get confirmDeleteComment;
+
+  /// Success message when entry is deleted
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись успешно удалена'**
+  String get entryDeleted;
+
+  /// Success message when comment is deleted
+  ///
+  /// In ru, this message translates to:
+  /// **'Комментарий успешно удален'**
+  String get commentDeleted;
+
+  /// Success message when entry is pinned
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись закреплена'**
+  String get entryPinned;
+
+  /// Success message when entry is unpinned
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись откреплена'**
+  String get entryUnpinned;
+
+  /// Success message when entry is followed
+  ///
+  /// In ru, this message translates to:
+  /// **'Теперь отслеживаете эту запись'**
+  String get entryFollowed;
+
+  /// Success message when entry is unfollowed
+  ///
+  /// In ru, this message translates to:
+  /// **'Больше не отслеживаете эту запись'**
+  String get entryUnfollowed;
+
+  /// Success message when link is copied
+  ///
+  /// In ru, this message translates to:
+  /// **'Ссылка скопирована в буфер обмена'**
+  String get linkCopied;
+
+  /// Success message when complaint is submitted
+  ///
+  /// In ru, this message translates to:
+  /// **'Жалоба успешно отправлена'**
+  String get complaintSubmitted;
 }
 
 class _AppLocalizationsDelegate
