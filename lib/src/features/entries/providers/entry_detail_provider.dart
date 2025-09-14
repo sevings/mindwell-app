@@ -315,7 +315,8 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
   /// Add a new comment to the entry.
   /// 
   /// [content] The content of the comment
-  Future<void> addComment(String content) async {
+  /// Returns true if successful, false if failed or duplicate
+  Future<bool> addComment(String content) async {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
@@ -327,7 +328,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
       error: (message, entry) => null,
     );
     
-    if (currentState == null) return;
+    if (currentState == null) return false;
     
     try {
       // Make API call to add comment
@@ -338,6 +339,14 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
       
       final newComment = response.data;
       if (newComment != null) {
+        // Check if comment already exists by ID
+        final commentExists = currentState.comments.any((comment) => comment.id == newComment.id);
+        
+        if (commentExists) {
+          _logger.warning('Comment with ID ${newComment.id} already exists in the list');
+          return false; // Don't add duplicate comment
+        }
+        
         // Add the new comment to the list
         final updatedComments = [...currentState.comments, newComment];
         
@@ -355,10 +364,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         );
         
         _logger.info('Added comment to entry $_entryId');
+        return true; // Success
       }
+      return false; // No comment data returned
     } catch (e, stackTrace) {
       _logger.severe('Failed to add comment to entry $_entryId', e, stackTrace);
       // Don't change state on error - user can retry
+      return false; // Failed
     }
   }
 }

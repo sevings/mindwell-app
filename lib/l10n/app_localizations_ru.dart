@@ -365,4 +365,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loadingComments => 'Загрузка комментариев...';
+
+  @override
+  String get commentPostedSuccessfully => 'Комментарий успешно добавлен!';
+
+  @override
+  String get failedToPostComment => 'Не удалось добавить комментарий';
+
+  @override
+  String get commentAlreadyExists => 'Этот комментарий уже существует';
 }

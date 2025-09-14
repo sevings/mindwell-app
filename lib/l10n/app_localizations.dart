@@ -793,6 +793,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Загрузка комментариев...'**
   String get loadingComments;
+
+  /// Success message when a comment is posted
+  ///
+  /// In ru, this message translates to:
+  /// **'Комментарий успешно добавлен!'**
+  String get commentPostedSuccessfully;
+
+  /// Error message when posting a comment fails
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось добавить комментарий'**
+  String get failedToPostComment;
+
+  /// Error message when trying to post a duplicate comment
+  ///
+  /// In ru, this message translates to:
+  /// **'Этот комментарий уже существует'**
+  String get commentAlreadyExists;
 }
 
 class _AppLocalizationsDelegate

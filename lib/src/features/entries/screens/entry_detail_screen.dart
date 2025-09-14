@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../../comments/widgets/comment_list.dart';
+import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
@@ -29,7 +30,6 @@ class EntryDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
-  final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -40,7 +40,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   @override
   void dispose() {
-    _commentController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -485,10 +484,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         ),
         const SizedBox(height: 16),
         
-        // Add comment form
-        _buildAddCommentForm(l10n),
-        const SizedBox(height: 16),
-        
         // Comments list using the new CommentList widget
         CommentList(
           comments: comments,
@@ -502,42 +497,19 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           onDownvote: (comment) => _onCommentVote(comment, false),
           onLoadMore: _loadMoreComments,
         ),
+        const SizedBox(height: 16),
+        
+        // Add comment form - now beneath the comment list
+        AddCommentForm(
+          entryId: widget.entryId,
+          onCommentSubmitted: _onCommentSubmitted,
+          onError: _onCommentError,
+          compact: true,
+        ),
       ],
     );
   }
 
-  Widget _buildAddCommentForm(AppLocalizations? l10n) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          TextField(
-            controller: _commentController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: l10n?.commentHint ?? 'Write your comment...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              contentPadding: const EdgeInsets.all(12),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: _addComment,
-              child: Text(l10n?.addComment ?? 'Add comment'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
 
   Widget _buildErrorState(
@@ -625,12 +597,45 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
   }
 
-  void _addComment() {
-    final content = _commentController.text.trim();
-    if (content.isEmpty) return;
+  void _onCommentSubmitted(String content) async {
+    // Call the provider to add the comment
+    final success = await ref.read(entryDetailProvider(widget.entryId).notifier).addComment(content);
+    
+    // Check if widget is still mounted before using context
+    if (!mounted) return;
+    
+    final l10n = AppLocalizations.of(context);
+    
+    if (success) {
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.commentPostedSuccessfully ?? 'Comment posted successfully!'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.commentAlreadyExists ?? 'This comment already exists'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
-    ref.read(entryDetailProvider(widget.entryId).notifier).addComment(content);
-    _commentController.clear();
+  void _onCommentError(String error) {
+    // Show error message to user
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${l10n?.failedToPostComment ?? 'Failed to post comment'}: $error'),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _onCommentTap(MwComment comment) {

@@ -360,4 +360,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingComments => 'Loading comments...';
+
+  @override
+  String get commentPostedSuccessfully => 'Comment posted successfully!';
+
+  @override
+  String get failedToPostComment => 'Failed to post comment';
+
+  @override
+  String get commentAlreadyExists => 'This comment already exists';
 }

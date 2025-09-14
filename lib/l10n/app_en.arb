@@ -410,5 +410,17 @@
   "loadingComments": "Loading comments...",
   "@loadingComments": {
     "description": "Loading comments message"
+  },
+  "commentPostedSuccessfully": "Comment posted successfully!",
+  "@commentPostedSuccessfully": {
+    "description": "Success message when a comment is posted"
+  },
+  "failedToPostComment": "Failed to post comment",
+  "@failedToPostComment": {
+    "description": "Error message when posting a comment fails"
+  },
+  "commentAlreadyExists": "This comment already exists",
+  "@commentAlreadyExists": {
+    "description": "Error message when trying to post a duplicate comment"
   }
 }

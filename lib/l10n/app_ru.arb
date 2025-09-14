@@ -476,5 +476,17 @@
   "loadingComments": "Загрузка комментариев...",
   "@loadingComments": {
     "description": "Loading comments message"
+  },
+  "commentPostedSuccessfully": "Комментарий успешно добавлен!",
+  "@commentPostedSuccessfully": {
+    "description": "Success message when a comment is posted"
+  },
+  "failedToPostComment": "Не удалось добавить комментарий",
+  "@failedToPostComment": {
+    "description": "Error message when posting a comment fails"
+  },
+  "commentAlreadyExists": "Этот комментарий уже существует",
+  "@commentAlreadyExists": {
+    "description": "Error message when trying to post a duplicate comment"
   }
 }
