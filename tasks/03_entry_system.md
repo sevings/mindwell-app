@@ -314,3 +314,103 @@ Implement the rich text editor UI for creating and editing entries.
 ### Testing:
 *   **Widget Tests:**
     *   Test the `EntryEditorScreen`. Mock the provider and verify that the Quill editor is present and that publishing actions call the correct provider methods.
+
+---
+
+## Task 15: Long Press Context Menu
+
+### Goal
+Implement a context menu that appears on long-press, offering actions like Pin, Follow, Edit, Delete, and Complain, based on user permissions.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/widgets/entry_context_menu.dart` (Create)
+*   `lib/src/features/comments/widgets/comment_context_menu.dart` (Create)
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+*   `lib/src/features/entries/providers/entry_detail_provider.dart` (Modify)
+
+### Implementation Details:
+1.  **Create Context Menu Widgets:**
+    *   Create `entry_context_menu.dart` and `comment_context_menu.dart` that use `PopupMenuButton` or a similar widget.
+    *   The menu options will be dynamically built based on the user's rights for the specific entry or comment.
+2.  **Integrate Menus:**
+    *   Integrate these menus into `entry_detail_screen.dart` to be triggered by a long press on the entry content or a comment item.
+3.  **Handle Actions:**
+    *   The `entry_detail_provider.dart` will need methods to handle the actions (e.g., `pinEntry`, `deleteComment`, `followEntry`).
+
+### Testing:
+*   **Widget Tests:** Test the context menus with different user permissions to ensure the correct options are displayed and that actions trigger the appropriate provider methods.
+
+---
+
+## Task 16: Adjacent Entry Navigation
+
+### Goal
+Allow users to navigate to the previous and next entries directly from the entry detail screen.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/widgets/adjacent_entry_navigation.dart` (Create)
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+*   `lib/src/features/entries/providers/entry_detail_provider.dart` (Modify)
+
+### Implementation Details:
+1.  **Provider Logic:**
+    *   The `entry_detail_provider.dart` should fetch and expose information about adjacent entries (`previousEntry` and `nextEntry`) in its state. This data is expected to be part of the `/entries/{id}` API response.
+2.  **Create Navigation Widget:**
+    *   Create `adjacent_entry_navigation.dart`, a widget that displays clickable titles and arrows for the previous and next entries.
+3.  **Integrate Widget:**
+    *   Add this widget to the `entry_detail_screen.dart`. Tapping on an adjacent entry title should navigate to that entry's detail screen.
+
+### Testing:
+*   **Widget Tests:** Test the `adjacent_entry_navigation.dart` widget to ensure it displays the correct data and that tapping navigates correctly.
+*   **Unit Tests:** Verify the provider correctly handles adjacent entry data.
+
+---
+
+## Task 17: Fullscreen Image Gallery
+
+### Goal
+Implement a fullscreen, swipeable image gallery for viewing entry images with zoom capabilities.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/image_gallery_screen.dart` (Create)
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+*   `lib/src/core/router/app_router.dart` (Modify)
+
+### Implementation Details:
+1.  **Create Gallery Screen:**
+    *   Create `image_gallery_screen.dart` that uses a `PageView.builder` for a swipeable gallery.
+    *   Integrate a package like `photo_view` to support pinch-to-zoom functionality for each image.
+2.  **Trigger Navigation:**
+    *   The gallery should be opened when a user taps on an image in the `entry_detail_screen.dart`.
+3.  **Update Router:**
+    *   Modify `app_router.dart` to add a route for the `ImageGalleryScreen`, configured to open as a fullscreen dialog or a separate page.
+
+### Testing:
+*   **Widget Tests:** Test the `ImageGalleryScreen` to ensure images are displayed correctly and that navigation and zoom gestures work as expected.
+
+---
+
+## Task 18: Tag Navigation
+
+### Goal
+Allow users to tap on a tag to navigate to a feed of entries filtered by that tag.
+
+### Files to be Created or Modified:
+*   `lib/src/features/entries/screens/entry_detail_screen.dart` (Modify)
+*   `lib/src/features/entries/screens/entry_feed_screen.dart` (Modify)
+*   `lib/src/features/entries/providers/entry_feed_provider.dart` (Modify)
+*   `lib/src/core/router/app_router.dart` (Modify)
+
+### Implementation Details:
+1.  **Make Tags Tappable:**
+    *   The tags displayed on the `entry_detail_screen.dart` should be interactive widgets.
+2.  **Handle Navigation:**
+    *   Tapping a tag should navigate to the `EntryFeedScreen`.
+    *   Modify `app_router.dart` to handle navigation to a tagged feed, e.g., `/tags/:tagName`.
+3.  **Filter Feed:**
+    *   The `EntryFeedScreen` needs to accept a `tag` parameter to filter the entries.
+    *   The `entryFeedProvider` will need to be updated to handle fetching entries filtered by a tag.
+
+### Testing:
+*   **Widget Tests:** Test that tapping a tag navigates to the `EntryFeedScreen` with the correct filter parameter.
+*   **Unit Tests:** Test that the `entryFeedProvider` correctly fetches tagged entries when the filter is applied.
