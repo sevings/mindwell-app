@@ -685,6 +685,22 @@
   "@privacyPrivate": {
     "description": "Private privacy level option"
   },
+  "privacyRegistered": "Зарегистрированные пользователи",
+  "@privacyRegistered": {
+    "description": "Registered users privacy level option"
+  },
+  "privacyInvited": "Приглашенные пользователи",
+  "@privacyInvited": {
+    "description": "Invited users privacy level option"
+  },
+  "privacyFollowers": "Подписчики",
+  "@privacyFollowers": {
+    "description": "Followers privacy level option"
+  },
+  "privacyMe": "Только я",
+  "@privacyMe": {
+    "description": "Only me privacy level option"
+  },
   "allowComments": "Разрешить комментарии",
   "@allowComments": {
     "description": "Allow comments setting title"
@@ -738,6 +754,17 @@
     "description": "Preview mode indicator text"
   },
   "previewModeCommentsDisabled": "Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.",
+  "thisIsDraft": "Это черновик",
+  "entryNotPublishedYet": "Эта запись еще не опубликована",
+  "anonymous": "Анонимно",
+  "privacy": "Приватность",
+  "voting": "Голосование",
+  "liveFeed": "Живая лента",
+  "sharing": "Поделиться",
+  "enabled": "Включено",
+  "disabled": "Отключено",
+  "close": "Закрыть",
+  "privacySome": "Некоторые",
   "@previewModeCommentsDisabled": {
     "description": "Preview mode comments disabled message"
   }

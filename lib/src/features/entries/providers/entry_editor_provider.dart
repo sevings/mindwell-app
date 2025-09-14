@@ -7,6 +7,7 @@ import 'package:built_collection/built_collection.dart';
 import '../../../core/api/api_provider.dart';
 import '../../../core/services/image_upload_service.dart';
 import '../models/entry_editor_state.dart';
+import '../services/entry_settings_backup_service.dart';
 
 /// Provider for the EntryEditorNotifier that manages the state of entry editing.
 /// 
@@ -73,6 +74,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     if (_isInitialized) return;
     _isInitialized = true;
 
+    // Always reset to appropriate state when initializing
     if (_entryId != null) {
       await _loadExistingEntry();
     } else {
@@ -220,26 +222,95 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       initial: () => EntryEditorState.editing(privacy: privacy, hasUnsavedChanges: true),
       loading: () => state,
       editing: (title, content, tags, oldPrivacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
-        EntryEditorState.editing(
-          title: title,
-          content: content,
-          tags: tags,
-          privacy: privacy,
-          isCommentable: isCommentable,
-          isVotable: isVotable,
-          inLive: inLive,
-          isShared: isShared,
-          isDraft: isDraft,
-          images: images,
-          entryId: entryId,
-          hasUnsavedChanges: true,
-          themeName: themeName,
-          isAnonymous: isAnonymous,
+        _updatePrivacyWithBackup(
+          title, content, tags, oldPrivacy, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous
         ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
       preview: (entry) => EntryEditorState.editing(privacy: privacy, hasUnsavedChanges: true),
       error: (message, canRetry) => state,
+    );
+  }
+
+  /// Update privacy with backup logic to preserve values when options are hidden/shown.
+  EntryEditorState _updatePrivacyWithBackup(
+    String title, String content, List<String> tags, String oldPrivacy, String newPrivacy,
+    bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft,
+    List<int> images, int? entryId, bool hasUnsavedChanges, String? themeName, bool isAnonymous,
+  ) {
+    bool newIsCommentable = isCommentable;
+    bool newIsVotable = isVotable;
+    bool newInLive = inLive;
+
+    final entryKey = entryId?.toString() ?? 'new_entry';
+
+    // Handle transition from non-restrictive to restrictive privacy
+    if (oldPrivacy != 'me' && newPrivacy == 'me') {
+      // Backup current values before hiding
+      EntrySettingsBackupService.backupSettings(
+        entryKey,
+        isCommentable: isCommentable,
+        isVotable: isVotable,
+        inLive: inLive,
+      );
+      // Disable options for 'me' privacy
+      newIsCommentable = false;
+      newIsVotable = false;
+      newInLive = false;
+    } else if (oldPrivacy != 'followers' && newPrivacy == 'followers') {
+      // Backup current live feed value before hiding
+      EntrySettingsBackupService.backupSettings(
+        entryKey,
+        isCommentable: isCommentable,
+        isVotable: isVotable,
+        inLive: inLive,
+      );
+      // Disable live feed for 'followers' privacy
+      newInLive = false;
+    }
+
+    // Handle transition from restrictive to non-restrictive privacy
+    if (oldPrivacy == 'me' && newPrivacy != 'me') {
+      // Restore backed up values
+      final backup = EntrySettingsBackupService.restoreSettings(entryKey);
+      if (backup != null) {
+        newIsCommentable = backup.isCommentable;
+        newIsVotable = backup.isVotable;
+        newInLive = backup.inLive;
+      } else {
+        newIsCommentable = true;
+        newIsVotable = true;
+        newInLive = true;
+      }
+      // Clear backup
+      EntrySettingsBackupService.clearBackup(entryKey);
+    } else if (oldPrivacy == 'followers' && newPrivacy != 'followers' && newPrivacy != 'me') {
+      // Restore backed up live feed value
+      final backup = EntrySettingsBackupService.restoreSettings(entryKey);
+      if (backup != null) {
+        newInLive = backup.inLive;
+      } else {
+        newInLive = true;
+      }
+      // Clear backup
+      EntrySettingsBackupService.clearBackup(entryKey);
+    }
+
+    return EntryEditorState.editing(
+      title: title,
+      content: content,
+      tags: tags,
+      privacy: newPrivacy,
+      isCommentable: newIsCommentable,
+      isVotable: newIsVotable,
+      inLive: newInLive,
+      isShared: isShared,
+      isDraft: isDraft,
+      images: images,
+      entryId: entryId,
+      hasUnsavedChanges: true,
+      themeName: themeName,
+      isAnonymous: isAnonymous,
     );
   }
 
@@ -758,10 +829,10 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     await publishEntry(isDraft: true);
   }
 
-  /// Preview the entry by saving it as a draft.
+  /// Preview the entry by creating a mock entry object from current draft data.
   /// 
-  /// This method saves the current entry as a draft and returns the created entry
-  /// for preview purposes. The entry can then be viewed in the entry detail screen.
+  /// This method creates a preview state without actually saving the entry to the server.
+  /// The preview shows how the entry will look when published.
   Future<void> previewEntry() async {
     final currentState = state;
     
@@ -780,14 +851,6 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     if (editingData == null) return;
     
     // Validate required fields
-    if (editingData.title.trim().isEmpty) {
-      state = EntryEditorState.error(
-        message: 'Title is required for preview',
-        canRetry: false,
-      );
-      return;
-    }
-    
     if (editingData.content.trim().isEmpty) {
       state = EntryEditorState.error(
         message: 'Content is required for preview',
@@ -799,36 +862,11 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     _logger.info('Creating preview of entry');
     
     try {
-      // Check if there are any new images that need to be uploaded
-      final hasNewImages = editingData.images.isNotEmpty;
+      // Create a mock entry object for preview without saving to server
+      final mockEntry = _createMockEntryForPreview(editingData);
       
-      if (hasNewImages) {
-        // Start with image upload phase
-        state = const EntryEditorState.publishing(isUploadingImages: true, uploadProgress: 0.0);
-        
-        // Upload images first
-        await _uploadImagesForPublishing(editingData.images);
-      }
-      
-      // Switch to publishing phase
-      state = const EntryEditorState.publishing(isUploadingImages: false, uploadProgress: 0.0);
-      
-      MwEntry? result;
-      
-      if (editingData.entryId != null) {
-        // Update existing entry as draft for preview
-        result = await _updateExistingEntry(editingData, true);
-      } else {
-        // Create new entry as draft for preview
-        result = await _createNewEntry(editingData, true);
-      }
-      
-      if (result != null) {
-        _logger.info('Successfully created preview for entry ${result.id}');
-        state = EntryEditorState.preview(entry: result);
-      } else {
-        throw Exception('Failed to create preview - no data returned');
-      }
+      _logger.info('Successfully created preview');
+      state = EntryEditorState.preview(entry: mockEntry);
       
     } catch (e, stackTrace) {
       _logger.severe('Failed to create preview', e, stackTrace);
@@ -839,14 +877,114 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     }
   }
 
+  /// Create a mock entry object for preview purposes.
+  MwEntry _createMockEntryForPreview(
+    ({String title, String content, List<String> tags, String privacy, bool isCommentable, bool isVotable, bool inLive, bool isShared, bool isDraft, List<int> images, int? entryId, String? themeName, bool isAnonymous}) editingData
+  ) {
+    // Create a mock entry with current draft data
+    // Note: This is a simplified mock - in a real implementation you might want to
+    // create a more complete mock with proper user data, timestamps, etc.
+    return MwEntry((b) => b
+      ..id = null // No ID since it's not saved yet
+      ..title = editingData.title.isEmpty ? null : editingData.title
+      ..content = editingData.content
+      ..tags = editingData.tags.isNotEmpty ? ListBuilder<String>(editingData.tags) : null
+      ..privacy = _parsePrivacyEnum(editingData.privacy)
+      ..isCommentable = editingData.isCommentable
+      ..inLive = editingData.inLive
+      ..isShared = editingData.isShared
+      ..isAnonymous = editingData.isAnonymous
+      ..createdAt = DateTime.now().millisecondsSinceEpoch / 1000.0
+      ..commentCount = 0
+      ..favoriteCount = 0
+      ..isFavorited = false
+      ..isWatching = false
+      ..isPinned = false
+      ..hasCut = false
+      ..wordCount = editingData.content.split(' ').length
+      // Note: Images would need to be handled separately if they exist
+      // For now, we'll leave images as null in the mock
+    );
+  }
+
+  /// Parse privacy string to enum.
+  MwEntryPrivacyEnum? _parsePrivacyEnum(String privacy) {
+    switch (privacy) {
+      case 'all':
+        return MwEntryPrivacyEnum.all;
+      case 'registered':
+        return MwEntryPrivacyEnum.registered;
+      case 'invited':
+        return MwEntryPrivacyEnum.invited;
+      case 'followers':
+        return MwEntryPrivacyEnum.followers;
+      case 'some':
+        return MwEntryPrivacyEnum.some;
+      case 'me':
+        return MwEntryPrivacyEnum.me;
+      default:
+        return MwEntryPrivacyEnum.all;
+    }
+  }
+
   /// Reset the editor to initial state.
   void reset() {
+    _isInitialized = false;
     if (_entryId != null) {
       _loadExistingEntry();
     } else {
       state = EntryEditorState.editing(
         themeName: _themeName,
       );
+    }
+  }
+
+  /// Reset from preview state back to editing state.
+  void resetFromPreview() {
+    final currentState = state;
+    
+    // Get the current editing data from the preview state
+    final editingData = currentState.maybeWhen(
+      preview: (entry) => (
+        title: entry.title ?? '',
+        content: entry.content ?? '',
+        tags: entry.tags?.toList() ?? [],
+        privacy: entry.privacy?.name ?? 'all',
+        isCommentable: entry.isCommentable ?? true,
+        isVotable: true, // Voting is always enabled
+        inLive: entry.inLive ?? true,
+        isShared: entry.isShared ?? false,
+        isDraft: false,
+        images: <int>[], // Images would need special handling
+        entryId: _entryId,
+        hasUnsavedChanges: true,
+        themeName: _themeName,
+        isAnonymous: entry.isAnonymous ?? false,
+      ),
+      orElse: () => null,
+    );
+    
+    if (editingData != null) {
+      // Return to editing state with the current data
+      state = EntryEditorState.editing(
+        title: editingData.title,
+        content: editingData.content,
+        tags: editingData.tags,
+        privacy: editingData.privacy,
+        isCommentable: editingData.isCommentable,
+        isVotable: editingData.isVotable,
+        inLive: editingData.inLive,
+        isShared: editingData.isShared,
+        isDraft: editingData.isDraft,
+        images: editingData.images,
+        entryId: editingData.entryId,
+        hasUnsavedChanges: editingData.hasUnsavedChanges,
+        themeName: editingData.themeName,
+        isAnonymous: editingData.isAnonymous,
+      );
+    } else {
+      // Fallback to normal reset if not in preview state
+      reset();
     }
   }
 

@@ -31,6 +31,9 @@ class MockEntryEditorNotifier extends StateNotifier<EntryEditorState> implements
   Future<void> updateIsDraft(bool isDraft) async {}
   
   @override
+  void resetFromPreview() {}
+  
+  @override
   Future<void> updateIsAnonymous(bool isAnonymous) async {}
   
   @override

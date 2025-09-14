@@ -113,7 +113,14 @@ class AppRouter {
             path: '/entries/:id/edit',
             name: 'editEntry',
             builder: (context, state) {
-              final entryId = int.parse(state.pathParameters['id']!);
+              final idParam = state.pathParameters['id'];
+              if (idParam == null) {
+                throw Exception('Entry ID is required');
+              }
+              final entryId = int.tryParse(idParam);
+              if (entryId == null) {
+                throw Exception('Invalid entry ID: $idParam');
+              }
               return EntryEditorScreen(entryId: entryId);
             },
           ),
@@ -121,7 +128,14 @@ class AppRouter {
             path: '/entries/:id',
             name: 'protectedEntryDetail',
             builder: (context, state) {
-              final entryId = int.parse(state.pathParameters['id']!);
+              final idParam = state.pathParameters['id'];
+              if (idParam == null) {
+                throw Exception('Entry ID is required');
+              }
+              final entryId = int.tryParse(idParam);
+              if (entryId == null) {
+                throw Exception('Invalid entry ID: $idParam');
+              }
               final isPreview = state.uri.queryParameters['preview'] == 'true';
               return EntryDetailScreen(
                 entryId: entryId,
@@ -177,7 +191,14 @@ class AppRouter {
             path: '/entries/:id',
             name: 'publicEntryDetail',
             builder: (context, state) {
-              final entryId = int.parse(state.pathParameters['id']!);
+              final idParam = state.pathParameters['id'];
+              if (idParam == null) {
+                throw Exception('Entry ID is required');
+              }
+              final entryId = int.tryParse(idParam);
+              if (entryId == null) {
+                throw Exception('Invalid entry ID: $idParam');
+              }
               final isPreview = state.uri.queryParameters['preview'] == 'true';
               return EntryDetailScreen(
                 entryId: entryId,

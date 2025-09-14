@@ -525,6 +525,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get privacyPrivate => 'Приватно';
 
   @override
+  String get privacyRegistered => 'Зарегистрированные пользователи';
+
+  @override
+  String get privacyInvited => 'Приглашенные пользователи';
+
+  @override
+  String get privacyFollowers => 'Подписчики';
+
+  @override
+  String get privacyMe => 'Только я';
+
+  @override
   String get allowComments => 'Разрешить комментарии';
 
   @override
@@ -570,4 +582,37 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get previewModeCommentsDisabled =>
       'Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.';
+
+  @override
+  String get thisIsDraft => 'Это черновик';
+
+  @override
+  String get entryNotPublishedYet => 'Эта запись еще не опубликована';
+
+  @override
+  String get anonymous => 'Анонимно';
+
+  @override
+  String get privacy => 'Приватность';
+
+  @override
+  String get voting => 'Голосование';
+
+  @override
+  String get liveFeed => 'Живая лента';
+
+  @override
+  String get sharing => 'Поделиться';
+
+  @override
+  String get enabled => 'Включено';
+
+  @override
+  String get disabled => 'Отключено';
+
+  @override
+  String get close => 'Закрыть';
+
+  @override
+  String get privacySome => 'Некоторые';
 }

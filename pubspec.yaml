@@ -45,6 +45,7 @@ dependencies:
   
   # Rich Text Editor
   flutter_quill: ^11.4.2
+  dart_quill_delta: ^10.8.3
 
   # Dependency Injection
   injectable: ^2.3.2

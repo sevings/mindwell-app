@@ -278,29 +278,6 @@ void main() {
         notifier.updateTitle('Test Title');
         notifier.updateContent('Test Content');
         
-        // Mock successful API response
-        final mockEntry = MockMwEntry();
-        when(() => mockEntry.id).thenReturn(123);
-        when(() => mockEntry.title).thenReturn('Test Title');
-        when(() => mockEntry.content).thenReturn('Test Content');
-        
-        when(() => mockMeApi.meTlogPost(
-          content: any(named: 'content'),
-          privacy: any(named: 'privacy'),
-          title: any(named: 'title'),
-          images: any(named: 'images'),
-          tags: any(named: 'tags'),
-          isCommentable: any(named: 'isCommentable'),
-          isVotable: any(named: 'isVotable'),
-          inLive: any(named: 'inLive'),
-          isShared: any(named: 'isShared'),
-          isDraft: true, // Should be true for preview
-        )).thenAnswer((_) async => Response<MwEntry>(
-          data: mockEntry,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/me/tlog'),
-        ));
-        
         // Call previewEntry
         await notifier.previewEntry();
         
@@ -311,34 +288,29 @@ void main() {
         );
         expect(isPreview, isTrue);
         
-        // Verify API was called with draft=true
-        verify(() => mockMeApi.meTlogPost(
-          content: 'Test Content',
-          privacy: 'all',
-          title: 'Test Title',
-          images: null,
-          tags: null,
-          isCommentable: true,
-          isVotable: true,
-          inLive: true,
-          isShared: false,
-          isDraft: true,
-        )).called(1);
+        // Verify the preview entry has correct data
+        notifier.state.maybeWhen(
+          preview: (entry) {
+            expect(entry.title, equals('Test Title'));
+            expect(entry.content, equals('Test Content'));
+          },
+          orElse: () => fail('Expected preview state'),
+        );
       });
 
-      test('should fail preview when title is empty', () async {
-        // Set up editing state without title
+      test('should create preview even when title is empty', () async {
+        // Set up editing state without title but with content
         notifier.updateContent('Test Content');
         
         // Call previewEntry
         await notifier.previewEntry();
         
-        // Should be in error state
-        final isError = notifier.state.maybeWhen(
-          error: (message, canRetry) => message == 'Title is required for preview',
+        // Should be in preview state (title is not required for preview)
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
           orElse: () => false,
         );
-        expect(isError, isTrue);
+        expect(isPreview, isTrue);
       });
 
       test('should fail preview when content is empty', () async {
@@ -356,34 +328,20 @@ void main() {
         expect(isError, isTrue);
       });
 
-      test('should handle API error during preview creation', () async {
+      test('should create preview successfully without API calls', () async {
         // Set up editing state
         notifier.updateTitle('Test Title');
         notifier.updateContent('Test Content');
         
-        // Mock API error
-        when(() => mockMeApi.meTlogPost(
-          content: any(named: 'content'),
-          privacy: any(named: 'privacy'),
-          title: any(named: 'title'),
-          images: any(named: 'images'),
-          tags: any(named: 'tags'),
-          isCommentable: any(named: 'isCommentable'),
-          isVotable: any(named: 'isVotable'),
-          inLive: any(named: 'inLive'),
-          isShared: any(named: 'isShared'),
-          isDraft: true,
-        )).thenThrow(Exception('API Error'));
-        
-        // Call previewEntry
+        // Call previewEntry (no API calls are made for preview)
         await notifier.previewEntry();
         
-        // Should be in error state
-        final isError = notifier.state.maybeWhen(
-          error: (message, canRetry) => message.contains('Failed to create preview'),
+        // Should be in preview state
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
           orElse: () => false,
         );
-        expect(isError, isTrue);
+        expect(isPreview, isTrue);
       });
 
       test('should create preview for existing entry', () async {
@@ -423,30 +381,7 @@ void main() {
         notifier.updateTitle('Updated Title');
         notifier.updateContent('Updated Content');
         
-        // Mock successful API response for updating existing entry
-        final mockUpdatedEntry = MockMwEntry();
-        when(() => mockUpdatedEntry.id).thenReturn(123);
-        when(() => mockUpdatedEntry.title).thenReturn('Updated Title');
-        when(() => mockUpdatedEntry.content).thenReturn('Updated Content');
-        
-        when(() => mockEntriesApi.entriesIdPut(
-          id: 123,
-          content: any(named: 'content'),
-          privacy: any(named: 'privacy'),
-          title: any(named: 'title'),
-          images: any(named: 'images'),
-          tags: any(named: 'tags'),
-          isCommentable: any(named: 'isCommentable'),
-          isVotable: any(named: 'isVotable'),
-          inLive: any(named: 'inLive'),
-          isShared: any(named: 'isShared'),
-        )).thenAnswer((_) async => Response<MwEntry>(
-          data: mockUpdatedEntry,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/entries/123'),
-        ));
-        
-        // Call previewEntry
+        // Call previewEntry (no API calls are made for preview)
         await notifier.previewEntry();
         
         // Should be in preview state
@@ -456,19 +391,14 @@ void main() {
         );
         expect(isPreview, isTrue);
         
-        // Verify API was called for updating existing entry
-        verify(() => mockEntriesApi.entriesIdPut(
-          id: 123,
-          content: 'Updated Content',
-          privacy: 'all',
-          title: 'Updated Title',
-          images: null,
-          tags: null,
-          isCommentable: true,
-          isVotable: true,
-          inLive: true,
-          isShared: false,
-        )).called(1);
+        // Verify the preview entry has the updated data
+        notifier.state.maybeWhen(
+          preview: (entry) {
+            expect(entry.title, equals('Updated Title'));
+            expect(entry.content, equals('Updated Content'));
+          },
+          orElse: () => fail('Expected preview state'),
+        );
       });
     });
 
@@ -564,34 +494,11 @@ void main() {
         // Wait for initialization
         await Future.delayed(const Duration(milliseconds: 100));
         
-        final mockEntry = MockMwEntry();
-        when(() => mockEntry.id).thenReturn(456);
-        when(() => mockEntry.title).thenReturn('Test Theme Entry');
-        when(() => mockEntry.content).thenReturn('Test Theme Content');
-        
-        when(() => mockThemesApi.themesNameTlogPost(
-          name: 'test-theme',
-          content: any(named: 'content'),
-          privacy: any(named: 'privacy'),
-          title: any(named: 'title'),
-          images: any(named: 'images'),
-          tags: any(named: 'tags'),
-          isCommentable: any(named: 'isCommentable'),
-          isVotable: any(named: 'isVotable'),
-          inLive: any(named: 'inLive'),
-          isShared: any(named: 'isShared'),
-          isDraft: true, // Should be true for preview
-          isAnonymous: any(named: 'isAnonymous'),
-        )).thenAnswer((_) async => Response<MwEntry>(
-          data: mockEntry,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/themes/test-theme/tlog'),
-        ));
-
         notifier.updateTitle('Test Theme Entry');
         notifier.updateContent('Test Theme Content');
         notifier.updateIsAnonymous(false);
         
+        // Call previewEntry (no API calls are made for preview)
         await notifier.previewEntry();
         
         final isPreview = notifier.state.maybeWhen(
@@ -600,20 +507,15 @@ void main() {
         );
         expect(isPreview, isTrue);
         
-        verify(() => mockThemesApi.themesNameTlogPost(
-          name: 'test-theme',
-          content: 'Test Theme Content',
-          privacy: 'all',
-          title: 'Test Theme Entry',
-          images: null,
-          tags: null,
-          isCommentable: true,
-          isVotable: true,
-          inLive: true,
-          isShared: false,
-          isDraft: true,
-          isAnonymous: false,
-        )).called(1);
+        // Verify the preview entry has correct data
+        notifier.state.maybeWhen(
+          preview: (entry) {
+            expect(entry.title, equals('Test Theme Entry'));
+            expect(entry.content, equals('Test Theme Content'));
+            expect(entry.isAnonymous, equals(false));
+          },
+          orElse: () => fail('Expected preview state'),
+        );
       });
 
       test('should show error when theme API call fails', () async {

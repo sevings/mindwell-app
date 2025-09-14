@@ -180,7 +180,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.newEntry,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to new entry screen
+            context.go('/entries/new');
           },
           theme: theme,
         ),

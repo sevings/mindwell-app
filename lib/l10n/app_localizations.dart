@@ -1106,6 +1106,30 @@ abstract class AppLocalizations {
   /// **'Приватно'**
   String get privacyPrivate;
 
+  /// Registered users privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Зарегистрированные пользователи'**
+  String get privacyRegistered;
+
+  /// Invited users privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашенные пользователи'**
+  String get privacyInvited;
+
+  /// Followers privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Подписчики'**
+  String get privacyFollowers;
+
+  /// Only me privacy level option
+  ///
+  /// In ru, this message translates to:
+  /// **'Только я'**
+  String get privacyMe;
+
   /// Allow comments setting title
   ///
   /// In ru, this message translates to:
@@ -1189,6 +1213,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Комментарии отключены в режиме предварительного просмотра. Опубликуйте запись, чтобы включить комментарии.'**
   String get previewModeCommentsDisabled;
+
+  /// No description provided for @thisIsDraft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Это черновик'**
+  String get thisIsDraft;
+
+  /// No description provided for @entryNotPublishedYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эта запись еще не опубликована'**
+  String get entryNotPublishedYet;
+
+  /// No description provided for @anonymous.
+  ///
+  /// In ru, this message translates to:
+  /// **'Анонимно'**
+  String get anonymous;
+
+  /// No description provided for @privacy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приватность'**
+  String get privacy;
+
+  /// No description provided for @voting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Голосование'**
+  String get voting;
+
+  /// No description provided for @liveFeed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Живая лента'**
+  String get liveFeed;
+
+  /// No description provided for @sharing.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поделиться'**
+  String get sharing;
+
+  /// No description provided for @enabled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включено'**
+  String get enabled;
+
+  /// No description provided for @disabled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отключено'**
+  String get disabled;
+
+  /// No description provided for @close.
+  ///
+  /// In ru, this message translates to:
+  /// **'Закрыть'**
+  String get close;
+
+  /// No description provided for @privacySome.
+  ///
+  /// In ru, this message translates to:
+  /// **'Некоторые'**
+  String get privacySome;
 }
 
 class _AppLocalizationsDelegate

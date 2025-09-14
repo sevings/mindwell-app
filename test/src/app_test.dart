@@ -65,7 +65,48 @@ class _MockEntriesApi implements EntriesApi {
 
 class _MockEntryCacheService implements EntryCacheService {
   @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+  Future<void> initialize() async {}
+
+  @override
+  Future<void> storeEntries(String feedType, List<MwEntry> entries, {int page = 1}) async {}
+
+  @override
+  Future<List<MwEntry>?> getEntries(String feedType, {int page = 1}) async {
+    return null;
+  }
+
+  @override
+  Future<bool> hasCachedEntries(String feedType, {int page = 1}) async {
+    return false;
+  }
+
+  @override
+  Future<void> clearFeedCache(String feedType) async {}
+
+  @override
+  Future<void> clearAllCache() async {}
+
+  @override
+  Map<String, dynamic> getCacheStats() {
+    return {};
+  }
+
+  @override
+  Future<void> cleanupExpiredEntries() async {}
+
+  @override
+  Future<void> close() async {}
+
+  @override
+  Future<void> storeFeedSettings(String feedType, Map<String, dynamic> settings) async {}
+
+  @override
+  Future<Map<String, dynamic>?> getFeedSettings(String feedType) async {
+    return null;
+  }
+
+  @override
+  Future<void> clearFeedSettings(String feedType) async {}
 }
 
 /// Mock EntryFeedNotifier that returns empty state

@@ -500,8 +500,44 @@ void main() {
       });
     });
 
-    group('setFeedParameter', () {
-      test('should update parameter and refetch data', () async {
+    group('feedParameter in constructor', () {
+      test('should create provider with feed parameter', () async {
+        when(() => mockEntriesApi.entriesLiveGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          source_: any(named: 'source_'),
+          section: any(named: 'section'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.profile,
+          entriesApi: mockEntriesApi,
+          cacheService: mockCacheService,
+          feedParameter: 'user123',
+        );
+
+        // Should start in initial state
+        expect(notifier.state.when(
+          initial: () => true,
+          loading: () => false,
+          loaded: (entries, hasMore, settings) => false,
+          error: (message, entries) => false,
+          empty: () => false,
+        ), isTrue);
+        
+        // Fetch initial entries
+        await notifier.fetchInitialEntries();
+        
+        // Should now be in loaded state with new data
+        expect(isLoadedState(notifier.state), isTrue);
+      });
+
+      test('should handle setFeedParameter for dynamic updates', () async {
         when(() => mockEntriesApi.entriesLiveGet(
           limit: any(named: 'limit'),
           after: any(named: 'after'),

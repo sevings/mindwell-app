@@ -55,12 +55,11 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     bool isAnonymous,
   ) {
     return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Handle bar
           Center(
@@ -89,21 +88,36 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           
           const Divider(height: 1),
           
-          // Privacy Level Section
-          _buildPrivacySection(context, ref, l10n, privacy),
-          
-          // Comment and Vote Settings Section
-          _buildCommentVoteSection(context, ref, l10n, isCommentable, isVotable),
-          
-          // Live Feed and Sharing Section
-          _buildLiveFeedSharingSection(context, ref, l10n, inLive, isShared),
-          
-          // Anonymous Posting Section (only for theme entries)
-          if (isThemeEntry) 
-            _buildAnonymousSection(context, ref, l10n, isAnonymous),
-          
-          // Bottom padding for safe area
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+          // Scrollable content
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Privacy Level Section
+                  _buildPrivacySection(context, ref, l10n, privacy),
+                  
+                  // Comment and Vote Settings Section (hidden for 'me' privacy)
+                  if (privacy != 'me')
+                    _buildCommentVoteSection(context, ref, l10n, isCommentable, isVotable),
+                  
+                  // Live Feed Section (hidden for 'me' and 'followers' privacy)
+                  if (privacy != 'me' && privacy != 'followers')
+                    _buildLiveFeedSection(context, ref, l10n, inLive),
+                  
+                  // Sharing Section (always visible)
+                  _buildSharingSection(context, ref, l10n, isShared),
+                  
+                  // Anonymous Posting Section (only for theme entries)
+                  if (isThemeEntry) 
+                    _buildAnonymousSection(context, ref, l10n, isAnonymous),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -130,16 +144,32 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           context,
           ref,
           l10n,
-          'friends',
-          l10n?.privacyFriends ?? 'Friends Only',
+          'registered',
+          l10n?.privacyRegistered ?? 'Registered Users',
           currentPrivacy,
         ),
         _buildPrivacyOption(
           context,
           ref,
           l10n,
-          'private',
-          l10n?.privacyPrivate ?? 'Private',
+          'invited',
+          l10n?.privacyInvited ?? 'Invited Users',
+          currentPrivacy,
+        ),
+        _buildPrivacyOption(
+          context,
+          ref,
+          l10n,
+          'followers',
+          l10n?.privacyFollowers ?? 'Followers',
+          currentPrivacy,
+        ),
+        _buildPrivacyOption(
+          context,
+          ref,
+          l10n,
+          'me',
+          l10n?.privacyMe ?? 'Only Me',
           currentPrivacy,
         ),
       ],
@@ -182,15 +212,14 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     );
   }
 
-  Widget _buildLiveFeedSharingSection(
+  Widget _buildLiveFeedSection(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations? l10n,
     bool inLive,
-    bool isShared,
   ) {
     return _buildSection(
-      title: 'Visibility & Sharing',
+      title: 'Visibility',
       children: [
         _buildSwitchTile(
           context,
@@ -203,6 +232,19 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           Icons.live_tv_outlined,
           key: const ValueKey('postInLive'),
         ),
+      ],
+    );
+  }
+
+  Widget _buildSharingSection(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations? l10n,
+    bool isShared,
+  ) {
+    return _buildSection(
+      title: 'Sharing',
+      children: [
         _buildSwitchTile(
           context,
           ref,

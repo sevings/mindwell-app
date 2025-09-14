@@ -30,6 +30,9 @@ class MockEntryEditorNotifier extends StateNotifier<EntryEditorState> implements
   Future<void> updateIsDraft(bool isDraft) async {}
   
   @override
+  void resetFromPreview() {}
+  
+  @override
   Future<void> updateIsAnonymous(bool isAnonymous) async {}
   
   @override
@@ -131,7 +134,8 @@ void main() {
       expect(find.text('Entry Settings'), findsOneWidget);
       expect(find.text('Privacy Level'), findsOneWidget);
       expect(find.text('Comments & Voting'), findsOneWidget);
-      expect(find.text('Visibility & Sharing'), findsOneWidget);
+      expect(find.text('Visibility'), findsOneWidget);
+      expect(find.text('Sharing'), findsOneWidget);
       
       // Anonymous section should not be present for regular entries
       expect(find.text('Posting Options'), findsNothing);
@@ -150,8 +154,8 @@ void main() {
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
 
-      // Tap on private option
-      await tester.tap(find.text('Private'));
+      // Tap on "Only Me" option (most private)
+      await tester.tap(find.text('Only Me'));
       await tester.pump();
 
       // The mock method will be called automatically
@@ -165,7 +169,7 @@ void main() {
       // Find and tap the comment switch by finding the SwitchListTile with the key
       final commentSwitch = find.byKey(const ValueKey('allowComments'));
       expect(commentSwitch, findsOneWidget);
-      await tester.tap(commentSwitch);
+      await tester.tap(commentSwitch, warnIfMissed: false);
       await tester.pump();
 
       // The mock method will be called automatically

@@ -29,6 +29,23 @@ final entryFeedProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryF
   },
 );
 
+/// Provider for the EntryFeedNotifier with a specific feed parameter.
+/// 
+/// Takes both [FeedType] and [String] (feedParameter) as parameters.
+final entryFeedWithParameterProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, ({FeedType feedType, String? feedParameter})>(
+  (ref, params) {
+    final entriesApi = ref.read(entriesApiProvider);
+    final cacheService = ref.read(entryCacheServiceProvider);
+    
+    return EntryFeedNotifier(
+      feedType: params.feedType,
+      entriesApi: entriesApi,
+      cacheService: cacheService,
+      feedParameter: params.feedParameter,
+    );
+  },
+);
+
 /// Notifier that manages the state and logic for fetching and paginating entry feeds.
 /// 
 /// This class handles:

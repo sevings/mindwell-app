@@ -619,6 +619,22 @@
   "@privacyPrivate": {
     "description": "Private privacy level option"
   },
+  "privacyRegistered": "Registered Users",
+  "@privacyRegistered": {
+    "description": "Registered users privacy level option"
+  },
+  "privacyInvited": "Invited Users",
+  "@privacyInvited": {
+    "description": "Invited users privacy level option"
+  },
+  "privacyFollowers": "Followers",
+  "@privacyFollowers": {
+    "description": "Followers privacy level option"
+  },
+  "privacyMe": "Only Me",
+  "@privacyMe": {
+    "description": "Only me privacy level option"
+  },
   "allowComments": "Allow Comments",
   "@allowComments": {
     "description": "Allow comments setting title"
@@ -672,6 +688,50 @@
     "description": "Preview mode indicator text"
   },
   "previewModeCommentsDisabled": "Comments are disabled in preview mode. Publish the entry to enable comments.",
+  "thisIsDraft": "This is a draft",
+  "@thisIsDraft": {
+    "description": "Text shown in preview to indicate this is a draft entry"
+  },
+  "entryNotPublishedYet": "This entry is not published yet",
+  "@entryNotPublishedYet": {
+    "description": "Text shown in preview comments section to indicate entry is not published"
+  },
+  "anonymous": "Anonymous",
+  "@anonymous": {
+    "description": "Text for anonymous user"
+  },
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy setting label"
+  },
+  "voting": "Voting",
+  "@voting": {
+    "description": "Voting setting label"
+  },
+  "liveFeed": "Live Feed",
+  "@liveFeed": {
+    "description": "Live feed setting label"
+  },
+  "sharing": "Sharing",
+  "@sharing": {
+    "description": "Sharing setting label"
+  },
+  "enabled": "Enabled",
+  "@enabled": {
+    "description": "Enabled status"
+  },
+  "disabled": "Disabled",
+  "@disabled": {
+    "description": "Disabled status"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  "privacySome": "Some",
+  "@privacySome": {
+    "description": "Privacy setting for some users"
+  },
   "@previewModeCommentsDisabled": {
     "description": "Preview mode comments disabled message"
   }

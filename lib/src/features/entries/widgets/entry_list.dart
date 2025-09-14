@@ -63,23 +63,22 @@ class _EntryListState extends ConsumerState<EntryList> {
       _scrollController.addListener(_onScroll);
     }
     
-    // Set feed parameter if provided
-    if (widget.feedParameter != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final notifier = ref.read(entryFeedProvider(widget.feedType).notifier);
-        // Check if the parameter is a tag filter (starts with # or is a simple tag name)
+    // Fetch initial entries (feed parameter is now handled by the provider constructor)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = widget.feedParameter != null
+          ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+          : entryFeedProvider(widget.feedType);
+      
+      // Check if the parameter is a tag filter and set it
+      if (widget.feedParameter != null) {
+        final notifier = ref.read(provider.notifier);
         if (widget.feedParameter!.startsWith('#') || 
             (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-'))) {
           notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
-        } else {
-          notifier.setFeedParameter(widget.feedParameter);
         }
-      });
-    }
-    
-    // Fetch initial entries
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(entryFeedProvider(widget.feedType).notifier).fetchInitialEntries();
+      }
+      
+      ref.read(provider.notifier).fetchInitialEntries();
     });
   }
 
@@ -95,15 +94,18 @@ class _EntryListState extends ConsumerState<EntryList> {
     
     // Update feed parameter if it changed
     if (widget.feedParameter != oldWidget.feedParameter) {
-      final notifier = ref.read(entryFeedProvider(widget.feedType).notifier);
+      final provider = widget.feedParameter != null
+          ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+          : entryFeedProvider(widget.feedType);
+      
+      final notifier = ref.read(provider.notifier);
       // Check if the parameter is a tag filter (starts with # or is a simple tag name)
       if (widget.feedParameter != null && 
           (widget.feedParameter!.startsWith('#') || 
            (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-')))) {
         notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
-      } else {
-        notifier.setFeedParameter(widget.feedParameter);
       }
+      // Feed parameter is handled by the provider constructor, so we don't need to call setFeedParameter
     }
   }
 
@@ -130,7 +132,10 @@ class _EntryListState extends ConsumerState<EntryList> {
     });
     
     try {
-      await ref.read(entryFeedProvider(widget.feedType).notifier).fetchMoreEntries();
+      final provider = widget.feedParameter != null
+          ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+          : entryFeedProvider(widget.feedType);
+      await ref.read(provider.notifier).fetchMoreEntries();
     } finally {
       if (mounted) {
         setState(() {
@@ -142,12 +147,18 @@ class _EntryListState extends ConsumerState<EntryList> {
 
   /// Handles pull-to-refresh
   Future<void> _onRefresh() async {
-    await ref.read(entryFeedProvider(widget.feedType).notifier).refresh();
+    final provider = widget.feedParameter != null
+        ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+        : entryFeedProvider(widget.feedType);
+    await ref.read(provider.notifier).refresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    final feedState = ref.watch(entryFeedProvider(widget.feedType));
+    // Use the appropriate provider based on whether we have a feed parameter
+    final feedState = widget.feedParameter != null
+        ? ref.watch(entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter)))
+        : ref.watch(entryFeedProvider(widget.feedType));
     
     return feedState.when(
       initial: () => _buildLoadingState(),
@@ -160,7 +171,10 @@ class _EntryListState extends ConsumerState<EntryList> {
 
   /// Builds the loading state with skeleton loaders
   Widget _buildLoadingState() {
-    final feedState = ref.read(entryFeedProvider(widget.feedType));
+    final provider = widget.feedParameter != null
+        ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+        : entryFeedProvider(widget.feedType);
+    final feedState = ref.read(provider);
     
     // Determine display format from feed state (default to full for loading)
     DisplayFormat displayFormat = DisplayFormat.full;
@@ -209,7 +223,10 @@ class _EntryListState extends ConsumerState<EntryList> {
 
   /// Builds the loaded state with actual entries
   Widget _buildLoadedState(List<MwEntry> entries, bool hasMore) {
-    final feedState = ref.read(entryFeedProvider(widget.feedType));
+    final provider = widget.feedParameter != null
+        ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+        : entryFeedProvider(widget.feedType);
+    final feedState = ref.read(provider);
     
     // Determine display format from feed state
     DisplayFormat displayFormat = DisplayFormat.full; // default
@@ -345,7 +362,10 @@ class _EntryListState extends ConsumerState<EntryList> {
             SizedBox(height: MindwellSpacing.lg),
             ElevatedButton(
               onPressed: () {
-                ref.read(entryFeedProvider(widget.feedType).notifier).fetchInitialEntries();
+                final provider = widget.feedParameter != null
+                    ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+                    : entryFeedProvider(widget.feedType);
+                ref.read(provider.notifier).fetchInitialEntries();
               },
               child: const Text('Попробовать снова'),
             ),
@@ -383,7 +403,10 @@ class _EntryListState extends ConsumerState<EntryList> {
             SizedBox(height: MindwellSpacing.lg),
             ElevatedButton(
               onPressed: () {
-                ref.read(entryFeedProvider(widget.feedType).notifier).refresh();
+                final provider = widget.feedParameter != null
+                    ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+                    : entryFeedProvider(widget.feedType);
+                ref.read(provider.notifier).refresh();
               },
               child: const Text('Обновить'),
             ),
@@ -623,7 +646,10 @@ class _EntryListState extends ConsumerState<EntryList> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(entryFeedProvider(widget.feedType).notifier).refresh();
+              final provider = widget.feedParameter != null
+                  ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
+                  : entryFeedProvider(widget.feedType);
+              ref.read(provider.notifier).refresh();
             },
             child: Text(
               'Обновить',

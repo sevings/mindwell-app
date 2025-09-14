@@ -520,6 +520,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPrivate => 'Private';
 
   @override
+  String get privacyRegistered => 'Registered Users';
+
+  @override
+  String get privacyInvited => 'Invited Users';
+
+  @override
+  String get privacyFollowers => 'Followers';
+
+  @override
+  String get privacyMe => 'Only Me';
+
+  @override
   String get allowComments => 'Allow Comments';
 
   @override
@@ -562,4 +574,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get previewModeCommentsDisabled =>
       'Comments are disabled in preview mode. Publish the entry to enable comments.';
+
+  @override
+  String get thisIsDraft => 'This is a draft';
+
+  @override
+  String get entryNotPublishedYet => 'This entry is not published yet';
+
+  @override
+  String get anonymous => 'Anonymous';
+
+  @override
+  String get privacy => 'Privacy';
+
+  @override
+  String get voting => 'Voting';
+
+  @override
+  String get liveFeed => 'Live Feed';
+
+  @override
+  String get sharing => 'Sharing';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get privacySome => 'Some';
 }
