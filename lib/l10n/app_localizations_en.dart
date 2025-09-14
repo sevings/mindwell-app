@@ -607,4 +607,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacySome => 'Some';
+
+  @override
+  String commentsByUser(String username) {
+    return 'Comments by @$username';
+  }
 }

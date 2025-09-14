@@ -767,5 +767,14 @@
   "privacySome": "Некоторые",
   "@previewModeCommentsDisabled": {
     "description": "Preview mode comments disabled message"
+  },
+  "commentsByUser": "Комментарии от @{username}",
+  "@commentsByUser": {
+    "description": "Title for comment feed screen showing comments by a specific user",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
   }
 }

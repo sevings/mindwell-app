@@ -9,6 +9,7 @@ import '../../features/entries/screens/entry_feed_screen.dart';
 import '../../features/entries/screens/entry_detail_screen.dart';
 import '../../features/entries/screens/entry_editor_screen.dart';
 import '../../features/entries/models/feed_type.dart';
+import '../../features/comments/screens/comment_feed_screen.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -165,6 +166,14 @@ class AppRouter {
               );
             },
           ),
+          GoRoute(
+            path: '/users/:name/comments',
+            name: 'userComments',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return CommentFeedScreen(username: username);
+            },
+          ),
         ],
       ),
       
@@ -215,6 +224,14 @@ class AppRouter {
                 feedType: FeedType.live,
                 tagFilter: tagName,
               );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/comments',
+            name: 'publicUserComments',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return CommentFeedScreen(username: username);
             },
           ),
         ],

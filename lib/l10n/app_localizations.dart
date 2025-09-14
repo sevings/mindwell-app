@@ -1279,6 +1279,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Некоторые'**
   String get privacySome;
+
+  /// Title for comment feed screen showing comments by a specific user
+  ///
+  /// In ru, this message translates to:
+  /// **'Комментарии от @{username}'**
+  String commentsByUser(String username);
 }
 
 class _AppLocalizationsDelegate

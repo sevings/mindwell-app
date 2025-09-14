@@ -615,4 +615,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get privacySome => 'Некоторые';
+
+  @override
+  String commentsByUser(String username) {
+    return 'Комментарии от @$username';
+  }
 }
