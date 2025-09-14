@@ -1327,6 +1327,30 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Не в сети'**
   String get offline;
+
+  /// Badges section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Значки'**
+  String get badges;
+
+  /// Button to view all badges
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать все значки'**
+  String get viewAllBadges;
+
+  /// Message when user has no badges
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет заработанных значков'**
+  String get noBadges;
+
+  /// Accessibility label for earned badge
+  ///
+  /// In ru, this message translates to:
+  /// **'Заработанный значок'**
+  String get badgeEarned;
 }
 
 class _AppLocalizationsDelegate

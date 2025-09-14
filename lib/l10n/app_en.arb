@@ -771,5 +771,21 @@
   "offline": "Offline",
   "@offline": {
     "description": "Offline status text"
+  },
+  "badges": "Badges",
+  "@badges": {
+    "description": "Badges section title"
+  },
+  "viewAllBadges": "View All Badges",
+  "@viewAllBadges": {
+    "description": "Button to view all badges"
+  },
+  "noBadges": "No badges earned yet",
+  "@noBadges": {
+    "description": "Message when user has no badges"
+  },
+  "badgeEarned": "Badge earned",
+  "@badgeEarned": {
+    "description": "Accessibility label for earned badge"
   }
 }

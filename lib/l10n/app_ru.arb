@@ -804,5 +804,21 @@
   "offline": "Не в сети",
   "@offline": {
     "description": "Offline status text"
+  },
+  "badges": "Значки",
+  "@badges": {
+    "description": "Badges section title"
+  },
+  "viewAllBadges": "Показать все значки",
+  "@viewAllBadges": {
+    "description": "Button to view all badges"
+  },
+  "noBadges": "Пока нет заработанных значков",
+  "@noBadges": {
+    "description": "Message when user has no badges"
+  },
+  "badgeEarned": "Заработанный значок",
+  "@badgeEarned": {
+    "description": "Accessibility label for earned badge"
   }
 }

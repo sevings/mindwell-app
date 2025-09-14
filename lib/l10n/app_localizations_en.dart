@@ -633,4 +633,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offline => 'Offline';
+
+  @override
+  String get badges => 'Badges';
+
+  @override
+  String get viewAllBadges => 'View All Badges';
+
+  @override
+  String get noBadges => 'No badges earned yet';
+
+  @override
+  String get badgeEarned => 'Badge earned';
 }

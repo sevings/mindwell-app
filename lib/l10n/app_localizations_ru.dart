@@ -641,4 +641,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get offline => 'Не в сети';
+
+  @override
+  String get badges => 'Значки';
+
+  @override
+  String get viewAllBadges => 'Показать все значки';
+
+  @override
+  String get noBadges => 'Пока нет заработанных значков';
+
+  @override
+  String get badgeEarned => 'Заработанный значок';
 }
