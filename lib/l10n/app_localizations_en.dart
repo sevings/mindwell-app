@@ -645,4 +645,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get badgeEarned => 'Badge earned';
+
+  @override
+  String get lastImages => 'Last Images';
+
+  @override
+  String get viewAllImages => 'View All Images';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get imageGallery => 'Image Gallery';
+
+  @override
+  String get imageNumber => 'Image';
 }

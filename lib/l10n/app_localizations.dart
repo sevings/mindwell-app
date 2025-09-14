@@ -1351,6 +1351,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Заработанный значок'**
   String get badgeEarned;
+
+  /// Last images section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Последние изображения'**
+  String get lastImages;
+
+  /// Button to view all images
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать все изображения'**
+  String get viewAllImages;
+
+  /// View all button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать все'**
+  String get viewAll;
+
+  /// Image gallery screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Галерея изображений'**
+  String get imageGallery;
+
+  /// Image number accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Изображение'**
+  String get imageNumber;
 }
 
 class _AppLocalizationsDelegate

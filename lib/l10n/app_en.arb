@@ -787,5 +787,25 @@
   "badgeEarned": "Badge earned",
   "@badgeEarned": {
     "description": "Accessibility label for earned badge"
+  },
+  "lastImages": "Last Images",
+  "@lastImages": {
+    "description": "Last images section title"
+  },
+  "viewAllImages": "View All Images",
+  "@viewAllImages": {
+    "description": "Button to view all images"
+  },
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  "imageGallery": "Image Gallery",
+  "@imageGallery": {
+    "description": "Image gallery screen title"
+  },
+  "imageNumber": "Image",
+  "@imageNumber": {
+    "description": "Image number accessibility label"
   }
 }

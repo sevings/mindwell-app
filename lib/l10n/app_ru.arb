@@ -820,5 +820,25 @@
   "badgeEarned": "Заработанный значок",
   "@badgeEarned": {
     "description": "Accessibility label for earned badge"
+  },
+  "lastImages": "Последние изображения",
+  "@lastImages": {
+    "description": "Last images section title"
+  },
+  "viewAllImages": "Показать все изображения",
+  "@viewAllImages": {
+    "description": "Button to view all images"
+  },
+  "viewAll": "Показать все",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  "imageGallery": "Галерея изображений",
+  "@imageGallery": {
+    "description": "Image gallery screen title"
+  },
+  "imageNumber": "Изображение",
+  "@imageNumber": {
+    "description": "Image number accessibility label"
   }
 }

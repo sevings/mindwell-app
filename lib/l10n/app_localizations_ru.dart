@@ -653,4 +653,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get badgeEarned => 'Заработанный значок';
+
+  @override
+  String get lastImages => 'Последние изображения';
+
+  @override
+  String get viewAllImages => 'Показать все изображения';
+
+  @override
+  String get viewAll => 'Показать все';
+
+  @override
+  String get imageGallery => 'Галерея изображений';
+
+  @override
+  String get imageNumber => 'Изображение';
 }
