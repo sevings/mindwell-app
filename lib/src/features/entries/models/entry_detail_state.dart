@@ -21,11 +21,13 @@ sealed class EntryDetailState with _$EntryDetailState {
   /// [comments] List of comments for this entry
   /// [hasMoreComments] Whether there are more comments to load
   /// [isLoadingComments] Whether comments are currently being loaded
+  /// [adjacentEntries] Information about adjacent entries for navigation
   const factory EntryDetailState.loaded({
     required MwEntry entry,
     @Default([]) List<MwComment> comments,
     @Default(false) bool hasMoreComments,
     @Default(false) bool isLoadingComments,
+    MwAdjacentEntries? adjacentEntries,
   }) = _Loaded;
 
   /// Error state when fetching entry details fails

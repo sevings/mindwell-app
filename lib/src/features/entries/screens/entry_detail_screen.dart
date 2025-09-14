@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
@@ -11,6 +12,7 @@ import '../../comments/widgets/comment_list.dart';
 import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
 import '../widgets/entry_context_menu.dart';
+import '../widgets/adjacent_entry_navigation.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
 /// 
@@ -62,8 +64,8 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       body: entryState.when(
         initial: () => _buildLoadingState(context),
         loading: () => _buildLoadingState(context),
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => 
-          _buildLoadedState(context, l10n, entry, comments, hasMoreComments, isLoadingComments),
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => 
+          _buildLoadedState(context, l10n, entry, comments, hasMoreComments, isLoadingComments, adjacentEntries),
         error: (message, entry) => _buildErrorState(context, l10n, message, entry),
       ),
     );
@@ -179,6 +181,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     List<MwComment> comments,
     bool hasMoreComments,
     bool isLoadingComments,
+    MwAdjacentEntries? adjacentEntries,
   ) {
     return CustomScrollView(
       controller: _scrollController,
@@ -222,6 +225,12 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 _buildEntryContent(entry),
                 const SizedBox(height: 16),
                 _buildActionButtons(entry),
+                const SizedBox(height: 16),
+                AdjacentEntryNavigation(
+                  adjacentEntries: adjacentEntries,
+                  onPreviousTap: () => _onAdjacentEntryTap(adjacentEntries?.older),
+                  onNextTap: () => _onAdjacentEntryTap(adjacentEntries?.newer),
+                ),
                 const SizedBox(height: 24),
                 _buildCommentsSection(l10n, comments, hasMoreComments, isLoadingComments),
               ],
@@ -796,6 +805,14 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           duration: const Duration(seconds: 2),
         ),
       );
+    }
+  }
+
+  /// Handle navigation to an adjacent entry.
+  void _onAdjacentEntryTap(MwCalendarEntry? entry) {
+    if (entry?.id != null) {
+      // Navigate to the adjacent entry detail screen
+      context.push('/entries/${entry!.id}');
     }
   }
 }

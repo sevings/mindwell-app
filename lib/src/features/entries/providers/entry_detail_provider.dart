@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:dio/dio.dart';
 
 import '../../../core/api/api_provider.dart';
 import '../models/entry_detail_state.dart';
@@ -55,12 +56,12 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
 
   /// Fetch the entry details from the API.
   /// 
-  /// This method fetches the full entry details including initial comments.
+  /// This method fetches the full entry details including initial comments and adjacent entries.
   Future<void> fetchEntryDetails() async {
     if (state.when(
       initial: () => false,
       loading: () => true,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => false,
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
       error: (message, entry) => false,
     )) {
       return; // Prevent multiple simultaneous loads
@@ -70,15 +71,26 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     state = const EntryDetailState.loading();
     
     try {
-      // Fetch entry details
-      final entryResponse = await _entriesApi.entriesIdGet(id: _entryId);
+      // Fetch entry details and adjacent entries in parallel
+      final futures = await Future.wait([
+        _entriesApi.entriesIdGet(id: _entryId),
+        _entriesApi.entriesIdAdjacentGet(id: _entryId),
+      ]);
+      
+      final entryResponse = futures[0] as Response<MwEntry>;
+      final adjacentResponse = futures[1] as Response<MwAdjacentEntries>;
+      
       final entry = entryResponse.data;
+      final adjacentEntries = adjacentResponse.data;
       
       if (entry == null) {
         throw Exception('Entry not found');
       }
       
       _logger.info('Fetched entry details for entry $_entryId');
+      if (adjacentEntries != null) {
+        _logger.info('Fetched adjacent entries for entry $_entryId');
+      }
       
       // Extract comments from the entry response
       final commentList = entry.comments;
@@ -93,6 +105,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           comments: initialComments,
           hasMoreComments: commentList.hasBefore ?? false,
           isLoadingComments: false,
+          adjacentEntries: adjacentEntries,
         );
       } else {
         // No comments in the entry response
@@ -101,6 +114,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           comments: [],
           hasMoreComments: false,
           isLoadingComments: false,
+          adjacentEntries: adjacentEntries,
         );
       }
       
@@ -134,10 +148,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         final currentState = state.when(
           initial: () => null,
           loading: () => null,
-          loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+          loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
+            adjacentEntries: adjacentEntries,
           ),
           error: (message, entry) => null,
         );
@@ -149,6 +164,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             comments: allComments,
             hasMoreComments: commentList.hasBefore ?? false,
             isLoadingComments: false,
+            adjacentEntries: currentState.adjacentEntries,
           );
         }
         
@@ -161,10 +177,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
       final currentState = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
           entry: entry,
           comments: comments,
           hasMoreComments: hasMoreComments,
+          adjacentEntries: adjacentEntries,
         ),
         error: (message, entry) => null,
       );
@@ -175,6 +192,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           comments: currentState.comments,
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
+          adjacentEntries: currentState.adjacentEntries,
         );
       }
     } finally {
@@ -187,10 +205,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -223,10 +242,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -245,6 +265,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
       // Make API call
@@ -270,10 +291,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -292,6 +314,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
       // Make API call
@@ -320,10 +343,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -361,6 +385,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           comments: updatedComments,
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
+          adjacentEntries: currentState.adjacentEntries,
         );
         
         _logger.info('Added comment to entry $_entryId');
@@ -379,10 +404,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -404,6 +430,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
     } catch (e, stackTrace) {
@@ -424,10 +451,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -449,6 +477,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
     } catch (e, stackTrace) {
@@ -469,10 +498,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -494,6 +524,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
     } catch (e, stackTrace) {
@@ -514,10 +545,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -539,6 +571,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: currentState.comments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
     } catch (e, stackTrace) {
@@ -559,10 +592,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -588,10 +622,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -614,10 +649,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -638,6 +674,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         comments: updatedComments,
         hasMoreComments: currentState.hasMoreComments,
         isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
       );
       
     } catch (e, stackTrace) {
@@ -658,10 +695,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );
@@ -687,10 +725,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+      loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
         entry: entry,
         comments: comments,
         hasMoreComments: hasMoreComments,
+        adjacentEntries: adjacentEntries,
       ),
       error: (message, entry) => null,
     );

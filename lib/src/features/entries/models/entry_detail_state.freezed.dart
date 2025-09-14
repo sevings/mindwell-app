@@ -20,8 +20,12 @@ mixin _$EntryDetailState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)
+    required TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) =>
@@ -30,8 +34,12 @@ mixin _$EntryDetailState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult? Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) =>
@@ -40,8 +48,12 @@ mixin _$EntryDetailState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -132,8 +144,12 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)
+    required TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -145,8 +161,12 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult? Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -158,8 +178,12 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -252,8 +276,12 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)
+    required TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -265,8 +293,12 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult? Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -278,8 +310,12 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -342,7 +378,8 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       {MwEntry entry,
       List<MwComment> comments,
       bool hasMoreComments,
-      bool isLoadingComments});
+      bool isLoadingComments,
+      MwAdjacentEntries? adjacentEntries});
 }
 
 /// @nodoc
@@ -360,6 +397,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? comments = null,
     Object? hasMoreComments = null,
     Object? isLoadingComments = null,
+    Object? adjacentEntries = freezed,
   }) {
     return _then(_$LoadedImpl(
       entry: null == entry
@@ -378,6 +416,10 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.isLoadingComments
           : isLoadingComments // ignore: cast_nullable_to_non_nullable
               as bool,
+      adjacentEntries: freezed == adjacentEntries
+          ? _value.adjacentEntries
+          : adjacentEntries // ignore: cast_nullable_to_non_nullable
+              as MwAdjacentEntries?,
     ));
   }
 }
@@ -389,7 +431,8 @@ class _$LoadedImpl implements _Loaded {
       {required this.entry,
       final List<MwComment> comments = const [],
       this.hasMoreComments = false,
-      this.isLoadingComments = false})
+      this.isLoadingComments = false,
+      this.adjacentEntries})
       : _comments = comments;
 
   @override
@@ -409,10 +452,12 @@ class _$LoadedImpl implements _Loaded {
   @override
   @JsonKey()
   final bool isLoadingComments;
+  @override
+  final MwAdjacentEntries? adjacentEntries;
 
   @override
   String toString() {
-    return 'EntryDetailState.loaded(entry: $entry, comments: $comments, hasMoreComments: $hasMoreComments, isLoadingComments: $isLoadingComments)';
+    return 'EntryDetailState.loaded(entry: $entry, comments: $comments, hasMoreComments: $hasMoreComments, isLoadingComments: $isLoadingComments, adjacentEntries: $adjacentEntries)';
   }
 
   @override
@@ -425,7 +470,9 @@ class _$LoadedImpl implements _Loaded {
             (identical(other.hasMoreComments, hasMoreComments) ||
                 other.hasMoreComments == hasMoreComments) &&
             (identical(other.isLoadingComments, isLoadingComments) ||
-                other.isLoadingComments == isLoadingComments));
+                other.isLoadingComments == isLoadingComments) &&
+            (identical(other.adjacentEntries, adjacentEntries) ||
+                other.adjacentEntries == adjacentEntries));
   }
 
   @override
@@ -434,7 +481,8 @@ class _$LoadedImpl implements _Loaded {
       entry,
       const DeepCollectionEquality().hash(_comments),
       hasMoreComments,
-      isLoadingComments);
+      isLoadingComments,
+      adjacentEntries);
 
   @JsonKey(ignore: true)
   @override
@@ -447,12 +495,17 @@ class _$LoadedImpl implements _Loaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)
+    required TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
-    return loaded(entry, comments, hasMoreComments, isLoadingComments);
+    return loaded(
+        entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
   }
 
   @override
@@ -460,12 +513,17 @@ class _$LoadedImpl implements _Loaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult? Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
-    return loaded?.call(entry, comments, hasMoreComments, isLoadingComments);
+    return loaded?.call(
+        entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
   }
 
   @override
@@ -473,14 +531,19 @@ class _$LoadedImpl implements _Loaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(entry, comments, hasMoreComments, isLoadingComments);
+      return loaded(
+          entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
     }
     return orElse();
   }
@@ -528,12 +591,14 @@ abstract class _Loaded implements EntryDetailState {
       {required final MwEntry entry,
       final List<MwComment> comments,
       final bool hasMoreComments,
-      final bool isLoadingComments}) = _$LoadedImpl;
+      final bool isLoadingComments,
+      final MwAdjacentEntries? adjacentEntries}) = _$LoadedImpl;
 
   MwEntry get entry;
   List<MwComment> get comments;
   bool get hasMoreComments;
   bool get isLoadingComments;
+  MwAdjacentEntries? get adjacentEntries;
   @JsonKey(ignore: true)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -613,8 +678,12 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)
+    required TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -626,8 +695,12 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult? Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -639,8 +712,12 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwEntry entry, List<MwComment> comments,
-            bool hasMoreComments, bool isLoadingComments)?
+    TResult Function(
+            MwEntry entry,
+            List<MwComment> comments,
+            bool hasMoreComments,
+            bool isLoadingComments,
+            MwAdjacentEntries? adjacentEntries)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),

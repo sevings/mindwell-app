@@ -594,5 +594,9 @@
   "complaintSubmitted": "Complaint submitted successfully",
   "@complaintSubmitted": {
     "description": "Success message when complaint is submitted"
+  },
+  "untitled": "Untitled",
+  "@untitled": {
+    "description": "Default title for entries without a title"
   }
 }

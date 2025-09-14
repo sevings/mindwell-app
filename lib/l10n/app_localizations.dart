@@ -1069,6 +1069,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Жалоба успешно отправлена'**
   String get complaintSubmitted;
+
+  /// Default title for entries without a title
+  ///
+  /// In ru, this message translates to:
+  /// **'Без названия'**
+  String get untitled;
 }
 
 class _AppLocalizationsDelegate

@@ -505,4 +505,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get complaintSubmitted => 'Жалоба успешно отправлена';
+
+  @override
+  String get untitled => 'Без названия';
 }

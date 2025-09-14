@@ -54,7 +54,7 @@ void main() {
       expect(state.when(
         initial: () => true,
         loading: () => false,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => false,
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
         error: (message, entry) => false,
       ), isTrue);
     });
@@ -66,7 +66,7 @@ void main() {
       expect(state.when(
         initial: () => false,
         loading: () => true,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => false,
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
         error: (message, entry) => false,
       ), isTrue);
     });
@@ -79,7 +79,7 @@ void main() {
       final result = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
           entry: entry,
           comments: comments,
           hasMoreComments: hasMoreComments,
@@ -109,7 +109,7 @@ void main() {
       final result = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
           entry: entry,
           comments: comments,
           hasMoreComments: hasMoreComments,
@@ -133,7 +133,7 @@ void main() {
       final result = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => null,
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => null,
         error: (message, entry) => (message: message, entry: entry),
       );
       
@@ -153,7 +153,7 @@ void main() {
       final result = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => null,
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => null,
         error: (message, entry) => (message: message, entry: entry),
       );
       
@@ -205,7 +205,7 @@ void main() {
       final result = loadedState.when(
         initial: () => 'initial',
         loading: () => 'loading',
-        loaded: (entry, comments, hasMoreComments, isLoadingComments) => 
+        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => 
             'loaded: ${entry.id}, ${comments.length} comments, hasMore: $hasMoreComments, loading: $isLoadingComments',
         error: (message, entry) => 'error: $message',
       );

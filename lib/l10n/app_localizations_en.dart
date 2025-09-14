@@ -500,4 +500,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get complaintSubmitted => 'Complaint submitted successfully';
+
+  @override
+  String get untitled => 'Untitled';
 }

@@ -15,13 +15,14 @@ class MockMwComment extends Mock implements MwComment {}
 class MockMwCommentList extends Mock implements MwCommentList {}
 class MockMwUser extends Mock implements MwUser {}
 class MockMwRating extends Mock implements MwRating {}
+class MockMwAdjacentEntries extends Mock implements MwAdjacentEntries {}
 
 // Helper functions for testing state
 bool isLoadedState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => false,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments) => true,
+    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => true,
     error: (message, entry) => false,
   );
 }
@@ -30,7 +31,7 @@ bool isErrorState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => false,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments) => false,
+    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
     error: (message, entry) => true,
   );
 }
@@ -39,7 +40,7 @@ bool isLoadingState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => true,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments) => false,
+    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
     error: (message, entry) => false,
   );
 }
@@ -48,7 +49,7 @@ bool isLoadingState(EntryDetailState state) {
   return state.when(
     initial: () => null,
     loading: () => null,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments) => (
+    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
       entry: entry,
       comments: comments,
       hasMoreComments: hasMoreComments,
@@ -62,7 +63,7 @@ String? getErrorMessage(EntryDetailState state) {
   return state.when(
     initial: () => null,
     loading: () => null,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments) => null,
+    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => null,
     error: (message, entry) => message,
   );
 }
@@ -77,6 +78,7 @@ void main() {
     late MockMwCommentList mockCommentList;
     late MockMwUser mockUser;
     late MockMwRating mockRating;
+    late MockMwAdjacentEntries mockAdjacentEntries;
 
     setUp(() {
       mockEntriesApi = MockEntriesApi();
@@ -86,6 +88,7 @@ void main() {
       mockCommentList = MockMwCommentList();
       mockUser = MockMwUser();
       mockRating = MockMwRating();
+      mockAdjacentEntries = MockMwAdjacentEntries();
 
       // Setup default mock responses
       when(() => mockUser.id).thenReturn(1);
@@ -115,6 +118,11 @@ void main() {
       when(() => mockCommentList.data).thenReturn(BuiltList([mockComment]));
       when(() => mockCommentList.nextBefore).thenReturn('next_cursor');
       when(() => mockCommentList.hasBefore).thenReturn(true);
+
+      // Setup adjacent entries mock
+      when(() => mockAdjacentEntries.older).thenReturn(null);
+      when(() => mockAdjacentEntries.newer).thenReturn(null);
+      when(() => mockAdjacentEntries.id).thenReturn(123);
     });
 
     test('should start with initial state', () {
@@ -124,6 +132,13 @@ void main() {
                 data: mockEntry,
                 statusCode: 200,
                 requestOptions: RequestOptions(path: '/entries/123'),
+              ));
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+          .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                data: mockAdjacentEntries,
+                statusCode: 200,
+                requestOptions: RequestOptions(path: '/entries/123/adjacent'),
               ));
 
         when(() => mockCommentsApi.entriesIdCommentsGet(
@@ -154,6 +169,13 @@ void main() {
                   data: mockEntry,
                   statusCode: 200,
                   requestOptions: RequestOptions(path: '/entries/123'),
+                ));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
                 ));
 
         notifier = EntryDetailNotifier(
@@ -191,6 +213,13 @@ void main() {
                   requestOptions: RequestOptions(path: '/entries/123'),
                 ));
 
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: null,
+                  statusCode: 404,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+                ));
+
         notifier = EntryDetailNotifier(
           entryId: 123,
           entriesApi: mockEntriesApi,
@@ -206,6 +235,9 @@ void main() {
 
       test('should handle API error', () async {
         when(() => mockEntriesApi.entriesIdGet(id: 123))
+            .thenThrow(Exception('Network error'));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
             .thenThrow(Exception('Network error'));
 
         notifier = EntryDetailNotifier(
@@ -232,6 +264,16 @@ void main() {
               );
             });
 
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async {
+              await Future.delayed(const Duration(milliseconds: 100));
+              return Response<MwAdjacentEntries>(
+                data: mockAdjacentEntries,
+                statusCode: 200,
+                requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+              );
+            });
+
         notifier = EntryDetailNotifier(
           entryId: 123,
           entriesApi: mockEntriesApi,
@@ -248,6 +290,7 @@ void main() {
 
         // Should only be called once due to loading guard
         verify(() => mockEntriesApi.entriesIdGet(id: 123)).called(1);
+        verify(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).called(1);
       });
     });
 
@@ -259,6 +302,13 @@ void main() {
                   data: mockEntry,
                   statusCode: 200,
                   requestOptions: RequestOptions(path: '/entries/123'),
+                ));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
                 ));
 
         notifier = EntryDetailNotifier(
@@ -333,6 +383,13 @@ void main() {
                   statusCode: 200,
                   requestOptions: RequestOptions(path: '/entries/123'),
                 ));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+                ));
         
         final testNotifier = EntryDetailNotifier(
           entryId: 123,
@@ -393,6 +450,13 @@ void main() {
                   requestOptions: RequestOptions(path: '/entries/123'),
                 ));
 
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+                ));
+
         notifier = EntryDetailNotifier(
           entryId: 123,
           entriesApi: mockEntriesApi,
@@ -408,6 +472,7 @@ void main() {
 
         // Should make fresh API calls
         verify(() => mockEntriesApi.entriesIdGet(id: 123)).called(2); // Once for init, once for refresh
+        verify(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).called(2); // Once for init, once for refresh
         // Should not make separate comments API calls since comments come from entry response
         verifyNever(() => mockCommentsApi.entriesIdCommentsGet(
               id: 123,
@@ -425,6 +490,13 @@ void main() {
                   data: mockEntry,
                   statusCode: 200,
                   requestOptions: RequestOptions(path: '/entries/123'),
+                ));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
                 ));
 
         notifier = EntryDetailNotifier(
@@ -464,6 +536,13 @@ void main() {
                   requestOptions: RequestOptions(path: '/entries/123'),
                 ));
 
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+                ));
+
         notifier = EntryDetailNotifier(
           entryId: 123,
           entriesApi: mockEntriesApi,
@@ -490,6 +569,13 @@ void main() {
                   data: mockEntry,
                   statusCode: 200,
                   requestOptions: RequestOptions(path: '/entries/123'),
+                ));
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
+            .thenAnswer((_) async => Response<MwAdjacentEntries>(
+                  data: mockAdjacentEntries,
+                  statusCode: 200,
+                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
                 ));
 
         notifier = EntryDetailNotifier(

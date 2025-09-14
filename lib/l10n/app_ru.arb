@@ -660,5 +660,9 @@
   "complaintSubmitted": "Жалоба успешно отправлена",
   "@complaintSubmitted": {
     "description": "Success message when complaint is submitted"
+  },
+  "untitled": "Без названия",
+  "@untitled": {
+    "description": "Default title for entries without a title"
   }
 }
