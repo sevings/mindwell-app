@@ -776,5 +776,33 @@
         "type": "String"
       }
     }
+  },
+  "followUser": "Подписаться",
+  "@followUser": {
+    "description": "Follow user button text"
+  },
+  "unfollowUser": "Отписаться",
+  "@unfollowUser": {
+    "description": "Unfollow user button text"
+  },
+  "blockUser": "Заблокировать",
+  "@blockUser": {
+    "description": "Block user button text"
+  },
+  "unblockUser": "Разблокировать",
+  "@unblockUser": {
+    "description": "Unblock user button text"
+  },
+  "messageUser": "Написать",
+  "@messageUser": {
+    "description": "Message user button text"
+  },
+  "online": "В сети",
+  "@online": {
+    "description": "Online status text"
+  },
+  "offline": "Не в сети",
+  "@offline": {
+    "description": "Offline status text"
   }
 }

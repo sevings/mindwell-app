@@ -1285,6 +1285,48 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Комментарии от @{username}'**
   String commentsByUser(String username);
+
+  /// Follow user button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Подписаться'**
+  String get followUser;
+
+  /// Unfollow user button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Отписаться'**
+  String get unfollowUser;
+
+  /// Block user button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокировать'**
+  String get blockUser;
+
+  /// Unblock user button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Разблокировать'**
+  String get unblockUser;
+
+  /// Message user button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать'**
+  String get messageUser;
+
+  /// Online status text
+  ///
+  /// In ru, this message translates to:
+  /// **'В сети'**
+  String get online;
+
+  /// Offline status text
+  ///
+  /// In ru, this message translates to:
+  /// **'Не в сети'**
+  String get offline;
 }
 
 class _AppLocalizationsDelegate

@@ -743,5 +743,33 @@
         "type": "String"
       }
     }
+  },
+  "followUser": "Follow",
+  "@followUser": {
+    "description": "Follow user button text"
+  },
+  "unfollowUser": "Unfollow",
+  "@unfollowUser": {
+    "description": "Unfollow user button text"
+  },
+  "blockUser": "Block",
+  "@blockUser": {
+    "description": "Block user button text"
+  },
+  "unblockUser": "Unblock",
+  "@unblockUser": {
+    "description": "Unblock user button text"
+  },
+  "messageUser": "Message",
+  "@messageUser": {
+    "description": "Message user button text"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status text"
+  },
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status text"
   }
 }

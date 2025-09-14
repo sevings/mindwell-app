@@ -612,4 +612,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String commentsByUser(String username) {
     return 'Comments by @$username';
   }
+
+  @override
+  String get followUser => 'Follow';
+
+  @override
+  String get unfollowUser => 'Unfollow';
+
+  @override
+  String get blockUser => 'Block';
+
+  @override
+  String get unblockUser => 'Unblock';
+
+  @override
+  String get messageUser => 'Message';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get offline => 'Offline';
 }

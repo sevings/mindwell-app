@@ -620,4 +620,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String commentsByUser(String username) {
     return 'Комментарии от @$username';
   }
+
+  @override
+  String get followUser => 'Подписаться';
+
+  @override
+  String get unfollowUser => 'Отписаться';
+
+  @override
+  String get blockUser => 'Заблокировать';
+
+  @override
+  String get unblockUser => 'Разблокировать';
+
+  @override
+  String get messageUser => 'Написать';
+
+  @override
+  String get online => 'В сети';
+
+  @override
+  String get offline => 'Не в сети';
 }

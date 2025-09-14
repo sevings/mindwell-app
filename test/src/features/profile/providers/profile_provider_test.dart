@@ -21,7 +21,6 @@ void main() {
     late MockResponse<MwImageList> mockImagesResponse;
     late MockResponse<MwTagList> mockTagsResponse;
     late MockResponse<MwCalendar> mockCalendarResponse;
-    late MockResponse<MwRelationship> mockRelationshipResponse;
 
     setUp(() {
       mockUsersApi = MockUsersApi();
@@ -30,7 +29,6 @@ void main() {
       mockImagesResponse = MockResponse<MwImageList>();
       mockTagsResponse = MockResponse<MwTagList>();
       mockCalendarResponse = MockResponse<MwCalendar>();
-      mockRelationshipResponse = MockResponse<MwRelationship>();
 
       profileNotifier = ProfileNotifier(
         username: 'testuser',
