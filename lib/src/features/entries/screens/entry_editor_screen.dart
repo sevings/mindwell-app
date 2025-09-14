@@ -59,6 +59,62 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
     super.dispose();
   }
 
+  /// Preview the entry by saving it as a draft and navigating to preview.
+  Future<void> _previewEntry() async {
+    final l10n = AppLocalizations.of(context);
+    
+    try {
+      // Save as draft first
+      await ref.read(entryEditorProvider(widget.entryId).notifier).saveDraft();
+      
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n?.draftSaved ?? 'Draft saved'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      
+      // TODO: Navigate to preview screen when implemented
+      // For now, just show a message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n?.preview ?? 'Preview functionality coming soon'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save draft: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Publish the entry.
+  Future<void> _publishEntry() async {
+    try {
+      await ref.read(entryEditorProvider(widget.entryId).notifier).publishEntry();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to publish entry: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -83,10 +139,21 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         },
         publishing: (isUploadingImages, uploadProgress) {},
         success: (entry) {
+          // Show success message and navigate
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n?.entryPublished ?? 'Entry published successfully!'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          
           // Navigate back to entry detail or feed after successful publish
           if (widget.entryId != null) {
+            // Editing existing entry - go back to the entry
             context.go('/entries/${widget.entryId}');
           } else {
+            // New entry - go to the newly created entry
             context.go('/entries/${entry.id}');
           }
         },
@@ -122,32 +189,71 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         foregroundColor: Colors.white,
         actions: [
           // Preview button
-          IconButton(
-            icon: const Icon(Icons.preview),
-            onPressed: () {
-              // TODO: Implement preview functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n?.preview ?? 'Preview'),
+          entryState.maybeWhen(
+            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+              return IconButton(
+                icon: const Icon(Icons.preview),
+                onPressed: title.trim().isNotEmpty && content.trim().isNotEmpty ? () {
+                  _previewEntry();
+                } : null,
+                tooltip: l10n?.preview ?? 'Preview',
+              );
+            },
+            orElse: () => IconButton(
+              icon: const Icon(Icons.preview),
+              onPressed: null,
+              tooltip: l10n?.preview ?? 'Preview',
+            ),
+          ),
+          // Publish button
+          entryState.maybeWhen(
+            editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
+              final canPublish = title.trim().isNotEmpty && content.trim().isNotEmpty;
+              return TextButton(
+                onPressed: canPublish ? () {
+                  _publishEntry();
+                } : null,
+                child: Text(
+                  l10n?.publish ?? 'Publish',
+                  style: TextStyle(
+                    color: canPublish ? Colors.white : Colors.white.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               );
             },
-          ),
-          // Publish button
-          TextButton(
-            onPressed: entryState.maybeWhen(
-              editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {
-                return title.trim().isNotEmpty && content.trim().isNotEmpty;
-              },
-              orElse: () => false,
-            ) ? () {
-              ref.read(entryEditorProvider(widget.entryId).notifier).publishEntry();
-            } : null,
-            child: Text(
-              l10n?.publish ?? 'Publish',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            publishing: (isUploadingImages, uploadProgress) => TextButton(
+              onPressed: null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n?.publishing ?? 'Publishing...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            orElse: () => TextButton(
+              onPressed: null,
+              child: Text(
+                l10n?.publish ?? 'Publish',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -158,7 +264,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) => _buildEditingContent(),
         publishing: (isUploadingImages, uploadProgress) => _buildPublishingContent(uploadProgress),
-        success: (entry) => const Center(child: CircularProgressIndicator()),
+        success: (entry) => _buildSuccessContent(),
         error: (message, canRetry) => _buildErrorContent(message, canRetry),
       ),
     );
@@ -267,30 +373,84 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
 
   Widget _buildPublishingContent(double uploadProgress) {
     final l10n = AppLocalizations.of(context);
+    final entryState = ref.watch(entryEditorProvider(widget.entryId));
     
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16),
-          Text(
-            l10n?.publishing ?? 'Publishing...',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (uploadProgress > 0) ...[
+    return entryState.maybeWhen(
+      publishing: (isUploadingImages, progress) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            LinearProgressIndicator(value: uploadProgress),
-            const SizedBox(height: 8),
             Text(
-              '${(uploadProgress * 100).toInt()}%',
-              style: const TextStyle(fontSize: 14),
+              isUploadingImages 
+                  ? (l10n?.uploadingImages ?? 'Uploading images...')
+                  : (l10n?.publishing ?? 'Publishing...'),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (progress > 0) ...[
+              const SizedBox(height: 16),
+              LinearProgressIndicator(value: progress),
+              const SizedBox(height: 8),
+              Text(
+                '${(progress * 100).toInt()}%',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Text(
+              l10n?.pleaseWait ?? 'Please wait...',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
             ),
           ],
-        ],
+        ),
+      ),
+      orElse: () => const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildSuccessContent() {
+    final l10n = AppLocalizations.of(context);
+    
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.check_circle,
+              size: 64,
+              color: Colors.green,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n?.entryPublished ?? 'Entry Published!',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n?.redirecting ?? 'Redirecting...',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(),
+          ],
+        ),
       ),
     );
   }
@@ -299,26 +459,26 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
     final l10n = AppLocalizations.of(context);
     
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error,
-            size: 64,
-            color: Colors.red,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l10n?.error ?? 'Error',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red,
             ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Text(
+            const SizedBox(height: 16),
+            Text(
+              l10n?.error ?? 'Error',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
               message,
               style: const TextStyle(
                 fontSize: 16,
@@ -326,21 +486,29 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 32),
-          if (canRetry)
-            ElevatedButton(
-              onPressed: () {
-                ref.read(entryEditorProvider(widget.entryId).notifier).clearError();
-              },
-              child: Text(l10n?.retry ?? 'Retry'),
+            const SizedBox(height: 32),
+            if (canRetry) ...[
+              ElevatedButton.icon(
+                onPressed: () {
+                  ref.read(entryEditorProvider(widget.entryId).notifier).retryLastOperation();
+                },
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n?.retry ?? 'Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF5E3A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            TextButton.icon(
+              onPressed: () => context.pop(),
+              icon: const Icon(Icons.arrow_back),
+              label: Text(l10n?.goBack ?? 'Go Back'),
             ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () => context.pop(),
-            child: Text(l10n?.goBack ?? 'Go Back'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

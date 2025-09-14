@@ -544,9 +544,22 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     }
     
     _logger.info('Publishing entry (draft: $isDraft)');
-    state = const EntryEditorState.publishing();
     
     try {
+      // Check if there are any new images that need to be uploaded
+      final hasNewImages = editingData.images.isNotEmpty;
+      
+      if (hasNewImages) {
+        // Start with image upload phase
+        state = const EntryEditorState.publishing(isUploadingImages: true, uploadProgress: 0.0);
+        
+        // Upload images first
+        await _uploadImagesForPublishing(editingData.images);
+      }
+      
+      // Switch to publishing phase
+      state = const EntryEditorState.publishing(isUploadingImages: false, uploadProgress: 0.0);
+      
       MwEntry? result;
       
       if (editingData.entryId != null) {
@@ -570,6 +583,25 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         message: 'Failed to publish entry: ${e.toString()}',
         canRetry: true,
       );
+    }
+  }
+
+  /// Upload images for publishing with progress tracking.
+  Future<void> _uploadImagesForPublishing(List<int> imageIds) async {
+    // This is a placeholder for image upload progress tracking
+    // In a real implementation, you would track the upload progress of each image
+    // and update the state accordingly
+    
+    for (int i = 0; i < imageIds.length; i++) {
+      // Simulate upload progress
+      final progress = (i + 1) / imageIds.length;
+      state = EntryEditorState.publishing(
+        isUploadingImages: true,
+        uploadProgress: progress,
+      );
+      
+      // Small delay to show progress
+      await Future.delayed(const Duration(milliseconds: 100));
     }
   }
 
@@ -644,6 +676,25 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         state = const EntryEditorState.editing();
       }
     }
+  }
+
+  /// Retry the last failed operation.
+  Future<void> retryLastOperation() async {
+    final currentState = state;
+    
+    currentState.when(
+      initial: () {},
+      loading: () {},
+      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges) {},
+      publishing: (isUploadingImages, uploadProgress) {},
+      success: (entry) {},
+      error: (message, canRetry) async {
+        if (canRetry) {
+          // Try to republish the entry
+          await publishEntry();
+        }
+      },
+    );
   }
 
   /// Check if the current state has unsaved changes.

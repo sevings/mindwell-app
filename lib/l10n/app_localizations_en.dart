@@ -421,4 +421,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addTag => 'Add Tag';
+
+  @override
+  String get draftSaved => 'Draft saved';
+
+  @override
+  String get entryPublished => 'Entry published successfully!';
+
+  @override
+  String get uploadingImages => 'Uploading images...';
+
+  @override
+  String get pleaseWait => 'Please wait...';
+
+  @override
+  String get redirecting => 'Redirecting...';
 }

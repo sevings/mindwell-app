@@ -426,4 +426,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addTag => 'Добавить тег';
+
+  @override
+  String get draftSaved => 'Черновик сохранен';
+
+  @override
+  String get entryPublished => 'Запись успешно опубликована!';
+
+  @override
+  String get uploadingImages => 'Загрузка изображений...';
+
+  @override
+  String get pleaseWait => 'Пожалуйста, подождите...';
+
+  @override
+  String get redirecting => 'Перенаправление...';
 }

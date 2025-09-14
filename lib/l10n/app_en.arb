@@ -490,5 +490,25 @@
   "addTag": "Add Tag",
   "@addTag": {
     "description": "Add tag button tooltip"
+  },
+  "draftSaved": "Draft saved",
+  "@draftSaved": {
+    "description": "Success message when draft is saved"
+  },
+  "entryPublished": "Entry published successfully!",
+  "@entryPublished": {
+    "description": "Success message when entry is published"
+  },
+  "uploadingImages": "Uploading images...",
+  "@uploadingImages": {
+    "description": "Status message when uploading images"
+  },
+  "pleaseWait": "Please wait...",
+  "@pleaseWait": {
+    "description": "Please wait message"
+  },
+  "redirecting": "Redirecting...",
+  "@redirecting": {
+    "description": "Redirecting message"
   }
 }

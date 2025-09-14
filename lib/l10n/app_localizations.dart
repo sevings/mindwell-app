@@ -913,6 +913,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Добавить тег'**
   String get addTag;
+
+  /// Success message when draft is saved
+  ///
+  /// In ru, this message translates to:
+  /// **'Черновик сохранен'**
+  String get draftSaved;
+
+  /// Success message when entry is published
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись успешно опубликована!'**
+  String get entryPublished;
+
+  /// Status message when uploading images
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка изображений...'**
+  String get uploadingImages;
+
+  /// Please wait message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, подождите...'**
+  String get pleaseWait;
+
+  /// Redirecting message
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенаправление...'**
+  String get redirecting;
 }
 
 class _AppLocalizationsDelegate

@@ -556,5 +556,25 @@
   "addTag": "Добавить тег",
   "@addTag": {
     "description": "Add tag button tooltip"
+  },
+  "draftSaved": "Черновик сохранен",
+  "@draftSaved": {
+    "description": "Success message when draft is saved"
+  },
+  "entryPublished": "Запись успешно опубликована!",
+  "@entryPublished": {
+    "description": "Success message when entry is published"
+  },
+  "uploadingImages": "Загрузка изображений...",
+  "@uploadingImages": {
+    "description": "Status message when uploading images"
+  },
+  "pleaseWait": "Пожалуйста, подождите...",
+  "@pleaseWait": {
+    "description": "Please wait message"
+  },
+  "redirecting": "Перенаправление...",
+  "@redirecting": {
+    "description": "Redirecting message"
   }
 }
