@@ -111,7 +111,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/entries/:id',
-            name: 'entryDetail',
+            name: 'protectedEntryDetail',
             builder: (context, state) {
               final entryId = int.parse(state.pathParameters['id']!);
               final isPreview = state.uri.queryParameters['preview'] == 'true';
@@ -134,7 +134,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/tags/:tagName',
-            name: 'tagFeed',
+            name: 'protectedTagFeed',
             builder: (context, state) {
               final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
               return EntryFeedScreen(
@@ -167,7 +167,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/entries/:id',
-            name: 'entryDetail',
+            name: 'publicEntryDetail',
             builder: (context, state) {
               final entryId = int.parse(state.pathParameters['id']!);
               final isPreview = state.uri.queryParameters['preview'] == 'true';
@@ -179,7 +179,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/tags/:tagName',
-            name: 'tagFeed',
+            name: 'publicTagFeed',
             builder: (context, state) {
               final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
               return EntryFeedScreen(

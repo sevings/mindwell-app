@@ -123,7 +123,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n,
           'all',
           l10n?.privacyAll ?? 'Public',
-          currentPrivacy == 'all',
+          currentPrivacy,
         ),
         _buildPrivacyOption(
           context,
@@ -131,7 +131,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n,
           'friends',
           l10n?.privacyFriends ?? 'Friends Only',
-          currentPrivacy == 'friends',
+          currentPrivacy,
         ),
         _buildPrivacyOption(
           context,
@@ -139,7 +139,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n,
           'private',
           l10n?.privacyPrivate ?? 'Private',
-          currentPrivacy == 'private',
+          currentPrivacy,
         ),
       ],
     );
@@ -270,19 +270,36 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     AppLocalizations? l10n,
     String privacyValue,
     String title,
-    bool isSelected,
+    String currentPrivacy,
   ) {
+    final isSelected = currentPrivacy == privacyValue;
+    
     return ListTile(
-      title: Text(title),
-      leading: Radio<String>(
-        value: privacyValue,
-        groupValue: isSelected ? privacyValue : null,
-        onChanged: (value) {
-          if (value != null) {
-            ref.read(entryEditorProvider(entryId).notifier).updatePrivacy(value);
-          }
+      leading: GestureDetector(
+        onTap: () {
+          ref.read(entryEditorProvider(entryId).notifier).updatePrivacy(privacyValue);
         },
+        child: Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isSelected ? const Color(0xFFFF5E3A) : Colors.grey,
+              width: 2,
+            ),
+            color: isSelected ? const Color(0xFFFF5E3A) : Colors.transparent,
+          ),
+          child: isSelected
+              ? const Icon(
+                  Icons.check,
+                  size: 16,
+                  color: Colors.white,
+                )
+              : null,
+        ),
       ),
+      title: Text(title),
       onTap: () {
         ref.read(entryEditorProvider(entryId).notifier).updatePrivacy(privacyValue);
       },

@@ -9,14 +9,63 @@ import 'package:built_collection/built_collection.dart';
 import 'package:mindwell/src/features/entries/screens/entry_detail_screen.dart';
 import 'package:mindwell/src/features/entries/providers/entry_detail_provider.dart';
 import 'package:mindwell/src/features/entries/models/entry_detail_state.dart';
+import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
 
 // Mock classes
 class MockGoRouter extends Mock implements GoRouter {}
-class MockEntryDetailNotifier extends Mock implements EntryDetailNotifier {}
 class MockMwEntry extends Mock implements MwEntry {}
 class MockMwUser extends Mock implements MwUser {}
 class MockMwAvatar extends Mock implements MwAvatar {}
 class MockMwComment extends Mock implements MwComment {}
+
+class MockEntryDetailNotifier extends StateNotifier<EntryDetailState> implements EntryDetailNotifier {
+  MockEntryDetailNotifier() : super(const EntryDetailState.initial());
+
+  @override
+  Future<void> fetchEntryDetails() async {}
+
+  @override
+  Future<void> loadMoreComments() async {}
+
+  @override
+  Future<void> refresh() async {}
+
+  @override
+  Future<void> voteEntry(bool isUpvote) async {}
+
+  @override
+  Future<void> toggleFavorite() async {}
+
+  @override
+  Future<bool> addComment(String content) async => true;
+
+  @override
+  Future<void> pinEntry() async {}
+
+  @override
+  Future<void> unpinEntry() async {}
+
+  @override
+  Future<void> followEntry() async {}
+
+  @override
+  Future<void> unfollowEntry() async {}
+
+  @override
+  Future<void> deleteEntry() async {}
+
+  @override
+  Future<void> complainEntry() async {}
+
+  @override
+  Future<void> deleteComment(int commentId) async {}
+
+  @override
+  Future<void> voteComment(int commentId, bool isUpvote) async {}
+
+  @override
+  Future<void> complainComment(int commentId) async {}
+}
 
 void main() {
   group('EntryDetailScreen', () {
@@ -76,18 +125,16 @@ void main() {
 
     testWidgets('should display tags and make them tappable', (WidgetTester tester) async {
       // Setup mock state
-      when(() => mockNotifier.state).thenReturn(
-        EntryDetailState.loaded(
-          entry: mockEntry,
-          comments: <MwComment>[],
-          hasMoreComments: false,
-          isLoadingComments: false,
-          adjacentEntries: null,
-        ),
+      mockNotifier.state = EntryDetailState.loaded(
+        entry: mockEntry,
+        comments: <MwComment>[],
+        hasMoreComments: false,
+        isLoadingComments: false,
+        adjacentEntries: null,
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Verify tags are displayed
       expect(find.text('#flutter'), findsOneWidget);
@@ -96,7 +143,7 @@ void main() {
 
       // Tap on a tag
       await tester.tap(find.text('#flutter'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Verify navigation occurred (this would need proper router setup in real test)
       // For now, we just verify the tap was registered
@@ -105,18 +152,16 @@ void main() {
 
     testWidgets('should display entry content correctly', (WidgetTester tester) async {
       // Setup mock state
-      when(() => mockNotifier.state).thenReturn(
-        EntryDetailState.loaded(
-          entry: mockEntry,
-          comments: <MwComment>[],
-          hasMoreComments: false,
-          isLoadingComments: false,
-          adjacentEntries: null,
-        ),
+      mockNotifier.state = EntryDetailState.loaded(
+        entry: mockEntry,
+        comments: <MwComment>[],
+        hasMoreComments: false,
+        isLoadingComments: false,
+        adjacentEntries: null,
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Verify entry content is displayed
       expect(find.text('Test Entry'), findsOneWidget);
@@ -126,26 +171,24 @@ void main() {
 
     testWidgets('should show loading state', (WidgetTester tester) async {
       // Setup loading state
-      when(() => mockNotifier.state).thenReturn(const EntryDetailState.loading());
+      mockNotifier.state = const EntryDetailState.loading();
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // Verify loading indicators are shown
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      // Verify skeleton loaders are shown (the actual implementation uses SkeletonLoader, not CircularProgressIndicator)
+      expect(find.byType(SkeletonLoader), findsWidgets);
     });
 
     testWidgets('should show error state', (WidgetTester tester) async {
       // Setup error state
-      when(() => mockNotifier.state).thenReturn(
-        const EntryDetailState.error(message: 'Something went wrong'),
-      );
+      mockNotifier.state = const EntryDetailState.error(message: 'Something went wrong');
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // Verify error message is displayed
-      expect(find.text('Something went wrong'), findsOneWidget);
+      // Verify error message is displayed (there are 2 widgets with "Something went wrong" - title and message)
+      expect(find.text('Something went wrong'), findsNWidgets(2));
       expect(find.text('Retry'), findsOneWidget);
     });
   });
