@@ -294,6 +294,7 @@ class _ChatContent extends StatelessWidget {
 
 
 
+
 /// Error screen widget for handling navigation errors.
 class _ErrorScreen extends StatelessWidget {
   const _ErrorScreen({

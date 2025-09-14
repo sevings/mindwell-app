@@ -13,6 +13,7 @@ import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
 import '../widgets/entry_context_menu.dart';
 import '../widgets/adjacent_entry_navigation.dart';
+import 'image_gallery_screen.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
 /// 
@@ -615,9 +616,21 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _openImageGallery(List<MwImage> images, int initialIndex) {
-    // TODO: Implement fullscreen image gallery
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Opening image gallery at index $initialIndex')),
+    final entryState = ref.read(entryDetailProvider(widget.entryId));
+    final entry = entryState.maybeWhen(
+      loaded: (entry, _, _, _, _) => entry,
+      orElse: () => null,
+    );
+    
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ImageGalleryScreen(
+          images: images,
+          initialIndex: initialIndex,
+          title: entry?.title,
+        ),
+        fullscreenDialog: true,
+      ),
     );
   }
 

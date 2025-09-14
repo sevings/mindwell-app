@@ -37,6 +37,7 @@ dependencies:
   # Image Handling
   cached_network_image: ^3.3.0
   image_picker: ^1.0.5
+  photo_view: ^0.15.0
   shimmer: ^3.0.0
 
   # HTML Rendering
