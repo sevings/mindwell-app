@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:built_collection/built_collection.dart';
 
-import '../../../../../lib/l10n/app_localizations.dart';
-import '../../../../../lib/src/features/profile/widgets/calendar_card.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/profile/widgets/calendar_card.dart';
 
 void main() {
   group('CalendarCard', () {
@@ -238,9 +238,6 @@ void main() {
     });
 
     testWidgets('should highlight today', (WidgetTester tester) async {
-      // Mock the current date to be January 15, 2024
-      final now = DateTime(2024, 1, 15);
-      
       await tester.pumpWidget(createTestWidget(calendarData: mockCalendar));
       await tester.pumpAndSettle();
       

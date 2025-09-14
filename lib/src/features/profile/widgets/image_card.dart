@@ -94,10 +94,10 @@ class ImageCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Calculate the number of rows needed (always 3 for 3x3 grid)
+        // Calculate the number of rows needed
         final crossAxisCount = 3;
         final itemCount = imagesToShow.length + (hasMoreImages ? 1 : 0);
-        final rowCount = 3; // Always 3 rows for consistent layout
+        final rowCount = (itemCount / crossAxisCount).ceil();
         
         return SizedBox(
           height: rowCount * 100.0 + (rowCount - 1) * 8.0, // 100px per item + 8px spacing
