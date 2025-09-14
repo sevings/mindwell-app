@@ -669,4 +669,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageNumber => 'Image';
+
+  @override
+  String get lastEntries => 'Last Entries';
+
+  @override
+  String get viewAllEntries => 'View All Entries';
+
+  @override
+  String get noEntries => 'No entries yet';
 }

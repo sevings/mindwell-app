@@ -830,7 +830,7 @@ abstract class AppLocalizations {
   /// **'Опубликовать'**
   String get publish;
 
-  /// Entry title field hint
+  /// Entry title accessibility label
   ///
   /// In ru, this message translates to:
   /// **'Заголовок записи'**
@@ -1399,6 +1399,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Изображение'**
   String get imageNumber;
+
+  /// Last entries section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Последние записи'**
+  String get lastEntries;
+
+  /// Button to view all entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать все записи'**
+  String get viewAllEntries;
+
+  /// Message when user has no entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет записей'**
+  String get noEntries;
 }
 
 class _AppLocalizationsDelegate

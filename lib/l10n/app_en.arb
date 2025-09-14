@@ -819,5 +819,21 @@
   "imageNumber": "Image",
   "@imageNumber": {
     "description": "Image number accessibility label"
+  },
+  "lastEntries": "Last Entries",
+  "@lastEntries": {
+    "description": "Last entries section title"
+  },
+  "viewAllEntries": "View All Entries",
+  "@viewAllEntries": {
+    "description": "Button to view all entries"
+  },
+  "noEntries": "No entries yet",
+  "@noEntries": {
+    "description": "Message when user has no entries"
+  },
+  "entryTitle": "Entry title",
+  "@entryTitle": {
+    "description": "Entry title accessibility label"
   }
 }

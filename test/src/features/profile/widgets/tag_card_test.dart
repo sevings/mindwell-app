@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/src/features/profile/widgets/tag_card.dart';
-import '../../../../../lib/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/profile/widgets/tag_card.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
 
 void main() {
   group('TagCard', () {

@@ -117,7 +117,7 @@ class TagCard extends StatelessWidget {
               color: theme.colorScheme.outline.withValues(alpha: 0.3),
               width: 1,
             ),
-            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

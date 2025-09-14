@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mindwell_api/mindwell_api.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../src/core/widgets/images/cached_image.dart';

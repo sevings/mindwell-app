@@ -677,4 +677,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get imageNumber => 'Изображение';
+
+  @override
+  String get lastEntries => 'Последние записи';
+
+  @override
+  String get viewAllEntries => 'Показать все записи';
+
+  @override
+  String get noEntries => 'Пока нет записей';
 }

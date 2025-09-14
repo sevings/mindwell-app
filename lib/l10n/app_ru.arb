@@ -852,5 +852,21 @@
   "imageNumber": "Изображение",
   "@imageNumber": {
     "description": "Image number accessibility label"
+  },
+  "lastEntries": "Последние записи",
+  "@lastEntries": {
+    "description": "Last entries section title"
+  },
+  "viewAllEntries": "Показать все записи",
+  "@viewAllEntries": {
+    "description": "Button to view all entries"
+  },
+  "noEntries": "Пока нет записей",
+  "@noEntries": {
+    "description": "Message when user has no entries"
+  },
+  "entryTitle": "Заголовок записи",
+  "@entryTitle": {
+    "description": "Entry title accessibility label"
   }
 }
