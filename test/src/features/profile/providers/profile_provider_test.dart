@@ -437,7 +437,7 @@ void main() {
         when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
             .thenAnswer((_) async => mockTlogResponse);
 
-        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'none'))
+        when(() => mockRelationsApi.relationsToNameDelete(name: 'testuser'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
 
         // First load the profile
@@ -447,7 +447,7 @@ void main() {
         await profileNotifier.unblockUser();
 
         // Assert
-        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'none')).called(1);
+        verify(() => mockRelationsApi.relationsToNameDelete(name: 'testuser')).called(1);
         verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
       });
     });
@@ -531,7 +531,7 @@ void main() {
         when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
             .thenAnswer((_) async => mockTlogResponse);
 
-        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
+        when(() => mockRelationsApi.relationsToNameDelete(name: 'testuser'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
 
         // First load the profile
@@ -541,7 +541,7 @@ void main() {
         await profileNotifier.unhideFromLive();
 
         // Assert
-        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed')).called(1);
+        verify(() => mockRelationsApi.relationsToNameDelete(name: 'testuser')).called(1);
         verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
       });
     });

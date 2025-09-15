@@ -289,7 +289,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       _logger.info('Unblocking user $_username');
       
       // Make API call to unblock user using RelationsApi
-      await _relationsApi.relationsToNamePut(name: _username, r: 'none');
+      await _relationsApi.relationsToNameDelete(name: _username);
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -369,7 +369,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       _logger.info('Unhiding user $_username from live');
       
       // Make API call to unhide user from live using RelationsApi
-      await _relationsApi.relationsToNamePut(name: _username, r: 'followed');
+      await _relationsApi.relationsToNameDelete(name: _username);
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -385,12 +385,12 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   /// Complain about the user.
   /// 
   /// This method makes an API call to report the user for inappropriate behavior.
-  Future<void> complain() async {
+  Future<void> complain({String? content}) async {
     try {
       _logger.info('Complaining about user $_username');
       
       // Make API call to complain about user using UsersApi
-      await _usersApi.usersNameComplainPost(name: _username);
+      await _usersApi.usersNameComplainPost(name: _username, content: content);
       
       _logger.info('Successfully complained about user $_username');
       

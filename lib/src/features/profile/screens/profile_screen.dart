@@ -10,6 +10,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_header_card.dart';
 import '../widgets/profile_edit_dialog.dart';
+import '../widgets/complain_dialog.dart';
 import '../widgets/info_card.dart';
 import '../widgets/badge_card.dart';
 import '../widgets/image_card.dart';
@@ -158,6 +159,7 @@ class ProfileScreen extends ConsumerWidget {
       final relations = user.relations;
       final isFollowing = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.followed;
       final isBlocked = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.ignored;
+      final isHiddenFromLive = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.hidden;
       final canMessage = relations?.isOpenForMe == true;
       final hasFollowRequest = relations?.toMe == MwProfileAllOfRelationsToMeEnum.requested;
 
@@ -208,7 +210,7 @@ class ProfileScreen extends ConsumerWidget {
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),
           onSelected: (value) => _handleMenuAction(context, value, ref),
-          itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked),
+          itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
         ),
       );
     }
@@ -221,6 +223,7 @@ class ProfileScreen extends ConsumerWidget {
     AppLocalizations? l10n,
     bool isFollowing,
     bool isBlocked,
+    bool isHiddenFromLive,
   ) {
     final items = <PopupMenuEntry<String>>[];
 
@@ -237,6 +240,21 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ));
     }
+
+    // Hide from Live / Unhide from Live
+    items.add(PopupMenuItem<String>(
+      value: isHiddenFromLive ? 'unhide_from_live' : 'hide_from_live',
+      child: Row(
+        children: [
+          Icon(
+            isHiddenFromLive ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Text(isHiddenFromLive ? (l10n?.unhideFromLive ?? 'Unhide from Live') : (l10n?.hideFromLive ?? 'Hide from Live')),
+        ],
+      ),
+    ));
 
     // Block / Unblock
     items.add(PopupMenuItem<String>(
@@ -266,9 +284,9 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           const Icon(Icons.report_outlined, size: 20, color: Colors.red),
           const SizedBox(width: 12),
-          const Text(
-            'Complain',
-            style: TextStyle(color: Colors.red),
+          Text(
+            l10n?.complain ?? 'Complain',
+            style: const TextStyle(color: Colors.red),
           ),
         ],
       ),
@@ -660,6 +678,12 @@ class ProfileScreen extends ConsumerWidget {
       case 'unfollow':
         _handleUnfollow(context, ref);
         break;
+      case 'hide_from_live':
+        ref.read(profileProvider(username).notifier).hideFromLive();
+        break;
+      case 'unhide_from_live':
+        ref.read(profileProvider(username).notifier).unhideFromLive();
+        break;
       case 'block':
         ref.read(profileProvider(username).notifier).blockUser();
         break;
@@ -667,9 +691,13 @@ class ProfileScreen extends ConsumerWidget {
         ref.read(profileProvider(username).notifier).unblockUser();
         break;
       case 'complain':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Complain functionality not yet implemented'),
+        showDialog(
+          context: context,
+          builder: (context) => ComplainDialog(
+            username: username,
+            onComplaintSubmitted: () {
+              // Optionally refresh profile data or show additional feedback
+            },
           ),
         );
         break;
