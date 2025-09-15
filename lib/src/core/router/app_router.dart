@@ -11,6 +11,8 @@ import '../../features/entries/screens/entry_editor_screen.dart';
 import '../../features/entries/models/feed_type.dart';
 import '../../features/comments/screens/comment_feed_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/profile/screens/user_list_screen.dart';
+import '../../features/profile/models/user_list_state.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -180,6 +182,16 @@ class AppRouter {
             },
           ),
           GoRoute(
+            path: '/users',
+            name: 'users',
+            builder: (context, state) {
+              return UserListScreen(
+                type: UserListType.users,
+                username: '', // Empty username for general user list
+              );
+            },
+          ),
+          GoRoute(
             path: '/users/:name',
             name: 'userProfile',
             builder: (context, state) {
@@ -193,6 +205,28 @@ class AppRouter {
             builder: (context, state) {
               final username = Uri.decodeComponent(state.pathParameters['name']!);
               return CommentFeedScreen(username: username);
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/followers',
+            name: 'userFollowers',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.followers,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/following',
+            name: 'userFollowing',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.following,
+                username: username,
+              );
             },
           ),
         ],
@@ -248,6 +282,16 @@ class AppRouter {
             },
           ),
           GoRoute(
+            path: '/users',
+            name: 'publicUsers',
+            builder: (context, state) {
+              return UserListScreen(
+                type: UserListType.users,
+                username: '', // Empty username for general user list
+              );
+            },
+          ),
+          GoRoute(
             path: '/users/:name',
             name: 'publicUserProfile',
             builder: (context, state) {
@@ -261,6 +305,28 @@ class AppRouter {
             builder: (context, state) {
               final username = Uri.decodeComponent(state.pathParameters['name']!);
               return CommentFeedScreen(username: username);
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/followers',
+            name: 'publicUserFollowers',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.followers,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/following',
+            name: 'publicUserFollowing',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.following,
+                username: username,
+              );
             },
           ),
         ],

@@ -264,6 +264,20 @@ class NavDrawer extends ConsumerWidget {
         
         const Divider(),
         
+        // Users section
+        _buildDrawerItem(
+          context: context,
+          icon: Icons.people_outline,
+          title: 'Users', // TODO: Add to localization
+          onTap: () {
+            Navigator.of(context).pop();
+            context.go('/users');
+          },
+          theme: theme,
+        ),
+        
+        const Divider(),
+        
         // Settings and support
         _buildDrawerItem(
           context: context,

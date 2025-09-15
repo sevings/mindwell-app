@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../src/core/widgets/buttons/button_size.dart';
@@ -99,6 +100,11 @@ class ProfileHeader extends ConsumerWidget {
                       children: [
                         // Avatar and basic info
                         _buildAvatarAndInfo(context, user, isCollapsed),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // User stats (followers/following)
+                        _buildUserStats(context, l10n, user),
                         
                         const SizedBox(height: 16),
                         
@@ -251,6 +257,121 @@ class ProfileHeader extends ConsumerWidget {
         color: colorScheme.onSurfaceVariant,
       ),
     );
+  }
+
+  /// Builds the user statistics section (followers/following)
+  Widget _buildUserStats(
+    BuildContext context,
+    AppLocalizations l10n,
+    MwProfile user,
+  ) {
+    final theme = Theme.of(context);
+    final counts = user.counts;
+
+    // Only show stats if we have count data
+    if (counts == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Followers count
+        if (counts.followers != null)
+          _buildStatItem(
+            context,
+            theme,
+            l10n,
+            counts.followers.toString(),
+            _getFollowersLabel(l10n, counts.followers!),
+            () => _navigateToFollowers(context, user.name),
+          ),
+        
+        // Following count
+        if (counts.followings != null) ...[
+          if (counts.followers != null)
+            const SizedBox(width: 32),
+          _buildStatItem(
+            context,
+            theme,
+            l10n,
+            counts.followings.toString(),
+            _getFollowingLabel(l10n, counts.followings!),
+            () => _navigateToFollowing(context, user.name),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Builds a single statistic item
+  Widget _buildStatItem(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+    String count,
+    String label,
+    VoidCallback onTap,
+  ) {
+    final colorScheme = theme.colorScheme;
+
+    return Semantics(
+      label: '$count $label',
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            children: [
+              Text(
+                count,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Gets the appropriate followers label based on count
+  String _getFollowersLabel(AppLocalizations l10n, int count) {
+    // For now, we'll use a simple approach
+    // In a real app, you might want to add proper pluralization
+    return count == 1 ? 'follower' : 'followers';
+  }
+
+  /// Gets the appropriate following label based on count
+  String _getFollowingLabel(AppLocalizations l10n, int count) {
+    // For now, we'll use a simple approach
+    // In a real app, you might want to add proper pluralization
+    return 'following';
+  }
+
+  /// Navigates to the user's followers list
+  void _navigateToFollowers(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(username)}/followers');
+    }
+  }
+
+  /// Navigates to the user's following list
+  void _navigateToFollowing(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(username)}/following');
+    }
   }
 
   /// Builds the action buttons
