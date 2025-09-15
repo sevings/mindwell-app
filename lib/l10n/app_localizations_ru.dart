@@ -761,4 +761,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get favorited => 'избранных';
+
+  @override
+  String get editProfile => 'Редактировать профиль';
+
+  @override
+  String get giveInvite => 'Дать приглашение';
+
+  @override
+  String get allowFollowRequest => 'Разрешить';
+
+  @override
+  String get denyFollowRequest => 'Отклонить';
+
+  @override
+  String get hideFromLive => 'Скрыть из ленты';
+
+  @override
+  String get unhideFromLive => 'Показать в ленте';
 }

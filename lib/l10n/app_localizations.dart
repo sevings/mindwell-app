@@ -1567,6 +1567,42 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'избранных'**
   String get favorited;
+
+  /// Edit profile button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать профиль'**
+  String get editProfile;
+
+  /// Give invite button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Дать приглашение'**
+  String get giveInvite;
+
+  /// Allow follow request button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить'**
+  String get allowFollowRequest;
+
+  /// Deny follow request button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Отклонить'**
+  String get denyFollowRequest;
+
+  /// Hide from live action text
+  ///
+  /// In ru, this message translates to:
+  /// **'Скрыть из ленты'**
+  String get hideFromLive;
+
+  /// Unhide from live action text
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать в ленте'**
+  String get unhideFromLive;
 }
 
 class _AppLocalizationsDelegate

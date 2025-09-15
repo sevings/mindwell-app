@@ -753,4 +753,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get favorited => 'favorited';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get giveInvite => 'Give Invite';
+
+  @override
+  String get allowFollowRequest => 'Allow';
+
+  @override
+  String get denyFollowRequest => 'Deny';
+
+  @override
+  String get hideFromLive => 'Hide from Live';
+
+  @override
+  String get unhideFromLive => 'Unhide from Live';
 }

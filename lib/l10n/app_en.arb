@@ -939,5 +939,29 @@
   "favorited": "favorited",
   "@favorited": {
     "description": "Favorited count label"
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "giveInvite": "Give Invite",
+  "@giveInvite": {
+    "description": "Give invite button text"
+  },
+  "allowFollowRequest": "Allow",
+  "@allowFollowRequest": {
+    "description": "Allow follow request button text"
+  },
+  "denyFollowRequest": "Deny",
+  "@denyFollowRequest": {
+    "description": "Deny follow request button text"
+  },
+  "hideFromLive": "Hide from Live",
+  "@hideFromLive": {
+    "description": "Hide from live action text"
+  },
+  "unhideFromLive": "Unhide from Live",
+  "@unhideFromLive": {
+    "description": "Unhide from live action text"
   }
 }

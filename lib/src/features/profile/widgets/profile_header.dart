@@ -8,6 +8,7 @@ import '../../../core/widgets/buttons/button_size.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/images/cached_image.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 
 /// A collapsible header widget for the user profile screen.
@@ -519,7 +520,127 @@ class ProfileHeader extends ConsumerWidget {
     final isBlocked = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.ignored;
     final canMessage = relations?.isOpenForMe == true;
     final isHiddenFromLive = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.hidden;
+    final hasFollowRequest = relations?.toMe == MwProfileAllOfRelationsToMeEnum.requested;
+    
+    // Get current user info to determine if this is own profile
+    final authState = ref.watch(authProvider);
+    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
 
+    if (isOwnProfile) {
+      // Own profile - show edit button
+      return _buildOwnProfileButtons(context, l10n, isCollapsed);
+    } else if (hasFollowRequest) {
+      // Has follow request - show Allow/Deny buttons
+      return _buildFollowRequestButtons(context, l10n, ref, isCollapsed);
+    } else {
+      // Other user's profile - show relationship buttons
+      return _buildOtherProfileButtons(
+        context, 
+        l10n, 
+        user, 
+        ref, 
+        isCollapsed, 
+        isFollowing, 
+        isBlocked, 
+        canMessage, 
+        isHiddenFromLive,
+      );
+    }
+  }
+
+  /// Builds action buttons for own profile
+  Widget _buildOwnProfileButtons(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isCollapsed,
+  ) {
+    if (isCollapsed) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => _handleEditProfile(context),
+            tooltip: l10n.editProfile,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          Expanded(
+            child: PrimaryButton(
+              text: l10n.editProfile,
+              onPressed: () => _handleEditProfile(context),
+              size: ButtonSize.small,
+              icon: Icons.edit_outlined,
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  /// Builds action buttons for follow request handling
+  Widget _buildFollowRequestButtons(
+    BuildContext context,
+    AppLocalizations l10n,
+    WidgetRef ref,
+    bool isCollapsed,
+  ) {
+    if (isCollapsed) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.check, color: Colors.green),
+            onPressed: () => _handleAllowFollowRequest(ref),
+            tooltip: l10n.allowFollowRequest,
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.red),
+            onPressed: () => _handleDenyFollowRequest(ref),
+            tooltip: l10n.denyFollowRequest,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          Expanded(
+            child: PrimaryButton(
+              text: l10n.allowFollowRequest,
+              onPressed: () => _handleAllowFollowRequest(ref),
+              size: ButtonSize.small,
+              icon: Icons.check,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SecondaryButton(
+              text: l10n.denyFollowRequest,
+              onPressed: () => _handleDenyFollowRequest(ref),
+              size: ButtonSize.small,
+              icon: Icons.close,
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  /// Builds action buttons for other user's profile
+  Widget _buildOtherProfileButtons(
+    BuildContext context,
+    AppLocalizations l10n,
+    MwProfile user,
+    WidgetRef ref,
+    bool isCollapsed,
+    bool isFollowing,
+    bool isBlocked,
+    bool canMessage,
+    bool isHiddenFromLive,
+  ) {
     if (isCollapsed) {
       // Compact layout when collapsed - show only essential buttons
       return Row(
@@ -547,6 +668,14 @@ class ProfileHeader extends ConsumerWidget {
               tooltip: l10n.messageUser,
             ),
           
+          // Give Invite button (if user can be invited)
+          if (_canGiveInvite(user))
+            IconButton(
+              icon: const Icon(Icons.card_giftcard_outlined),
+              onPressed: () => _handleGiveInvite(context, ref),
+              tooltip: l10n.giveInvite,
+            ),
+          
           // More options button (popup menu)
           PopupMenuButton<String>(
             icon: Icon(
@@ -560,55 +689,84 @@ class ProfileHeader extends ConsumerWidget {
       );
     } else {
       // Full layout when expanded
-      return Row(
-        children: [
-          // Follow/Unfollow button
-          if (!isBlocked) ...[
-            Expanded(
-              child: isFollowing
-                  ? SecondaryButton(
-                      text: l10n.unfollowUser,
-                      onPressed: () => _handleUnfollow(ref),
-                      size: ButtonSize.small,
-                    )
-                  : PrimaryButton(
-                      text: l10n.followUser,
-                      onPressed: () => _handleFollow(ref),
-                      size: ButtonSize.small,
-                    ),
+      final buttons = <Widget>[];
+      
+      // Follow/Unfollow button
+      if (!isBlocked) {
+        buttons.add(
+          Expanded(
+            child: isFollowing
+                ? SecondaryButton(
+                    text: l10n.unfollowUser,
+                    onPressed: () => _handleUnfollow(ref),
+                    size: ButtonSize.small,
+                  )
+                : PrimaryButton(
+                    text: l10n.followUser,
+                    onPressed: () => _handleFollow(ref),
+                    size: ButtonSize.small,
+                  ),
+          ),
+        );
+        buttons.add(const SizedBox(width: 12));
+      }
+      
+      // Message button
+      if (canMessage && !isBlocked) {
+        buttons.add(
+          Expanded(
+            child: SecondaryButton(
+              text: l10n.messageUser,
+              onPressed: () => _handleMessage(context, user),
+              size: ButtonSize.small,
+              icon: Icons.message_outlined,
             ),
-            const SizedBox(width: 12),
-          ],
-          
-          // Message button
-          if (canMessage && !isBlocked) ...[
-            Expanded(
-              child: SecondaryButton(
-                text: l10n.messageUser,
-                onPressed: () => _handleMessage(context, user),
-                size: ButtonSize.small,
-                icon: Icons.message_outlined,
-              ),
+          ),
+        );
+        buttons.add(const SizedBox(width: 12));
+      }
+      
+      // Give Invite button
+      if (_canGiveInvite(user)) {
+        buttons.add(
+          Expanded(
+            child: SecondaryButton(
+              text: l10n.giveInvite,
+              onPressed: () => _handleGiveInvite(context, ref),
+              size: ButtonSize.small,
+              icon: Icons.card_giftcard_outlined,
             ),
-            const SizedBox(width: 12),
-          ],
-          
-        // More options button (popup menu)
+          ),
+        );
+        buttons.add(const SizedBox(width: 12));
+      }
+      
+      // More options button (popup menu)
+      buttons.add(
         SizedBox(
           width: 48,
           height: 36,
           child: PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onSelected: (value) => _handleMenuAction(context, ref, value),
-              itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
+            onSelected: (value) => _handleMenuAction(context, ref, value),
+            itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
           ),
-        ],
+        ),
       );
+      
+      return Row(children: buttons);
     }
+  }
+
+  /// Determines if the current user can give an invite to this user
+  bool _canGiveInvite(MwProfile user) {
+    // TODO: Implement logic to check if current user has available invites
+    // and if the target user can receive invites
+    // For now, return false as this requires more complex logic
+    return false;
   }
 
   /// Builds the popup menu items
@@ -644,7 +802,7 @@ class ProfileHeader extends ConsumerWidget {
             size: 20,
           ),
           const SizedBox(width: 12),
-          Text(isHiddenFromLive ? 'Unhide from Live' : 'Hide from Live'),
+          Text(isHiddenFromLive ? l10n.unhideFromLive : l10n.hideFromLive),
         ],
       ),
     ));
@@ -883,6 +1041,36 @@ class ProfileHeader extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Complain functionality not yet implemented'),
+      ),
+    );
+  }
+
+  /// Handles edit profile action
+  void _handleEditProfile(BuildContext context) {
+    // TODO: Implement edit profile functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Edit profile functionality not yet implemented'),
+      ),
+    );
+  }
+
+  /// Handles allow follow request action
+  void _handleAllowFollowRequest(WidgetRef ref) {
+    ref.read(profileProvider(username).notifier).acceptFollowRequest();
+  }
+
+  /// Handles deny follow request action
+  void _handleDenyFollowRequest(WidgetRef ref) {
+    ref.read(profileProvider(username).notifier).denyFollowRequest();
+  }
+
+  /// Handles give invite action
+  void _handleGiveInvite(BuildContext context, WidgetRef ref) {
+    // TODO: Implement give invite functionality with invite code input
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Give invite functionality not yet implemented'),
       ),
     );
   }

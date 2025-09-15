@@ -972,5 +972,29 @@
   "favorited": "избранных",
   "@favorited": {
     "description": "Favorited count label"
+  },
+  "editProfile": "Редактировать профиль",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "giveInvite": "Дать приглашение",
+  "@giveInvite": {
+    "description": "Give invite button text"
+  },
+  "allowFollowRequest": "Разрешить",
+  "@allowFollowRequest": {
+    "description": "Allow follow request button text"
+  },
+  "denyFollowRequest": "Отклонить",
+  "@denyFollowRequest": {
+    "description": "Deny follow request button text"
+  },
+  "hideFromLive": "Скрыть из ленты",
+  "@hideFromLive": {
+    "description": "Hide from live action text"
+  },
+  "unhideFromLive": "Показать в ленте",
+  "@unhideFromLive": {
+    "description": "Unhide from live action text"
   }
 }
