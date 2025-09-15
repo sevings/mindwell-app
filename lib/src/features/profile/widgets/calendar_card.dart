@@ -12,6 +12,9 @@ class CalendarCard extends StatefulWidget {
   /// The calendar data containing entries
   final MwCalendar? calendarData;
 
+  /// The profile data to get registration date
+  final MwProfile? profile;
+
   /// Callback when an entry is tapped
   final void Function(MwCalendarEntry entry)? onEntryTap;
 
@@ -21,6 +24,7 @@ class CalendarCard extends StatefulWidget {
   const CalendarCard({
     super.key,
     this.calendarData,
+    this.profile,
     this.onEntryTap,
     this.onDayTap,
   });
@@ -51,25 +55,7 @@ class _CalendarCardState extends State<CalendarCard> {
 
   /// Gets the initial date to display in the calendar
   DateTime _getInitialDate() {
-    if (widget.calendarData?.entries?.isNotEmpty == true) {
-      // Find the earliest entry date
-      DateTime? earliestDate;
-      for (final entry in widget.calendarData!.entries!) {
-        if (entry.createdAt != null) {
-          final date = DateTime.fromMillisecondsSinceEpoch(
-            (entry.createdAt! * 1000).toInt(),
-          );
-          if (earliestDate == null || date.isBefore(earliestDate)) {
-            earliestDate = date;
-          }
-        }
-      }
-      if (earliestDate != null) {
-        return DateTime(earliestDate.year, earliestDate.month, 1);
-      }
-    }
-    
-    // Fallback to current month
+    // Always start with current month
     final now = DateTime.now();
     return DateTime(now.year, now.month, 1);
   }
@@ -126,188 +112,75 @@ class _CalendarCardState extends State<CalendarCard> {
   Widget _buildHeader(BuildContext context, ThemeData theme, AppLocalizations l10n) {
     return Row(
       children: [
-        Icon(
-          Icons.calendar_month_outlined,
-          color: theme.colorScheme.primary,
-          size: 20,
+        // Navigation buttons - positioned on the left
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Previous year button
+            IconButton(
+              onPressed: () => _navigateToPreviousYear(),
+              icon: const Icon(Icons.keyboard_double_arrow_left),
+              iconSize: 16,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
+            ),
+            
+            // Previous month button
+            IconButton(
+              onPressed: () => _navigateToPreviousMonth(),
+              icon: const Icon(Icons.keyboard_arrow_left),
+              iconSize: 16,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        Flexible(
+        
+        // Current month/year display - centered
+        Expanded(
           child: Text(
-            l10n.calendar,
+            _getMonthYearText(l10n),
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
-            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(width: 8),
         
-        // Navigation buttons - use Wrap to handle overflow gracefully
-        Flexible(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // If space is very limited, show only month navigation
-              if (constraints.maxWidth < 200) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Previous month button
-                    IconButton(
-                      onPressed: () => _navigateToPreviousMonth(),
-                      icon: const Icon(Icons.keyboard_arrow_left),
-                      iconSize: 14,
-                      padding: const EdgeInsets.all(2),
-                      constraints: const BoxConstraints(
-                        minWidth: 24,
-                        minHeight: 24,
-                      ),
-                    ),
-                    
-                    // Current month/year display
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                        child: Text(
-                          _getMonthYearText(l10n),
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    
-                    // Next month button
-                    IconButton(
-                      onPressed: () => _navigateToNextMonth(),
-                      icon: const Icon(Icons.keyboard_arrow_right),
-                      iconSize: 14,
-                      padding: const EdgeInsets.all(2),
-                      constraints: const BoxConstraints(
-                        minWidth: 24,
-                        minHeight: 24,
-                      ),
-                    ),
-                  ],
-                );
-              }
-              
-              // If space is limited, show month navigation only
-              if (constraints.maxWidth < 280) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Previous month button
-                    IconButton(
-                      onPressed: () => _navigateToPreviousMonth(),
-                      icon: const Icon(Icons.keyboard_arrow_left),
-                      iconSize: 14,
-                      padding: const EdgeInsets.all(2),
-                      constraints: const BoxConstraints(
-                        minWidth: 26,
-                        minHeight: 26,
-                      ),
-                    ),
-                    
-                    // Current month/year display
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Text(
-                          _getMonthYearText(l10n),
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    
-                    // Next month button
-                    IconButton(
-                      onPressed: () => _navigateToNextMonth(),
-                      icon: const Icon(Icons.keyboard_arrow_right),
-                      iconSize: 14,
-                      padding: const EdgeInsets.all(2),
-                      constraints: const BoxConstraints(
-                        minWidth: 26,
-                        minHeight: 26,
-                      ),
-                    ),
-                  ],
-                );
-              }
-              
-              // Full navigation for larger screens
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Previous year button
-                  IconButton(
-                    onPressed: () => _navigateToPreviousYear(),
-                    icon: const Icon(Icons.keyboard_double_arrow_left),
-                    iconSize: 14,
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                  ),
-                  
-                  // Previous month button
-                  IconButton(
-                    onPressed: () => _navigateToPreviousMonth(),
-                    icon: const Icon(Icons.keyboard_arrow_left),
-                    iconSize: 14,
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                  ),
-                  
-                  // Current month/year display
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Text(
-                        _getMonthYearText(l10n),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  
-                  // Next month button
-                  IconButton(
-                    onPressed: () => _navigateToNextMonth(),
-                    icon: const Icon(Icons.keyboard_arrow_right),
-                    iconSize: 14,
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                  ),
-                  
-                  // Next year button
-                  IconButton(
-                    onPressed: () => _navigateToNextYear(),
-                    icon: const Icon(Icons.keyboard_double_arrow_right),
-                    iconSize: 14,
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+        // Next navigation buttons - positioned on the right
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Next month button
+            IconButton(
+              onPressed: () => _navigateToNextMonth(),
+              icon: const Icon(Icons.keyboard_arrow_right),
+              iconSize: 16,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
+            ),
+            
+            // Next year button
+            IconButton(
+              onPressed: () => _navigateToNextYear(),
+              icon: const Icon(Icons.keyboard_double_arrow_right),
+              iconSize: 16,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -413,9 +286,8 @@ class _CalendarCardState extends State<CalendarCard> {
     return Semantics(
       label: _getDaySemanticLabel(date, entries),
       button: true,
-      child: InkWell(
-        onTap: () => _handleDayTap(date, entries),
-        borderRadius: BorderRadius.circular(4),
+      child: GestureDetector(
+        onTap: hasEntries ? () => _handleDayTap(date, entries) : null,
         child: Container(
           height: 32,
           margin: const EdgeInsets.symmetric(horizontal: 1),
@@ -575,7 +447,14 @@ class _CalendarCardState extends State<CalendarCard> {
   /// Gets the month/year text for the header
   String _getMonthYearText(AppLocalizations l10n) {
     final monthName = _getMonthName(_currentDate.month, l10n);
-    return '$monthName ${_currentDate.year}';
+    final currentYear = DateTime.now().year;
+    
+    // Only show year if it's not the current year
+    if (_currentDate.year == currentYear) {
+      return monthName;
+    } else {
+      return '$monthName ${_currentDate.year}';
+    }
   }
 
   /// Handles day tap events
@@ -584,18 +463,94 @@ class _CalendarCardState extends State<CalendarCard> {
     
     if (entries.length == 1) {
       // Single entry - navigate to entry detail
-      widget.onEntryTap?.call(entries.first);
+      final entry = entries.first;
+      if (widget.onEntryTap != null) {
+        widget.onEntryTap!(entry);
+      }
     } else {
-      // Multiple entries - show popup with entry list
-      widget.onDayTap?.call(entries, date);
+      // Multiple entries - call onDayTap callback if provided, otherwise show popup
+      if (widget.onDayTap != null) {
+        widget.onDayTap!(entries, date);
+      } else {
+        _showEntriesPopup(context, entries, date);
+      }
     }
+  }
+
+  /// Shows a popup with the list of entries for a specific day
+  void _showEntriesPopup(BuildContext context, List<MwCalendarEntry> entries, DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '${date.day} ${_getMonthName(date.month, l10n)} ${date.year}',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: SizedBox(
+          width: 300,
+          height: entries.length > 5 ? 300 : null,
+          child: ListView.builder(
+            shrinkWrap: entries.length <= 5,
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              final entry = entries[index];
+              return ListTile(
+                title: Text(
+                  entry.title ?? l10n.untitledEntry,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  widget.onEntryTap?.call(entry);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Gets the profile registration date
+  DateTime? _getRegistrationDate() {
+    if (widget.profile?.createdAt != null) {
+      return DateTime.fromMillisecondsSinceEpoch(
+        (widget.profile!.createdAt! * 1000).toInt(),
+      );
+    }
+    return null;
+  }
+
+  /// Checks if a date is before the registration date
+  bool _isBeforeRegistration(DateTime date) {
+    final registrationDate = _getRegistrationDate();
+    if (registrationDate == null) return false;
+    
+    final registrationMonth = DateTime(registrationDate.year, registrationDate.month, 1);
+    final targetMonth = DateTime(date.year, date.month, 1);
+    
+    return targetMonth.isBefore(registrationMonth);
   }
 
   /// Navigation methods
   void _navigateToPreviousMonth() {
-    setState(() {
-      _currentDate = DateTime(_currentDate.year, _currentDate.month - 1, 1);
-    });
+    final newDate = DateTime(_currentDate.year, _currentDate.month - 1, 1);
+    if (!_isBeforeRegistration(newDate)) {
+      setState(() {
+        _currentDate = newDate;
+      });
+    }
   }
 
   void _navigateToNextMonth() {
@@ -605,9 +560,20 @@ class _CalendarCardState extends State<CalendarCard> {
   }
 
   void _navigateToPreviousYear() {
-    setState(() {
-      _currentDate = DateTime(_currentDate.year - 1, _currentDate.month, 1);
-    });
+    final newDate = DateTime(_currentDate.year - 1, _currentDate.month, 1);
+    if (!_isBeforeRegistration(newDate)) {
+      setState(() {
+        _currentDate = newDate;
+      });
+    } else {
+      // If we can't go one year back, navigate to the registration date
+      final registrationDate = _getRegistrationDate();
+      if (registrationDate != null) {
+        setState(() {
+          _currentDate = DateTime(registrationDate.year, registrationDate.month, 1);
+        });
+      }
+    }
   }
 
   void _navigateToNextYear() {

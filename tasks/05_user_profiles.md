@@ -300,10 +300,26 @@ Build a reusable widget to display the user's activity in a calendar view.
 
 ### Implementation Details:
 1.  **Create `calendar_card.dart`:**
-    *   Create a widget that displays a month-by-month calendar of the user's activity.
-    *   Allow navigation between months and years.
-    *   Handle tapping on days to show entries.
-    *   The card will take the calendar data from the `ProfileState` as a parameter.
+    *   The widget will take calendar data from the `ProfileState` and the user's registration date as parameters.
+2.  **Header UI:**
+    *   Implement a header with navigation buttons: "previous year" (⏮️), "previous month" (◀️), "next month" (▶️), and "next year" (⏭️).
+    *   Display the current month and year, using localized month names. The year should only be shown if it is not the current year.
+3.  **Calendar Grid:**
+    *   Display a standard month grid.
+    *   For days with one entry, display the day number and a truncated title (8 chars + "...").
+    *   For days with multiple entries, display the day number and a count (e.g., "+3").
+    *   Style active days with a primary-colored background and white text.
+4.  **Navigation Logic:**
+    *   Implement logic for month and year navigation.
+    *   Disable navigation to dates before the user's registration date. Implement a fallback to the registration month if year navigation is blocked.
+5.  **Interaction Logic:**
+    *   On tapping a single-entry day, navigate to the `EntryDetailScreen`.
+    *   On tapping a multiple-entry day, show a popup dialog.
+6.  **Popup Dialog:**
+    *   Create a dialog with a constrained size (300px width, max 300px height).
+    *   The dialog should display a scrollable list of entries for the selected day.
+    *   Each item in the list should be tappable, navigating to the corresponding `EntryDetailScreen`.
+    *   Include a close button.
 
 ### Testing:
 *   **Widget Tests:**

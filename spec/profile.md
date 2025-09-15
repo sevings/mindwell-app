@@ -70,10 +70,15 @@ The content cards will be displayed in a responsive grid layout below the header
 
 *   **Calendar Card:** A calendar view of the user's activity.
     *   This card is only displayed if the user has at least one entry.
-    *   Displays a month-by-month calendar.
-    *   Buttons are provided to navigate one month and one year backward and forward.
-    *   If a day has only one entry, the beginning of the entry's title is displayed on the calendar. Tapping it opens the entry detail screen.
-    *   If a day has more than one entry, a count of entries is displayed. Tapping the day opens a popup list of the entry titles for that day.
+    *   **Header**: Contains navigation buttons (previous/next year: ⏮️/⏭️, previous/next month: ◀️/▶️) and a centered display for the current month and year (e.g., "September 2025" or "September" if the current year). Uses localized month names.
+    *   **Navigation Limits**: Navigation is disabled for dates before the user's registration date. If a year-level navigation is blocked, it falls back to the registration month.
+    *   **Day Cells**:
+        *   **Single Entry:** Displays the day number and a truncated entry title (e.g., "8: My First..."). Tapping navigates to the entry.
+        *   **Multiple Entries:** Displays the day number and an entry count (e.g., "12: +3"). Tapping opens a popup dialog.
+    *   **Entries Popup**:
+        *   A constrained dialog (300px width, max 300px height) with a scrollable list of entry titles for that day.
+        *   Each entry title is tappable and navigates to the entry's detail screen.
+        *   Includes a close button.
 
 ### 2.4. Loading State
 

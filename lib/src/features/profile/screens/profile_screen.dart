@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -153,7 +154,12 @@ class ProfileScreen extends ConsumerWidget {
           staggeredTiles.add(
             StaggeredGridTile.fit(
               crossAxisCellCount: 1,
-              child: CalendarCard(calendarData: calendarData),
+              child: CalendarCard(
+                calendarData: calendarData,
+                profile: user,
+                onEntryTap: (entry) => _navigateToEntry(context, entry),
+                onDayTap: (entries, date) => _showEntriesForDay(context, entries, date),
+              ),
             ),
           );
         }
@@ -331,5 +337,78 @@ class ProfileScreen extends ConsumerWidget {
         duration: const Duration(seconds: 1),
       ),
     );
+  }
+
+  /// Navigates to entry detail screen
+  void _navigateToEntry(BuildContext context, MwCalendarEntry entry) {
+    if (entry.id != null) {
+      context.push('/entries/${entry.id}');
+    }
+  }
+
+  /// Shows entries for a specific day
+  void _showEntriesForDay(BuildContext context, List<MwCalendarEntry> entries, DateTime date) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '${date.day} ${_getMonthName(date.month, l10n)} ${date.year}',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: SizedBox(
+          width: 300,
+          height: entries.length > 5 ? 300 : null,
+          child: ListView.builder(
+            shrinkWrap: entries.length <= 5,
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              final entry = entries[index];
+              return ListTile(
+                title: Text(
+                  entry.title ?? (l10n?.untitledEntry ?? 'Untitled'),
+                  style: theme.textTheme.bodyMedium,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _navigateToEntry(context, entry);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n?.close ?? 'Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Gets the month name in the current locale
+  String _getMonthName(int month, AppLocalizations? l10n) {
+    if (l10n == null) return '';
+    
+    switch (month) {
+      case 1: return l10n.january;
+      case 2: return l10n.february;
+      case 3: return l10n.march;
+      case 4: return l10n.april;
+      case 5: return l10n.may;
+      case 6: return l10n.june;
+      case 7: return l10n.july;
+      case 8: return l10n.august;
+      case 9: return l10n.september;
+      case 10: return l10n.october;
+      case 11: return l10n.november;
+      case 12: return l10n.december;
+      default: return '';
+    }
   }
 }
