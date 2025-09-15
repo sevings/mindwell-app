@@ -22,12 +22,16 @@ sealed class ProfileState with _$ProfileState {
   /// [images] List of images uploaded by the user.
   /// [tags] List of tags used by the user with their counts.
   /// [calendarData] Calendar data showing user activity over time.
+  /// [entries] List of user's entries for the tlog feed.
+  /// [hasMoreEntries] Whether there are more entries to load for pagination.
   const factory ProfileState.loaded({
     required MwProfile user,
     @Default([]) List<MwBadge> badges,
     @Default([]) List<MwImage> images,
     @Default([]) List<MwTagListDataInner> tags,
     MwCalendar? calendarData,
+    @Default([]) List<MwEntry> entries,
+    @Default(false) bool hasMoreEntries,
   }) = _Loaded;
 
   /// Error state when profile data fetching fails.

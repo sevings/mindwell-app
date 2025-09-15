@@ -51,6 +51,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final Logger _logger = Logger('ProfileNotifier');
   
   bool _isLoading = false;
+  String? _tlogNextAfter;
+  bool _isLoadingMoreTlog = false;
 
   ProfileNotifier({
     required String username,
@@ -97,6 +99,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         _usersApi.usersNameImagesGet(name: _username),
         _usersApi.usersNameTagsGet(name: _username),
         _usersApi.usersNameCalendarGet(name: _username),
+        _usersApi.usersNameTlogGet(name: _username, limit: 20),
       ]);
       
       final profileResponse = futures[0] as Response<MwProfile>;
@@ -104,6 +107,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       final imagesResponse = futures[2] as Response<MwImageList>;
       final tagsResponse = futures[3] as Response<MwTagList>;
       final calendarResponse = futures[4] as Response<MwCalendar>;
+      final tlogResponse = futures[5] as Response<MwFeed>;
       
       final profile = profileResponse.data;
       if (profile == null) {
@@ -117,9 +121,12 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       final images = imagesResponse.data?.data?.toList() ?? [];
       final tags = tagsResponse.data?.data?.toList() ?? [];
       final calendarData = calendarResponse.data;
+      final entries = tlogResponse.data?.entries?.toList() ?? [];
+      final hasMoreEntries = tlogResponse.data?.hasAfter ?? false;
+      _tlogNextAfter = tlogResponse.data?.nextAfter;
       
       _logger.info('Fetched profile data for user $_username');
-      _logger.info('Loaded ${badges.length} badges, ${images.length} images, ${tags.length} tags');
+      _logger.info('Loaded ${badges.length} badges, ${images.length} images, ${tags.length} tags, ${entries.length} entries');
       
       state = ProfileState.loaded(
         user: user,
@@ -127,6 +134,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       );
       
     } catch (e, stackTrace) {
@@ -148,12 +157,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -186,12 +197,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -224,12 +237,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -262,12 +277,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -300,12 +317,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -338,12 +357,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (user, badges, images, tags, calendarData) => (
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
         user: user,
         badges: badges,
         images: images,
         tags: tags,
         calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
       ),
       error: (message) => null,
     );
@@ -507,7 +528,68 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   /// This method clears the current state and fetches fresh data.
   Future<void> refresh() async {
     _logger.info('Refreshing profile data for user $_username');
+    _tlogNextAfter = null;
+    _isLoadingMoreTlog = false;
     await fetchProfileData();
+  }
+
+  /// Fetch the next page of tlog entries for infinite scrolling.
+  /// 
+  /// This method appends new entries to the existing list.
+  Future<void> fetchNextTlogPage() async {
+    if (_isLoadingMoreTlog || _tlogNextAfter == null) return;
+    
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => (
+        user: user,
+        badges: badges,
+        images: images,
+        tags: tags,
+        calendarData: calendarData,
+        entries: entries,
+        hasMoreEntries: hasMoreEntries,
+      ),
+      error: (message) => null,
+    );
+    
+    if (currentState == null || !currentState.hasMoreEntries) return;
+    
+    _isLoadingMoreTlog = true;
+    _logger.info('Fetching next tlog page for user $_username');
+    
+    try {
+      final response = await _usersApi.usersNameTlogGet(
+        name: _username,
+        limit: 20,
+        after: _tlogNextAfter,
+      );
+      
+      final feed = response.data;
+      if (feed != null) {
+        final newEntries = feed.entries?.toList() ?? [];
+        _tlogNextAfter = feed.nextAfter;
+        
+        final allEntries = [...currentState.entries, ...newEntries];
+        
+        _logger.info('Fetched ${newEntries.length} more tlog entries');
+        state = ProfileState.loaded(
+          user: currentState.user,
+          badges: currentState.badges,
+          images: currentState.images,
+          tags: currentState.tags,
+          calendarData: currentState.calendarData,
+          entries: allEntries,
+          hasMoreEntries: feed.hasAfter ?? false,
+        );
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to fetch next tlog page for user $_username', e, stackTrace);
+      // Don't change state on error - user can retry
+    } finally {
+      _isLoadingMoreTlog = false;
+    }
   }
 
   /// Update the user's avatar image.

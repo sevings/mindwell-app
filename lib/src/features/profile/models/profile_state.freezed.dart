@@ -25,7 +25,9 @@ mixin _$ProfileState {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)
         loaded,
     required TResult Function(String message) error,
   }) =>
@@ -39,7 +41,9 @@ mixin _$ProfileState {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)?
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult? Function(String message)? error,
   }) =>
@@ -48,8 +52,14 @@ mixin _$ProfileState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -145,7 +155,9 @@ class _$InitialImpl implements _Initial {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)
         loaded,
     required TResult Function(String message) error,
   }) {
@@ -162,7 +174,9 @@ class _$InitialImpl implements _Initial {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)?
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -174,8 +188,14 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -273,7 +293,9 @@ class _$LoadingImpl implements _Loading {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)
         loaded,
     required TResult Function(String message) error,
   }) {
@@ -290,7 +312,9 @@ class _$LoadingImpl implements _Loading {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)?
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -302,8 +326,14 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -367,7 +397,9 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       List<MwBadge> badges,
       List<MwImage> images,
       List<MwTagListDataInner> tags,
-      MwCalendar? calendarData});
+      MwCalendar? calendarData,
+      List<MwEntry> entries,
+      bool hasMoreEntries});
 }
 
 /// @nodoc
@@ -386,6 +418,8 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? images = null,
     Object? tags = null,
     Object? calendarData = freezed,
+    Object? entries = null,
+    Object? hasMoreEntries = null,
   }) {
     return _then(_$LoadedImpl(
       user: null == user
@@ -408,6 +442,14 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.calendarData
           : calendarData // ignore: cast_nullable_to_non_nullable
               as MwCalendar?,
+      entries: null == entries
+          ? _value._entries
+          : entries // ignore: cast_nullable_to_non_nullable
+              as List<MwEntry>,
+      hasMoreEntries: null == hasMoreEntries
+          ? _value.hasMoreEntries
+          : hasMoreEntries // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -420,10 +462,13 @@ class _$LoadedImpl implements _Loaded {
       final List<MwBadge> badges = const [],
       final List<MwImage> images = const [],
       final List<MwTagListDataInner> tags = const [],
-      this.calendarData})
+      this.calendarData,
+      final List<MwEntry> entries = const [],
+      this.hasMoreEntries = false})
       : _badges = badges,
         _images = images,
-        _tags = tags;
+        _tags = tags,
+        _entries = entries;
 
   @override
   final MwProfile user;
@@ -456,10 +501,22 @@ class _$LoadedImpl implements _Loaded {
 
   @override
   final MwCalendar? calendarData;
+  final List<MwEntry> _entries;
+  @override
+  @JsonKey()
+  List<MwEntry> get entries {
+    if (_entries is EqualUnmodifiableListView) return _entries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_entries);
+  }
+
+  @override
+  @JsonKey()
+  final bool hasMoreEntries;
 
   @override
   String toString() {
-    return 'ProfileState.loaded(user: $user, badges: $badges, images: $images, tags: $tags, calendarData: $calendarData)';
+    return 'ProfileState.loaded(user: $user, badges: $badges, images: $images, tags: $tags, calendarData: $calendarData, entries: $entries, hasMoreEntries: $hasMoreEntries)';
   }
 
   @override
@@ -472,7 +529,10 @@ class _$LoadedImpl implements _Loaded {
             const DeepCollectionEquality().equals(other._images, _images) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.calendarData, calendarData) ||
-                other.calendarData == calendarData));
+                other.calendarData == calendarData) &&
+            const DeepCollectionEquality().equals(other._entries, _entries) &&
+            (identical(other.hasMoreEntries, hasMoreEntries) ||
+                other.hasMoreEntries == hasMoreEntries));
   }
 
   @override
@@ -482,7 +542,9 @@ class _$LoadedImpl implements _Loaded {
       const DeepCollectionEquality().hash(_badges),
       const DeepCollectionEquality().hash(_images),
       const DeepCollectionEquality().hash(_tags),
-      calendarData);
+      calendarData,
+      const DeepCollectionEquality().hash(_entries),
+      hasMoreEntries);
 
   @JsonKey(ignore: true)
   @override
@@ -500,11 +562,14 @@ class _$LoadedImpl implements _Loaded {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)
         loaded,
     required TResult Function(String message) error,
   }) {
-    return loaded(user, badges, images, tags, calendarData);
+    return loaded(
+        user, badges, images, tags, calendarData, entries, hasMoreEntries);
   }
 
   @override
@@ -517,11 +582,14 @@ class _$LoadedImpl implements _Loaded {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)?
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult? Function(String message)? error,
   }) {
-    return loaded?.call(user, badges, images, tags, calendarData);
+    return loaded?.call(
+        user, badges, images, tags, calendarData, entries, hasMoreEntries);
   }
 
   @override
@@ -529,14 +597,21 @@ class _$LoadedImpl implements _Loaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(user, badges, images, tags, calendarData);
+      return loaded(
+          user, badges, images, tags, calendarData, entries, hasMoreEntries);
     }
     return orElse();
   }
@@ -585,13 +660,17 @@ abstract class _Loaded implements ProfileState {
       final List<MwBadge> badges,
       final List<MwImage> images,
       final List<MwTagListDataInner> tags,
-      final MwCalendar? calendarData}) = _$LoadedImpl;
+      final MwCalendar? calendarData,
+      final List<MwEntry> entries,
+      final bool hasMoreEntries}) = _$LoadedImpl;
 
   MwProfile get user;
   List<MwBadge> get badges;
   List<MwImage> get images;
   List<MwTagListDataInner> get tags;
   MwCalendar? get calendarData;
+  List<MwEntry> get entries;
+  bool get hasMoreEntries;
   @JsonKey(ignore: true)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -668,7 +747,9 @@ class _$ErrorImpl implements _Error {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)
         loaded,
     required TResult Function(String message) error,
   }) {
@@ -685,7 +766,9 @@ class _$ErrorImpl implements _Error {
             List<MwBadge> badges,
             List<MwImage> images,
             List<MwTagListDataInner> tags,
-            MwCalendar? calendarData)?
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -697,8 +780,14 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(MwProfile user, List<MwBadge> badges, List<MwImage> images,
-            List<MwTagListDataInner> tags, MwCalendar? calendarData)?
+    TResult Function(
+            MwProfile user,
+            List<MwBadge> badges,
+            List<MwImage> images,
+            List<MwTagListDataInner> tags,
+            MwCalendar? calendarData,
+            List<MwEntry> entries,
+            bool hasMoreEntries)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
