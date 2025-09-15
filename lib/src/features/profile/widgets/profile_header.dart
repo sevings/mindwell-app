@@ -12,6 +12,7 @@ import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
+import 'profile_edit_dialog.dart';
 
 /// A collapsible header widget for the user profile screen.
 /// 
@@ -1108,11 +1109,14 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
 
   /// Handles edit profile action
   void _handleEditProfile(BuildContext context) {
-    // TODO: Implement edit profile functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Edit profile functionality not yet implemented'),
-      ),
+    final profileState = ref.read(profileProvider(widget.username));
+    profileState.whenOrNull(
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
+        showDialog(
+          context: context,
+          builder: (context) => ProfileEditDialog(profile: user),
+        );
+      },
     );
   }
 

@@ -116,7 +116,7 @@ void main() {
       // Verify error screen is displayed
       expect(find.byType(Scaffold), findsWidgets);
       expect(find.byType(AppBar), findsOneWidget);
-      expect(find.text('Profile'), findsOneWidget);
+      expect(find.text('testuser'), findsOneWidget);
       expect(find.text('Something went wrong'), findsOneWidget);
       expect(find.text(errorMessage), findsOneWidget);
       expect(find.text('Try Again'), findsOneWidget);
@@ -397,7 +397,6 @@ class MockProfileNotifier extends ProfileNotifier {
     usersApi: MockUsersApi(), 
     relationsApi: MockRelationsApi(), 
     meApi: MockMeApi(),
-    imageUploadService: MockImageUploadService(),
   ) {
     state = initialState;
   }

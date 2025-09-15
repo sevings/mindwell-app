@@ -136,12 +136,6 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
                   ),
                 ),
               
-              // Action button in top right
-              Positioned(
-                top: 16,
-                right: 16,
-                child: _buildActionButton(context, user, ref),
-              ),
               
               // Tappable overlay for own profile cover
               if (isOwnProfile && user.cover != null)
@@ -172,66 +166,6 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     );
   }
 
-  /// Builds the action button in the top right
-  Widget _buildActionButton(BuildContext context, MwProfile user, WidgetRef ref) {
-    
-    // Get current user info to determine if this is own profile
-    final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.maybeWhen(
-      authenticated: (authUser) => authUser.id == user.id,
-      orElse: () => false,
-    );
-
-    if (isOwnProfile) {
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.orange,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.tune,
-            color: Colors.white,
-          ),
-          onPressed: () => _handleEditProfile(context),
-        ),
-      );
-    } else {
-      // For other users, show follow/unfollow or other actions
-      final relations = user.relations;
-      final isFollowing = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.followed;
-      
-      return Container(
-        decoration: BoxDecoration(
-          color: isFollowing ? Colors.grey[600] : Colors.orange,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: IconButton(
-          icon: Icon(
-            isFollowing ? Icons.person_remove : Icons.person_add,
-            color: Colors.white,
-          ),
-          onPressed: () => isFollowing 
-              ? _handleUnfollow(ref)
-              : _handleFollow(ref),
-        ),
-      );
-    }
-  }
 
   /// Builds the white section with avatar, name, status and stats
   Widget _buildWhiteSection(
@@ -719,23 +653,6 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     }
   }
 
-  // Action handlers (same as original)
-  void _handleFollow(WidgetRef ref) {
-    ref.read(profileProvider(widget.username).notifier).followUser();
-  }
-
-  void _handleUnfollow(WidgetRef ref) {
-    ref.read(profileProvider(widget.username).notifier).unfollowUser();
-  }
-
-  void _handleEditProfile(BuildContext context) {
-    // TODO: Implement edit profile functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Edit profile functionality not yet implemented'),
-      ),
-    );
-  }
 
   /// Handles avatar tap to change avatar image
   Future<void> _handleAvatarTap() async {

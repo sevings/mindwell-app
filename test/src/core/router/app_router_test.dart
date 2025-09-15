@@ -16,9 +16,7 @@ import 'package:mindwell/src/features/entries/screens/entry_feed_screen.dart';
 import 'package:mindwell/src/features/profile/screens/profile_screen.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
-import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell_api/mindwell_api.dart';
-import 'dart:io';
 
 /// Mock implementations for testing
 class _MockTokenStorageService implements TokenStorageService {
@@ -126,31 +124,6 @@ class _MockRelationsApi implements RelationsApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
-class _MockImageUploadService implements ImageUploadService {
-  @override
-  Future<MwImage?> uploadImage(File file, {void Function(double progress)? onProgress}) async {
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<List<MwImage?>> uploadImages(
-    List<File> files, {
-    void Function(double progress)? onProgress,
-    void Function(int imageIndex, double progress)? onImageProgress,
-  }) async {
-    throw UnimplementedError();
-  }
-  
-  @override
-  String getImageUrl(int imageId) {
-    throw UnimplementedError();
-  }
-  
-  @override
-  String getThumbnailUrl(int imageId) {
-    throw UnimplementedError();
-  }
-}
 
 /// Mock ProfileNotifier that doesn't make HTTP requests
 class _MockProfileNotifier extends ProfileNotifier {
@@ -159,7 +132,6 @@ class _MockProfileNotifier extends ProfileNotifier {
     usersApi: _MockUsersApi(), 
     relationsApi: _MockRelationsApi(), 
     meApi: _MockMeApi(),
-    imageUploadService: _MockImageUploadService(),
   ) {
     state = initialState;
   }

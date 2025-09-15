@@ -88,6 +88,9 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Add top margin to prevent title truncation
+            const SizedBox(height: 8),
+            
             // Display Name
             TextField(
               controller: _showNameController,
@@ -119,20 +122,16 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
                 labelText: l10n.gender,
                 border: const OutlineInputBorder(),
               ),
-              items: [
+              items: const [
                 DropdownMenuItem<String>(
-                  value: null,
-                  child: Text(l10n.gender),
-                ),
-                const DropdownMenuItem<String>(
                   value: 'male',
                   child: Text('Мужской'),
                 ),
-                const DropdownMenuItem<String>(
+                DropdownMenuItem<String>(
                   value: 'female',
                   child: Text('Женский'),
                 ),
-                const DropdownMenuItem<String>(
+                DropdownMenuItem<String>(
                   value: 'notSet',
                   child: Text('Не указан'),
                 ),
@@ -192,16 +191,16 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
                   child: Text('Все'),
                 ),
                 DropdownMenuItem<String>(
-                  value: 'followers',
-                  child: Text('Подписчики'),
+                  value: 'registered',
+                  child: Text('Зарегистрированные'),
                 ),
                 DropdownMenuItem<String>(
                   value: 'invited',
                   child: Text('Приглашенные'),
                 ),
                 DropdownMenuItem<String>(
-                  value: 'registered',
-                  child: Text('Зарегистрированные'),
+                  value: 'followers',
+                  child: Text('Подписчики'),
                 ),
               ],
               onChanged: _isLoading ? null : (value) {

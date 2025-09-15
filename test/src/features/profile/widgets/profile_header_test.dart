@@ -26,7 +26,6 @@ class MockProfileNotifier extends ProfileNotifier {
     usersApi: MockUsersApi(), 
     relationsApi: MockRelationsApi(), 
     meApi: MockMeApi(),
-    imageUploadService: MockImageUploadService(),
   ) {
     state = initialState;
   }
@@ -129,7 +128,7 @@ void main() {
       // Should show Card widget with profile content
       expect(find.byType(Card), findsOneWidget);
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.byIcon(Icons.tune), findsOneWidget); // Action button for own profile
+      expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget); // Avatar edit button for own profile
     });
 
     testWidgets('displays follow request buttons when user has requested to follow', (WidgetTester tester) async {

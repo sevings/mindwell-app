@@ -5,7 +5,6 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:dio/dio.dart';
 
 import '../../../core/api/api_provider.dart';
-import '../../../core/services/image_upload_service.dart';
 import '../models/profile_state.dart';
 
 /// Provider for the ProfileNotifier that manages the state of a specific user profile.
@@ -16,14 +15,12 @@ final profileProvider = StateNotifierProvider.family<ProfileNotifier, ProfileSta
     final usersApi = ref.read(usersApiProvider);
     final relationsApi = ref.read(relationsApiProvider);
     final meApi = ref.read(meApiProvider);
-    final imageUploadService = ref.read(imageUploadServiceProvider);
     
     return ProfileNotifier(
       username: username,
       usersApi: usersApi,
       relationsApi: relationsApi,
       meApi: meApi,
-      imageUploadService: imageUploadService,
     );
   },
 );
@@ -47,7 +44,6 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final UsersApi _usersApi;
   final RelationsApi _relationsApi;
   final MeApi _meApi;
-  final ImageUploadService _imageUploadService;
   final Logger _logger = Logger('ProfileNotifier');
   
   bool _isLoading = false;
@@ -59,12 +55,10 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     required UsersApi usersApi,
     required RelationsApi relationsApi,
     required MeApi meApi,
-    required ImageUploadService imageUploadService,
   })  : _username = username,
         _usersApi = usersApi,
         _relationsApi = relationsApi,
         _meApi = meApi,
-        _imageUploadService = imageUploadService,
         super(const ProfileState.initial()) {
     _initialize();
   }
@@ -595,9 +589,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   /// Update the user's avatar image.
   /// 
   /// This method:
-  /// 1. Uses ImageUploadService to upload the selected image
-  /// 2. Calls MeApi to update the user's avatar with the uploaded image
-  /// 3. Refreshes the profile data to update the UI
+  /// 1. Calls MeApi to update the user's avatar with the selected image
+  /// 2. Refreshes the profile data to update the UI
   /// 
   /// [imageFile] The image file to upload as avatar
   /// [onProgress] Optional callback for upload progress (0.0 to 1.0)
@@ -608,19 +601,15 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Updating avatar for user $_username');
       
-      // Upload the image first
-      final uploadedImage = await _imageUploadService.uploadImage(
-        imageFile,
-        onProgress: onProgress,
-      );
-      
-      if (uploadedImage == null) {
-        throw Exception('Failed to upload avatar image');
-      }
-      
       // Update the avatar using MeApi
       await _meApi.meAvatarPut(
         file: await MultipartFile.fromFile(imageFile.path),
+        onSendProgress: (sent, total) {
+          if (total > 0) {
+            final progress = sent / total;
+            onProgress?.call(progress);
+          }
+        },
       );
       
       // Refresh profile data to update the UI with new avatar
@@ -637,9 +626,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   /// Update the user's cover image.
   /// 
   /// This method:
-  /// 1. Uses ImageUploadService to upload the selected image
-  /// 2. Calls MeApi to update the user's cover with the uploaded image
-  /// 3. Refreshes the profile data to update the UI
+  /// 1. Calls MeApi to update the user's cover with the selected image
+  /// 2. Refreshes the profile data to update the UI
   /// 
   /// [imageFile] The image file to upload as cover
   /// [onProgress] Optional callback for upload progress (0.0 to 1.0)
@@ -650,19 +638,15 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Updating cover for user $_username');
       
-      // Upload the image first
-      final uploadedImage = await _imageUploadService.uploadImage(
-        imageFile,
-        onProgress: onProgress,
-      );
-      
-      if (uploadedImage == null) {
-        throw Exception('Failed to upload cover image');
-      }
-      
       // Update the cover using MeApi
       await _meApi.meCoverPut(
         file: await MultipartFile.fromFile(imageFile.path),
+        onSendProgress: (sent, total) {
+          if (total > 0) {
+            final progress = sent / total;
+            onProgress?.call(progress);
+          }
+        },
       );
       
       // Refresh profile data to update the UI with new cover
