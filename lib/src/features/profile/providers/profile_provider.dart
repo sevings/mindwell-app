@@ -13,11 +13,13 @@ final profileProvider = StateNotifierProvider.family<ProfileNotifier, ProfileSta
   (ref, username) {
     final usersApi = ref.read(usersApiProvider);
     final relationsApi = ref.read(relationsApiProvider);
+    final meApi = ref.read(meApiProvider);
     
     return ProfileNotifier(
       username: username,
       usersApi: usersApi,
       relationsApi: relationsApi,
+      meApi: meApi,
     );
   },
 );
@@ -33,12 +35,14 @@ final relationsApiProvider = Provider<RelationsApi>((ref) {
 /// This class handles:
 /// - Fetching user profile data from multiple API endpoints in parallel
 /// - Managing follow/unfollow/block actions
+/// - Updating profile information
 /// - Error handling and state management
 /// - Optimistic UI updates for user actions
 class ProfileNotifier extends StateNotifier<ProfileState> {
   final String _username;
   final UsersApi _usersApi;
   final RelationsApi _relationsApi;
+  final MeApi _meApi;
   final Logger _logger = Logger('ProfileNotifier');
   
   bool _isLoading = false;
@@ -47,9 +51,11 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     required String username,
     required UsersApi usersApi,
     required RelationsApi relationsApi,
+    required MeApi meApi,
   })  : _username = username,
         _usersApi = usersApi,
         _relationsApi = relationsApi,
+        _meApi = meApi,
         super(const ProfileState.initial()) {
     _initialize();
   }
@@ -429,6 +435,63 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     } catch (e, stackTrace) {
       _logger.severe('Failed to deny follow request from user $_username', e, stackTrace);
       // Don't change state on error - user can retry
+    }
+  }
+
+  /// Update profile information.
+  /// 
+  /// This method:
+  /// 1. Calls the MeApi to update the user's profile information
+  /// 2. Refreshes the profile data to update the UI
+  /// 
+  /// [showName] The display name for the user
+  /// [privacy] The privacy level for the profile
+  /// [chatPrivacy] The privacy level for chat
+  /// [gender] Optional gender information
+  /// [isDaylog] Whether the user is using daylog mode
+  /// [title] Optional title/bio for the profile
+  /// [birthday] Optional birthday information
+  /// [country] Optional country information
+  /// [city] Optional city information
+  /// [showInTops] Whether to show in top users lists
+  Future<void> updateProfileInfo({
+    required String showName,
+    required String privacy,
+    required String chatPrivacy,
+    String? gender,
+    bool? isDaylog,
+    String? title,
+    String? birthday,
+    String? country,
+    String? city,
+    bool? showInTops,
+  }) async {
+    try {
+      _logger.info('Updating profile information for user $_username');
+      
+      // Make API call to update profile using MeApi
+      await _meApi.mePut(
+        showName: showName,
+        privacy: privacy,
+        chatPrivacy: chatPrivacy,
+        gender: gender,
+        isDaylog: isDaylog,
+        title: title,
+        birthday: birthday,
+        country: country,
+        city: city,
+        showInTops: showInTops,
+      );
+      
+      // Refresh profile data to update the UI with new information
+      await fetchProfileData();
+      
+      _logger.info('Successfully updated profile information for user $_username');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to update profile information for user $_username', e, stackTrace);
+      // Don't change state on error - user can retry
+      rethrow; // Re-throw to allow UI to handle the error
     }
   }
 

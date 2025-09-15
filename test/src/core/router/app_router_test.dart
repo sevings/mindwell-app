@@ -126,7 +126,7 @@ class _MockRelationsApi implements RelationsApi {
 
 /// Mock ProfileNotifier that doesn't make HTTP requests
 class _MockProfileNotifier extends ProfileNotifier {
-  _MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: _MockUsersApi(), relationsApi: _MockRelationsApi()) {
+  _MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: _MockUsersApi(), relationsApi: _MockRelationsApi(), meApi: _MockMeApi()) {
     state = initialState;
   }
   

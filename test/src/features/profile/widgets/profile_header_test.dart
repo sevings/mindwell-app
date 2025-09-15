@@ -4,18 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/l10n/app_localizations.dart';
-import '../../../../../lib/src/core/providers/auth_provider.dart';
-import '../../../../../lib/src/features/profile/providers/profile_provider.dart';
-import '../../../../../lib/src/features/profile/widgets/profile_header.dart';
-import '../../../../../lib/src/features/profile/models/profile_state.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/core/providers/auth_provider.dart';
+import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
+import 'package:mindwell/src/features/profile/widgets/profile_header.dart';
+import 'package:mindwell/src/features/profile/models/profile_state.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
+class MockMeApi extends Mock implements MeApi {}
 
 class MockProfileNotifier extends ProfileNotifier {
-  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi()) {
+  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi(), meApi: MockMeApi()) {
     state = initialState;
   }
   

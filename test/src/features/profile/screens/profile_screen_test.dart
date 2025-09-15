@@ -23,6 +23,7 @@ import 'package:mindwell/l10n/app_localizations.dart';
 class MockUsersApi extends Mock implements UsersApi {}
 class MockMindwellApi extends Mock implements MindwellApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
+class MockMeApi extends Mock implements MeApi {}
 
 void main() {
   group('ProfileScreen', () {
@@ -345,7 +346,7 @@ void main() {
 
 /// Mock ProfileNotifier for testing
 class MockProfileNotifier extends ProfileNotifier {
-  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi()) {
+  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi(), meApi: MockMeApi()) {
     state = initialState;
   }
   

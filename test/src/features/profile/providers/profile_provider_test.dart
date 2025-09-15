@@ -10,12 +10,14 @@ import 'package:mindwell/src/features/profile/models/profile_state.dart';
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
+class MockMeApi extends Mock implements MeApi {}
 class MockResponse<T> extends Mock implements Response<T> {}
 
 void main() {
   group('ProfileNotifier', () {
     late MockUsersApi mockUsersApi;
     late MockRelationsApi mockRelationsApi;
+    late MockMeApi mockMeApi;
     late ProfileNotifier profileNotifier;
     late MockResponse<MwProfile> mockProfileResponse;
     late MockResponse<MwBadgeList> mockBadgesResponse;
@@ -26,6 +28,7 @@ void main() {
     setUp(() {
       mockUsersApi = MockUsersApi();
       mockRelationsApi = MockRelationsApi();
+      mockMeApi = MockMeApi();
       mockProfileResponse = MockResponse<MwProfile>();
       mockBadgesResponse = MockResponse<MwBadgeList>();
       mockImagesResponse = MockResponse<MwImageList>();
@@ -36,6 +39,7 @@ void main() {
         username: 'testuser',
         usersApi: mockUsersApi,
         relationsApi: mockRelationsApi,
+        meApi: mockMeApi,
       );
     });
 
@@ -801,6 +805,269 @@ void main() {
             expect(message, equals('Произошла неизвестная ошибка'));
           },
         );
+      });
+    });
+
+    group('updateProfileInfo', () {
+      test('should update profile information successfully and refresh data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Updated User'
+          ..isTheme = false
+          ..isOnline = true
+        );
+
+        final mockBadgeList = MwBadgeList((b) => b
+          ..data = ListBuilder<MwBadge>([])
+        );
+
+        final mockImageList = MwImageList((b) => b
+          ..data = ListBuilder<MwImage>([])
+        );
+
+        final mockTagList = MwTagList((b) => b
+          ..data = ListBuilder<MwTagListDataInner>([])
+        );
+
+        final mockCalendar = MwCalendar();
+
+        // Mock the mePut API call
+        when(() => mockMeApi.mePut(
+          showName: 'Updated User',
+          privacy: 'public',
+          chatPrivacy: 'public',
+          gender: 'male',
+          isDaylog: false,
+          title: 'Updated bio',
+          birthday: '1990-01-01',
+          country: 'Russia',
+          city: 'Moscow',
+          showInTops: true,
+        )).thenAnswer((_) async => MockResponse<MwProfile>());
+
+        // Mock the profile data fetching after update
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
+        when(() => mockImagesResponse.data).thenReturn(mockImageList);
+        when(() => mockTagsResponse.data).thenReturn(mockTagList);
+        when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+
+        // Act
+        await profileNotifier.updateProfileInfo(
+          showName: 'Updated User',
+          privacy: 'public',
+          chatPrivacy: 'public',
+          gender: 'male',
+          isDaylog: false,
+          title: 'Updated bio',
+          birthday: '1990-01-01',
+          country: 'Russia',
+          city: 'Moscow',
+          showInTops: true,
+        );
+
+        // Assert
+        verify(() => mockMeApi.mePut(
+          showName: 'Updated User',
+          privacy: 'public',
+          chatPrivacy: 'public',
+          gender: 'male',
+          isDaylog: false,
+          title: 'Updated bio',
+          birthday: '1990-01-01',
+          country: 'Russia',
+          city: 'Moscow',
+          showInTops: true,
+        )).called(1);
+
+        // Verify that profile data was refreshed after update
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+        verify(() => mockUsersApi.usersNameBadgesGet(name: 'testuser')).called(greaterThan(0));
+        verify(() => mockUsersApi.usersNameImagesGet(name: 'testuser')).called(greaterThan(0));
+        verify(() => mockUsersApi.usersNameTagsGet(name: 'testuser')).called(greaterThan(0));
+        verify(() => mockUsersApi.usersNameCalendarGet(name: 'testuser')).called(greaterThan(0));
+      });
+
+      test('should handle API error when updating profile information', () async {
+        // Arrange
+        // Mock the initial profile fetch that happens in constructor
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true
+        );
+
+        final mockBadgeList = MwBadgeList((b) => b
+          ..data = ListBuilder<MwBadge>([])
+        );
+
+        final mockImageList = MwImageList((b) => b
+          ..data = ListBuilder<MwImage>([])
+        );
+
+        final mockTagList = MwTagList((b) => b
+          ..data = ListBuilder<MwTagListDataInner>([])
+        );
+
+        final mockCalendar = MwCalendar();
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
+        when(() => mockImagesResponse.data).thenReturn(mockImageList);
+        when(() => mockTagsResponse.data).thenReturn(mockTagList);
+        when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+
+        // Wait for initial fetch to complete
+        await Future.delayed(Duration.zero);
+
+        // Now mock the mePut API call to throw an error
+        when(() => mockMeApi.mePut(
+          showName: 'Updated User',
+          privacy: 'public',
+          chatPrivacy: 'public',
+          gender: null,
+          isDaylog: null,
+          title: null,
+          birthday: null,
+          country: null,
+          city: null,
+          showInTops: null,
+        )).thenThrow(DioException(
+          requestOptions: RequestOptions(path: '/me'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/me'),
+            statusCode: 400,
+            data: {'error': 'Invalid data'},
+          ),
+        ));
+
+        // Act & Assert
+        expect(
+          () => profileNotifier.updateProfileInfo(
+            showName: 'Updated User',
+            privacy: 'public',
+            chatPrivacy: 'public',
+          ),
+          throwsA(isA<DioException>()),
+        );
+
+        // Verify that the API was called
+        verify(() => mockMeApi.mePut(
+          showName: 'Updated User',
+          privacy: 'public',
+          chatPrivacy: 'public',
+          gender: null,
+          isDaylog: null,
+          title: null,
+          birthday: null,
+          country: null,
+          city: null,
+          showInTops: null,
+        )).called(1);
+      });
+
+      test('should update profile with minimal required parameters', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Minimal User'
+          ..isTheme = false
+          ..isOnline = true
+        );
+
+        final mockBadgeList = MwBadgeList((b) => b
+          ..data = ListBuilder<MwBadge>([])
+        );
+
+        final mockImageList = MwImageList((b) => b
+          ..data = ListBuilder<MwImage>([])
+        );
+
+        final mockTagList = MwTagList((b) => b
+          ..data = ListBuilder<MwTagListDataInner>([])
+        );
+
+        final mockCalendar = MwCalendar();
+
+        // Mock the mePut API call with only required parameters
+        when(() => mockMeApi.mePut(
+          showName: 'Minimal User',
+          privacy: 'private',
+          chatPrivacy: 'private',
+          gender: null,
+          isDaylog: null,
+          title: null,
+          birthday: null,
+          country: null,
+          city: null,
+          showInTops: null,
+        )).thenAnswer((_) async => MockResponse<MwProfile>());
+
+        // Mock the profile data fetching after update
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
+        when(() => mockImagesResponse.data).thenReturn(mockImageList);
+        when(() => mockTagsResponse.data).thenReturn(mockTagList);
+        when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+
+        // Act
+        await profileNotifier.updateProfileInfo(
+          showName: 'Minimal User',
+          privacy: 'private',
+          chatPrivacy: 'private',
+        );
+
+        // Assert
+        verify(() => mockMeApi.mePut(
+          showName: 'Minimal User',
+          privacy: 'private',
+          chatPrivacy: 'private',
+          gender: null,
+          isDaylog: null,
+          title: null,
+          birthday: null,
+          country: null,
+          city: null,
+          showInTops: null,
+        )).called(1);
       });
     });
   });
