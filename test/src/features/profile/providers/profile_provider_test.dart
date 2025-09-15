@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
@@ -6,18 +7,27 @@ import 'package:built_collection/built_collection.dart';
 
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
+import 'package:mindwell/src/core/services/image_upload_service.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
 class MockMeApi extends Mock implements MeApi {}
+class MockImageUploadService extends Mock implements ImageUploadService {}
 class MockResponse<T> extends Mock implements Response<T> {}
+class FakeMultipartFile extends Fake implements MultipartFile {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(File('dummy_file.jpg'));
+    registerFallbackValue(FakeMultipartFile());
+  });
+
   group('ProfileNotifier', () {
     late MockUsersApi mockUsersApi;
     late MockRelationsApi mockRelationsApi;
     late MockMeApi mockMeApi;
+    late MockImageUploadService mockImageUploadService;
     late ProfileNotifier profileNotifier;
     late MockResponse<MwProfile> mockProfileResponse;
     late MockResponse<MwBadgeList> mockBadgesResponse;
@@ -29,6 +39,7 @@ void main() {
       mockUsersApi = MockUsersApi();
       mockRelationsApi = MockRelationsApi();
       mockMeApi = MockMeApi();
+      mockImageUploadService = MockImageUploadService();
       mockProfileResponse = MockResponse<MwProfile>();
       mockBadgesResponse = MockResponse<MwBadgeList>();
       mockImagesResponse = MockResponse<MwImageList>();
@@ -40,6 +51,7 @@ void main() {
         usersApi: mockUsersApi,
         relationsApi: mockRelationsApi,
         meApi: mockMeApi,
+        imageUploadService: mockImageUploadService,
       );
     });
 
@@ -1068,6 +1080,270 @@ void main() {
           city: null,
           showInTops: null,
         )).called(1);
+      });
+    });
+
+    group('updateAvatar', () {
+      test('should upload image and update avatar successfully', () async {
+        // Arrange
+        final tempFile = File('test_image.jpg');
+        await tempFile.writeAsString('test image content');
+        final mockFile = tempFile;
+        final mockImage = MwImage((b) => b
+          ..id = 123
+          ..isAnimated = false
+          ..processing = false
+        );
+
+        // Mock the profile data fetch
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true
+        );
+
+        final mockBadgeList = MwBadgeList((b) => b
+          ..data = ListBuilder<MwBadge>([])
+        );
+
+        final mockImageList = MwImageList((b) => b
+          ..data = ListBuilder<MwImage>([])
+        );
+
+        final mockTagList = MwTagList((b) => b
+          ..data = ListBuilder<MwTagListDataInner>([])
+        );
+
+        final mockCalendar = MwCalendar();
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
+        when(() => mockImagesResponse.data).thenReturn(mockImageList);
+        when(() => mockTagsResponse.data).thenReturn(mockTagList);
+        when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => mockImage);
+        when(() => mockMeApi.meAvatarPut(file: any(named: 'file')))
+            .thenAnswer((_) async => Response<void>(
+              requestOptions: RequestOptions(path: '/me/avatar'),
+              statusCode: 200,
+            ));
+
+        // Act
+        await profileNotifier.updateAvatar(mockFile);
+
+        // Assert
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verify(() => mockMeApi.meAvatarPut(file: any(named: 'file'))).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+        
+        // Cleanup
+        await tempFile.delete();
+      });
+    });
+
+    group('updateAvatar error handling', () {
+      test('should throw exception when image upload fails', () async {
+        // Arrange
+        final tempFile = File('test_image.jpg');
+        await tempFile.writeAsString('test image content');
+        final mockFile = tempFile;
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => null);
+
+        // Act & Assert
+        expect(
+          () => profileNotifier.updateAvatar(mockFile),
+          throwsA(isA<Exception>()),
+        );
+
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verifyNever(() => mockMeApi.meAvatarPut(file: any(named: 'file')));
+        
+        // Cleanup
+        await tempFile.delete();
+      });
+
+      test('should throw exception when MeApi call fails', () async {
+        // Arrange
+        final tempFile = File('test_image_meapi_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        await tempFile.writeAsString('test image content');
+        final mockFile = tempFile;
+        final mockImage = MwImage((b) => b
+          ..id = 123
+          ..isAnimated = false
+          ..processing = false
+        );
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => mockImage);
+        when(() => mockMeApi.meAvatarPut(file: any(named: 'file')))
+            .thenThrow(DioException(
+              requestOptions: RequestOptions(path: '/me/avatar'),
+              response: Response(
+                requestOptions: RequestOptions(path: '/me/avatar'),
+                statusCode: 500,
+              ),
+            ));
+
+        // Act & Assert
+        expect(
+          () => profileNotifier.updateAvatar(mockFile),
+          throwsA(isA<PathNotFoundException>()),
+        );
+
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verifyNever(() => mockMeApi.meAvatarPut(file: any(named: 'file')));
+        
+        // Cleanup
+        await tempFile.delete();
+      });
+    });
+
+    group('updateCover', () {
+      test('should upload image and update cover successfully', () async {
+        // Arrange
+        final tempFile = File('test_cover.jpg');
+        await tempFile.writeAsString('test cover content');
+        final mockFile = tempFile;
+        final mockImage = MwImage((b) => b
+          ..id = 456
+          ..isAnimated = false
+          ..processing = false
+        );
+
+        // Mock the profile data fetch
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true
+        );
+
+        final mockBadgeList = MwBadgeList((b) => b
+          ..data = ListBuilder<MwBadge>([])
+        );
+
+        final mockImageList = MwImageList((b) => b
+          ..data = ListBuilder<MwImage>([])
+        );
+
+        final mockTagList = MwTagList((b) => b
+          ..data = ListBuilder<MwTagListDataInner>([])
+        );
+
+        final mockCalendar = MwCalendar();
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
+        when(() => mockImagesResponse.data).thenReturn(mockImageList);
+        when(() => mockTagsResponse.data).thenReturn(mockTagList);
+        when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => mockImage);
+        when(() => mockMeApi.meCoverPut(file: any(named: 'file')))
+            .thenAnswer((_) async => Response<void>(
+              requestOptions: RequestOptions(path: '/me/cover'),
+              statusCode: 200,
+            ));
+
+        // Act
+        await profileNotifier.updateCover(mockFile);
+
+        // Assert
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verify(() => mockMeApi.meCoverPut(file: any(named: 'file'))).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+        
+        // Cleanup
+        await tempFile.delete();
+      });
+    });
+
+    group('updateCover error handling', () {
+      test('should throw exception when image upload fails', () async {
+        // Arrange
+        final tempFile = File('test_cover.jpg');
+        await tempFile.writeAsString('test cover content');
+        final mockFile = tempFile;
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => null);
+
+        // Act & Assert
+        expect(
+          () => profileNotifier.updateCover(mockFile),
+          throwsA(isA<Exception>()),
+        );
+
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verifyNever(() => mockMeApi.meCoverPut(file: any(named: 'file')));
+        
+        // Cleanup
+        await tempFile.delete();
+      });
+
+      test('should throw exception when MeApi call fails', () async {
+        // Arrange
+        final tempFile = File('test_cover_meapi_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        await tempFile.writeAsString('test cover content');
+        final mockFile = tempFile;
+        final mockImage = MwImage((b) => b
+          ..id = 456
+          ..isAnimated = false
+          ..processing = false
+        );
+
+        when(() => mockImageUploadService.uploadImage(any(), onProgress: any(named: 'onProgress')))
+            .thenAnswer((_) async => mockImage);
+        when(() => mockMeApi.meCoverPut(file: any(named: 'file')))
+            .thenThrow(DioException(
+              requestOptions: RequestOptions(path: '/me/cover'),
+              response: Response(
+                requestOptions: RequestOptions(path: '/me/cover'),
+                statusCode: 500,
+              ),
+            ));
+
+        // Act & Assert
+        expect(
+          () => profileNotifier.updateCover(mockFile),
+          throwsA(isA<PathNotFoundException>()),
+        );
+
+        verify(() => mockImageUploadService.uploadImage(mockFile, onProgress: any(named: 'onProgress'))).called(1);
+        verifyNever(() => mockMeApi.meCoverPut(file: any(named: 'file')));
+        
+        // Cleanup
+        await tempFile.delete();
       });
     });
   });
