@@ -977,6 +977,50 @@
   "@editProfile": {
     "description": "Edit profile button text"
   },
+  "save": "Сохранить",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Отмена",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "bio": "О себе",
+  "@bio": {
+    "description": "Bio field label"
+  },
+  "showName": "Отображаемое имя",
+  "@showName": {
+    "description": "Display name field label"
+  },
+  "country": "Страна",
+  "@country": {
+    "description": "Country field label"
+  },
+  "city": "Город",
+  "@city": {
+    "description": "City field label"
+  },
+  "birthday": "Дата рождения",
+  "@birthday": {
+    "description": "Birthday field label"
+  },
+  "privacy": "Приватность",
+  "@privacy": {
+    "description": "Privacy setting label"
+  },
+  "chatPrivacy": "Приватность чата",
+  "@chatPrivacy": {
+    "description": "Chat privacy setting label"
+  },
+  "showInTops": "Показывать в топах",
+  "@showInTops": {
+    "description": "Show in tops setting label"
+  },
+  "isDaylog": "Режим дневника",
+  "@isDaylog": {
+    "description": "Daylog mode setting label"
+  },
   "giveInvite": "Дать приглашение",
   "@giveInvite": {
     "description": "Give invite button text"

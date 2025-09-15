@@ -1250,7 +1250,7 @@ abstract class AppLocalizations {
   /// **'Анонимно'**
   String get anonymous;
 
-  /// No description provided for @privacy.
+  /// Privacy setting label
   ///
   /// In ru, this message translates to:
   /// **'Приватность'**
@@ -1573,6 +1573,66 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Редактировать профиль'**
   String get editProfile;
+
+  /// Save button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить'**
+  String get save;
+
+  /// Cancel button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмена'**
+  String get cancel;
+
+  /// Bio field label
+  ///
+  /// In ru, this message translates to:
+  /// **'О себе'**
+  String get bio;
+
+  /// Display name field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Отображаемое имя'**
+  String get showName;
+
+  /// Country field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Страна'**
+  String get country;
+
+  /// City field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Город'**
+  String get city;
+
+  /// Birthday field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Дата рождения'**
+  String get birthday;
+
+  /// Chat privacy setting label
+  ///
+  /// In ru, this message translates to:
+  /// **'Приватность чата'**
+  String get chatPrivacy;
+
+  /// Show in tops setting label
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать в топах'**
+  String get showInTops;
+
+  /// Daylog mode setting label
+  ///
+  /// In ru, this message translates to:
+  /// **'Режим дневника'**
+  String get isDaylog;
 
   /// Give invite button text
   ///

@@ -944,6 +944,50 @@
   "@editProfile": {
     "description": "Edit profile button text"
   },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "bio": "About",
+  "@bio": {
+    "description": "Bio field label"
+  },
+  "showName": "Display Name",
+  "@showName": {
+    "description": "Display name field label"
+  },
+  "country": "Country",
+  "@country": {
+    "description": "Country field label"
+  },
+  "city": "City",
+  "@city": {
+    "description": "City field label"
+  },
+  "birthday": "Birthday",
+  "@birthday": {
+    "description": "Birthday field label"
+  },
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy setting label"
+  },
+  "chatPrivacy": "Chat Privacy",
+  "@chatPrivacy": {
+    "description": "Chat privacy setting label"
+  },
+  "showInTops": "Show in Tops",
+  "@showInTops": {
+    "description": "Show in tops setting label"
+  },
+  "isDaylog": "Daylog Mode",
+  "@isDaylog": {
+    "description": "Daylog mode setting label"
+  },
   "giveInvite": "Give Invite",
   "@giveInvite": {
     "description": "Give invite button text"

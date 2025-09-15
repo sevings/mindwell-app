@@ -758,6 +758,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfile => 'Edit Profile';
 
   @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get bio => 'About';
+
+  @override
+  String get showName => 'Display Name';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get birthday => 'Birthday';
+
+  @override
+  String get chatPrivacy => 'Chat Privacy';
+
+  @override
+  String get showInTops => 'Show in Tops';
+
+  @override
+  String get isDaylog => 'Daylog Mode';
+
+  @override
   String get giveInvite => 'Give Invite';
 
   @override

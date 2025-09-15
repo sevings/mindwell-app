@@ -766,6 +766,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editProfile => 'Редактировать профиль';
 
   @override
+  String get save => 'Сохранить';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get bio => 'О себе';
+
+  @override
+  String get showName => 'Отображаемое имя';
+
+  @override
+  String get country => 'Страна';
+
+  @override
+  String get city => 'Город';
+
+  @override
+  String get birthday => 'Дата рождения';
+
+  @override
+  String get chatPrivacy => 'Приватность чата';
+
+  @override
+  String get showInTops => 'Показывать в топах';
+
+  @override
+  String get isDaylog => 'Режим дневника';
+
+  @override
   String get giveInvite => 'Дать приглашение';
 
   @override
