@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/buttons/button_size.dart';
@@ -16,7 +18,7 @@ import '../providers/profile_provider.dart';
 /// This widget displays the user's cover image, avatar, name, and action buttons.
 /// It's designed to be placed inside a SliverAppBar's flexibleSpace and will
 /// animate smoothly as the user scrolls.
-class ProfileHeader extends ConsumerWidget {
+class ProfileHeader extends ConsumerStatefulWidget {
   /// The username of the profile being displayed
   final String username;
 
@@ -26,8 +28,15 @@ class ProfileHeader extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileState = ref.watch(profileProvider(username));
+  ConsumerState<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
+  final ImagePicker _imagePicker = ImagePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(profileProvider(widget.username));
     final l10n = AppLocalizations.of(context);
     
     // Handle case where localizations are not available
@@ -72,7 +81,7 @@ class ProfileHeader extends ConsumerWidget {
           child: Stack(
             children: [
               // Cover image with parallax effect
-              if (user.cover != null) _buildCoverImage(user.cover!, isCollapsed),
+              if (user.cover != null) _buildCoverImage(user.cover!, isCollapsed, user, ref),
               
               // Content overlay with stronger gradient when collapsed
               Positioned.fill(
@@ -109,7 +118,7 @@ class ProfileHeader extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Avatar and basic info - smaller when collapsed
-                        _buildAvatarAndInfo(context, user, isCollapsed),
+                        _buildAvatarAndInfo(context, user, isCollapsed, ref),
                         
                         if (!isCollapsed) ...[
                           const SizedBox(height: 16),
@@ -135,22 +144,52 @@ class ProfileHeader extends ConsumerWidget {
   }
 
   /// Builds the cover image with parallax effect
-  Widget _buildCoverImage(MwCover cover, bool isCollapsed) {
+  Widget _buildCoverImage(MwCover cover, bool isCollapsed, MwProfile user, WidgetRef ref) {
+    // Check if this is the user's own profile
+    final authState = ref.watch(authProvider);
+    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    
     return Positioned.fill(
-      child: CachedImage(
-        imageUrl: cover.x1920 ?? cover.x318 ?? '',
-        fit: BoxFit.cover,
-        useSkeletonLoader: true,
-        errorWidget: Container(
-          color: Colors.grey[300],
-          child: const Center(
-            child: Icon(
-              Icons.image_not_supported_outlined,
-              size: 48,
-              color: Colors.grey,
+      child: Stack(
+        children: [
+          CachedImage(
+            imageUrl: cover.x1920 ?? cover.x318 ?? '',
+            fit: BoxFit.cover,
+            useSkeletonLoader: true,
+            errorWidget: Container(
+              color: Colors.grey[300],
+              child: const Center(
+                child: Icon(
+                  Icons.image_not_supported_outlined,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+              ),
             ),
           ),
-        ),
+          // Tappable overlay for own profile
+          if (isOwnProfile)
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _handleCoverImageTap(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.0),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -160,13 +199,18 @@ class ProfileHeader extends ConsumerWidget {
     BuildContext context,
     MwProfile user,
     bool isCollapsed,
+    WidgetRef ref,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    
+    // Check if this is the user's own profile
+    final authState = ref.watch(authProvider);
+    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
 
     return Row(
       children: [
-        // Avatar
+        // Avatar with tappable overlay for own profile
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -182,10 +226,38 @@ class ProfileHeader extends ConsumerWidget {
               ),
             ],
           ),
-          child: CachedAvatar(
-            imageUrl: user.avatar?.x124 ?? user.avatar?.x92 ?? user.avatar?.x42,
-            size: isCollapsed ? 60.0 : 80.0,
-            fallbackIcon: Icons.person,
+          child: Stack(
+            children: [
+              CachedAvatar(
+                imageUrl: user.avatar?.x124 ?? user.avatar?.x92 ?? user.avatar?.x42,
+                size: isCollapsed ? 60.0 : 80.0,
+                fallbackIcon: Icons.person,
+              ),
+              // Tappable overlay for own profile
+              if (isOwnProfile)
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _handleAvatarTap(),
+                      borderRadius: BorderRadius.circular(isCollapsed ? 30.0 : 40.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.0),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.white,
+                            size: isCollapsed ? 20.0 : 24.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         
@@ -997,22 +1069,22 @@ class ProfileHeader extends ConsumerWidget {
 
   /// Handles follow action
   void _handleFollow(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).followUser();
+    ref.read(profileProvider(widget.username).notifier).followUser();
   }
 
   /// Handles unfollow action
   void _handleUnfollow(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).unfollowUser();
+    ref.read(profileProvider(widget.username).notifier).unfollowUser();
   }
 
   /// Handles block action
   void _handleBlock(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).blockUser();
+    ref.read(profileProvider(widget.username).notifier).blockUser();
   }
 
   /// Handles unblock action
   void _handleUnblock(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).unblockUser();
+    ref.read(profileProvider(widget.username).notifier).unblockUser();
   }
 
   /// Handles message action
@@ -1027,12 +1099,12 @@ class ProfileHeader extends ConsumerWidget {
 
   /// Handles hide from live action
   void _handleHideFromLive(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).hideFromLive();
+    ref.read(profileProvider(widget.username).notifier).hideFromLive();
   }
 
   /// Handles unhide from live action
   void _handleUnhideFromLive(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).unhideFromLive();
+    ref.read(profileProvider(widget.username).notifier).unhideFromLive();
   }
 
   /// Handles complain action
@@ -1057,12 +1129,12 @@ class ProfileHeader extends ConsumerWidget {
 
   /// Handles allow follow request action
   void _handleAllowFollowRequest(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).acceptFollowRequest();
+    ref.read(profileProvider(widget.username).notifier).acceptFollowRequest();
   }
 
   /// Handles deny follow request action
   void _handleDenyFollowRequest(WidgetRef ref) {
-    ref.read(profileProvider(username).notifier).denyFollowRequest();
+    ref.read(profileProvider(widget.username).notifier).denyFollowRequest();
   }
 
   /// Handles give invite action
@@ -1073,5 +1145,73 @@ class ProfileHeader extends ConsumerWidget {
         content: Text('Give invite functionality not yet implemented'),
       ),
     );
+  }
+
+  /// Handles avatar tap to change avatar image
+  Future<void> _handleAvatarTap() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 512,
+        maxHeight: 512,
+      );
+      
+      if (pickedFile != null) {
+        final file = File(pickedFile.path);
+        await ref.read(profileProvider(widget.username).notifier).updateAvatar(file);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Avatar updated'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Error updating avatar'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Handles cover image tap to change cover image
+  Future<void> _handleCoverImageTap() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+      
+      if (pickedFile != null) {
+        final file = File(pickedFile.path);
+        await ref.read(profileProvider(widget.username).notifier).updateCover(file);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Cover updated'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Error updating cover'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 }

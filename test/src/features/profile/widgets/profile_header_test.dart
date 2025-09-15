@@ -6,6 +6,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 import 'package:mindwell/l10n/app_localizations.dart';
 import 'package:mindwell/src/core/providers/auth_provider.dart';
+import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/widgets/profile_header.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
@@ -14,9 +15,16 @@ import 'package:mindwell/src/features/profile/models/profile_state.dart';
 class MockUsersApi extends Mock implements UsersApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
 class MockMeApi extends Mock implements MeApi {}
+class MockImageUploadService extends Mock implements ImageUploadService {}
 
 class MockProfileNotifier extends ProfileNotifier {
-  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi(), meApi: MockMeApi()) {
+  MockProfileNotifier(ProfileState initialState) : super(
+    username: 'test', 
+    usersApi: MockUsersApi(), 
+    relationsApi: MockRelationsApi(), 
+    meApi: MockMeApi(),
+    imageUploadService: MockImageUploadService(),
+  ) {
     state = initialState;
   }
   
@@ -242,6 +250,75 @@ void main() {
       // Should show online indicator
       expect(find.byType(Container), findsWidgets);
       // The green dot for online status should be present
+    });
+
+    testWidgets('shows upload buttons on own profile', (WidgetTester tester) async {
+      final user = $MwProfile((b) => b
+        ..name = 'testuser'
+        ..showName = 'Test User'
+        ..isOnline = false);
+
+      await tester.pumpWidget(createTestWidget(
+        username: 'testuser',
+        profileState: ProfileState.loaded(
+          user: user,
+          badges: [],
+          images: [],
+          tags: [],
+          calendarData: null,
+        ),
+        authState: const AuthState(isAuthenticated: true, username: 'testuser'),
+      ));
+      await tester.pumpAndSettle();
+
+      // Should show camera icon for avatar upload (cover overlay only shows if cover exists)
+      expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget);
+    });
+
+    testWidgets('hides upload buttons on other users profile', (WidgetTester tester) async {
+      final user = $MwProfile((b) => b
+        ..name = 'testuser'
+        ..showName = 'Test User'
+        ..isOnline = false);
+
+      await tester.pumpWidget(createTestWidget(
+        username: 'testuser',
+        profileState: ProfileState.loaded(
+          user: user,
+          badges: [],
+          images: [],
+          tags: [],
+          calendarData: null,
+        ),
+        authState: const AuthState(isAuthenticated: true, username: 'otheruser'),
+      ));
+      await tester.pumpAndSettle();
+
+      // Should not show camera icons for other users' profiles
+      expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
+    });
+
+    testWidgets('shows upload buttons only when authenticated', (WidgetTester tester) async {
+      final user = $MwProfile((b) => b
+        ..name = 'testuser'
+        ..showName = 'Test User'
+        ..isOnline = false);
+
+      await tester.pumpWidget(createTestWidget(
+        username: 'testuser',
+        profileState: ProfileState.loaded(
+          user: user,
+          badges: [],
+          images: [],
+          tags: [],
+          calendarData: null,
+        ),
+        authState: const AuthState(isAuthenticated: false),
+      ));
+      await tester.pumpAndSettle();
+
+      // Should not show camera icons when not authenticated
+      expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
     });
   });
 }
