@@ -752,4 +752,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get untitledEntry => 'Запись без заголовка';
+
+  @override
+  String get followers => 'подписчиков';
+
+  @override
+  String get following => 'подписок';
+
+  @override
+  String get favorited => 'избранных';
 }

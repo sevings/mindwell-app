@@ -1549,6 +1549,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Запись без заголовка'**
   String get untitledEntry;
+
+  /// Followers count label
+  ///
+  /// In ru, this message translates to:
+  /// **'подписчиков'**
+  String get followers;
+
+  /// Following count label
+  ///
+  /// In ru, this message translates to:
+  /// **'подписок'**
+  String get following;
+
+  /// Favorited count label
+  ///
+  /// In ru, this message translates to:
+  /// **'избранных'**
+  String get favorited;
 }
 
 class _AppLocalizationsDelegate

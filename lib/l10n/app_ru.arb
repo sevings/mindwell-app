@@ -960,5 +960,17 @@
   "untitledEntry": "Запись без заголовка",
   "@untitledEntry": {
     "description": "Default title for entries without title"
+  },
+  "followers": "подписчиков",
+  "@followers": {
+    "description": "Followers count label"
+  },
+  "following": "подписок",
+  "@following": {
+    "description": "Following count label"
+  },
+  "favorited": "избранных",
+  "@favorited": {
+    "description": "Favorited count label"
   }
 }

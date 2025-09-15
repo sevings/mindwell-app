@@ -4,10 +4,10 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../../src/core/widgets/buttons/button_size.dart';
-import '../../../../src/core/widgets/buttons/primary_button.dart';
-import '../../../../src/core/widgets/buttons/secondary_button.dart';
-import '../../../../src/core/widgets/images/cached_image.dart';
+import '../../../core/widgets/buttons/button_size.dart';
+import '../../../core/widgets/buttons/primary_button.dart';
+import '../../../core/widgets/buttons/secondary_button.dart';
+import '../../../core/widgets/images/cached_image.dart';
 import '../providers/profile_provider.dart';
 
 /// A collapsible header widget for the user profile screen.
@@ -55,7 +55,7 @@ class ProfileHeader extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isCollapsed = constraints.maxHeight < 200;
+        final isCollapsed = constraints.maxHeight < 250;
         
         return Container(
           decoration: BoxDecoration(
@@ -63,27 +63,33 @@ class ProfileHeader extends ConsumerWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                colorScheme.surface,
-                colorScheme.surface.withValues(alpha: 0.8),
+                colorScheme.surface.withValues(alpha: 0.1),
+                colorScheme.surface.withValues(alpha: 0.9),
               ],
             ),
           ),
           child: Stack(
             children: [
-              // Cover image
-              if (user.cover != null) _buildCoverImage(user.cover!),
+              // Cover image with parallax effect
+              if (user.cover != null) _buildCoverImage(user.cover!, isCollapsed),
               
-              // Content overlay
+              // Content overlay with stronger gradient when collapsed
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        colorScheme.surface.withValues(alpha: 0.7),
-                      ],
+                      colors: isCollapsed
+                          ? [
+                              Colors.transparent,
+                              colorScheme.surface.withValues(alpha: 0.9),
+                            ]
+                          : [
+                              Colors.transparent,
+                              colorScheme.surface.withValues(alpha: 0.6),
+                              colorScheme.surface.withValues(alpha: 0.8),
+                            ],
                     ),
                   ),
                 ),
@@ -93,23 +99,28 @@ class ProfileHeader extends ConsumerWidget {
               Positioned.fill(
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: isCollapsed ? 8.0 : 16.0,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Avatar and basic info
+                        // Avatar and basic info - smaller when collapsed
                         _buildAvatarAndInfo(context, user, isCollapsed),
                         
-                        const SizedBox(height: 16),
+                        if (!isCollapsed) ...[
+                          const SizedBox(height: 16),
+                          
+                          // User stats - hide when collapsed
+                          _buildUserStats(context, l10n, user),
+                          
+                          const SizedBox(height: 16),
+                        ],
                         
-                        // User stats (followers/following)
-                        _buildUserStats(context, l10n, user),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Action buttons
-                        _buildActionButtons(context, l10n, user, ref),
+                        // Action buttons - always visible but smaller when collapsed
+                        _buildActionButtons(context, l10n, user, ref, isCollapsed),
                       ],
                     ),
                   ),
@@ -122,8 +133,8 @@ class ProfileHeader extends ConsumerWidget {
     );
   }
 
-  /// Builds the cover image
-  Widget _buildCoverImage(MwCover cover) {
+  /// Builds the cover image with parallax effect
+  Widget _buildCoverImage(MwCover cover, bool isCollapsed) {
     return Positioned.fill(
       child: CachedImage(
         imageUrl: cover.x1920 ?? cover.x318 ?? '',
@@ -259,7 +270,7 @@ class ProfileHeader extends ConsumerWidget {
     );
   }
 
-  /// Builds the user statistics section (followers/following)
+  /// Builds the user statistics section (entries, comments, favorited, followings, followers, invited)
   Widget _buildUserStats(
     BuildContext context,
     AppLocalizations l10n,
@@ -273,34 +284,120 @@ class ProfileHeader extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Followers count
-        if (counts.followers != null)
-          _buildStatItem(
-            context,
-            theme,
-            l10n,
-            counts.followers.toString(),
-            _getFollowersLabel(l10n, counts.followers!),
-            () => _navigateToFollowers(context, user.name),
-          ),
+    // Create a list of all available stats
+    final stats = <Widget>[];
+    
+    // Entries count
+    if (counts.entries != null && counts.entries! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.entries.toString(),
+        l10n.entries,
+        () => _navigateToEntries(context, user.name),
+      ));
+    }
+    
+    // Comments count
+    if (counts.comments != null && counts.comments! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.comments.toString(),
+        l10n.comments,
+        () => _navigateToComments(context, user.name),
+      ));
+    }
+    
+    // Favorites count
+    if (counts.favorites != null && counts.favorites! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.favorites.toString(),
+        l10n.favorited,
+        () => _navigateToFavorited(context, user.name),
+      ));
+    }
+    
+    // Following count
+    if (counts.followings != null && counts.followings! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.followings.toString(),
+        l10n.following,
+        () => _navigateToFollowing(context, user.name),
+      ));
+    }
+    
+    // Followers count
+    if (counts.followers != null && counts.followers! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.followers.toString(),
+        l10n.followers,
+        () => _navigateToFollowers(context, user.name),
+      ));
+    }
+    
+    // Invited count
+    if (counts.invited != null && counts.invited! > 0) {
+      stats.add(_buildStatItem(
+        context,
+        theme,
+        l10n,
+        counts.invited.toString(),
+        l10n.invited,
+        () => _navigateToInvited(context, user.name),
+      ));
+    }
+
+    if (stats.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Layout stats in rows based on screen width
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
         
-        // Following count
-        if (counts.followings != null) ...[
-          if (counts.followers != null)
-            const SizedBox(width: 32),
-          _buildStatItem(
-            context,
-            theme,
-            l10n,
-            counts.followings.toString(),
-            _getFollowingLabel(l10n, counts.followings!),
-            () => _navigateToFollowing(context, user.name),
-          ),
-        ],
-      ],
+        if (screenWidth < 540) {
+          // Single row for small screens
+          return Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 16,
+            runSpacing: 8,
+            children: stats,
+          );
+        } else {
+          // Two rows for larger screens
+          final firstRowStats = stats.take((stats.length / 2).ceil()).toList();
+          final secondRowStats = stats.skip((stats.length / 2).ceil()).toList();
+          
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: firstRowStats.expand((stat) => [stat, const SizedBox(width: 16)]).take(firstRowStats.length * 2 - 1).toList(),
+              ),
+              if (secondRowStats.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: secondRowStats.expand((stat) => [stat, const SizedBox(width: 16)]).take(secondRowStats.length * 2 - 1).toList(),
+                ),
+              ],
+            ],
+          );
+        }
+      },
     );
   }
 
@@ -346,18 +443,52 @@ class ProfileHeader extends ConsumerWidget {
     );
   }
 
-  /// Gets the appropriate followers label based on count
-  String _getFollowersLabel(AppLocalizations l10n, int count) {
-    // For now, we'll use a simple approach
-    // In a real app, you might want to add proper pluralization
-    return count == 1 ? 'follower' : 'followers';
+  /// Navigates to the user's entries list
+  void _navigateToEntries(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      // TODO: Navigate to user's entries feed
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Navigate to entries - not yet implemented'),
+        ),
+      );
+    }
   }
 
-  /// Gets the appropriate following label based on count
-  String _getFollowingLabel(AppLocalizations l10n, int count) {
-    // For now, we'll use a simple approach
-    // In a real app, you might want to add proper pluralization
-    return 'following';
+  /// Navigates to the user's comments list
+  void _navigateToComments(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      // TODO: Navigate to user's comments
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Navigate to comments - not yet implemented'),
+        ),
+      );
+    }
+  }
+
+  /// Navigates to the user's favorited entries list
+  void _navigateToFavorited(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      // TODO: Navigate to user's favorited entries
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Navigate to favorited - not yet implemented'),
+        ),
+      );
+    }
+  }
+
+  /// Navigates to the user's invited list
+  void _navigateToInvited(BuildContext context, String? username) {
+    if (username != null && username.isNotEmpty) {
+      // TODO: Navigate to user's invited users
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Navigate to invited - not yet implemented'),
+        ),
+      );
+    }
   }
 
   /// Navigates to the user's followers list
@@ -380,62 +511,205 @@ class ProfileHeader extends ConsumerWidget {
     AppLocalizations l10n,
     MwProfile user,
     WidgetRef ref,
+    bool isCollapsed,
   ) {
     // Determine which buttons to show based on user relationship
     final relations = user.relations;
     final isFollowing = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.followed;
     final isBlocked = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.ignored;
     final canMessage = relations?.isOpenForMe == true;
+    final isHiddenFromLive = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.hidden;
 
-    return Row(
-      children: [
-        // Follow/Unfollow button
-        if (!isBlocked) ...[
-          Expanded(
-            child: isFollowing
-                ? SecondaryButton(
-                    text: l10n.unfollowUser,
+    if (isCollapsed) {
+      // Compact layout when collapsed - show only essential buttons
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Follow/Unfollow button
+          if (!isBlocked)
+            isFollowing
+                ? IconButton(
+                    icon: const Icon(Icons.person_remove_outlined),
                     onPressed: () => _handleUnfollow(ref),
-                    size: ButtonSize.small,
+                    tooltip: l10n.unfollowUser,
                   )
-                : PrimaryButton(
-                    text: l10n.followUser,
+                : IconButton(
+                    icon: const Icon(Icons.person_add_outlined),
                     onPressed: () => _handleFollow(ref),
-                    size: ButtonSize.small,
+                    tooltip: l10n.followUser,
                   ),
-          ),
-          const SizedBox(width: 12),
-        ],
-        
-        // Message button
-        if (canMessage && !isBlocked) ...[
-          Expanded(
-            child: SecondaryButton(
-              text: l10n.messageUser,
+          
+          // Message button
+          if (canMessage && !isBlocked)
+            IconButton(
+              icon: const Icon(Icons.message_outlined),
               onPressed: () => _handleMessage(context, user),
-              size: ButtonSize.small,
-              icon: Icons.message_outlined,
+              tooltip: l10n.messageUser,
+            ),
+          
+          // More options button (popup menu)
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            onSelected: (value) => _handleMenuAction(context, ref, value),
+            itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
+          ),
+        ],
+      );
+    } else {
+      // Full layout when expanded
+      return Row(
+        children: [
+          // Follow/Unfollow button
+          if (!isBlocked) ...[
+            Expanded(
+              child: isFollowing
+                  ? SecondaryButton(
+                      text: l10n.unfollowUser,
+                      onPressed: () => _handleUnfollow(ref),
+                      size: ButtonSize.small,
+                    )
+                  : PrimaryButton(
+                      text: l10n.followUser,
+                      onPressed: () => _handleFollow(ref),
+                      size: ButtonSize.small,
+                    ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          
+          // Message button
+          if (canMessage && !isBlocked) ...[
+            Expanded(
+              child: SecondaryButton(
+                text: l10n.messageUser,
+                onPressed: () => _handleMessage(context, user),
+                size: ButtonSize.small,
+                icon: Icons.message_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          
+        // More options button (popup menu)
+        SizedBox(
+          width: 48,
+          height: 36,
+          child: PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onSelected: (value) => _handleMenuAction(context, ref, value),
+              itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
             ),
           ),
-          const SizedBox(width: 12),
         ],
-        
-        // Block/Unblock button
-        Expanded(
-          child: isBlocked
-              ? SecondaryButton(
-                  text: l10n.unblockUser,
-                  onPressed: () => _handleUnblock(ref),
-                  size: ButtonSize.small,
-                )
-              : SecondaryButton(
-                  text: l10n.blockUser,
-                  onPressed: () => _handleBlock(ref),
-                  size: ButtonSize.small,
-                ),
+      );
+    }
+  }
+
+  /// Builds the popup menu items
+  List<PopupMenuEntry<String>> _buildPopupMenuItems(
+    AppLocalizations l10n,
+    bool isFollowing,
+    bool isBlocked,
+    bool isHiddenFromLive,
+  ) {
+    final items = <PopupMenuEntry<String>>[];
+
+    // Unfollow option (only if following)
+    if (isFollowing) {
+      items.add(PopupMenuItem<String>(
+        value: 'unfollow',
+        child: Row(
+          children: [
+            const Icon(Icons.person_remove_outlined, size: 20),
+            const SizedBox(width: 12),
+            Text(l10n.unfollowUser),
+          ],
         ),
-      ],
-    );
+      ));
+    }
+
+    // Hide from Live / Unhide from Live
+    items.add(PopupMenuItem<String>(
+      value: isHiddenFromLive ? 'unhide_from_live' : 'hide_from_live',
+      child: Row(
+        children: [
+          Icon(
+            isHiddenFromLive ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Text(isHiddenFromLive ? 'Unhide from Live' : 'Hide from Live'),
+        ],
+      ),
+    ));
+
+    // Block / Unblock
+    items.add(PopupMenuItem<String>(
+      value: isBlocked ? 'unblock' : 'block',
+      child: Row(
+        children: [
+          Icon(
+            isBlocked ? Icons.lock_open_outlined : Icons.block_outlined,
+            size: 20,
+            color: isBlocked ? null : Colors.red,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            isBlocked ? l10n.unblockUser : l10n.blockUser,
+            style: TextStyle(
+              color: isBlocked ? null : Colors.red,
+            ),
+          ),
+        ],
+      ),
+    ));
+
+    // Complain option
+    items.add(PopupMenuItem<String>(
+      value: 'complain',
+      child: Row(
+        children: [
+          const Icon(Icons.report_outlined, size: 20, color: Colors.red),
+          const SizedBox(width: 12),
+          const Text(
+            'Complain',
+            style: TextStyle(color: Colors.red),
+          ),
+        ],
+      ),
+    ));
+
+    return items;
+  }
+
+  /// Handles popup menu actions
+  void _handleMenuAction(BuildContext context, WidgetRef ref, String action) {
+    switch (action) {
+      case 'unfollow':
+        _handleUnfollow(ref);
+        break;
+      case 'hide_from_live':
+        _handleHideFromLive(ref);
+        break;
+      case 'unhide_from_live':
+        _handleUnhideFromLive(ref);
+        break;
+      case 'block':
+        _handleBlock(ref);
+        break;
+      case 'unblock':
+        _handleUnblock(ref);
+        break;
+      case 'complain':
+        _handleComplain(context);
+        break;
+    }
   }
 
   /// Builds the loading state header
@@ -589,6 +863,26 @@ class ProfileHeader extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Message functionality not yet implemented'),
+      ),
+    );
+  }
+
+  /// Handles hide from live action
+  void _handleHideFromLive(WidgetRef ref) {
+    ref.read(profileProvider(username).notifier).hideFromLive();
+  }
+
+  /// Handles unhide from live action
+  void _handleUnhideFromLive(WidgetRef ref) {
+    ref.read(profileProvider(username).notifier).unhideFromLive();
+  }
+
+  /// Handles complain action
+  void _handleComplain(BuildContext context) {
+    // TODO: Implement complain functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Complain functionality not yet implemented'),
       ),
     );
   }

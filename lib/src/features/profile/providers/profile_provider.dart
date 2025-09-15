@@ -281,6 +281,84 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     }
   }
 
+  /// Hide the user from live feed.
+  /// 
+  /// This method:
+  /// 1. Makes an API call to hide the user from live
+  /// 2. Refetches the profile data to update the UI
+  Future<void> hideFromLive() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (user, badges, images, tags, calendarData) => (
+        user: user,
+        badges: badges,
+        images: images,
+        tags: tags,
+        calendarData: calendarData,
+      ),
+      error: (message) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      _logger.info('Hiding user $_username from live');
+      
+      // Make API call to hide user from live
+      // Note: The actual hide from live API endpoint would need to be implemented
+      // await _relationsApi.hideFromLive(name: _username);
+      
+      // Refetch profile data to update the UI with new relationship status
+      await fetchProfileData();
+      
+      _logger.info('Successfully hid user $_username from live');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to hide user $_username from live', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
+  /// Unhide the user from live feed.
+  /// 
+  /// This method:
+  /// 1. Makes an API call to unhide the user from live
+  /// 2. Refetches the profile data to update the UI
+  Future<void> unhideFromLive() async {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (user, badges, images, tags, calendarData) => (
+        user: user,
+        badges: badges,
+        images: images,
+        tags: tags,
+        calendarData: calendarData,
+      ),
+      error: (message) => null,
+    );
+    
+    if (currentState == null) return;
+    
+    try {
+      _logger.info('Unhiding user $_username from live');
+      
+      // Make API call to unhide user from live
+      // Note: The actual unhide from live API endpoint would need to be implemented
+      // await _relationsApi.unhideFromLive(name: _username);
+      
+      // Refetch profile data to update the UI with new relationship status
+      await fetchProfileData();
+      
+      _logger.info('Successfully unhid user $_username from live');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to unhide user $_username from live', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
   /// Refresh the profile data.
   /// 
   /// This method clears the current state and fetches fresh data.

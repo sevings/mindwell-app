@@ -927,5 +927,17 @@
   "untitledEntry": "Untitled entry",
   "@untitledEntry": {
     "description": "Default title for entries without title"
+  },
+  "followers": "followers",
+  "@followers": {
+    "description": "Followers count label"
+  },
+  "following": "following",
+  "@following": {
+    "description": "Following count label"
+  },
+  "favorited": "favorited",
+  "@favorited": {
+    "description": "Favorited count label"
   }
 }

@@ -744,4 +744,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get untitledEntry => 'Untitled entry';
+
+  @override
+  String get followers => 'followers';
+
+  @override
+  String get following => 'following';
+
+  @override
+  String get favorited => 'favorited';
 }
