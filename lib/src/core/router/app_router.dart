@@ -10,6 +10,7 @@ import '../../features/entries/screens/entry_detail_screen.dart';
 import '../../features/entries/screens/entry_editor_screen.dart';
 import '../../features/entries/models/feed_type.dart';
 import '../../features/comments/screens/comment_feed_screen.dart';
+import '../../features/profile/screens/profile_screen.dart';
 
 /// Application router configuration using GoRouter.
 /// 
@@ -85,7 +86,19 @@ class AppRouter {
           GoRoute(
             path: '/profile',
             name: 'profile',
-            builder: (context, state) => const _ProfileContent(),
+            builder: (context, state) {
+              // Get current user from auth state
+              final container = ProviderScope.containerOf(context);
+              final authState = container.read(authProvider);
+              
+              return authState.when(
+                authenticated: (user) => ProfileScreen(username: user.name ?? ''),
+                initial: () => const _ProfileContent(),
+                loading: () => const _ProfileContent(),
+                unauthenticated: () => const _ProfileContent(),
+                error: (message) => const _ProfileContent(),
+              );
+            },
           ),
           GoRoute(
             path: '/notifications',
@@ -167,6 +180,14 @@ class AppRouter {
             },
           ),
           GoRoute(
+            path: '/users/:name',
+            name: 'userProfile',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return ProfileScreen(username: username);
+            },
+          ),
+          GoRoute(
             path: '/users/:name/comments',
             name: 'userComments',
             builder: (context, state) {
@@ -224,6 +245,14 @@ class AppRouter {
                 feedType: FeedType.live,
                 tagFilter: tagName,
               );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name',
+            name: 'publicUserProfile',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return ProfileScreen(username: username);
             },
           ),
           GoRoute(
