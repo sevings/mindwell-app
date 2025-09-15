@@ -22,7 +22,15 @@ The Profile screen is a dynamic and responsive screen that showcases a user's pe
     *   The layout of the counts adapts to the screen width, appearing in one or two rows.
     *   Tapping on a count navigates to the relevant screen (e.g., tapping "Followers" opens the list of followers).
 
-### 2.2. Content Cards
+### 2.2. Profile Editing
+
+When viewing their own profile, the user will have an "Edit Profile" button. Tapping this button will open a dialog or a dedicated screen with the following options:
+
+*   **Change Avatar:** Opens an image picker to select and upload a new avatar image.
+*   **Change Cover:** Opens an image picker to select and upload a new cover image.
+*   **Edit Information:** Allows editing of text-based profile information, such as the user's bio.
+
+### 2.3. Content Cards
 
 The content cards will be displayed in a responsive grid layout below the header. Each card will be a reusable widget.
 
@@ -63,7 +71,7 @@ The content cards will be displayed in a responsive grid layout below the header
     *   If a day has only one entry, the beginning of the entry's title is displayed on the calendar. Tapping it opens the entry detail screen.
     *   If a day has more than one entry, a count of entries is displayed. Tapping the day opens a popup list of the entry titles for that day.
 
-### 2.3. Loading State
+### 2.4. Loading State
 
 A shimmer effect will be used to indicate that the profile data is loading, with placeholders for each card.
 
