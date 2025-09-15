@@ -34,6 +34,7 @@ void main() {
     late MockResponse<MwImageList> mockImagesResponse;
     late MockResponse<MwTagList> mockTagsResponse;
     late MockResponse<MwCalendar> mockCalendarResponse;
+    late MockResponse<MwFeed> mockTlogResponse;
 
     setUp(() {
       mockUsersApi = MockUsersApi();
@@ -45,6 +46,7 @@ void main() {
       mockImagesResponse = MockResponse<MwImageList>();
       mockTagsResponse = MockResponse<MwTagList>();
       mockCalendarResponse = MockResponse<MwCalendar>();
+      mockTlogResponse = MockResponse<MwFeed>();
 
       profileNotifier = ProfileNotifier(
         username: 'testuser',
@@ -79,12 +81,18 @@ void main() {
         );
 
         final mockCalendar = MwCalendar();
+        
+        final mockFeed = MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        );
 
         when(() => mockProfileResponse.data).thenReturn(mockProfile);
         when(() => mockBadgesResponse.data).thenReturn(mockBadgeList);
         when(() => mockImagesResponse.data).thenReturn(mockImageList);
         when(() => mockTagsResponse.data).thenReturn(mockTagList);
         when(() => mockCalendarResponse.data).thenReturn(mockCalendar);
+        when(() => mockTlogResponse.data).thenReturn(mockFeed);
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -96,6 +104,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         // Act
         await profileNotifier.fetchProfileData();
@@ -105,9 +115,11 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (user, badges, images, tags, calendarData) {
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
             expect(user.name, equals('testuser'));
             expect(user.showName, equals('Test User'));
+            expect(entries, isEmpty);
+            expect(hasMoreEntries, false);
             expect(badges, isEmpty);
             expect(images, isEmpty);
             expect(tags, isEmpty);
@@ -143,7 +155,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Пользователь не найден'));
           },
@@ -164,7 +176,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, contains('Произошла неизвестная ошибка'));
           },
@@ -216,6 +228,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -227,6 +243,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -255,6 +273,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -266,6 +288,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
             .thenThrow(DioException(
@@ -303,6 +327,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -314,6 +342,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNameDelete(name: 'testuser'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -344,6 +374,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -355,6 +389,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'ignored'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -385,6 +421,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -396,6 +436,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'none'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -426,6 +468,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -437,6 +483,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'hidden'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -467,6 +515,10 @@ void main() {
         when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
         when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
         when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+        when(() => mockTlogResponse.data).thenReturn(MwFeed((b) => b
+          ..entries = ListBuilder<MwEntry>([])
+          ..hasAfter = false
+        ));
 
         when(() => mockUsersApi.usersNameGet(name: 'testuser'))
             .thenAnswer((_) async => mockProfileResponse);
@@ -478,6 +530,8 @@ void main() {
             .thenAnswer((_) async => mockTagsResponse);
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
+        when(() => mockUsersApi.usersNameTlogGet(name: 'testuser', limit: 20))
+            .thenAnswer((_) async => mockTlogResponse);
 
         when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
             .thenAnswer((_) async => MockResponse<MwRelationship>());
@@ -699,7 +753,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Пользователь не найден'));
           },
@@ -724,7 +778,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Нет доступа к профилю пользователя'));
           },
@@ -749,7 +803,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Слишком много запросов. Попробуйте позже'));
           },
@@ -774,7 +828,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Произошла ошибка сети. Проверьте подключение к интернету'));
           },
@@ -793,7 +847,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Exception: Test exception'));
           },
@@ -812,7 +866,7 @@ void main() {
         profileNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
           error: (message) {
             expect(message, equals('Произошла неизвестная ошибка'));
           },

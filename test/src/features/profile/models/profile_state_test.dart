@@ -100,12 +100,14 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(user, mockUser);
           expect(badges, isEmpty);
           expect(images, isEmpty);
           expect(tags, isEmpty);
           expect(calendarData, isNull);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -123,12 +125,14 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(user, mockUser);
           expect(badges, [mockBadge]);
           expect(images, [mockImage]);
           expect(tags, [mockTag]);
           expect(calendarData, mockCalendar);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -145,12 +149,14 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(user, mockUser);
           expect(badges, [mockBadge]);
           expect(images, [mockImage]);
           expect(tags, isEmpty);
           expect(calendarData, isNull);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -164,7 +170,7 @@ void main() {
       state.when(
         initial: () => fail('Expected error state'),
         loading: () => fail('Expected error state'),
-        loaded: (user, badges, images, tags, calendarData) => fail('Expected error state'),
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => fail('Expected error state'),
         error: (message) {
           expect(message, 'Failed to load profile');
         },
@@ -193,7 +199,7 @@ void main() {
         loadingState.when(
           initial: () => 'initial',
           loading: () => 'loading',
-          loaded: (user, badges, images, tags, calendarData) => 'loaded',
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 'loaded',
           error: (message) => 'error',
         ),
         'loading',
@@ -203,7 +209,7 @@ void main() {
         errorState.when(
           initial: () => 'initial',
           loading: () => 'loading',
-          loaded: (user, badges, images, tags, calendarData) => 'loaded',
+          loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 'loaded',
           error: (message) => 'error',
         ),
         'error',
@@ -255,9 +261,11 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(badges, hasLength(2));
           expect(badges, [mockBadge, badge2]);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -299,9 +307,11 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(images, hasLength(2));
           expect(images, [mockImage, image2]);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -321,9 +331,11 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(tags, hasLength(2));
           expect(tags, [mockTag, tag2]);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );
@@ -338,10 +350,12 @@ void main() {
       state.when(
         initial: () => fail('Expected loaded state'),
         loading: () => fail('Expected loaded state'),
-        loaded: (user, badges, images, tags, calendarData) {
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) {
           expect(calendarData, mockCalendar);
           expect(calendarData?.entries, isNotNull);
           expect(calendarData?.entries?.length, 1);
+          expect(entries, isEmpty);
+          expect(hasMoreEntries, false);
         },
         error: (message) => fail('Expected loaded state'),
       );

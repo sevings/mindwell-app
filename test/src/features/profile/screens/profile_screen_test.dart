@@ -16,6 +16,7 @@ import 'package:mindwell/src/features/profile/widgets/tag_card.dart';
 import 'package:mindwell/src/features/profile/widgets/last_entries_card.dart';
 import 'package:mindwell/src/features/profile/widgets/calendar_card.dart';
 import 'package:mindwell/src/core/api/api_provider.dart';
+import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
 import 'package:mindwell/l10n/app_localizations.dart';
 
@@ -23,6 +24,7 @@ import 'package:mindwell/l10n/app_localizations.dart';
 class MockUsersApi extends Mock implements UsersApi {}
 class MockMindwellApi extends Mock implements MindwellApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
+class MockImageUploadService extends Mock implements ImageUploadService {}
 class MockMeApi extends Mock implements MeApi {}
 
 void main() {
@@ -346,7 +348,13 @@ void main() {
 
 /// Mock ProfileNotifier for testing
 class MockProfileNotifier extends ProfileNotifier {
-  MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi(), relationsApi: MockRelationsApi(), meApi: MockMeApi()) {
+  MockProfileNotifier(ProfileState initialState) : super(
+    username: 'test', 
+    usersApi: MockUsersApi(), 
+    relationsApi: MockRelationsApi(), 
+    meApi: MockMeApi(),
+    imageUploadService: MockImageUploadService(),
+  ) {
     state = initialState;
   }
   

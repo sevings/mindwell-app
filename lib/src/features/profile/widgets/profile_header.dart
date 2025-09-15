@@ -47,7 +47,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
     return profileState.when(
       initial: () => _buildLoadingHeader(context),
       loading: () => _buildLoadingHeader(context),
-      loaded: (user, badges, images, tags, calendarData) => 
+      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 
           _buildLoadedHeader(context, l10n, user, ref),
       error: (message) => _buildErrorHeader(context, l10n, message),
     );

@@ -114,7 +114,7 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
             
             // Gender
             DropdownButtonFormField<String>(
-              value: _selectedGender,
+              initialValue: _selectedGender,
               decoration: InputDecoration(
                 labelText: l10n.gender,
                 border: const OutlineInputBorder(),
@@ -181,7 +181,7 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
             
             // Privacy
             DropdownButtonFormField<String>(
-              value: _selectedPrivacy,
+              initialValue: _selectedPrivacy,
               decoration: InputDecoration(
                 labelText: l10n.privacy,
                 border: const OutlineInputBorder(),
@@ -214,7 +214,7 @@ class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
             
             // Chat Privacy
             DropdownButtonFormField<String>(
-              value: _selectedChatPrivacy,
+              initialValue: _selectedChatPrivacy,
               decoration: InputDecoration(
                 labelText: l10n.chatPrivacy,
                 border: const OutlineInputBorder(),

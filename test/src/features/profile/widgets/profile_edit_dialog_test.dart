@@ -4,10 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/l10n/app_localizations.dart';
-import '../../../../../lib/src/features/profile/widgets/profile_edit_dialog.dart';
-import '../../../../../lib/src/features/profile/providers/profile_provider.dart';
-import '../../../../../lib/src/features/profile/models/profile_state.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/profile/widgets/profile_edit_dialog.dart';
+import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 
 class MockProfileNotifier extends Mock implements ProfileNotifier {}
 
@@ -20,15 +19,9 @@ class MockMeApi extends Mock implements MeApi {}
 void main() {
   group('ProfileEditDialog', () {
     late MockProfileNotifier mockProfileNotifier;
-    late MockUsersApi mockUsersApi;
-    late MockRelationsApi mockRelationsApi;
-    late MockMeApi mockMeApi;
 
     setUp(() {
       mockProfileNotifier = MockProfileNotifier();
-      mockUsersApi = MockUsersApi();
-      mockRelationsApi = MockRelationsApi();
-      mockMeApi = MockMeApi();
     });
 
     Widget createTestWidget(MwProfile profile) {

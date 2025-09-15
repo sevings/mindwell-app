@@ -37,8 +37,8 @@ class ProfileScreen extends ConsumerWidget {
       body: profileState.when(
         initial: () => _buildLoadingScreen(context),
         loading: () => _buildLoadingScreen(context),
-        loaded: (user, badges, images, tags, calendarData) => 
-            _buildLoadedScreen(context, l10n, user, badges, images, tags, calendarData),
+        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 
+            _buildLoadedScreen(context, l10n, user, badges, images, tags, calendarData, entries, hasMoreEntries),
         error: (message) => _buildErrorScreen(context, l10n, message),
       ),
     );
@@ -53,6 +53,8 @@ class ProfileScreen extends ConsumerWidget {
     List<MwImage> images,
     List<MwTagListDataInner> tags,
     MwCalendar? calendarData,
+    List<MwEntry> entries,
+    bool hasMoreEntries,
   ) {
     return CustomScrollView(
       slivers: [
