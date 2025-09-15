@@ -26,8 +26,13 @@ class ImageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    
+    // Handle case where localizations are not available
+    if (l10n == null) {
+      return const SizedBox.shrink();
+    }
 
     // Don't show the card if there are no images
     if (images.isEmpty) {
@@ -128,7 +133,9 @@ class ImageCard extends StatelessWidget {
 
   /// Builds an individual image item
   Widget _buildImageItem(BuildContext context, ThemeData theme, MwImage image, int index) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return const SizedBox.shrink();
+    
     final imageUrl = _getImageUrl(image);
 
     return Semantics(
@@ -203,7 +210,8 @@ class ImageCard extends StatelessWidget {
 
   /// Builds the "View All" button for the grid
   Widget _buildViewAllButton(BuildContext context, ThemeData theme) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return const SizedBox.shrink();
 
     return Semantics(
       label: l10n.viewAllImages,
@@ -250,7 +258,8 @@ class ImageCard extends StatelessWidget {
 
   /// Opens the image gallery with the specified images and initial index
   void _openImageGallery(BuildContext context, List<MwImage> images, int initialIndex) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => ImageGalleryScreen(

@@ -75,23 +75,30 @@ class EntryCardShort extends StatelessWidget {
     
     return Row(
       children: [
-        CachedAvatar(
-          imageUrl: author?.avatar?.x42,
-          size: 32.0,
-          fallbackText: _getInitials(authorName),
+        GestureDetector(
+          onTap: () => _navigateToAuthorProfile(context, author),
+          child: CachedAvatar(
+            imageUrl: author?.avatar?.x42,
+            size: 32.0,
+            fallbackText: _getInitials(authorName),
+          ),
         ),
         SizedBox(width: MindwellSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                authorName,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => _navigateToAuthorProfile(context, author),
+                child: Text(
+                  authorName,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 timestamp,
@@ -354,5 +361,12 @@ class EntryCardShort extends StatelessWidget {
     }
     
     return (words[0].substring(0, 1) + words[1].substring(0, 1)).toUpperCase();
+  }
+
+  /// Navigates to the author's profile screen
+  void _navigateToAuthorProfile(BuildContext context, MwUser? author) {
+    if (author?.name != null && author!.name!.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(author.name!)}');
+    }
   }
 }

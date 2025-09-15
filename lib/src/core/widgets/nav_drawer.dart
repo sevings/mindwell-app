@@ -68,55 +68,72 @@ class NavDrawer extends ConsumerWidget {
     AuthState authState,
     ThemeData theme,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // Avatar
-        CircleAvatar(
-          radius: MindwellSpacing.avatarMd / 2,
-          backgroundColor: theme.colorScheme.primary,
-          child: Text(
-            authState.maybeWhen(
-              authenticated: (user) => user.name?.isNotEmpty == true
-                  ? user.name!.substring(0, 1).toUpperCase()
-                  : 'U',
-              orElse: () => 'U',
-            ),
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: MindwellSpacing.sm),
-        
-        // Username
-        Text(
-          authState.maybeWhen(
-            authenticated: (user) => user.name ?? 'User',
-            orElse: () => 'User',
-          ),
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: MindwellSpacing.xs),
-        
-        // User ID (optional, for debugging)
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
         authState.maybeWhen(
-          authenticated: (user) => user.id != null
-              ? Text(
-                  'ID: ${user.id}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-                  ),
-                )
-              : const SizedBox.shrink(),
-          orElse: () => const SizedBox.shrink(),
+          authenticated: (user) {
+            if (user.name != null && user.name!.isNotEmpty) {
+              context.go('/users/${Uri.encodeComponent(user.name!)}');
+            }
+          },
+          orElse: () {},
+        );
+      },
+      borderRadius: BorderRadius.circular(MindwellSpacing.borderRadius),
+      child: Padding(
+        padding: const EdgeInsets.all(MindwellSpacing.sm),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // Avatar
+            CircleAvatar(
+              radius: MindwellSpacing.avatarMd / 2,
+              backgroundColor: theme.colorScheme.primary,
+              child: Text(
+                authState.maybeWhen(
+                  authenticated: (user) => user.name?.isNotEmpty == true
+                      ? user.name!.substring(0, 1).toUpperCase()
+                      : 'U',
+                  orElse: () => 'U',
+                ),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: MindwellSpacing.sm),
+            
+            // Username
+            Text(
+              authState.maybeWhen(
+                authenticated: (user) => user.name ?? 'User',
+                orElse: () => 'User',
+              ),
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: MindwellSpacing.xs),
+            
+            // User ID (optional, for debugging)
+            authState.maybeWhen(
+              authenticated: (user) => user.id != null
+                  ? Text(
+                      'ID: ${user.id}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              orElse: () => const SizedBox.shrink(),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

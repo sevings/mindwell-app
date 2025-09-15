@@ -1,8 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:mindwell/src/features/home/screens/home_screen.dart';
-import 'package:mindwell/src/core/providers/auth_provider.dart';
+import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
+import 'package:mindwell/src/features/auth/models/auth_state.dart';
+import 'package:mindwell/src/core/services/token_storage_service.dart';
+import 'package:mindwell_api/mindwell_api.dart';
+
+/// Mock AuthNotifier for testing
+class MockAuthNotifier extends AuthNotifier {
+  MockAuthNotifier(AuthState initialState) : super(
+    tokenStorageService: _MockTokenStorageService(),
+    oauth2Api: _MockOauth2Api(),
+    accountApi: _MockAccountApi(),
+    meApi: _MockMeApi(),
+  ) {
+    state = initialState;
+  }
+}
+
+/// Mock implementations
+class _MockTokenStorageService implements TokenStorageService {
+  @override
+  Future<void> saveUserTokens({required String accessToken, required String refreshToken}) async {}
+  @override
+  Future<String?> getAccessToken() async => null;
+  @override
+  Future<String?> getRefreshToken() async => null;
+  @override
+  Future<void> saveAppToken(String appToken) async {}
+  @override
+  Future<String?> getAppToken() async => null;
+  @override
+  Future<void> clearUserTokens() async {}
+  @override
+  Future<void> clearAppToken() async {}
+  @override
+  Future<bool> hasUserTokens() async => false;
+  @override
+  Future<bool> hasAppToken() async => false;
+}
+
+class _MockOauth2Api extends Mock implements Oauth2Api {}
+class _MockAccountApi extends Mock implements AccountApi {}
+class _MockMeApi extends Mock implements MeApi {}
+
+/// Helper function to create test user
+$MwUser _createTestUser() {
+  return $MwUser((b) => b
+    ..id = 1
+    ..name = 'testuser'
+    ..showName = 'Test User'
+    ..isTheme = false
+    ..isOnline = true
+  );
+}
 
 void main() {
   group('HomeScreen', () {
@@ -14,8 +67,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -37,8 +89,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -64,8 +115,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -87,8 +137,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -113,8 +162,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -135,7 +183,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()),
+            authProvider.overrideWith((ref) => MockAuthNotifier(const AuthState.unauthenticated())),
           ],
           child: const MaterialApp(
             home: HomeScreen(child: testChild),
@@ -155,8 +203,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => AuthNotifier()
-              ..login(userId: 'test-user', username: 'testuser')),
+            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
           ],
           child: MaterialApp(
             theme: ThemeData(

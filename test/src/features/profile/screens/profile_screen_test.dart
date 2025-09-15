@@ -6,17 +6,18 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:built_collection/built_collection.dart';
 
-import '../../../../../lib/src/features/profile/screens/profile_screen.dart';
-import '../../../../../lib/src/features/profile/models/profile_state.dart';
-import '../../../../../lib/src/features/profile/providers/profile_provider.dart';
-import '../../../../../lib/src/features/profile/widgets/info_card.dart';
-import '../../../../../lib/src/features/profile/widgets/badge_card.dart';
-import '../../../../../lib/src/features/profile/widgets/image_card.dart';
-import '../../../../../lib/src/features/profile/widgets/tag_card.dart';
-import '../../../../../lib/src/features/profile/widgets/last_entries_card.dart';
-import '../../../../../lib/src/features/profile/widgets/calendar_card.dart';
-import '../../../../../lib/src/core/api/api_provider.dart';
-import '../../../../../lib/src/core/widgets/loaders/skeleton_loader.dart';
+import 'package:mindwell/src/features/profile/screens/profile_screen.dart';
+import 'package:mindwell/src/features/profile/models/profile_state.dart';
+import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
+import 'package:mindwell/src/features/profile/widgets/info_card.dart';
+import 'package:mindwell/src/features/profile/widgets/badge_card.dart';
+import 'package:mindwell/src/features/profile/widgets/image_card.dart';
+import 'package:mindwell/src/features/profile/widgets/tag_card.dart';
+import 'package:mindwell/src/features/profile/widgets/last_entries_card.dart';
+import 'package:mindwell/src/features/profile/widgets/calendar_card.dart';
+import 'package:mindwell/src/core/api/api_provider.dart';
+import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
@@ -43,6 +44,8 @@ void main() {
           profileProvider(username).overrideWith((ref) => MockProfileNotifier(profileState)),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: ProfileScreen(username: username),
         ),
       );
@@ -153,7 +156,7 @@ void main() {
 
         // Set screen size to mobile (< 540dp)
         await tester.binding.setSurfaceSize(const Size(400, 800));
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         // Verify staggered grid is present with 1 column
         expect(find.byType(StaggeredGrid), findsOneWidget);
@@ -211,7 +214,7 @@ void main() {
 
         // Set screen size to tablet (540dp - 1200dp)
         await tester.binding.setSurfaceSize(const Size(800, 600));
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         // Verify staggered grid is present
         expect(find.byType(StaggeredGrid), findsOneWidget);
@@ -269,7 +272,7 @@ void main() {
 
         // Set screen size to desktop (> 1200dp)
         await tester.binding.setSurfaceSize(const Size(1400, 800));
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         // Verify staggered grid is present
         expect(find.byType(StaggeredGrid), findsOneWidget);
@@ -308,8 +311,8 @@ void main() {
         expect(find.text('This profile is empty'), findsOneWidget);
         expect(find.byIcon(Icons.person_outline), findsOneWidget);
         
-        // Verify no cards are displayed (except info card which should always be there)
-        expect(find.byType(InfoCard), findsOneWidget);
+        // Verify no cards are displayed (empty state replaces all cards)
+        expect(find.byType(InfoCard), findsNothing);
         expect(find.byType(BadgeCard), findsNothing);
         expect(find.byType(ImageCard), findsNothing);
         expect(find.byType(TagCard), findsNothing);
@@ -327,7 +330,7 @@ void main() {
 
         // Set screen size to tablet
         await tester.binding.setSurfaceSize(const Size(800, 600));
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         // Verify staggered grid is present in loading state
         expect(find.byType(StaggeredGrid), findsOneWidget);
@@ -343,5 +346,10 @@ void main() {
 class MockProfileNotifier extends ProfileNotifier {
   MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: MockUsersApi()) {
     state = initialState;
+  }
+  
+  @override
+  Future<void> fetchProfileData() async {
+    // Override to prevent HTTP requests
   }
 }

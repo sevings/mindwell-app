@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
@@ -138,7 +139,7 @@ class CommentItem extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: onAuthorTap,
+          onTap: onAuthorTap ?? () => _navigateToAuthorProfile(context, author),
           child: CachedAvatar(
             imageUrl: _getAvatarUrl(author.avatar),
             size: 32,
@@ -153,7 +154,7 @@ class CommentItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: onAuthorTap,
+                onTap: onAuthorTap ?? () => _navigateToAuthorProfile(context, author),
                 child: Text(
                   author.name ?? 'Unknown',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -473,5 +474,12 @@ class CommentItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Navigates to the author's profile screen
+  void _navigateToAuthorProfile(BuildContext context, MwUser author) {
+    if (author.name != null && author.name!.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(author.name!)}');
+    }
   }
 }

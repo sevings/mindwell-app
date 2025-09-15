@@ -188,8 +188,8 @@ class ProfileScreen extends ConsumerWidget {
           );
         }
 
-        // If no cards to display, show empty state
-        if (staggeredTiles.isEmpty) {
+        // If only info card is present and no other content, show empty state
+        if (staggeredTiles.length == 1) {
           return _buildEmptyState(context);
         }
 

@@ -13,6 +13,9 @@ import 'package:mindwell/src/features/entries/providers/entry_feed_provider.dart
 import 'package:mindwell/src/features/entries/models/feed_type.dart';
 import 'package:mindwell/src/features/entries/models/entry_feed_state.dart';
 import 'package:mindwell/src/features/entries/screens/entry_feed_screen.dart';
+import 'package:mindwell/src/features/profile/screens/profile_screen.dart';
+import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
+import 'package:mindwell/src/features/profile/models/profile_state.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 /// Mock implementations for testing
@@ -111,6 +114,23 @@ class _MockEntryCacheService implements EntryCacheService {
   Future<void> clearFeedSettings(String feedType) async {}
 }
 
+class _MockUsersApi implements UsersApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+/// Mock ProfileNotifier that doesn't make HTTP requests
+class _MockProfileNotifier extends ProfileNotifier {
+  _MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: _MockUsersApi()) {
+    state = initialState;
+  }
+  
+  @override
+  Future<void> fetchProfileData() async {
+    // Override to prevent HTTP requests
+  }
+}
+
 /// Mock EntryFeedNotifier that returns empty state
 class _MockEntryFeedNotifier extends EntryFeedNotifier {
   _MockEntryFeedNotifier() : super(
@@ -140,6 +160,9 @@ Widget createTestWidget(Widget child, {AuthState? authState}) {
     entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
     entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
     entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+    usersApiProvider.overrideWith((ref) => _MockUsersApi()),
+    // Override profileProvider to prevent HTTP requests
+    profileProvider.overrideWith((ref, username) => _MockProfileNotifier(const ProfileState.initial())),
   ];
   
   if (authState != null) {
@@ -479,9 +502,8 @@ void main() {
       await tester.pump(); // Additional pump to ensure navigation completes
       await tester.pump(); // Extra pump to ensure profile content is rendered
       
-      // Assert - should stay on profile page
-      expect(find.text('Profile'), findsOneWidget);
-      expect(find.text('Your personal profile and settings'), findsOneWidget);
+      // Assert - should stay on profile page and show ProfileScreen
+      expect(find.byType(ProfileScreen), findsOneWidget);
     });
 
     testWidgets('does not redirect when auth state is initial', (WidgetTester tester) async {

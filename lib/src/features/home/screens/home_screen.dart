@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/platform_app_bar.dart';
 import '../../../core/widgets/bottom_nav_bar.dart';
 import '../../../core/widgets/nav_drawer.dart';
-import '../../../core/providers/auth_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 /// Main home screen that serves as the shell for authenticated users.
 /// 
@@ -39,12 +40,25 @@ class HomeScreen extends ConsumerWidget {
         elevation: 0,
         showHamburgerMenu: true,
         showSearch: true,
-        showUserAvatar: authState.isAuthenticated,
+        showUserAvatar: authState.maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        ),
         onSearchTap: () {
           // TODO: Implement search functionality
         },
         onAvatarTap: () {
-          // TODO: Navigate to profile
+          authState.when(
+            initial: () {},
+            loading: () {},
+            authenticated: (user) {
+              if (user.name != null && user.name!.isNotEmpty) {
+                context.go('/users/${Uri.encodeComponent(user.name!)}');
+              }
+            },
+            unauthenticated: () {},
+            error: (message) {},
+          );
         },
         actions: [
           // Add action buttons here in future tasks
@@ -69,7 +83,10 @@ class HomeScreen extends ConsumerWidget {
       drawer: const NavDrawer(),
       
       // Floating action button will be added in future tasks
-      floatingActionButton: authState.isAuthenticated
+      floatingActionButton: authState.maybeWhen(
+        authenticated: (_) => true,
+        orElse: () => false,
+      )
           ? FloatingActionButton(
               onPressed: () {
                 // TODO: Add new entry functionality

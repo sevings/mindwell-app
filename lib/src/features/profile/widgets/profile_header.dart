@@ -26,7 +26,12 @@ class ProfileHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileState = ref.watch(profileProvider(username));
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    // Handle case where localizations are not available
+    if (l10n == null) {
+      return _buildLoadingHeader(context);
+    }
 
     return profileState.when(
       initial: () => _buildLoadingHeader(context),
@@ -211,7 +216,11 @@ class ProfileHeader extends ConsumerWidget {
   Widget _buildOnlineStatus(BuildContext context, MwProfile user) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    if (l10n == null) {
+      return const SizedBox.shrink();
+    }
 
     if (user.isOnline == true) {
       return Row(

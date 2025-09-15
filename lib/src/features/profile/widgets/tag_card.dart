@@ -20,8 +20,13 @@ class TagCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    
+    // Handle case where localizations are not available
+    if (l10n == null) {
+      return const SizedBox.shrink();
+    }
 
     // Don't show the card if there are no tags
     if (tags.isEmpty) {
@@ -91,7 +96,9 @@ class TagCard extends StatelessWidget {
 
   /// Builds an individual tag chip
   Widget _buildTagChip(BuildContext context, ThemeData theme, MwTagListDataInner tagData) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return const SizedBox.shrink();
+    
     final tag = tagData.tag ?? '';
     final count = tagData.count ?? 0;
 
