@@ -51,21 +51,22 @@ Set up the state notifier provider to fetch and manage all data for a user profi
 ## Task 3: Profile Header UI
 
 ### Goal
-Build the collapsible header widget for the user profile screen.
+Build the card-based header widget for the user profile screen.
 
 ### Files to be Created or Modified:
-*   `lib/src/features/profile/widgets/profile_header.dart` (Create)
+*   `lib/src/features/profile/widgets/profile_header_card.dart` (Create)
 
 ### Implementation Details:
-1.  **Create `profile_header.dart`:**
-    *   A widget that will be placed inside the `SliverAppBar`'s `flexibleSpace`.
-    *   It should display the cover image, avatar, and user's name.
-    *   Display a grid or row of user statistics (Entries, Comments, Favorited, Followings, Followers, Invited), making them tappable to navigate to the corresponding lists.
-    *   The content should animate and collapse smoothly as the user scrolls.
+1.  **Create `profile_header_card.dart`:**
+    *   Create a `ProfileHeaderCard` that serves as the profile screen's header. It should be a `Card` widget that fills the screen width.
+    *   It should display a full-width cover image with a 3:1 aspect ratio.
+    *   The user's avatar (124px) should be positioned to overlap the cover image and the content area below. It should have a border and shadow.
+    *   Display the user's name and status below the avatar.
+    *   Display user statistics (Entries, Comments, etc.) distributed across the full width. The layout should be responsive (e.g., max 3 stats per row on smaller screens, single row on larger screens).
 
 ### Testing:
 *   **Widget Tests:**
-    *   Test the `ProfileHeader` widget with mock data.
+    *   Test the `ProfileHeaderCard` widget with mock data.
 
 ---
 
@@ -91,16 +92,17 @@ Implement the logic for handling all user-to-user actions on the profile screen.
 ## Task 5: Profile Action Buttons UI
 
 ### Goal
-Build the UI for the action buttons and popup menu in the profile header.
+Build the UI for the primary action button in the profile header card.
 
 ### Files to be Created or Modified:
-*   `lib/src/features/profile/widgets/profile_header.dart` (Modify)
+*   `lib/src/features/profile/widgets/profile_header_card.dart` (Modify)
 
 ### Implementation Details:
-1.  **Modify `profile_header.dart`:**
-    *   Based on the `User` model's relationship data, display the correct set of action buttons (e.g., "Edit Profile", "Follow", "Write a Message", "Give Invite", "Allow"/"Deny" Follow Request).
-    *   Implement the popup menu containing secondary actions ("Unfollow", "Hide from Live", "Block", "Complain").
-    *   Connect these buttons to the corresponding methods in the `ProfileNotifier`.
+1.  **Modify `profile_header_card.dart`:**
+    *   Add an orange, circular action button to the top-right corner of the header image.
+    *   The button's icon should change based on the user relationship (e.g., a `tune` icon for editing one's own profile, follow/unfollow icons for other users).
+    *   This button can also host a popup menu for secondary actions ("Write a Message", "Block", "Complain", etc.).
+    *   Connect the button to the corresponding methods in the `ProfileNotifier`.
 
 ### Testing:
 *   **Widget Tests:**
@@ -320,11 +322,11 @@ Build the basic structure of the profile screen, including the app bar and handl
 ### Implementation Details:
 1.  **Create `profile_screen.dart`:**
     *   The main screen widget that watches the `profileProvider`.
-    *   Use a `CustomScrollView` with a `SliverAppBar`.
-    *   The `SliverAppBar` should contain the `ProfileHeader` widget in its `flexibleSpace`.
+    *   The screen layout will be structured with the new `ProfileHeaderCard` at the top.
+    *   The rest of the profile content (info card, badge card, etc.) will be placed in a scrollable view below the header card.
     *   Display a `SkeletonLoader` while the state is `loading`.
     *   Display an error message if the state is `error`.
-    *   When loaded, display the main content area (initially, this can be a placeholder for the grid).
+    *   When loaded, display the header card and the main content area.
 
 ### Testing:
 *   **Widget Tests:**

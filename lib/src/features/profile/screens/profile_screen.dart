@@ -6,7 +6,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../providers/profile_provider.dart';
-import '../widgets/profile_header.dart';
+import '../widgets/profile_header_card.dart';
 import '../widgets/info_card.dart';
 import '../widgets/badge_card.dart';
 import '../widgets/image_card.dart';
@@ -58,41 +58,9 @@ class ProfileScreen extends ConsumerWidget {
   ) {
     return CustomScrollView(
       slivers: [
-        // Collapsible app bar with profile header
-        SliverAppBar(
-          expandedHeight: 300.0,
-          pinned: true,
-          flexibleSpace: FlexibleSpaceBar(
-            background: ProfileHeader(username: username),
-          ),
-          actions: [
-            // More options menu
-            PopupMenuButton<String>(
-              onSelected: (value) => _handleMenuAction(context, value),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'refresh',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.refresh),
-                      const SizedBox(width: 8),
-                      Text('Refresh'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'share',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.share),
-                      const SizedBox(width: 8),
-                      Text(l10n?.share ?? 'Share'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+        // Profile header card at the top
+        SliverToBoxAdapter(
+          child: ProfileHeaderCard(username: username),
         ),
 
         // Main content area
@@ -209,106 +177,11 @@ class ProfileScreen extends ConsumerWidget {
 
   /// Builds the loading state screen
   Widget _buildLoadingScreen(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return CustomScrollView(
       slivers: [
-        // Loading app bar
-        SliverAppBar(
-          expandedHeight: 300.0,
-          pinned: true,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Row(
-                        children: [
-                          // Skeleton avatar
-                          SkeletonLoader(
-                            child: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Skeleton text
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SkeletonLoader(
-                                  child: Container(
-                                    height: 20,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                SkeletonLoader(
-                                  child: Container(
-                                    height: 16,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Skeleton buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SkeletonLoader(
-                              child: Container(
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SkeletonLoader(
-                              child: Container(
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+        // Loading profile header card
+        SliverToBoxAdapter(
+          child: ProfileHeaderCard(username: username),
         ),
 
         // Loading content with staggered grid
@@ -448,18 +321,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  /// Handles menu actions
-  void _handleMenuAction(BuildContext context, String action) {
-    switch (action) {
-      case 'refresh':
-        _handleRefresh(context);
-        break;
-      case 'share':
-        _handleShare(context);
-        break;
-    }
-  }
-
   /// Handles refresh action
   void _handleRefresh(BuildContext context) {
     // Trigger a refresh of the profile data
@@ -468,17 +329,6 @@ class ProfileScreen extends ConsumerWidget {
       SnackBar(
         content: Text('Refreshing...'),
         duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
-  /// Handles share action
-  void _handleShare(BuildContext context) {
-    // TODO: Implement share functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Share functionality not implemented'),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

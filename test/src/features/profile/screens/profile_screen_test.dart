@@ -15,6 +15,7 @@ import 'package:mindwell/src/features/profile/widgets/image_card.dart';
 import 'package:mindwell/src/features/profile/widgets/tag_card.dart';
 import 'package:mindwell/src/features/profile/widgets/last_entries_card.dart';
 import 'package:mindwell/src/features/profile/widgets/calendar_card.dart';
+import 'package:mindwell/src/features/profile/widgets/profile_header_card.dart';
 import 'package:mindwell/src/core/api/api_provider.dart';
 import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
@@ -65,7 +66,7 @@ void main() {
 
       // Verify loading screen is displayed
       expect(find.byType(CustomScrollView), findsOneWidget);
-      expect(find.byType(SliverAppBar), findsOneWidget);
+      expect(find.byType(ProfileHeaderCard), findsOneWidget);
       
       // Verify skeleton loaders are present
       expect(find.byType(SkeletonLoader), findsWidgets);

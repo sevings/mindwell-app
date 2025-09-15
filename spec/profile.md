@@ -2,24 +2,28 @@
 
 ## 1. Overview
 
-The Profile screen is a dynamic and responsive screen that showcases a user's personal information and activity. It uses a `CustomScrollView` with a `SliverAppBar` for a modern, collapsible header, and a responsive grid layout for the content cards.
+The Profile screen is a dynamic and responsive screen that showcases a user's personal information and activity.
 
 ## 2. UI Elements
 
-### 2.1. Header (`SliverAppBar`)
+### 2.1. Header (`ProfileHeaderCard`)
 
-*   **Flexible Space:** The user's cover image will be displayed in the `flexibleSpace` of the `SliverAppBar`, creating a parallax effect on scroll.
-*   **Avatar:** The user's avatar will be displayed prominently, overlapping the cover image and the main content area.
-*   **Name and Status:** The user's name and online status will be displayed in the app bar, collapsing to a smaller size as the user scrolls.
-*   **Action Buttons:** The action buttons will be displayed in the app bar, always visible.
+The header is a `ProfileHeaderCard` widget that fills the entire screen width and is positioned at the top. It uses Material Design card styling with appropriate elevation and theme colors.
+
+*   **Header Image:** A full-width header image is displayed with a 3:1 aspect ratio. It supports a cover image with a fallback placeholder.
+*   **Avatar:** The user's avatar is 124px in size, displayed prominently to overlap both the header image and the content section below. It has a white border and shadow effects. For the user's own profile, it supports tap-to-edit functionality.
+*   **Name and Status:** The user's name and online status are displayed below the avatar.
+*   **Action Button:** An orange circular action button is located in the top-right corner of the header image. It shows a `tune` (settings) icon for the user's own profile, and follow/unfollow icons for other users. It has a proper shadow for visual prominence.
+*   **Other Actions:** The full list of actions for other users (message, give invite, block, complain, etc.) is available through other UI elements, often a popup menu associated with the main action button or other buttons on the card.
     *   **Own Profile:** An icon button to navigate to the profile editing screen.
     *   **Another User's Profile:**
         *   Icon buttons to "Follow" (if the current user is not blocked by the other user), "Write a Message" (if the current user is invited and not blocked by the other user), and "Give Invite" (if the current user has available invites and the other user can be invited).
         *   A popup menu with items: "Unfollow", "Hide from Live/Unhide", "Block/Unblock", and "Complain".
-        *   If the viewed user has requested to follow the current user, display "Allow" and "Deny" icon buttons in addition to the standard action buttons.
-*   **Counts:** A collection of user statistics.
+        *   If the viewed user has requested to follow the current user, display "Allow" and "Deny" icon buttons.
+*   **Counts (User Statistics):** The user statistics are distributed across the full screen width.
     *   Each count (Entries, Comments, Favorited, Followings, Followers, Invited) is displayed only if its value is greater than 0.
-    *   The layout of the counts adapts to the screen width, appearing in one or two rows.
+    *   The layout is responsive: on screens smaller than 800px, there's a maximum of 3 stats per row. On larger screens, all stats appear in a single row.
+    *   `Expanded` widgets are used to ensure even distribution across the available width.
     *   Tapping on a count navigates to the relevant screen (e.g., tapping "Followers" opens the list of followers).
 
 ### 2.2. Profile Editing

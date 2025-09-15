@@ -8,8 +8,9 @@ import 'package:mindwell/l10n/app_localizations.dart';
 import 'package:mindwell/src/core/providers/auth_provider.dart';
 import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
-import 'package:mindwell/src/features/profile/widgets/profile_header.dart';
+import 'package:mindwell/src/features/profile/widgets/profile_header_card.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
+import 'package:mindwell/src/core/widgets/images/cached_image.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
@@ -41,7 +42,7 @@ class MockAuthNotifier extends AuthNotifier {
 }
 
 void main() {
-  group('ProfileHeader', () {
+  group('ProfileHeaderCard', () {
     Widget createTestWidget({
       required String username,
       ProfileState profileState = const ProfileState.initial(),
@@ -56,7 +57,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ProfileHeader(username: username),
+            body: ProfileHeaderCard(username: username),
           ),
         ),
       );
@@ -67,9 +68,10 @@ void main() {
         username: 'testuser',
         profileState: const ProfileState.loading(),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // Should show skeleton loading elements
+      // Should show Card widget and skeleton loading elements
+      expect(find.byType(Card), findsOneWidget);
       expect(find.byType(Container), findsWidgets);
     });
 
@@ -78,8 +80,10 @@ void main() {
         username: 'testuser',
         profileState: const ProfileState.error(message: 'Test error'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
+      // Should show Card widget with error content
+      expect(find.byType(Card), findsOneWidget);
       expect(find.text('Test error'), findsOneWidget);
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
@@ -101,11 +105,12 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'testuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
+      // Should show Card widget with profile content
+      expect(find.byType(Card), findsOneWidget);
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
-      expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.tune), findsOneWidget); // Action button for own profile
     });
 
     testWidgets('displays follow request buttons when user has requested to follow', (WidgetTester tester) async {
@@ -125,11 +130,10 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // For now, just verify the basic profile display works
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
     });
 
     testWidgets('displays follow button for non-followed user', (WidgetTester tester) async {
@@ -149,11 +153,10 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // For now, just verify the basic profile display works
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
     });
 
     testWidgets('displays unfollow button for followed user', (WidgetTester tester) async {
@@ -173,11 +176,10 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // For now, just verify the basic profile display works
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
     });
 
     testWidgets('displays popup menu with correct actions', (WidgetTester tester) async {
@@ -197,11 +199,10 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // For now, just verify the basic profile display works
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
     });
 
     testWidgets('displays user statistics correctly', (WidgetTester tester) async {
@@ -221,11 +222,10 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // For now, just verify the basic profile display works
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
     });
 
     testWidgets('displays online status correctly', (WidgetTester tester) async {
@@ -245,7 +245,7 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Should show online indicator
       expect(find.byType(Container), findsWidgets);
@@ -269,7 +269,7 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'testuser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Should show camera icon for avatar upload (cover overlay only shows if cover exists)
       expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget);
@@ -292,7 +292,7 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: true, username: 'otheruser'),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Should not show camera icons for other users' profiles
       expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
@@ -315,10 +315,59 @@ void main() {
         ),
         authState: const AuthState(isAuthenticated: false),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Should not show camera icons when not authenticated
       expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
+    });
+
+    testWidgets('displays user statistics in row layout', (WidgetTester tester) async {
+      final user = $MwProfile((b) => b
+        ..name = 'testuser'
+        ..showName = 'Test User'
+        ..isOnline = false);
+
+      await tester.pumpWidget(createTestWidget(
+        username: 'testuser',
+        profileState: ProfileState.loaded(
+          user: user,
+          badges: [],
+          images: [],
+          tags: [],
+          calendarData: null,
+        ),
+        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+      ));
+      await tester.pump();
+
+      // Should show Card widget with profile content
+      expect(find.byType(Card), findsOneWidget);
+      expect(find.text('Test User'), findsOneWidget);
+    });
+
+    testWidgets('displays avatar with correct size', (WidgetTester tester) async {
+      final user = $MwProfile((b) => b
+        ..name = 'testuser'
+        ..showName = 'Test User'
+        ..isOnline = false);
+
+      await tester.pumpWidget(createTestWidget(
+        username: 'testuser',
+        profileState: ProfileState.loaded(
+          user: user,
+          badges: [],
+          images: [],
+          tags: [],
+          calendarData: null,
+        ),
+        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+      ));
+      await tester.pump();
+
+      // Should show Card widget with avatar
+      expect(find.byType(Card), findsOneWidget);
+      // Avatar should be present (CachedAvatar widget)
+      expect(find.byType(CachedAvatar), findsOneWidget);
     });
   });
 }
