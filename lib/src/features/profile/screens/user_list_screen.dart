@@ -79,6 +79,21 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
   Future<void> _loadMoreUsers() async {
     if (_isLoadingMore) return;
     
+    // Check if there are more users to load
+    final currentState = ref.read(userListProvider((type: widget.type, username: widget.username)));
+    bool hasMore = false;
+    
+    currentState.when(
+      initial: () {},
+      loading: () {},
+      loaded: (users, hasMoreValue, nextAfter, nextBefore) {
+        hasMore = hasMoreValue;
+      },
+      error: (message) {},
+    );
+    
+    if (!hasMore) return;
+    
     setState(() {
       _isLoadingMore = true;
     });
@@ -154,7 +169,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
           ),
           
           // Loading more indicator
-          if (_isLoadingMore || hasMore)
+          if (hasMore)
             SliverToBoxAdapter(
               child: _buildLoadingMoreIndicator(context),
             ),
