@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
-import '../models/profile_state.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/info_card.dart';
@@ -118,105 +117,93 @@ class ProfileScreen extends ConsumerWidget {
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         
-        // Determine number of columns based on screen width
+        // Determine number of columns based on screen width breakpoints
         int columns;
         if (screenWidth < 540) {
-          columns = 1;
+          columns = 1; // Single column for mobile
         } else if (screenWidth < 1200) {
-          columns = 2;
+          columns = 2; // Two columns for tablets
         } else {
-          columns = 3;
+          columns = 3; // Three columns for desktop
         }
 
-        // Create list of content cards
-        final List<Widget> cards = [];
+        // Create list of content cards with staggered grid items
+        final List<StaggeredGridTile> staggeredTiles = [];
 
-        // Always show info card
-        cards.add(InfoCard(profile: user));
+        // Always show info card - full width
+        staggeredTiles.add(
+          StaggeredGridTile.fit(
+            crossAxisCellCount: 1,
+            child: InfoCard(profile: user),
+          ),
+        );
 
-        // Add badge card if user has badges
+        // Add badge card if user has badges - full width
         if (badges.isNotEmpty) {
-          cards.add(BadgeCard(badges: badges));
+          staggeredTiles.add(
+            StaggeredGridTile.fit(
+              crossAxisCellCount: 1,
+              child: BadgeCard(badges: badges),
+            ),
+          );
         }
 
-        // Add image card if user has images
+        // Add image card if user has images - full width
         if (images.isNotEmpty) {
-          cards.add(ImageCard(images: images));
+          staggeredTiles.add(
+            StaggeredGridTile.fit(
+              crossAxisCellCount: 1,
+              child: ImageCard(images: images),
+            ),
+          );
         }
 
-        // Add tag card if user has tags
+        // Add tag card if user has tags - full width
         if (tags.isNotEmpty) {
-          cards.add(TagCard(tags: tags));
+          staggeredTiles.add(
+            StaggeredGridTile.fit(
+              crossAxisCellCount: 1,
+              child: TagCard(tags: tags),
+            ),
+          );
         }
 
-        // Add last entries card if user has entries
+        // Add last entries card if user has entries - full width
         if (calendarData != null) {
-          cards.add(LastEntriesCard(calendarData: calendarData));
+          staggeredTiles.add(
+            StaggeredGridTile.fit(
+              crossAxisCellCount: 1,
+              child: LastEntriesCard(calendarData: calendarData),
+            ),
+          );
         }
 
-        // Add calendar card if user has entries
+        // Add calendar card if user has entries - full width
         if (calendarData != null) {
-          cards.add(CalendarCard(calendarData: calendarData));
+          staggeredTiles.add(
+            StaggeredGridTile.fit(
+              crossAxisCellCount: 1,
+              child: CalendarCard(calendarData: calendarData),
+            ),
+          );
         }
 
         // If no cards to display, show empty state
-        if (cards.isEmpty) {
+        if (staggeredTiles.isEmpty) {
           return _buildEmptyState(context);
         }
 
-        // Build responsive grid
-        return _buildResponsiveGrid(cards, columns);
+        // Build responsive staggered grid
+        return StaggeredGrid.count(
+          crossAxisCount: columns,
+          mainAxisSpacing: 16.0,
+          crossAxisSpacing: 16.0,
+          children: staggeredTiles,
+        );
       },
     );
   }
 
-  /// Builds a responsive grid layout
-  Widget _buildResponsiveGrid(List<Widget> cards, int columns) {
-    if (columns == 1) {
-      // Single column layout
-      return Column(
-        children: cards,
-      );
-    } else if (columns == 2) {
-      // Two column layout
-      return Column(
-        children: [
-          for (int i = 0; i < cards.length; i += 2)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: cards[i]),
-                if (i + 1 < cards.length) ...[
-                  const SizedBox(width: 16),
-                  Expanded(child: cards[i + 1]),
-                ],
-              ],
-            ),
-        ],
-      );
-    } else {
-      // Three column layout
-      return Column(
-        children: [
-          for (int i = 0; i < cards.length; i += 3)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: cards[i]),
-                if (i + 1 < cards.length) ...[
-                  const SizedBox(width: 16),
-                  Expanded(child: cards[i + 1]),
-                ],
-                if (i + 2 < cards.length) ...[
-                  const SizedBox(width: 16),
-                  Expanded(child: cards[i + 2]),
-                ],
-              ],
-            ),
-        ],
-      );
-    }
-  }
 
   /// Builds the loading state screen
   Widget _buildLoadingScreen(BuildContext context) {
@@ -322,25 +309,44 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
 
-        // Loading content
+        // Loading content with staggered grid
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: List.generate(3, (index) => 
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: SkeletonLoader(
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = constraints.maxWidth;
+                
+                // Determine number of columns based on screen width breakpoints
+                int columns;
+                if (screenWidth < 540) {
+                  columns = 1;
+                } else if (screenWidth < 1200) {
+                  columns = 2;
+                } else {
+                  columns = 3;
+                }
+
+                return StaggeredGrid.count(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: 16.0,
+                  crossAxisSpacing: 16.0,
+                  children: List.generate(6, (index) => 
+                    StaggeredGridTile.fit(
+                      crossAxisCellCount: 1,
+                      child: SkeletonLoader(
+                        child: Container(
+                          height: 200 + (index % 3) * 50, // Vary heights for staggered effect
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -406,7 +412,6 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Padding(
