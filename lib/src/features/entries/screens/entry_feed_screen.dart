@@ -25,7 +25,10 @@ class EntryFeedScreen extends ConsumerStatefulWidget {
   /// Optional tag filter to show only entries with this tag
   final String? tagFilter;
   
-  const EntryFeedScreen({super.key, this.feedType, this.tagFilter});
+  /// Optional username for profile feed type
+  final String? username;
+  
+  const EntryFeedScreen({super.key, this.feedType, this.tagFilter, this.username});
 
   @override
   ConsumerState<EntryFeedScreen> createState() => _EntryFeedScreenState();
@@ -238,9 +241,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
           controller: _tabController,
           children: _feedTypes.map((feedType) {
             return EntryList(
-              key: ValueKey('${feedType.name}_${_tabController.index}_${widget.tagFilter ?? 'no_tag'}'),
+              key: ValueKey('${feedType.name}_${_tabController.index}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}'),
               feedType: feedType,
-              feedParameter: widget.tagFilter,
+              feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) ? widget.username : widget.tagFilter,
               enablePullToRefresh: true,
               enableInfiniteScroll: true,
             );
@@ -282,6 +285,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         break;
       case FeedType.theme:
         baseName = l10n?.themes ?? 'Themes';
+        break;
+      case FeedType.favorites:
+        baseName = 'Favorites'; // TODO: Add to localization
         break;
     }
     
@@ -462,9 +468,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         ];
       },
       body: EntryList(
-        key: ValueKey('${feedType.name}_single_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}'),
+        key: ValueKey('${feedType.name}_single_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}'),
         feedType: feedType,
-        feedParameter: widget.tagFilter ?? feedParameter,
+        feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) ? widget.username : (widget.tagFilter ?? feedParameter),
         enablePullToRefresh: true,
         enableInfiniteScroll: true,
       ),
@@ -627,9 +633,9 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         controller: _tabController,
         children: tabConfigs.map((tabConfig) {
           return EntryList(
-            key: ValueKey('${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}'),
+            key: ValueKey('${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}'),
             feedType: feedType,
-            feedParameter: widget.tagFilter ?? '${feedParameter ?? ''}_${tabConfig.value}',
+            feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) ? widget.username : (widget.tagFilter ?? '${feedParameter ?? ''}_${tabConfig.value}'),
             enablePullToRefresh: true,
             enableInfiniteScroll: true,
           );

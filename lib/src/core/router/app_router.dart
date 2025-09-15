@@ -229,6 +229,39 @@ class AppRouter {
               );
             },
           ),
+          GoRoute(
+            path: '/users/:name/entries',
+            name: 'userEntries',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return EntryFeedScreen(
+                feedType: FeedType.profile,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/invited',
+            name: 'userInvited',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.invited,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/favorites',
+            name: 'userFavorites',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return EntryFeedScreen(
+                feedType: FeedType.favorites,
+                username: username,
+              );
+            },
+          ),
         ],
       ),
       
@@ -325,6 +358,39 @@ class AppRouter {
               final username = Uri.decodeComponent(state.pathParameters['name']!);
               return UserListScreen(
                 type: UserListType.following,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/entries',
+            name: 'publicUserEntries',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return EntryFeedScreen(
+                feedType: FeedType.profile,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/invited',
+            name: 'publicUserInvited',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return UserListScreen(
+                type: UserListType.invited,
+                username: username,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users/:name/favorites',
+            name: 'publicUserFavorites',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              return EntryFeedScreen(
+                feedType: FeedType.favorites,
                 username: username,
               );
             },

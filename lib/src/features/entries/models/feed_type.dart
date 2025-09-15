@@ -17,6 +17,9 @@ enum FeedType {
   
   /// Entries from a specific theme
   theme,
+  
+  /// Favorited entries from a specific user
+  favorites,
 }
 
 /// Extension methods for FeedType to provide additional functionality.
@@ -34,6 +37,8 @@ extension FeedTypeExtension on FeedType {
         return 'Profile';
       case FeedType.theme:
         return 'Theme';
+      case FeedType.favorites:
+        return 'Favorites';
     }
   }
   
@@ -52,6 +57,8 @@ extension FeedTypeExtension on FeedType {
         return 'profile_${parameter ?? 'default'}';
       case FeedType.theme:
         return 'theme_${parameter ?? 'default'}';
+      case FeedType.favorites:
+        return 'favorites_${parameter ?? 'default'}';
     }
   }
 }

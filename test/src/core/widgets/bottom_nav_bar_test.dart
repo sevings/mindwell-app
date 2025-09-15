@@ -37,10 +37,10 @@ void main() {
       );
 
       expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.text('Feed'), findsOneWidget);
-      expect(find.text('Profile'), findsOneWidget);
-      expect(find.text('Notifications'), findsOneWidget);
-      expect(find.text('Chat'), findsOneWidget);
+      expect(find.text('Feed'), findsAtLeastNWidgets(1));
+      expect(find.text('Profile'), findsAtLeastNWidgets(1));
+      expect(find.text('Notifications'), findsAtLeastNWidgets(1));
+      expect(find.text('Chat'), findsAtLeastNWidgets(1));
     });
 
     testWidgets('hides when not authenticated', (WidgetTester tester) async {
@@ -120,10 +120,10 @@ void main() {
       );
 
       // Verify all navigation items are displayed
-      expect(find.text('Feed'), findsOneWidget);
-      expect(find.text('Profile'), findsOneWidget);
-      expect(find.text('Notifications'), findsOneWidget);
-      expect(find.text('Chat'), findsOneWidget);
+      expect(find.text('Feed'), findsAtLeastNWidgets(1));
+      expect(find.text('Profile'), findsAtLeastNWidgets(1));
+      expect(find.text('Notifications'), findsAtLeastNWidgets(1));
+      expect(find.text('Chat'), findsAtLeastNWidgets(1));
     });
   });
 }

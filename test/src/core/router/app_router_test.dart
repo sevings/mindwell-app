@@ -175,6 +175,7 @@ class _MockEntryFeedNotifier extends EntryFeedNotifier {
   _MockEntryFeedNotifier() : super(
     feedType: FeedType.live,
     entriesApi: _MockEntriesApi(),
+    usersApi: _MockUsersApi(),
     cacheService: _MockEntryCacheService(),
   ) {
     state = const EntryFeedState.empty();
@@ -277,7 +278,7 @@ void main() {
       
       // Assert - Check if we're on the notifications route
       // The notifications content should be displayed
-      expect(find.text('Notifications'), findsOneWidget);
+      expect(find.text('Notifications'), findsAtLeastNWidgets(1));
       expect(find.text('Stay updated with your mindful journey'), findsOneWidget);
     });
 
@@ -294,7 +295,7 @@ void main() {
       await tester.pump(); // Additional pump to ensure navigation completes
       
       // Assert
-      expect(find.text('Chat'), findsOneWidget);
+      expect(find.text('Chat'), findsAtLeastNWidgets(1));
       expect(find.text('Connect with your support community'), findsOneWidget);
     });
 

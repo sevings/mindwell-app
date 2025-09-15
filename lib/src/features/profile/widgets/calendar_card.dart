@@ -132,77 +132,182 @@ class _CalendarCardState extends State<CalendarCard> {
           size: 20,
         ),
         const SizedBox(width: 8),
-        Text(
-          l10n.calendar,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        Flexible(
+          child: Text(
+            l10n.calendar,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         
-        // Navigation buttons
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Previous year button
-            IconButton(
-              onPressed: () => _navigateToPreviousYear(),
-              icon: const Icon(Icons.keyboard_double_arrow_left),
-              iconSize: 16,
-              padding: const EdgeInsets.all(4),
-              constraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 32,
-              ),
-            ),
-            
-            // Previous month button
-            IconButton(
-              onPressed: () => _navigateToPreviousMonth(),
-              icon: const Icon(Icons.keyboard_arrow_left),
-              iconSize: 16,
-              padding: const EdgeInsets.all(4),
-              constraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 32,
-              ),
-            ),
-            
-            // Current month/year display
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                _getMonthYearText(l10n),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            
-            // Next month button
-            IconButton(
-              onPressed: () => _navigateToNextMonth(),
-              icon: const Icon(Icons.keyboard_arrow_right),
-              iconSize: 16,
-              padding: const EdgeInsets.all(4),
-              constraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 32,
-              ),
-            ),
-            
-            // Next year button
-            IconButton(
-              onPressed: () => _navigateToNextYear(),
-              icon: const Icon(Icons.keyboard_double_arrow_right),
-              iconSize: 16,
-              padding: const EdgeInsets.all(4),
-              constraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 32,
-              ),
-            ),
-          ],
+        // Navigation buttons - use Wrap to handle overflow gracefully
+        Flexible(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // If space is very limited, show only month navigation
+              if (constraints.maxWidth < 200) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Previous month button
+                    IconButton(
+                      onPressed: () => _navigateToPreviousMonth(),
+                      icon: const Icon(Icons.keyboard_arrow_left),
+                      iconSize: 14,
+                      padding: const EdgeInsets.all(2),
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                    ),
+                    
+                    // Current month/year display
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: Text(
+                          _getMonthYearText(l10n),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    
+                    // Next month button
+                    IconButton(
+                      onPressed: () => _navigateToNextMonth(),
+                      icon: const Icon(Icons.keyboard_arrow_right),
+                      iconSize: 14,
+                      padding: const EdgeInsets.all(2),
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              
+              // If space is limited, show month navigation only
+              if (constraints.maxWidth < 280) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Previous month button
+                    IconButton(
+                      onPressed: () => _navigateToPreviousMonth(),
+                      icon: const Icon(Icons.keyboard_arrow_left),
+                      iconSize: 14,
+                      padding: const EdgeInsets.all(2),
+                      constraints: const BoxConstraints(
+                        minWidth: 26,
+                        minHeight: 26,
+                      ),
+                    ),
+                    
+                    // Current month/year display
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Text(
+                          _getMonthYearText(l10n),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    
+                    // Next month button
+                    IconButton(
+                      onPressed: () => _navigateToNextMonth(),
+                      icon: const Icon(Icons.keyboard_arrow_right),
+                      iconSize: 14,
+                      padding: const EdgeInsets.all(2),
+                      constraints: const BoxConstraints(
+                        minWidth: 26,
+                        minHeight: 26,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              
+              // Full navigation for larger screens
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Previous year button
+                  IconButton(
+                    onPressed: () => _navigateToPreviousYear(),
+                    icon: const Icon(Icons.keyboard_double_arrow_left),
+                    iconSize: 14,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                  ),
+                  
+                  // Previous month button
+                  IconButton(
+                    onPressed: () => _navigateToPreviousMonth(),
+                    icon: const Icon(Icons.keyboard_arrow_left),
+                    iconSize: 14,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                  ),
+                  
+                  // Current month/year display
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        _getMonthYearText(l10n),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  
+                  // Next month button
+                  IconButton(
+                    onPressed: () => _navigateToNextMonth(),
+                    icon: const Icon(Icons.keyboard_arrow_right),
+                    iconSize: 14,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                  ),
+                  
+                  // Next year button
+                  IconButton(
+                    onPressed: () => _navigateToNextYear(),
+                    icon: const Icon(Icons.keyboard_double_arrow_right),
+                    iconSize: 14,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ],
     );

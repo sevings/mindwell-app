@@ -525,48 +525,28 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
   /// Navigates to the user's entries list
   void _navigateToEntries(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's entries feed
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to entries - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/entries');
     }
   }
 
   /// Navigates to the user's comments list
   void _navigateToComments(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's comments
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to comments - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/comments');
     }
   }
 
   /// Navigates to the user's favorited entries list
   void _navigateToFavorited(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's favorited entries
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to favorited - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/favorites');
     }
   }
 
   /// Navigates to the user's invited list
   void _navigateToInvited(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's invited users
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to invited - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/invited');
     }
   }
 

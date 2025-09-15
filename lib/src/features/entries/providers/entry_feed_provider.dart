@@ -19,11 +19,13 @@ final entryCacheServiceProvider = Provider<EntryCacheService>((ref) {
 final entryFeedProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, FeedType>(
   (ref, feedType) {
     final entriesApi = ref.read(entriesApiProvider);
+    final usersApi = ref.read(usersApiProvider);
     final cacheService = ref.read(entryCacheServiceProvider);
     
     return EntryFeedNotifier(
       feedType: feedType,
       entriesApi: entriesApi,
+      usersApi: usersApi,
       cacheService: cacheService,
     );
   },
@@ -35,11 +37,13 @@ final entryFeedProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryF
 final entryFeedWithParameterProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, ({FeedType feedType, String? feedParameter})>(
   (ref, params) {
     final entriesApi = ref.read(entriesApiProvider);
+    final usersApi = ref.read(usersApiProvider);
     final cacheService = ref.read(entryCacheServiceProvider);
     
     return EntryFeedNotifier(
       feedType: params.feedType,
       entriesApi: entriesApi,
+      usersApi: usersApi,
       cacheService: cacheService,
       feedParameter: params.feedParameter,
     );
@@ -57,6 +61,7 @@ final entryFeedWithParameterProvider = StateNotifierProvider.family<EntryFeedNot
 class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
   final FeedType _feedType;
   final EntriesApi _entriesApi;
+  final UsersApi _usersApi;
   final EntryCacheService _cacheService;
   final Logger _logger = Logger('EntryFeedNotifier');
   
@@ -69,11 +74,13 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
   EntryFeedNotifier({
     required FeedType feedType,
     required EntriesApi entriesApi,
+    required UsersApi usersApi,
     required EntryCacheService cacheService,
     String? feedParameter,
     String? tagFilter,
   })  : _feedType = feedType,
         _entriesApi = entriesApi,
+        _usersApi = usersApi,
         _cacheService = cacheService,
         _feedParameter = feedParameter,
         _tagFilter = tagFilter,
@@ -411,6 +418,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
             before: before,
             source_: 'all',
             section: 'entries',
+          );
+          return response.data;
+          
+        case FeedType.favorites:
+          // For favorites feeds, we need the username parameter
+          if (_feedParameter == null) {
+            throw Exception('Favorites feed requires a username parameter');
+          }
+          final response = await _usersApi.usersNameFavoritesGet(
+            name: _feedParameter!,
+            limit: _settings.entriesPerPage,
+            after: after,
+            before: before,
           );
           return response.data;
       }

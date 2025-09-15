@@ -18,6 +18,11 @@ class _MockEntriesApi implements EntriesApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+class _MockUsersApi implements UsersApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
 class _MockEntryCacheService implements EntryCacheService {
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -28,6 +33,7 @@ class _MockEntryFeedNotifier extends EntryFeedNotifier {
   _MockEntryFeedNotifier() : super(
     feedType: FeedType.live,
     entriesApi: _MockEntriesApi(),
+    usersApi: _MockUsersApi(),
     cacheService: _MockEntryCacheService(),
   ) {
     state = const EntryFeedState.empty();

@@ -20,6 +20,9 @@ import 'package:mindwell/src/core/api/api_provider.dart';
 import 'package:mindwell/src/core/services/image_upload_service.dart';
 import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
 import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
+import 'package:mindwell/src/features/auth/models/auth_state.dart';
+import 'package:mindwell/src/core/services/token_storage_service.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
@@ -27,15 +30,26 @@ class MockMindwellApi extends Mock implements MindwellApi {}
 class MockRelationsApi extends Mock implements RelationsApi {}
 class MockImageUploadService extends Mock implements ImageUploadService {}
 class MockMeApi extends Mock implements MeApi {}
+class MockOauth2Api extends Mock implements Oauth2Api {}
+class MockAccountApi extends Mock implements AccountApi {}
+class MockTokenStorageService extends Mock implements TokenStorageService {}
 
 void main() {
   group('ProfileScreen', () {
     late MockUsersApi mockUsersApi;
     late MockMindwellApi mockMindwellApi;
+    late MockOauth2Api mockOauth2Api;
+    late MockAccountApi mockAccountApi;
+    late MockMeApi mockMeApi;
+    late MockTokenStorageService mockTokenStorageService;
 
     setUp(() {
       mockUsersApi = MockUsersApi();
       mockMindwellApi = MockMindwellApi();
+      mockOauth2Api = MockOauth2Api();
+      mockAccountApi = MockAccountApi();
+      mockMeApi = MockMeApi();
+      mockTokenStorageService = MockTokenStorageService();
     });
 
     Widget createTestWidget({
@@ -46,6 +60,20 @@ void main() {
         overrides: [
           mindwellApiProvider.overrideWithValue(mockMindwellApi),
           usersApiProvider.overrideWithValue(mockUsersApi),
+          oauth2ApiProvider.overrideWithValue(mockOauth2Api),
+          accountApiProvider.overrideWithValue(mockAccountApi),
+          meApiProvider.overrideWithValue(mockMeApi),
+          tokenStorageServiceProvider.overrideWithValue(mockTokenStorageService),
+          authProvider.overrideWith((ref) => MockAuthNotifier(
+            AuthState.authenticated(
+              user: $MwUser((b) => b
+                ..id = 1
+                ..name = 'testuser'
+                ..showName = 'Test User'
+                ..isTheme = false
+                ..isOnline = true),
+            ),
+          )),
           profileProvider(username).overrideWith((ref) => MockProfileNotifier(profileState)),
         ],
         child: MaterialApp(
@@ -144,7 +172,12 @@ void main() {
             ..count = 5),
         ];
         final mockCalendar = MwCalendar((b) => b
-          ..entries = BuiltList<MwCalendarEntry>([]).toBuilder());
+          ..entries = BuiltList<MwCalendarEntry>([
+            MwCalendarEntry((b) => b
+              ..id = 1
+              ..title = 'Test Entry'
+              ..createdAt = 1640995200.0),
+          ]).toBuilder());
 
         await tester.pumpWidget(
           createTestWidget(
@@ -202,7 +235,12 @@ void main() {
             ..count = 5),
         ];
         final mockCalendar = MwCalendar((b) => b
-          ..entries = BuiltList<MwCalendarEntry>([]).toBuilder());
+          ..entries = BuiltList<MwCalendarEntry>([
+            MwCalendarEntry((b) => b
+              ..id = 1
+              ..title = 'Test Entry'
+              ..createdAt = 1640995200.0),
+          ]).toBuilder());
 
         await tester.pumpWidget(
           createTestWidget(
@@ -260,7 +298,12 @@ void main() {
             ..count = 5),
         ];
         final mockCalendar = MwCalendar((b) => b
-          ..entries = BuiltList<MwCalendarEntry>([]).toBuilder());
+          ..entries = BuiltList<MwCalendarEntry>([
+            MwCalendarEntry((b) => b
+              ..id = 1
+              ..title = 'Test Entry'
+              ..createdAt = 1640995200.0),
+          ]).toBuilder());
 
         await tester.pumpWidget(
           createTestWidget(
@@ -362,5 +405,17 @@ class MockProfileNotifier extends ProfileNotifier {
   @override
   Future<void> fetchProfileData() async {
     // Override to prevent HTTP requests
+  }
+}
+
+/// Mock AuthNotifier for testing
+class MockAuthNotifier extends AuthNotifier {
+  MockAuthNotifier(AuthState initialState) : super(
+    tokenStorageService: MockTokenStorageService(),
+    oauth2Api: MockOauth2Api(),
+    accountApi: MockAccountApi(),
+    meApi: MockMeApi(),
+  ) {
+    state = initialState;
   }
 }

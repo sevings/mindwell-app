@@ -12,6 +12,7 @@ import 'package:mindwell/src/features/entries/providers/entry_feed_provider.dart
 
 // Mock classes
 class MockEntriesApi extends Mock implements EntriesApi {}
+class MockUsersApi extends Mock implements UsersApi {}
 class MockEntryCacheService extends Mock implements EntryCacheService {}
 class MockMwFeed extends Mock implements MwFeed {}
 class MockMwEntry extends Mock implements MwEntry {}
@@ -70,6 +71,7 @@ bool isEmptyState(EntryFeedState state) {
 void main() {
   group('EntryFeedNotifier', () {
     late MockEntriesApi mockEntriesApi;
+    late MockUsersApi mockUsersApi;
     late MockEntryCacheService mockCacheService;
     late EntryFeedNotifier notifier;
     late MockMwFeed mockFeed;
@@ -77,6 +79,7 @@ void main() {
 
     setUp(() {
       mockEntriesApi = MockEntriesApi();
+      mockUsersApi = MockUsersApi();
       mockCacheService = MockEntryCacheService();
       mockFeed = MockMwFeed();
       
@@ -107,6 +110,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -159,6 +163,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -191,6 +196,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -225,6 +231,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -253,6 +260,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -283,6 +291,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -316,6 +325,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -347,6 +357,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -380,6 +391,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -420,6 +432,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -456,6 +469,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -483,6 +497,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -517,6 +532,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.profile,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           feedParameter: 'user123',
         );
@@ -553,6 +569,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.profile,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -602,6 +619,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -635,6 +653,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           tagFilter: 'flutter',
         );
@@ -671,6 +690,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           tagFilter: 'flutter',
         );
@@ -703,6 +723,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.best,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           tagFilter: 'dart',
         );
@@ -738,6 +759,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           tagFilter: 'flutter',
         );
@@ -766,6 +788,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
           tagFilter: 'flutter',
         );
@@ -794,6 +817,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.best,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 
@@ -824,6 +848,7 @@ void main() {
         notifier = EntryFeedNotifier(
           feedType: FeedType.friends,
           entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
           cacheService: mockCacheService,
         );
 

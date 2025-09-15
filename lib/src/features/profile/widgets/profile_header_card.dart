@@ -682,48 +682,28 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     );
   }
 
-  // Navigation methods (same as original)
+  // Navigation methods
   void _navigateToEntries(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's entries feed
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to entries - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/entries');
     }
   }
 
   void _navigateToComments(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's comments
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to comments - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/comments');
     }
   }
 
   void _navigateToFavorited(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's favorited entries
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to favorited - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/favorites');
     }
   }
 
   void _navigateToInvited(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      // TODO: Navigate to user's invited users
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Navigate to invited - not yet implemented'),
-        ),
-      );
+      context.go('/users/${Uri.encodeComponent(username)}/invited');
     }
   }
 
