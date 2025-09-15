@@ -12,10 +12,12 @@ import '../models/profile_state.dart';
 final profileProvider = StateNotifierProvider.family<ProfileNotifier, ProfileState, String>(
   (ref, username) {
     final usersApi = ref.read(usersApiProvider);
+    final relationsApi = ref.read(relationsApiProvider);
     
     return ProfileNotifier(
       username: username,
       usersApi: usersApi,
+      relationsApi: relationsApi,
     );
   },
 );
@@ -36,6 +38,7 @@ final relationsApiProvider = Provider<RelationsApi>((ref) {
 class ProfileNotifier extends StateNotifier<ProfileState> {
   final String _username;
   final UsersApi _usersApi;
+  final RelationsApi _relationsApi;
   final Logger _logger = Logger('ProfileNotifier');
   
   bool _isLoading = false;
@@ -43,8 +46,10 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   ProfileNotifier({
     required String username,
     required UsersApi usersApi,
+    required RelationsApi relationsApi,
   })  : _username = username,
         _usersApi = usersApi,
+        _relationsApi = relationsApi,
         super(const ProfileState.initial()) {
     _initialize();
   }
@@ -145,10 +150,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Following user $_username');
       
-      // Make API call to follow user
-      // Note: The actual follow API endpoint would need to be implemented
-      // For now, we'll just log the action and refetch data
-      // await _relationsApi.followUser(name: _username);
+      // Make API call to follow user using RelationsApi
+      await _relationsApi.relationsToNamePut(name: _username, r: 'followed');
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -185,10 +188,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Unfollowing user $_username');
       
-      // Make API call to unfollow user
-      // Note: The actual unfollow API endpoint would need to be implemented
-      // For now, we'll just log the action and refetch data
-      // await _relationsApi.unfollowUser(name: _username);
+      // Make API call to unfollow user using RelationsApi
+      await _relationsApi.relationsToNameDelete(name: _username);
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -225,10 +226,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Blocking user $_username');
       
-      // Make API call to block user
-      // Note: The actual block API endpoint would need to be implemented
-      // For now, we'll just log the action
-      // await _relationsApi.blockUser(name: _username);
+      // Make API call to block user using RelationsApi
+      await _relationsApi.relationsToNamePut(name: _username, r: 'ignored');
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -265,10 +264,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Unblocking user $_username');
       
-      // Make API call to unblock user
-      // Note: The actual unblock API endpoint would need to be implemented
-      // For now, we'll just log the action
-      // await _relationsApi.unblockUser(name: _username);
+      // Make API call to unblock user using RelationsApi
+      await _relationsApi.relationsToNamePut(name: _username, r: 'none');
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -305,9 +302,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Hiding user $_username from live');
       
-      // Make API call to hide user from live
-      // Note: The actual hide from live API endpoint would need to be implemented
-      // await _relationsApi.hideFromLive(name: _username);
+      // Make API call to hide user from live using RelationsApi
+      await _relationsApi.relationsToNamePut(name: _username, r: 'hidden');
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -344,9 +340,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     try {
       _logger.info('Unhiding user $_username from live');
       
-      // Make API call to unhide user from live
-      // Note: The actual unhide from live API endpoint would need to be implemented
-      // await _relationsApi.unhideFromLive(name: _username);
+      // Make API call to unhide user from live using RelationsApi
+      await _relationsApi.relationsToNamePut(name: _username, r: 'followed');
       
       // Refetch profile data to update the UI with new relationship status
       await fetchProfileData();
@@ -355,6 +350,84 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       
     } catch (e, stackTrace) {
       _logger.severe('Failed to unhide user $_username from live', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
+  /// Complain about the user.
+  /// 
+  /// This method makes an API call to report the user for inappropriate behavior.
+  Future<void> complain() async {
+    try {
+      _logger.info('Complaining about user $_username');
+      
+      // Make API call to complain about user using UsersApi
+      await _usersApi.usersNameComplainPost(name: _username);
+      
+      _logger.info('Successfully complained about user $_username');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to complain about user $_username', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
+  /// Give an invite to the user.
+  /// 
+  /// This method makes an API call to send an invite to the user.
+  Future<void> giveInvite(String invite) async {
+    try {
+      _logger.info('Giving invite to user $_username');
+      
+      // Make API call to give invite using RelationsApi
+      await _relationsApi.relationsInvitedNamePost(name: _username, invite: invite);
+      
+      _logger.info('Successfully gave invite to user $_username');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to give invite to user $_username', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
+  /// Accept a follow request from the user.
+  /// 
+  /// This method makes an API call to accept the user's follow request.
+  Future<void> acceptFollowRequest() async {
+    try {
+      _logger.info('Accepting follow request from user $_username');
+      
+      // Make API call to accept follow request using RelationsApi
+      await _relationsApi.relationsFromNamePut(name: _username);
+      
+      // Refetch profile data to update the UI with new relationship status
+      await fetchProfileData();
+      
+      _logger.info('Successfully accepted follow request from user $_username');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to accept follow request from user $_username', e, stackTrace);
+      // Don't change state on error - user can retry
+    }
+  }
+
+  /// Deny a follow request from the user.
+  /// 
+  /// This method makes an API call to deny the user's follow request.
+  Future<void> denyFollowRequest() async {
+    try {
+      _logger.info('Denying follow request from user $_username');
+      
+      // Make API call to deny follow request using RelationsApi
+      await _relationsApi.relationsFromNameDelete(name: _username);
+      
+      // Refetch profile data to update the UI with new relationship status
+      await fetchProfileData();
+      
+      _logger.info('Successfully denied follow request from user $_username');
+      
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to deny follow request from user $_username', e, stackTrace);
       // Don't change state on error - user can retry
     }
   }

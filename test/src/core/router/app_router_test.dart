@@ -119,9 +119,14 @@ class _MockUsersApi implements UsersApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+class _MockRelationsApi implements RelationsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
 /// Mock ProfileNotifier that doesn't make HTTP requests
 class _MockProfileNotifier extends ProfileNotifier {
-  _MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: _MockUsersApi()) {
+  _MockProfileNotifier(ProfileState initialState) : super(username: 'test', usersApi: _MockUsersApi(), relationsApi: _MockRelationsApi()) {
     state = initialState;
   }
   

@@ -15,6 +15,7 @@ class MockResponse<T> extends Mock implements Response<T> {}
 void main() {
   group('ProfileNotifier', () {
     late MockUsersApi mockUsersApi;
+    late MockRelationsApi mockRelationsApi;
     late ProfileNotifier profileNotifier;
     late MockResponse<MwProfile> mockProfileResponse;
     late MockResponse<MwBadgeList> mockBadgesResponse;
@@ -24,6 +25,7 @@ void main() {
 
     setUp(() {
       mockUsersApi = MockUsersApi();
+      mockRelationsApi = MockRelationsApi();
       mockProfileResponse = MockResponse<MwProfile>();
       mockBadgesResponse = MockResponse<MwBadgeList>();
       mockImagesResponse = MockResponse<MwImageList>();
@@ -33,6 +35,7 @@ void main() {
       profileNotifier = ProfileNotifier(
         username: 'testuser',
         usersApi: mockUsersApi,
+        relationsApi: mockRelationsApi,
       );
     });
 
@@ -209,6 +212,9 @@ void main() {
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
 
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
         // First load the profile
         await profileNotifier.fetchProfileData();
 
@@ -216,6 +222,7 @@ void main() {
         await profileNotifier.followUser();
 
         // Assert
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed')).called(1);
         verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
       });
 
@@ -244,6 +251,15 @@ void main() {
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
 
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
+            .thenThrow(DioException(
+              requestOptions: RequestOptions(path: '/test'),
+              response: Response(
+                requestOptions: RequestOptions(path: '/test'),
+                statusCode: 500,
+              ),
+            ));
+
         // First load the profile
         await profileNotifier.fetchProfileData();
         final initialState = profileNotifier.state;
@@ -251,8 +267,9 @@ void main() {
         // Act
         await profileNotifier.followUser();
 
-        // Assert - State should remain unchanged on error (since we're not making actual API calls)
+        // Assert - State should remain unchanged on error
         expect(profileNotifier.state, equals(initialState));
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed')).called(1);
       });
     });
 
@@ -282,6 +299,9 @@ void main() {
         when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
             .thenAnswer((_) async => mockCalendarResponse);
 
+        when(() => mockRelationsApi.relationsToNameDelete(name: 'testuser'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
         // First load the profile
         await profileNotifier.fetchProfileData();
 
@@ -289,6 +309,319 @@ void main() {
         await profileNotifier.unfollowUser();
 
         // Assert
+        verify(() => mockRelationsApi.relationsToNameDelete(name: 'testuser')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('blockUser', () {
+      test('should block user successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'ignored'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.blockUser();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'ignored')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('unblockUser', () {
+      test('should unblock user successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'none'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.unblockUser();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'none')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('hideFromLive', () {
+      test('should hide user from live successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'hidden'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.hideFromLive();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'hidden')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('unhideFromLive', () {
+      test('should unhide user from live successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.unhideFromLive();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsToNamePut(name: 'testuser', r: 'followed')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('complain', () {
+      test('should complain about user successfully', () async {
+        // Arrange
+        when(() => mockUsersApi.usersNameComplainPost(name: 'testuser'))
+            .thenAnswer((_) async => MockResponse<void>());
+
+        // Act
+        await profileNotifier.complain();
+
+        // Assert
+        verify(() => mockUsersApi.usersNameComplainPost(name: 'testuser')).called(1);
+      });
+
+      test('should handle complain error gracefully', () async {
+        // Arrange
+        when(() => mockUsersApi.usersNameComplainPost(name: 'testuser'))
+            .thenThrow(DioException(
+              requestOptions: RequestOptions(path: '/test'),
+              response: Response(
+                requestOptions: RequestOptions(path: '/test'),
+                statusCode: 500,
+              ),
+            ));
+
+        // Act
+        await profileNotifier.complain();
+
+        // Assert - Should not throw, just log the error
+        verify(() => mockUsersApi.usersNameComplainPost(name: 'testuser')).called(1);
+      });
+    });
+
+    group('giveInvite', () {
+      test('should give invite to user successfully', () async {
+        // Arrange
+        const inviteCode = 'INVITE123';
+        when(() => mockRelationsApi.relationsInvitedNamePost(name: 'testuser', invite: inviteCode))
+            .thenAnswer((_) async => MockResponse<void>());
+
+        // Act
+        await profileNotifier.giveInvite(inviteCode);
+
+        // Assert
+        verify(() => mockRelationsApi.relationsInvitedNamePost(name: 'testuser', invite: inviteCode)).called(1);
+      });
+
+      test('should handle giveInvite error gracefully', () async {
+        // Arrange
+        const inviteCode = 'INVITE123';
+        when(() => mockRelationsApi.relationsInvitedNamePost(name: 'testuser', invite: inviteCode))
+            .thenThrow(DioException(
+              requestOptions: RequestOptions(path: '/test'),
+              response: Response(
+                requestOptions: RequestOptions(path: '/test'),
+                statusCode: 500,
+              ),
+            ));
+
+        // Act
+        await profileNotifier.giveInvite(inviteCode);
+
+        // Assert - Should not throw, just log the error
+        verify(() => mockRelationsApi.relationsInvitedNamePost(name: 'testuser', invite: inviteCode)).called(1);
+      });
+    });
+
+    group('acceptFollowRequest', () {
+      test('should accept follow request successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsFromNamePut(name: 'testuser'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.acceptFollowRequest();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsFromNamePut(name: 'testuser')).called(1);
+        verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
+      });
+    });
+
+    group('denyFollowRequest', () {
+      test('should deny follow request successfully and refetch profile data', () async {
+        // Arrange
+        final mockProfile = $MwProfile((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+        );
+
+        when(() => mockProfileResponse.data).thenReturn(mockProfile);
+        when(() => mockBadgesResponse.data).thenReturn(MwBadgeList((b) => b..data = ListBuilder<MwBadge>([])));
+        when(() => mockImagesResponse.data).thenReturn(MwImageList((b) => b..data = ListBuilder<MwImage>([])));
+        when(() => mockTagsResponse.data).thenReturn(MwTagList((b) => b..data = ListBuilder<MwTagListDataInner>([])));
+        when(() => mockCalendarResponse.data).thenReturn(MwCalendar());
+
+        when(() => mockUsersApi.usersNameGet(name: 'testuser'))
+            .thenAnswer((_) async => mockProfileResponse);
+        when(() => mockUsersApi.usersNameBadgesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockBadgesResponse);
+        when(() => mockUsersApi.usersNameImagesGet(name: 'testuser'))
+            .thenAnswer((_) async => mockImagesResponse);
+        when(() => mockUsersApi.usersNameTagsGet(name: 'testuser'))
+            .thenAnswer((_) async => mockTagsResponse);
+        when(() => mockUsersApi.usersNameCalendarGet(name: 'testuser'))
+            .thenAnswer((_) async => mockCalendarResponse);
+
+        when(() => mockRelationsApi.relationsFromNameDelete(name: 'testuser'))
+            .thenAnswer((_) async => MockResponse<MwRelationship>());
+
+        // First load the profile
+        await profileNotifier.fetchProfileData();
+
+        // Act
+        await profileNotifier.denyFollowRequest();
+
+        // Assert
+        verify(() => mockRelationsApi.relationsFromNameDelete(name: 'testuser')).called(1);
         verify(() => mockUsersApi.usersNameGet(name: 'testuser')).called(greaterThan(0));
       });
     });
