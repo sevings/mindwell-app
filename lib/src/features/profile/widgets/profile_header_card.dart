@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
-import '../../../core/providers/auth_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 
 /// A card-based profile header widget that fills the screen width.
@@ -90,7 +90,10 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -174,7 +177,10 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     
     // Get current user info to determine if this is own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
 
     if (isOwnProfile) {
       return Container(
@@ -236,7 +242,10 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
   ) {
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
 
     return Column(
       children: [

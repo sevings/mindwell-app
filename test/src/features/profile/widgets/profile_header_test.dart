@@ -5,8 +5,10 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import 'package:mindwell/l10n/app_localizations.dart';
-import 'package:mindwell/src/core/providers/auth_provider.dart';
+import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
+import 'package:mindwell/src/features/auth/models/auth_state.dart';
 import 'package:mindwell/src/core/services/image_upload_service.dart';
+import 'package:mindwell/src/core/services/token_storage_service.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/widgets/profile_header_card.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
@@ -36,17 +38,27 @@ class MockProfileNotifier extends ProfileNotifier {
 }
 
 class MockAuthNotifier extends AuthNotifier {
-  MockAuthNotifier(AuthState initialState) {
+  MockAuthNotifier(AuthState initialState) : super(
+    tokenStorageService: MockTokenStorageService(),
+    oauth2Api: MockOauth2Api(),
+    accountApi: MockAccountApi(),
+    meApi: MockMeApi(),
+  ) {
     state = initialState;
   }
 }
+
+// Mock classes for dependencies
+class MockTokenStorageService extends Mock implements TokenStorageService {}
+class MockOauth2Api extends Mock implements Oauth2Api {}
+class MockAccountApi extends Mock implements AccountApi {}
 
 void main() {
   group('ProfileHeaderCard', () {
     Widget createTestWidget({
       required String username,
       ProfileState profileState = const ProfileState.initial(),
-      AuthState authState = const AuthState(isAuthenticated: false),
+      AuthState authState = const AuthState.unauthenticated(),
     }) {
       return ProviderScope(
         overrides: [
@@ -90,6 +102,7 @@ void main() {
 
     testWidgets('displays own profile with edit button', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -103,7 +116,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'testuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -115,6 +134,7 @@ void main() {
 
     testWidgets('displays follow request buttons when user has requested to follow', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -128,7 +148,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -138,6 +164,7 @@ void main() {
 
     testWidgets('displays follow button for non-followed user', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -151,7 +178,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -161,6 +194,7 @@ void main() {
 
     testWidgets('displays unfollow button for followed user', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -174,7 +208,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -184,6 +224,7 @@ void main() {
 
     testWidgets('displays popup menu with correct actions', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -197,7 +238,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -207,6 +254,7 @@ void main() {
 
     testWidgets('displays user statistics correctly', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -220,7 +268,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -243,7 +297,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -254,6 +314,7 @@ void main() {
 
     testWidgets('shows upload buttons on own profile', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -267,7 +328,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'testuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -277,6 +344,7 @@ void main() {
 
     testWidgets('hides upload buttons on other users profile', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -290,7 +358,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'otheruser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 2
+          ..name = 'otheruser'
+          ..showName = 'Other User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -300,6 +374,7 @@ void main() {
 
     testWidgets('shows upload buttons only when authenticated', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -313,7 +388,7 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: false),
+        authState: const AuthState.unauthenticated(),
       ));
       await tester.pump();
 
@@ -323,6 +398,7 @@ void main() {
 
     testWidgets('displays user statistics in row layout', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -336,7 +412,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 
@@ -347,6 +429,7 @@ void main() {
 
     testWidgets('displays avatar with correct size', (WidgetTester tester) async {
       final user = $MwProfile((b) => b
+        ..id = 1
         ..name = 'testuser'
         ..showName = 'Test User'
         ..isOnline = false);
@@ -360,7 +443,13 @@ void main() {
           tags: [],
           calendarData: null,
         ),
-        authState: const AuthState(isAuthenticated: true, username: 'currentuser'),
+        authState: AuthState.authenticated(user: $MwUser((b) => b
+          ..id = 1
+          ..name = 'currentuser'
+          ..showName = 'Current User'
+          ..isTheme = false
+          ..isOnline = true
+        )),
       ));
       await tester.pump();
 

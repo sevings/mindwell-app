@@ -10,7 +10,7 @@ import '../../../core/widgets/buttons/button_size.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/buttons/secondary_button.dart';
 import '../../../core/widgets/images/cached_image.dart';
-import '../../../core/providers/auth_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 
 /// A collapsible header widget for the user profile screen.
@@ -147,7 +147,10 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
   Widget _buildCoverImage(MwCover cover, bool isCollapsed, MwProfile user, WidgetRef ref) {
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
     
     return Positioned.fill(
       child: Stack(
@@ -206,7 +209,10 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
     
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
 
     return Row(
       children: [
@@ -596,7 +602,10 @@ class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
     
     // Get current user info to determine if this is own profile
     final authState = ref.watch(authProvider);
-    final isOwnProfile = authState.isAuthenticated && authState.username == user.name;
+    final isOwnProfile = authState.maybeWhen(
+      authenticated: (authUser) => authUser.id == user.id,
+      orElse: () => false,
+    );
 
     if (isOwnProfile) {
       // Own profile - show edit button

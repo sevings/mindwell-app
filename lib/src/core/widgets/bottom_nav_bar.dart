@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth_provider.dart';
+import '../../features/auth/providers/auth_provider.dart';
 import '../theme/spacing.dart';
 
 /// Platform-aware bottom navigation bar widget.
@@ -90,7 +90,7 @@ class PlatformBottomNavBar extends ConsumerWidget {
     final platform = theme.platform;
 
     // Only show the bottom navigation bar when authenticated
-    if (!authState.isAuthenticated) {
+    if (!authState.maybeWhen(authenticated: (_) => true, orElse: () => false)) {
       return const SizedBox.shrink();
     }
 
