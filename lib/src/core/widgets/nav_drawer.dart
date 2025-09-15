@@ -247,7 +247,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.tlogs,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to tlogs
+            context.go('/users');
           },
           theme: theme,
         ),
@@ -258,20 +258,6 @@ class NavDrawer extends ConsumerWidget {
           onTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to themes
-          },
-          theme: theme,
-        ),
-        
-        const Divider(),
-        
-        // Users section
-        _buildDrawerItem(
-          context: context,
-          icon: Icons.people_outline,
-          title: 'Users', // TODO: Add to localization
-          onTap: () {
-            Navigator.of(context).pop();
-            context.go('/users');
           },
           theme: theme,
         ),
