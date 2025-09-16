@@ -614,6 +614,18 @@ abstract class AppLocalizations {
   /// **'Интервал обновления'**
   String get refreshInterval;
 
+  /// Refresh button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Обновить'**
+  String get refresh;
+
+  /// Refreshing status text
+  ///
+  /// In ru, this message translates to:
+  /// **'Обновление'**
+  String get refreshing;
+
   /// Seconds unit for time intervals
   ///
   /// In ru, this message translates to:

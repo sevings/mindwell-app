@@ -7,6 +7,7 @@ import '../../../core/theme/spacing.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/feed_type.dart';
 import '../models/feed_tab_config.dart';
+import '../providers/entry_feed_provider.dart';
 import '../widgets/entry_list.dart';
 import '../widgets/feed_settings_bottom_sheet.dart';
 
@@ -177,7 +178,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
                     color: Color(0xFFFF5E3A),
                   ),
                 ),
-                // Menu button for additional options
+                // Menu button for refresh option
                 PopupMenuButton<String>(
                   icon: const Icon(
                     Icons.more_vert,
@@ -191,27 +192,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
                         children: [
                           const Icon(Icons.refresh),
                           const SizedBox(width: MindwellSpacing.sm),
-                          Text('Refresh'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'my_entries',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.person),
-                          const SizedBox(width: MindwellSpacing.sm),
-                          Text(l10n?.myEntries ?? 'My Entries'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'themes',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.category),
-                          const SizedBox(width: MindwellSpacing.sm),
-                          Text(l10n?.themes ?? 'Themes'),
+                          Text(l10n?.refresh ?? 'Refresh'),
                         ],
                       ),
                     ),
@@ -332,23 +313,45 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       case 'refresh':
         _refreshCurrentFeed();
         break;
-      case 'my_entries':
-        _navigateToMyEntries();
-        break;
-      case 'themes':
-        _navigateToThemes();
-        break;
     }
   }
 
   /// Refresh the current active feed
   void _refreshCurrentFeed() {
-    final currentFeedType = _feedTypes[_tabController.index];
-    // TODO: Implement refresh logic when provider is available
+    final currentFeedType = widget.feedType ?? _feedTypes[_tabController.index];
+    final l10n = AppLocalizations.of(context);
+    
+    // Get the appropriate provider based on feed type and parameters
+    String? feedParameter;
+    
+    if (widget.feedType != null) {
+      // For specific feed types with tab configurations
+      final tabConfigs = _getTabConfigurations();
+      if (tabConfigs.isNotEmpty && _tabController.index < tabConfigs.length) {
+        // We're in a tabbed view with specific configurations
+        final tabConfig = tabConfigs[_tabController.index];
+        feedParameter = '${widget.username ?? ''}_${tabConfig.value}';
+      } else if (currentFeedType == FeedType.profile && widget.username != null) {
+        // For profile feeds, use username as feedParameter
+        feedParameter = widget.username;
+      }
+    } else {
+      // For the main feed screen with default tabs, no specific parameter needed
+      feedParameter = null;
+    }
+    
+    final provider = feedParameter != null
+        ? entryFeedWithParameterProvider((feedType: currentFeedType, feedParameter: feedParameter))
+        : entryFeedProvider(currentFeedType);
+    
+    // Call refresh on the provider
+    ref.read(provider.notifier).refresh();
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Refreshing ${_getFeedTypeDisplayName(currentFeedType, AppLocalizations.of(context))} feed...'),
+        content: Text('${l10n?.refreshing ?? 'Refreshing'} ${_getFeedTypeDisplayName(currentFeedType, l10n)} ${l10n?.feed ?? 'feed'}...'),
         backgroundColor: const Color(0xFFFF5E3A),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -356,22 +359,6 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
   /// Navigate to the entry editor
   void _navigateToEntryEditor() {
     context.push('/entries/new');
-  }
-
-  /// Navigate to my entries
-  void _navigateToMyEntries() {
-    context.push('/profile');
-  }
-
-  /// Navigate to themes
-  void _navigateToThemes() {
-    // TODO: Implement themes navigation when available
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Themes feature coming soon!'),
-        backgroundColor: Color(0xFFFF5E3A),
-      ),
-    );
   }
 
   /// Build a single feed view without tabs for specific feed types
@@ -450,27 +437,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
                       children: [
                         const Icon(Icons.refresh),
                         const SizedBox(width: MindwellSpacing.sm),
-                        Text('Refresh'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'my_entries',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.myEntries ?? 'My Entries'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'themes',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.category),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.themes ?? 'Themes'),
+                        Text(l10n?.refresh ?? 'Refresh'),
                       ],
                     ),
                   ),
@@ -589,27 +556,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
                       children: [
                         const Icon(Icons.refresh),
                         const SizedBox(width: MindwellSpacing.sm),
-                        Text('Refresh'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'my_entries',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.myEntries ?? 'My Entries'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'themes',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.category),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.themes ?? 'Themes'),
+                        Text(l10n?.refresh ?? 'Refresh'),
                       ],
                     ),
                   ),

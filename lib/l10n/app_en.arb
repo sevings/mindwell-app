@@ -286,6 +286,14 @@
   "@refreshInterval": {
     "description": "Refresh interval setting"
   },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "refreshing": "Refreshing",
+  "@refreshing": {
+    "description": "Refreshing status text"
+  },
   "seconds": "seconds",
   "@seconds": {
     "description": "Seconds unit for time intervals"

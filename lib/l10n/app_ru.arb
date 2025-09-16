@@ -352,6 +352,14 @@
   "@refreshInterval": {
     "description": "Refresh interval setting"
   },
+  "refresh": "Обновить",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "refreshing": "Обновление",
+  "@refreshing": {
+    "description": "Refreshing status text"
+  },
   "seconds": "секунд",
   "@seconds": {
     "description": "Seconds unit for time intervals"

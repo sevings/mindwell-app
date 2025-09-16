@@ -270,6 +270,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refreshInterval => 'Refresh Interval';
 
   @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get refreshing => 'Refreshing';
+
+  @override
   String get seconds => 'seconds';
 
   @override
