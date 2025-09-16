@@ -82,9 +82,8 @@ void main() {
           entriesApiProvider.overrideWith((ref) => mockEntriesApi),
           usersApiProvider.overrideWith((ref) => mockUsersApi),
           entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
-          // Override all possible feed providers with mock notifiers
-          entryFeedProvider.overrideWith((ref, feedType) => MockEntryFeedNotifier(feedType: feedType)),
-          entryFeedWithParameterProvider.overrideWith((ref, params) => 
+          // Override the unified feed provider with mock notifiers
+          entryFeedProvider.overrideWith((ref, params) => 
             MockEntryFeedNotifier(feedType: params.feedType, feedParameter: params.feedParameter)),
         ],
         child: MaterialApp(
@@ -298,9 +297,8 @@ void main() {
           entriesApiProvider.overrideWith((ref) => mockEntriesApi),
           usersApiProvider.overrideWith((ref) => mockUsersApi),
           entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
-          // Override all possible feed providers with mock notifiers
-          entryFeedProvider.overrideWith((ref, feedType) => MockEntryFeedNotifier(feedType: feedType)),
-          entryFeedWithParameterProvider.overrideWith((ref, params) => 
+          // Override the unified feed provider with mock notifiers
+          entryFeedProvider.overrideWith((ref, params) => 
             MockEntryFeedNotifier(feedType: params.feedType, feedParameter: params.feedParameter)),
         ],
         child: MaterialApp(

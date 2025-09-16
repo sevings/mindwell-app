@@ -15,26 +15,9 @@ final entryCacheServiceProvider = Provider<EntryCacheService>((ref) {
 
 /// Provider for the EntryFeedNotifier that manages the state of a specific feed type.
 /// 
-/// Takes a [FeedType] as a parameter to create separate providers for each feed type.
-final entryFeedProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, FeedType>(
-  (ref, feedType) {
-    final entriesApi = ref.read(entriesApiProvider);
-    final usersApi = ref.read(usersApiProvider);
-    final cacheService = ref.read(entryCacheServiceProvider);
-    
-    return EntryFeedNotifier(
-      feedType: feedType,
-      entriesApi: entriesApi,
-      usersApi: usersApi,
-      cacheService: cacheService,
-    );
-  },
-);
-
-/// Provider for the EntryFeedNotifier with a specific feed parameter.
-/// 
-/// Takes both [FeedType] and [String] (feedParameter) as parameters.
-final entryFeedWithParameterProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, ({FeedType feedType, String? feedParameter})>(
+/// Takes both [FeedType] and optional [String] (feedParameter) as parameters.
+/// This unified provider handles all feed types, whether they need parameters or not.
+final entryFeedProvider = StateNotifierProvider.family<EntryFeedNotifier, EntryFeedState, ({FeedType feedType, String? feedParameter})>(
   (ref, params) {
     final entriesApi = ref.read(entriesApiProvider);
     final usersApi = ref.read(usersApiProvider);
@@ -260,14 +243,14 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
   Future<void> refresh() async {
     _logger.info('Refreshing feed for ${_feedType.name}');
     
-    // Clear cache for this feed type
+    // Clear only the entries cache, preserve settings
     final cacheKey = _getCacheKey();
     await _cacheService.clearFeedCache(cacheKey);
     
     // Reset pagination
     _nextAfter = null;
     
-    // Fetch fresh data
+    // Fetch fresh data with current settings
     await fetchInitialEntries();
   }
 

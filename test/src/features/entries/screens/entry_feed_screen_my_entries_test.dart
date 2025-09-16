@@ -146,10 +146,8 @@ void main() {
         entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
         // Override all possible feed providers
         for (final ft in FeedType.values) ...[
-          entryFeedProvider(ft).overrideWith((ref) => mockNotifier),
-          // Also override parameterized providers for all feed types
-          entryFeedWithParameterProvider((feedType: ft, feedParameter: null))
-              .overrideWith((ref) => mockNotifier),
+          // Override the unified feed provider for all feed types
+          entryFeedProvider((feedType: ft, feedParameter: null)).overrideWith((ref) => mockNotifier),
         ],
       ];
       

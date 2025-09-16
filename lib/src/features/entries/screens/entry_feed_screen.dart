@@ -322,6 +322,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
     final l10n = AppLocalizations.of(context);
     
     // Get the appropriate provider based on feed type and parameters
+    // Use the same logic as the EntryList widgets to ensure we're using the same provider instance
     String? feedParameter;
     
     if (widget.feedType != null) {
@@ -330,19 +331,35 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       if (tabConfigs.isNotEmpty && _tabController.index < tabConfigs.length) {
         // We're in a tabbed view with specific configurations
         final tabConfig = tabConfigs[_tabController.index];
-        feedParameter = '${widget.username ?? ''}_${tabConfig.value}';
-      } else if (currentFeedType == FeedType.profile && widget.username != null) {
-        // For profile feeds, use username as feedParameter
-        feedParameter = widget.username;
+        // Use the same logic as EntryList widgets
+        if (currentFeedType == FeedType.profile || currentFeedType == FeedType.favorites) {
+          feedParameter = widget.username;
+        } else {
+          feedParameter = '${widget.username ?? ''}_${tabConfig.value}';
+        }
+      } else {
+        // For single feed view, use the same logic as EntryList widgets
+        if (currentFeedType == FeedType.profile || currentFeedType == FeedType.favorites) {
+          feedParameter = widget.username;
+        } else {
+          feedParameter = null;
+        }
       }
     } else {
-      // For the main feed screen with default tabs, no specific parameter needed
-      feedParameter = null;
+      // For the main feed screen with default tabs, use the same logic as EntryList widgets
+      if (currentFeedType == FeedType.profile || currentFeedType == FeedType.favorites) {
+        // Get the current user ID for profile feeds in the main tabbed view
+        final authState = ref.read(authProvider);
+        authState.maybeWhen(
+          authenticated: (user) => feedParameter = user.id?.toString(),
+          orElse: () => feedParameter = null,
+        );
+      } else {
+        feedParameter = null;
+      }
     }
     
-    final provider = feedParameter != null
-        ? entryFeedWithParameterProvider((feedType: currentFeedType, feedParameter: feedParameter))
-        : entryFeedProvider(currentFeedType);
+    final provider = entryFeedProvider((feedType: currentFeedType, feedParameter: feedParameter));
     
     // Call refresh on the provider
     ref.read(provider.notifier).refresh();

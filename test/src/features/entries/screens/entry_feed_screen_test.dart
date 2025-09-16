@@ -89,13 +89,13 @@ void main() {
       // Override all possible feed providers
       for (final ft in FeedType.values) {
         providers.add(
-          entryFeedProvider(ft).overrideWith((ref) => mockNotifier),
+          entryFeedProvider((feedType: ft, feedParameter: null)).overrideWith((ref) => mockNotifier),
         );
         
         // Also override parameterized providers for all feed types
         if (tagFilter != null) {
           providers.add(
-            entryFeedWithParameterProvider((feedType: ft, feedParameter: tagFilter))
+            entryFeedProvider((feedType: ft, feedParameter: tagFilter))
                 .overrideWith((ref) => mockNotifier),
           );
         }

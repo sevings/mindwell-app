@@ -44,7 +44,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
     final l10n = AppLocalizations.of(context);
     
     // Get current settings from the provider state
-    final feedState = ref.watch(entryFeedProvider(widget.feedType));
+    final feedState = ref.watch(entryFeedProvider((feedType: widget.feedType, feedParameter: null)));
     final settings = feedState.when(
       initial: () => FeedSettings.defaultSettings,
       loading: () => FeedSettings.defaultSettings,
@@ -412,7 +412,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   void _applySettings() {
     // Update the provider with new settings
     if (_currentSettings != null) {
-      ref.read(entryFeedProvider(widget.feedType).notifier)
+      ref.read(entryFeedProvider((feedType: widget.feedType, feedParameter: null)).notifier)
           .updateSettings(_currentSettings!);
     }
     
