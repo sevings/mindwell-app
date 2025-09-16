@@ -128,11 +128,13 @@ void main() {
       // Verify app title is displayed
       expect(find.text('Mindwell'), findsOneWidget);
 
-      // Verify SliverAppBar is present
-      expect(find.byType(SliverAppBar), findsOneWidget);
+      // Verify PlatformAppBar is present (EntryFeedScreen uses PlatformAppBar, not SliverAppBar)
+      expect(find.byType(AppBar), findsOneWidget);
     });
 
-    testWidgets('displays FloatingActionButton', (WidgetTester tester) async {
+    testWidgets('displays FloatingActionButton when in standalone mode', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -145,7 +147,12 @@ void main() {
             ),
           ],
           child: MaterialApp(
-            home: const EntryFeedScreen(),
+            // Create a route that can pop to simulate standalone mode
+            initialRoute: '/feed',
+            routes: {
+              '/': (context) => const Scaffold(body: Text('Home')),
+              '/feed': (context) => const EntryFeedScreen(),
+            },
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -160,7 +167,7 @@ void main() {
 
       await tester.pump();
 
-      // Verify FloatingActionButton is present
+      // Verify FloatingActionButton is present when in standalone mode
       expect(find.byType(FloatingActionButton), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
     });

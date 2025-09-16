@@ -5,15 +5,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
+import '../../../core/widgets/platform_app_bar.dart';
 import '../models/user_list_state.dart';
 import '../providers/user_list_provider.dart';
 import '../widgets/user_card.dart';
 
 /// A screen that displays a list of users in a responsive grid layout.
-/// 
+///
 /// This screen supports different types of user lists (followers, following, invited, users)
 /// and provides a consistent UI for displaying user information in a card-based layout.
-/// 
+///
 /// ## Features:
 /// - Responsive grid layout that adapts to screen size
 /// - Pull-to-refresh functionality
@@ -21,31 +22,27 @@ import '../widgets/user_card.dart';
 /// - Loading states with skeleton placeholders
 /// - Error handling with retry options
 /// - Empty state handling
-/// 
+///
 /// ## Usage Examples:
-/// 
+///
 /// ```dart
 /// // Navigate to followers list
 /// context.go('/users/john_doe/followers');
-/// 
+///
 /// // Navigate to following list
 /// context.go('/users/john_doe/following');
-/// 
+///
 /// // Navigate to invited users list
 /// context.go('/users/john_doe/invited');
 /// ```
 class UserListScreen extends ConsumerStatefulWidget {
   /// The type of user list to display
   final UserListType type;
-  
+
   /// The username for which to display the user list
   final String username;
 
-  const UserListScreen({
-    super.key,
-    required this.type,
-    required this.username,
-  });
+  const UserListScreen({super.key, required this.type, required this.username});
 
   @override
   ConsumerState<UserListScreen> createState() => _UserListScreenState();
@@ -69,7 +66,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
 
   /// Handles scroll events to implement infinite scrolling
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
+    if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _loadMoreUsers();
     }
@@ -78,11 +75,13 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
   /// Loads more users for pagination
   Future<void> _loadMoreUsers() async {
     if (_isLoadingMore) return;
-    
+
     // Check if there are more users to load
-    final currentState = ref.read(userListProvider((type: widget.type, username: widget.username)));
+    final currentState = ref.read(
+      userListProvider((type: widget.type, username: widget.username)),
+    );
     bool hasMore = false;
-    
+
     currentState.when(
       initial: () {},
       loading: () {},
@@ -91,16 +90,22 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
       },
       error: (message) {},
     );
-    
+
     if (!hasMore) return;
-    
+
     setState(() {
       _isLoadingMore = true;
     });
 
     try {
-      await ref.read(userListProvider((type: widget.type, username: widget.username))
-          .notifier).fetchNextPage();
+      await ref
+          .read(
+            userListProvider((
+              type: widget.type,
+              username: widget.username,
+            )).notifier,
+          )
+          .fetchNextPage();
     } finally {
       if (mounted) {
         setState(() {
@@ -112,19 +117,38 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
 
   /// Refreshes the user list
   Future<void> _refreshUsers() async {
-    await ref.read(userListProvider((type: widget.type, username: widget.username))
-        .notifier).refresh();
+    await ref
+        .read(
+          userListProvider((
+            type: widget.type,
+            username: widget.username,
+          )).notifier,
+        )
+        .refresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userListState = ref.watch(userListProvider((type: widget.type, username: widget.username)));
+    final userListState = ref.watch(
+      userListProvider((type: widget.type, username: widget.username)),
+    );
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_getAppBarTitle(l10n)),
+      appBar: PlatformAppBar(
+        title: Text(
+          _getAppBarTitle(l10n),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        automaticallyImplyLeading: true,
         actions: [
           // Refresh button
           IconButton(
@@ -137,7 +161,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
       body: userListState.when(
         initial: () => _buildLoadingScreen(context),
         loading: () => _buildLoadingScreen(context),
-        loaded: (users, hasMore, nextAfter, nextBefore) => 
+        loaded: (users, hasMore, nextAfter, nextBefore) =>
             _buildLoadedScreen(context, l10n, users, hasMore),
         error: (message) => _buildErrorScreen(context, l10n, message),
       ),
@@ -167,12 +191,10 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
               child: _buildUserGrid(context, users),
             ),
           ),
-          
+
           // Loading more indicator
           if (hasMore)
-            SliverToBoxAdapter(
-              child: _buildLoadingMoreIndicator(context),
-            ),
+            SliverToBoxAdapter(child: _buildLoadingMoreIndicator(context)),
         ],
       ),
     );
@@ -183,7 +205,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
-        
+
         // Determine number of columns based on screen width breakpoints
         int columns;
         if (screenWidth < 540) {
@@ -198,17 +220,19 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
           crossAxisCount: columns,
           mainAxisSpacing: 16.0,
           crossAxisSpacing: 16.0,
-          children: users.map((user) => 
-            StaggeredGridTile.fit(
-              crossAxisCellCount: 1,
-              child: UserCard(
-                user: user,
-                onTap: () => _navigateToUserProfile(user.name),
-                onEntriesTap: () => _navigateToUserEntries(user.name),
-                onFollowersTap: () => _navigateToUserFollowers(user.name),
-              ),
-            ),
-          ).toList(),
+          children: users
+              .map(
+                (user) => StaggeredGridTile.fit(
+                  crossAxisCellCount: 1,
+                  child: UserCard(
+                    user: user,
+                    onTap: () => _navigateToUserProfile(user.name),
+                    onEntriesTap: () => _navigateToUserEntries(user.name),
+                    onFollowersTap: () => _navigateToUserFollowers(user.name),
+                  ),
+                ),
+              )
+              .toList(),
         );
       },
     );
@@ -233,7 +257,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
-        
+
         // Determine number of columns based on screen width breakpoints
         int columns;
         if (screenWidth < 540) {
@@ -248,8 +272,9 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
           crossAxisCount: columns,
           mainAxisSpacing: 16.0,
           crossAxisSpacing: 16.0,
-          children: List.generate(6, (index) => 
-            StaggeredGridTile.fit(
+          children: List.generate(
+            6,
+            (index) => StaggeredGridTile.fit(
               crossAxisCellCount: 1,
               child: _buildSkeletonUserCard(),
             ),
@@ -261,11 +286,12 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
 
   /// Builds a skeleton user card for loading state
   Widget _buildSkeletonUserCard() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -275,7 +301,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
               height: 80,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
@@ -283,7 +309,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
               ),
             ),
           ),
-          
+
           // Content skeleton
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -297,8 +323,8 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                       child: Container(
                         width: 48,
                         height: 48,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -313,7 +339,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                               height: 16,
                               width: 120,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),
@@ -324,7 +350,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                               height: 14,
                               width: 80,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),
@@ -334,9 +360,9 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Stats skeleton
                 Row(
                   children: [
@@ -345,7 +371,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                         height: 32,
                         width: 60,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -356,7 +382,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                         height: 32,
                         width: 60,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -386,11 +412,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 64, color: colorScheme.error),
             const SizedBox(height: 16),
             Text(
               l10n?.somethingWentWrong ?? 'Something went wrong',

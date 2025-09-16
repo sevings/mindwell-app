@@ -6,6 +6,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
+import '../../../core/widgets/platform_app_bar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_header_card.dart';
@@ -19,18 +20,15 @@ import '../widgets/last_entries_card.dart';
 import '../widgets/calendar_card.dart';
 
 /// The main profile screen that displays a user's profile information.
-/// 
-/// This screen uses a CustomScrollView with a SliverAppBar to create a
-/// collapsible header effect. The content is displayed in a responsive
+///
+/// This screen uses a CustomScrollView with a PlatformAppBar to provide
+/// consistent navigation and actions. The content is displayed in a responsive
 /// grid layout with various profile cards.
 class ProfileScreen extends ConsumerWidget {
   /// The username of the profile to display
   final String username;
 
-  const ProfileScreen({
-    super.key,
-    required this.username,
-  });
+  const ProfileScreen({super.key, required this.username});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,8 +39,27 @@ class ProfileScreen extends ConsumerWidget {
       body: profileState.when(
         initial: () => _buildLoadingScreen(context),
         loading: () => _buildLoadingScreen(context),
-        loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 
-            _buildLoadedScreen(context, l10n, user, badges, images, tags, calendarData, entries, hasMoreEntries, ref),
+        loaded:
+            (
+              user,
+              badges,
+              images,
+              tags,
+              calendarData,
+              entries,
+              hasMoreEntries,
+            ) => _buildLoadedScreen(
+              context,
+              l10n,
+              user,
+              badges,
+              images,
+              tags,
+              calendarData,
+              entries,
+              hasMoreEntries,
+              ref,
+            ),
         error: (message) => _buildErrorScreen(context, l10n, message),
       ),
     );
@@ -66,15 +83,20 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           // Profile header card at the top
-          SliverToBoxAdapter(
-            child: ProfileHeaderCard(username: username),
-          ),
+          SliverToBoxAdapter(child: ProfileHeaderCard(username: username)),
 
           // Main content area
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: _buildContentGrid(context, user, badges, images, tags, calendarData),
+              child: _buildContentGrid(
+                context,
+                user,
+                badges,
+                images,
+                tags,
+                calendarData,
+              ),
             ),
           ),
         ],
@@ -91,7 +113,7 @@ class ProfileScreen extends ConsumerWidget {
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     // Check if this is the user's own profile
     final authState = ref.read(authProvider);
     final isOwnProfile = authState.maybeWhen(
@@ -99,7 +121,7 @@ class ProfileScreen extends ConsumerWidget {
       orElse: () => false,
     );
 
-    return AppBar(
+    return PlatformAppBar(
       title: Text(
         user.showName ?? user.name ?? '',
         style: theme.textTheme.titleLarge?.copyWith(
@@ -119,7 +141,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildLeadingButton(BuildContext context) {
     // Check if we can pop (i.e., if there's a previous route)
     final canPop = ModalRoute.of(context)?.canPop ?? false;
-    
+
     if (canPop) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
@@ -157,11 +179,15 @@ class ProfileScreen extends ConsumerWidget {
     } else {
       // Other user's profile - show relationship buttons
       final relations = user.relations;
-      final isFollowing = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.followed;
-      final isBlocked = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.ignored;
-      final isHiddenFromLive = relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.hidden;
+      final isFollowing =
+          relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.followed;
+      final isBlocked =
+          relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.ignored;
+      final isHiddenFromLive =
+          relations?.fromMe == MwProfileAllOfRelationsFromMeEnum.hidden;
       final canMessage = relations?.isOpenForMe == true;
-      final hasFollowRequest = relations?.toMe == MwProfileAllOfRelationsToMeEnum.requested;
+      final hasFollowRequest =
+          relations?.toMe == MwProfileAllOfRelationsToMeEnum.requested;
 
       if (hasFollowRequest) {
         // Show allow/deny buttons for follow requests
@@ -182,12 +208,14 @@ class ProfileScreen extends ConsumerWidget {
         buttons.add(
           IconButton(
             icon: Icon(
-              isFollowing ? Icons.person_remove_outlined : Icons.person_add_outlined,
+              isFollowing
+                  ? Icons.person_remove_outlined
+                  : Icons.person_add_outlined,
             ),
-            onPressed: () => isFollowing 
+            onPressed: () => isFollowing
                 ? _handleUnfollow(context, ref)
                 : _handleFollow(context, ref),
-            tooltip: isFollowing 
+            tooltip: isFollowing
                 ? (l10n?.unfollowUser ?? 'Unfollow')
                 : (l10n?.followUser ?? 'Follow'),
           ),
@@ -210,7 +238,12 @@ class ProfileScreen extends ConsumerWidget {
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),
           onSelected: (value) => _handleMenuAction(context, value, ref),
-          itemBuilder: (context) => _buildPopupMenuItems(l10n, isFollowing, isBlocked, isHiddenFromLive),
+          itemBuilder: (context) => _buildPopupMenuItems(
+            l10n,
+            isFollowing,
+            isBlocked,
+            isHiddenFromLive,
+          ),
         ),
       );
     }
@@ -229,68 +262,82 @@ class ProfileScreen extends ConsumerWidget {
 
     // Unfollow option (only if following)
     if (isFollowing) {
-      items.add(PopupMenuItem<String>(
-        value: 'unfollow',
-        child: Row(
-          children: [
-            const Icon(Icons.person_remove_outlined, size: 20),
-            const SizedBox(width: 12),
-            Text(l10n?.unfollowUser ?? 'Unfollow'),
-          ],
+      items.add(
+        PopupMenuItem<String>(
+          value: 'unfollow',
+          child: Row(
+            children: [
+              const Icon(Icons.person_remove_outlined, size: 20),
+              const SizedBox(width: 12),
+              Text(l10n?.unfollowUser ?? 'Unfollow'),
+            ],
+          ),
         ),
-      ));
+      );
     }
 
     // Hide from Live / Unhide from Live
-    items.add(PopupMenuItem<String>(
-      value: isHiddenFromLive ? 'unhide_from_live' : 'hide_from_live',
-      child: Row(
-        children: [
-          Icon(
-            isHiddenFromLive ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Text(isHiddenFromLive ? (l10n?.unhideFromLive ?? 'Unhide from Live') : (l10n?.hideFromLive ?? 'Hide from Live')),
-        ],
+    items.add(
+      PopupMenuItem<String>(
+        value: isHiddenFromLive ? 'unhide_from_live' : 'hide_from_live',
+        child: Row(
+          children: [
+            Icon(
+              isHiddenFromLive
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              isHiddenFromLive
+                  ? (l10n?.unhideFromLive ?? 'Unhide from Live')
+                  : (l10n?.hideFromLive ?? 'Hide from Live'),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
 
     // Block / Unblock
-    items.add(PopupMenuItem<String>(
-      value: isBlocked ? 'unblock' : 'block',
-      child: Row(
-        children: [
-          Icon(
-            isBlocked ? Icons.lock_open_outlined : Icons.block_outlined,
-            size: 20,
-            color: isBlocked ? null : Colors.red,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            isBlocked ? (l10n?.unblockUser ?? 'Unblock') : (l10n?.blockUser ?? 'Block'),
-            style: TextStyle(
+    items.add(
+      PopupMenuItem<String>(
+        value: isBlocked ? 'unblock' : 'block',
+        child: Row(
+          children: [
+            Icon(
+              isBlocked ? Icons.lock_open_outlined : Icons.block_outlined,
+              size: 20,
               color: isBlocked ? null : Colors.red,
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Text(
+              isBlocked
+                  ? (l10n?.unblockUser ?? 'Unblock')
+                  : (l10n?.blockUser ?? 'Block'),
+              style: TextStyle(color: isBlocked ? null : Colors.red),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
 
     // Complain option
-    items.add(PopupMenuItem<String>(
-      value: 'complain',
-      child: Row(
-        children: [
-          const Icon(Icons.report_outlined, size: 20, color: Colors.red),
-          const SizedBox(width: 12),
-          Text(
-            l10n?.complain ?? 'Complain',
-            style: const TextStyle(color: Colors.red),
-          ),
-        ],
+    items.add(
+      PopupMenuItem<String>(
+        value: 'complain',
+        child: Row(
+          children: [
+            const Icon(Icons.report_outlined, size: 20, color: Colors.red),
+            const SizedBox(width: 12),
+            Text(
+              l10n?.complain ?? 'Complain',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
 
     return items;
   }
@@ -307,7 +354,7 @@ class ProfileScreen extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
-        
+
         // Determine number of columns based on screen width breakpoints
         int columns;
         if (screenWidth < 540) {
@@ -378,7 +425,8 @@ class ProfileScreen extends ConsumerWidget {
                 calendarData: calendarData,
                 profile: user,
                 onEntryTap: (entry) => _navigateToEntry(context, entry),
-                onDayTap: (entries, date) => _showEntriesForDay(context, entries, date),
+                onDayTap: (entries, date) =>
+                    _showEntriesForDay(context, entries, date),
               ),
             ),
           );
@@ -400,11 +448,10 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-
   /// Builds the loading state screen
   Widget _buildLoadingScreen(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: PlatformAppBar(
         title: Text(username),
         centerTitle: true,
         leading: _buildLeadingButton(context),
@@ -412,9 +459,7 @@ class ProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           // Loading profile header card
-          SliverToBoxAdapter(
-            child: ProfileHeaderCard(username: username),
-          ),
+          SliverToBoxAdapter(child: ProfileHeaderCard(username: username)),
 
           // Loading content with staggered grid
           SliverToBoxAdapter(
@@ -423,7 +468,7 @@ class ProfileScreen extends ConsumerWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final screenWidth = constraints.maxWidth;
-                  
+
                   // Determine number of columns based on screen width breakpoints
                   int columns;
                   if (screenWidth < 540) {
@@ -438,12 +483,16 @@ class ProfileScreen extends ConsumerWidget {
                     crossAxisCount: columns,
                     mainAxisSpacing: 16.0,
                     crossAxisSpacing: 16.0,
-                    children: List.generate(6, (index) => 
-                      StaggeredGridTile.fit(
+                    children: List.generate(
+                      6,
+                      (index) => StaggeredGridTile.fit(
                         crossAxisCellCount: 1,
                         child: SkeletonLoader(
                           child: Container(
-                            height: 200 + (index % 3) * 50, // Vary heights for staggered effect
+                            height:
+                                200 +
+                                (index % 3) *
+                                    50, // Vary heights for staggered effect
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -472,7 +521,7 @@ class ProfileScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: PlatformAppBar(
         title: Text(username),
         centerTitle: true,
         leading: _buildLeadingButton(context),
@@ -483,11 +532,7 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: colorScheme.error,
-              ),
+              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
               const SizedBox(height: 16),
               Text(
                 l10n?.somethingWentWrong ?? 'Something went wrong',
@@ -575,10 +620,14 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   /// Shows entries for a specific day
-  void _showEntriesForDay(BuildContext context, List<MwCalendarEntry> entries, DateTime date) {
+  void _showEntriesForDay(
+    BuildContext context,
+    List<MwCalendarEntry> entries,
+    DateTime date,
+  ) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -622,21 +671,34 @@ class ProfileScreen extends ConsumerWidget {
   /// Gets the month name in the current locale
   String _getMonthName(int month, AppLocalizations? l10n) {
     if (l10n == null) return '';
-    
+
     switch (month) {
-      case 1: return l10n.january;
-      case 2: return l10n.february;
-      case 3: return l10n.march;
-      case 4: return l10n.april;
-      case 5: return l10n.may;
-      case 6: return l10n.june;
-      case 7: return l10n.july;
-      case 8: return l10n.august;
-      case 9: return l10n.september;
-      case 10: return l10n.october;
-      case 11: return l10n.november;
-      case 12: return l10n.december;
-      default: return '';
+      case 1:
+        return l10n.january;
+      case 2:
+        return l10n.february;
+      case 3:
+        return l10n.march;
+      case 4:
+        return l10n.april;
+      case 5:
+        return l10n.may;
+      case 6:
+        return l10n.june;
+      case 7:
+        return l10n.july;
+      case 8:
+        return l10n.august;
+      case 9:
+        return l10n.september;
+      case 10:
+        return l10n.october;
+      case 11:
+        return l10n.november;
+      case 12:
+        return l10n.december;
+      default:
+        return '';
     }
   }
 
@@ -667,9 +729,7 @@ class ProfileScreen extends ConsumerWidget {
   void _handleMessage(BuildContext context, MwProfile user) {
     // TODO: Implement navigation to chat/message screen
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Message functionality not yet implemented'),
-      ),
+      SnackBar(content: Text('Message functionality not yet implemented')),
     );
   }
 

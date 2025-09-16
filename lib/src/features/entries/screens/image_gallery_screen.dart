@@ -5,19 +5,20 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/platform_app_bar.dart';
 
 /// A fullscreen image gallery that allows users to view entry images with zoom and swipe capabilities.
-/// 
+///
 /// This screen provides a swipeable gallery of images with pinch-to-zoom functionality
 /// using the photo_view package. Users can navigate between images by swiping left/right
 /// and zoom in/out using pinch gestures.
 class ImageGalleryScreen extends StatefulWidget {
   /// The list of images to display in the gallery
   final List<MwImage> images;
-  
+
   /// The initial index to display when the gallery opens
   final int initialIndex;
-  
+
   /// Optional title to display in the app bar
   final String? title;
 
@@ -53,41 +54,45 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: _showControls ? AppBar(
-        backgroundColor: Colors.black.withValues(alpha: 0.7),
-        foregroundColor: Colors.white,
-        title: Text(
-          widget.title ?? 'Image Gallery',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          if (widget.images.length > 1)
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: Center(
-                child: Text(
-                  '${_currentIndex + 1} / ${widget.images.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+      appBar: _showControls
+          ? PlatformAppBar(
+              backgroundColor: Colors.black.withValues(alpha: 0.7),
+              foregroundColor: Colors.white,
+              title: Text(
+                widget.title ?? 'Image Gallery',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
-        ],
-      ) : null,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => context.pop(),
+              ),
+              automaticallyImplyLeading:
+                  false, // Custom leading button provided
+              actions: [
+                if (widget.images.length > 1)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: Center(
+                      child: Text(
+                        '${_currentIndex + 1} / ${widget.images.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            )
+          : null,
       body: GestureDetector(
         onTap: _toggleControls,
         child: PhotoViewGallery.builder(
@@ -101,7 +106,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
           builder: (context, index) {
             final image = widget.images[index];
             final imageUrl = _getImageUrl(image);
-            
+
             if (imageUrl == null) {
               return PhotoViewGalleryPageOptions.customChild(
                 child: _buildErrorWidget(theme),
@@ -110,7 +115,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
                 maxScale: PhotoViewComputedScale.covered * 2,
               );
             }
-            
+
             return PhotoViewGalleryPageOptions(
               imageProvider: CachedNetworkImageProvider(imageUrl),
               minScale: PhotoViewComputedScale.contained,
@@ -122,9 +127,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
             );
           },
           scrollPhysics: const BouncingScrollPhysics(),
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.black,
-          ),
+          backgroundDecoration: const BoxDecoration(color: Colors.black),
           loadingBuilder: (context, event) => _buildLoadingWidget(theme),
         ),
       ),
@@ -133,10 +136,10 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
 
   /// Gets the best available image URL from the MwImage object
   String? _getImageUrl(MwImage image) {
-    return image.large?.url ?? 
-           image.medium?.url ?? 
-           image.small?.url ?? 
-           image.thumbnail?.url;
+    return image.large?.url ??
+        image.medium?.url ??
+        image.small?.url ??
+        image.thumbnail?.url;
   }
 
   /// Toggles the visibility of the app bar controls
@@ -175,10 +178,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
             const SizedBox(height: 16),
             const Text(
               'Failed to load image',
-              style: TextStyle(
-                color: Colors.white54,
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.white54, fontSize: 16),
             ),
           ],
         ),
@@ -191,7 +191,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
 class EntryImageGalleryScreen extends StatelessWidget {
   /// The entry containing the images
   final MwEntry entry;
-  
+
   /// The initial index to display
   final int initialIndex;
 
@@ -204,18 +204,23 @@ class EntryImageGalleryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final images = entry.images?.toList() ?? <MwImage>[];
-    
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (images.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
+        appBar: PlatformAppBar(
           title: const Text('No Images'),
+          centerTitle: true,
+          backgroundColor: colorScheme.surface,
+          foregroundColor: colorScheme.onSurface,
+          elevation: 0,
+          automaticallyImplyLeading: true,
         ),
-        body: const Center(
-          child: Text('This entry has no images to display.'),
-        ),
+        body: const Center(child: Text('This entry has no images to display.')),
       );
     }
-    
+
     return ImageGalleryScreen(
       images: images,
       initialIndex: initialIndex,

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
+import '../../../core/widgets/platform_app_bar.dart';
 import '../../comments/widgets/comment_list.dart';
 import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
@@ -16,14 +17,14 @@ import '../widgets/adjacent_entry_navigation.dart';
 import 'image_gallery_screen.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
-/// 
-/// This screen uses a CustomScrollView with SliverAppBar for a modern, collapsible
-/// header effect. It displays the full entry content, author information, images,
+///
+/// This screen uses a PlatformAppBar with SingleChildScrollView for consistent
+/// navigation and theming. It displays the full entry content, author information, images,
 /// tags, and comments with voting and favoriting capabilities.
 class EntryDetailScreen extends ConsumerStatefulWidget {
   /// The ID of the entry to display
   final int entryId;
-  
+
   /// Whether this is a preview mode (showing a draft entry)
   final bool isPreview;
 
@@ -53,7 +54,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
+    if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       // Load more comments when near bottom
       ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
@@ -69,113 +70,124 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       body: entryState.when(
         initial: () => _buildLoadingState(context),
         loading: () => _buildLoadingState(context),
-        loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => 
-          _buildLoadedState(context, l10n, entry, comments, hasMoreComments, isLoadingComments, adjacentEntries),
-        error: (message, entry) => _buildErrorState(context, l10n, message, entry),
+        loaded:
+            (
+              entry,
+              comments,
+              hasMoreComments,
+              isLoadingComments,
+              adjacentEntries,
+            ) => _buildLoadedState(
+              context,
+              l10n,
+              entry,
+              comments,
+              hasMoreComments,
+              isLoadingComments,
+              adjacentEntries,
+            ),
+        error: (message, entry) =>
+            _buildErrorState(context, l10n, message, entry),
       ),
     );
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 200.0,
-          pinned: true,
-          flexibleSpace: FlexibleSpaceBar(
-            title: SkeletonLoader(
-              child: Container(
-                height: 20,
-                width: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            background: SkeletonLoader(
-              child: Container(
-                color: Colors.grey[300],
-              ),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: PlatformAppBar(
+        title: SkeletonLoader(
+          child: Container(
+            height: 20,
+            width: 200,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(4),
             ),
           ),
         ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Author info skeleton
-                Row(
-                  children: [
-                    const SkeletonAvatar(size: 40),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SkeletonLoader(
-                            child: Container(
-                              height: 16,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Author info skeleton
+              Row(
+                children: [
+                  const SkeletonAvatar(size: 40),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SkeletonLoader(
+                          child: Container(
+                            height: 16,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          SkeletonLoader(
-                            child: Container(
-                              height: 14,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        SkeletonLoader(
+                          child: Container(
+                            height: 14,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                // Content skeleton
-                const SkeletonText(lines: 8),
-                const SizedBox(height: 16),
-                // Action buttons skeleton
-                Row(
-                  children: [
-                    SkeletonLoader(
-                      child: Container(
-                        height: 40,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
                         ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Content skeleton
+              const SkeletonText(lines: 8),
+              const SizedBox(height: 16),
+              // Action buttons skeleton
+              Row(
+                children: [
+                  SkeletonLoader(
+                    child: Container(
+                      height: 40,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    SkeletonLoader(
-                      child: Container(
-                        height: 40,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                  ),
+                  const SizedBox(width: 12),
+                  SkeletonLoader(
+                    child: Container(
+                      height: 40,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -188,115 +200,136 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     bool isLoadingComments,
     MwAdjacentEntries? adjacentEntries,
   ) {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        SliverAppBar(
-          expandedHeight: widget.isPreview ? 240.0 : 200.0,
-          pinned: true,
-          actions: widget.isPreview ? [
-            // In preview mode, show a back button instead of context menu
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => context.pop(),
-              tooltip: 'Back to editor',
-            ),
-          ] : [
-            EntryContextMenu(
-              entry: entry,
-              onPin: () => _onPinEntry(),
-              onUnpin: () => _onUnpinEntry(),
-              onFollow: () => _onFollowEntry(),
-              onUnfollow: () => _onUnfollowEntry(),
-              onEdit: () => _onEditEntry(),
-              onDelete: () => _onDeleteEntry(),
-              onComplain: () => _onComplainEntry(),
-              onShare: () => _onShareEntry(),
-              onCopyLink: () => _onCopyLink(),
-            ),
-          ],
-          flexibleSpace: FlexibleSpaceBar(
-            title: widget.isPreview 
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(12),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: PlatformAppBar(
+        title: widget.isPreview
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                          size: 16,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.visibility,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              AppLocalizations.of(context)?.preview ?? 'Preview',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Flexible(
-                        child: Text(
-                          entry.title ?? '',
+                        const SizedBox(width: 4),
+                        Text(
+                          AppLocalizations.of(context)?.preview ?? 'Preview',
                           style: const TextStyle(
                             color: Colors.white,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  )
-                : Text(
-                    entry.title ?? '',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      ],
                     ),
                   ),
-            background: _buildAppBarBackground(entry),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildAuthorInfo(entry),
-                const SizedBox(height: 16),
-                _buildEntryContent(entry),
-                const SizedBox(height: 16),
-                _buildActionButtons(entry),
-                const SizedBox(height: 16),
-                AdjacentEntryNavigation(
-                  adjacentEntries: adjacentEntries,
-                  onPreviousTap: () => _onAdjacentEntryTap(adjacentEntries?.older),
-                  onNextTap: () => _onAdjacentEntryTap(adjacentEntries?.newer),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      entry.title ?? '',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              )
+            : Text(
+                entry.title ?? '',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 24),
-                widget.isPreview 
-                    ? _buildPreviewCommentsSection()
-                    : _buildCommentsSection(l10n, comments, hasMoreComments, isLoadingComments),
+              ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        showHamburgerMenu: false, // Entry detail should always show back button
+        actions: widget.isPreview
+            ? [
+                // In preview mode, show a back button instead of context menu
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => context.pop(),
+                  tooltip: 'Back to editor',
+                ),
+              ]
+            : [
+                EntryContextMenu(
+                  entry: entry,
+                  onPin: () => _onPinEntry(),
+                  onUnpin: () => _onUnpinEntry(),
+                  onFollow: () => _onFollowEntry(),
+                  onUnfollow: () => _onUnfollowEntry(),
+                  onEdit: () => _onEditEntry(),
+                  onDelete: () => _onDeleteEntry(),
+                  onComplain: () => _onComplainEntry(),
+                  onShare: () => _onShareEntry(),
+                  onCopyLink: () => _onCopyLink(),
+                ),
               ],
+      ),
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Background image section (if entry has images)
+            if (entry.images != null && entry.images!.isNotEmpty) ...[
+              _buildAppBarBackground(entry),
+              const SizedBox(height: 16),
+            ],
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAuthorInfo(entry),
+                  const SizedBox(height: 16),
+                  _buildEntryContent(entry),
+                  const SizedBox(height: 16),
+                  _buildActionButtons(entry),
+                  const SizedBox(height: 16),
+                  AdjacentEntryNavigation(
+                    adjacentEntries: adjacentEntries,
+                    onPreviousTap: () =>
+                        _onAdjacentEntryTap(adjacentEntries?.older),
+                    onNextTap: () =>
+                        _onAdjacentEntryTap(adjacentEntries?.newer),
+                  ),
+                  const SizedBox(height: 24),
+                  widget.isPreview
+                      ? _buildPreviewCommentsSection()
+                      : _buildCommentsSection(
+                          l10n,
+                          comments,
+                          hasMoreComments,
+                          isLoadingComments,
+                        ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -305,31 +338,35 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final images = entry.images;
     if (images != null && images.isNotEmpty) {
       final firstImage = images.first;
-      final imageUrl = firstImage.medium?.url ?? 
-                      firstImage.small?.url ?? 
-                      firstImage.thumbnail?.url ?? 
-                      firstImage.large?.url;
-      
+      final imageUrl =
+          firstImage.medium?.url ??
+          firstImage.small?.url ??
+          firstImage.thumbnail?.url ??
+          firstImage.large?.url;
+
       if (imageUrl != null) {
-        return CachedImage(
-          imageUrl: imageUrl,
+        return SizedBox(
+          height: 200,
           width: double.infinity,
-          height: double.infinity,
-          fit: BoxFit.cover,
+          child: CachedImage(
+            imageUrl: imageUrl,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
         );
       }
     }
-    
+
     // Default gradient background
     return Container(
+      height: 200,
+      width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFF5E3A),
-            Color(0xFFFF8A65),
-          ],
+          colors: [Color(0xFFFF5E3A), Color(0xFFFF8A65)],
         ),
       ),
     );
@@ -344,7 +381,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         CachedAvatar(
           imageUrl: _getAvatarUrl(author.avatar),
           size: 40,
-          fallbackText: author.name?.isNotEmpty == true 
+          fallbackText: author.name?.isNotEmpty == true
               ? author.name!.substring(0, 1).toUpperCase()
               : '?',
         ),
@@ -355,9 +392,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             children: [
               Text(
                 author.name ?? 'Unknown',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               if (entry.createdAt != null) ...[
                 const SizedBox(height: 2),
@@ -390,9 +427,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 fontSize: FontSize(16),
                 lineHeight: const LineHeight(1.5),
               ),
-              "p": Style(
-                margin: Margins.only(bottom: 12),
-              ),
+              "p": Style(margin: Margins.only(bottom: 12)),
               "h1, h2, h3, h4, h5, h6": Style(
                 margin: Margins.only(top: 16, bottom: 8),
                 fontWeight: FontWeight.bold,
@@ -405,13 +440,13 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ),
           const SizedBox(height: 16),
         ],
-        
+
         // Images gallery
         if (entry.images != null && entry.images!.isNotEmpty) ...[
           _buildImageGallery(entry.images!.toList()),
           const SizedBox(height: 16),
         ],
-        
+
         // Tags
         if (entry.tags != null && entry.tags!.isNotEmpty) ...[
           _buildTags(entry.tags!.toList()),
@@ -433,7 +468,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         );
       }
     }
-    
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -459,10 +494,10 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   String? _getImageUrl(MwImage image) {
-    return image.medium?.url ?? 
-           image.small?.url ?? 
-           image.thumbnail?.url ?? 
-           image.large?.url;
+    return image.medium?.url ??
+        image.small?.url ??
+        image.thumbnail?.url ??
+        image.large?.url;
   }
 
   String? _getAvatarUrl(MwAvatar? avatar) {
@@ -519,14 +554,11 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.visibility,
-              color: Colors.orange,
-              size: 20,
-            ),
+            Icon(Icons.visibility, color: Colors.orange, size: 20),
             const SizedBox(width: 8),
             Text(
-              AppLocalizations.of(context)?.previewMode ?? 'Preview Mode - Interactions Disabled',
+              AppLocalizations.of(context)?.previewMode ??
+                  'Preview Mode - Interactions Disabled',
               style: TextStyle(
                 color: Colors.orange.shade700,
                 fontWeight: FontWeight.w500,
@@ -550,9 +582,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             ),
             Text(
               score.toString(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             IconButton(
               onPressed: () => _onVote(false),
@@ -586,7 +618,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   Widget _buildPreviewCommentsSection() {
     final l10n = AppLocalizations.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -601,11 +633,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.comment_outlined,
-                color: Colors.orange,
-                size: 20,
-              ),
+              Icon(Icons.comment_outlined, color: Colors.orange, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n?.comments ?? 'Comments',
@@ -619,11 +647,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            l10n?.previewModeCommentsDisabled ?? 'Comments are disabled in preview mode. Publish the entry to enable comments.',
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 14,
-            ),
+            l10n?.previewModeCommentsDisabled ??
+                'Comments are disabled in preview mode. Publish the entry to enable comments.',
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -642,12 +668,12 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       children: [
         Text(
           l10n?.comments ?? 'Comments',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        
+
         // Comments list using the new CommentList widget
         CommentList(
           comments: comments,
@@ -666,7 +692,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           showContextMenu: true,
         ),
         const SizedBox(height: 16),
-        
+
         // Add comment form - now beneath the comment list
         AddCommentForm(
           entryId: widget.entryId,
@@ -678,53 +704,68 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     );
   }
 
-
-
   Widget _buildErrorState(
     BuildContext context,
     AppLocalizations? l10n,
     String message,
     MwEntry? entry,
   ) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n?.somethingWentWrong ?? 'Something went wrong',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: PlatformAppBar(
+        title: Text(
+          l10n?.error ?? 'Error',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
+              const SizedBox(height: 16),
+              Text(
+                l10n?.somethingWentWrong ?? 'Something went wrong',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              const SizedBox(height: 8),
+              Text(
+                message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => ref.read(entryDetailProvider(widget.entryId).notifier).refresh(),
-              child: const Text('Retry'),
-            ),
-          ],
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => ref
+                    .read(entryDetailProvider(widget.entryId).notifier)
+                    .refresh(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   String _formatTimestamp(double timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+    final date = DateTime.fromMillisecondsSinceEpoch(
+      (timestamp * 1000).round(),
+    );
     final now = DateTime.now();
     final difference = now.difference(date);
 
@@ -758,7 +799,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       loaded: (entry, _, _, _, _) => entry,
       orElse: () => null,
     );
-    
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ImageGalleryScreen(
@@ -777,18 +818,22 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   void _onCommentSubmitted(String content) async {
     // Call the provider to add the comment
-    final success = await ref.read(entryDetailProvider(widget.entryId).notifier).addComment(content);
-    
+    final success = await ref
+        .read(entryDetailProvider(widget.entryId).notifier)
+        .addComment(content);
+
     // Check if widget is still mounted before using context
     if (!mounted) return;
-    
+
     final l10n = AppLocalizations.of(context);
-    
+
     if (success) {
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n?.commentPostedSuccessfully ?? 'Comment posted successfully!'),
+          content: Text(
+            l10n?.commentPostedSuccessfully ?? 'Comment posted successfully!',
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -796,7 +841,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n?.commentAlreadyExists ?? 'This comment already exists'),
+          content: Text(
+            l10n?.commentAlreadyExists ?? 'This comment already exists',
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
           duration: const Duration(seconds: 3),
         ),
@@ -809,7 +856,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${l10n?.failedToPostComment ?? 'Failed to post comment'}: $error'),
+        content: Text(
+          '${l10n?.failedToPostComment ?? 'Failed to post comment'}: $error',
+        ),
         backgroundColor: Theme.of(context).colorScheme.error,
         duration: const Duration(seconds: 3),
       ),
@@ -824,13 +873,17 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   void _onAuthorTap(MwUser author) {
     // TODO: Navigate to user profile
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Navigate to ${author.name ?? 'Unknown'}\'s profile')),
+      SnackBar(
+        content: Text('Navigate to ${author.name ?? 'Unknown'}\'s profile'),
+      ),
     );
   }
 
   void _onCommentVote(MwComment comment, bool isUpvote) {
     if (comment.id != null) {
-      ref.read(entryDetailProvider(widget.entryId).notifier).voteComment(comment.id!, isUpvote);
+      ref
+          .read(entryDetailProvider(widget.entryId).notifier)
+          .voteComment(comment.id!, isUpvote);
     }
   }
 
@@ -872,7 +925,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n?.entryUnfollowed ?? 'No longer following this entry'),
+        content: Text(
+          l10n?.entryUnfollowed ?? 'No longer following this entry',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -880,9 +935,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   void _onEditEntry() {
     // TODO: Navigate to entry editor
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Navigate to entry editor')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to entry editor')));
   }
 
   void _onDeleteEntry() {
@@ -902,7 +957,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n?.complaintSubmitted ?? 'Complaint submitted successfully'),
+        content: Text(
+          l10n?.complaintSubmitted ?? 'Complaint submitted successfully',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -910,9 +967,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   void _onShareEntry() {
     // TODO: Implement sharing functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Share entry functionality')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Share entry functionality')));
   }
 
   void _onCopyLink() {
@@ -927,14 +984,16 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   void _onEditComment(MwComment comment) {
     // TODO: Implement comment editing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit comment functionality')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Edit comment functionality')));
   }
 
   void _onDeleteComment(MwComment comment) {
     if (comment.id != null) {
-      ref.read(entryDetailProvider(widget.entryId).notifier).deleteComment(comment.id!);
+      ref
+          .read(entryDetailProvider(widget.entryId).notifier)
+          .deleteComment(comment.id!);
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -947,11 +1006,15 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
 
   void _onComplainComment(MwComment comment) {
     if (comment.id != null) {
-      ref.read(entryDetailProvider(widget.entryId).notifier).complainComment(comment.id!);
+      ref
+          .read(entryDetailProvider(widget.entryId).notifier)
+          .complainComment(comment.id!);
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n?.complaintSubmitted ?? 'Complaint submitted successfully'),
+          content: Text(
+            l10n?.complaintSubmitted ?? 'Complaint submitted successfully',
+          ),
           duration: const Duration(seconds: 2),
         ),
       );

@@ -197,10 +197,15 @@ void main() {
         ),
       );
 
+      // Wait for the app to fully load
+      await tester.pumpAndSettle();
+
       // Verify the app builds without errors
       expect(find.byType(MaterialApp), findsOneWidget);
-      // There should be one "Mindwell" text in the SliverAppBar (app now starts with live feed)
-      expect(find.text('Mindwell'), findsOneWidget);
+      // The app should have an AppBar (either from HomeScreen or EntryFeedScreen)
+      expect(find.byType(AppBar), findsOneWidget);
+      // The app should show feed content (Russian text indicates the feed is working)
+      expect(find.text('Прямой эфир'), findsOneWidget);
     });
 
     testWidgets('should apply light theme correctly', (

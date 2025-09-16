@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
+import '../widgets/platform_app_bar.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/auth_screen.dart';
@@ -15,7 +16,7 @@ import '../../features/profile/screens/user_list_screen.dart';
 import '../../features/profile/models/user_list_state.dart';
 
 /// Application router configuration using GoRouter.
-/// 
+///
 /// Defines the navigation structure for the Mindwell application,
 /// including routes for authenticated and unauthenticated users.
 class AppRouter {
@@ -26,15 +27,22 @@ class AppRouter {
       // Get the current authentication state
       final container = ProviderScope.containerOf(context);
       final authState = container.read(authProvider);
-      
+
       // Define protected routes that require authentication
-      const protectedRoutes = ['/', '/profile', '/notifications', '/chat', '/feed/subscriptions', '/feed/my-entries'];
-      
+      const protectedRoutes = [
+        '/',
+        '/profile',
+        '/notifications',
+        '/chat',
+        '/feed/subscriptions',
+        '/feed/my-entries',
+      ];
+
       // Define unauthenticated routes that should redirect if user is logged in
       const unauthenticatedRoutes = ['/login', '/register'];
-      
+
       final currentPath = state.uri.path;
-      
+
       // Handle authentication state
       return authState.when(
         initial: () {
@@ -75,15 +83,14 @@ class AppRouter {
       // Shell route for authenticated users
       ShellRoute(
         builder: (context, state, child) {
-          return ProviderScope(
-            child: HomeScreen(child: child),
-          );
+          return ProviderScope(child: HomeScreen(child: child));
         },
         routes: [
           GoRoute(
             path: '/',
             name: 'home',
-            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.live),
+            builder: (context, state) =>
+                const EntryFeedScreen(feedType: FeedType.live),
           ),
           GoRoute(
             path: '/profile',
@@ -92,9 +99,10 @@ class AppRouter {
               // Get current user from auth state
               final container = ProviderScope.containerOf(context);
               final authState = container.read(authProvider);
-              
+
               return authState.when(
-                authenticated: (user) => ProfileScreen(username: user.name ?? ''),
+                authenticated: (user) =>
+                    ProfileScreen(username: user.name ?? ''),
                 initial: () => const _ProfileContent(),
                 loading: () => const _ProfileContent(),
                 unauthenticated: () => const _ProfileContent(),
@@ -121,7 +129,9 @@ class AppRouter {
             path: '/themes/:themeName/entries/new',
             name: 'newThemeEntry',
             builder: (context, state) {
-              final themeName = Uri.decodeComponent(state.pathParameters['themeName']!);
+              final themeName = Uri.decodeComponent(
+                state.pathParameters['themeName']!,
+              );
               return EntryEditorScreen(themeName: themeName);
             },
           ),
@@ -153,17 +163,15 @@ class AppRouter {
                 throw Exception('Invalid entry ID: $idParam');
               }
               final isPreview = state.uri.queryParameters['preview'] == 'true';
-              return EntryDetailScreen(
-                entryId: entryId,
-                isPreview: isPreview,
-              );
+              return EntryDetailScreen(entryId: entryId, isPreview: isPreview);
             },
           ),
           // Protected feed type routes (require authentication)
           GoRoute(
             path: '/feed/subscriptions',
             name: 'subscriptionsFeed',
-            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.friends),
+            builder: (context, state) =>
+                const EntryFeedScreen(feedType: FeedType.friends),
           ),
           GoRoute(
             path: '/feed/my-entries',
@@ -172,16 +180,20 @@ class AppRouter {
               // Get current user from auth state
               final container = ProviderScope.containerOf(context);
               final authState = container.read(authProvider);
-              
+
               return authState.when(
                 authenticated: (user) => EntryFeedScreen(
                   feedType: FeedType.profile,
                   username: user.name ?? user.id?.toString(),
                 ),
-                initial: () => const EntryFeedScreen(feedType: FeedType.profile),
-                loading: () => const EntryFeedScreen(feedType: FeedType.profile),
-                unauthenticated: () => const EntryFeedScreen(feedType: FeedType.profile),
-                error: (message) => const EntryFeedScreen(feedType: FeedType.profile),
+                initial: () =>
+                    const EntryFeedScreen(feedType: FeedType.profile),
+                loading: () =>
+                    const EntryFeedScreen(feedType: FeedType.profile),
+                unauthenticated: () =>
+                    const EntryFeedScreen(feedType: FeedType.profile),
+                error: (message) =>
+                    const EntryFeedScreen(feedType: FeedType.profile),
               );
             },
           ),
@@ -189,7 +201,9 @@ class AppRouter {
             path: '/tags/:tagName',
             name: 'protectedTagFeed',
             builder: (context, state) {
-              final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
+              final tagName = Uri.decodeComponent(
+                state.pathParameters['tagName']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.live,
                 tagFilter: tagName,
@@ -210,7 +224,9 @@ class AppRouter {
             path: '/users/:name',
             name: 'userProfile',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return ProfileScreen(username: username);
             },
           ),
@@ -218,7 +234,9 @@ class AppRouter {
             path: '/users/:name/comments',
             name: 'userComments',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return CommentFeedScreen(username: username);
             },
           ),
@@ -226,7 +244,9 @@ class AppRouter {
             path: '/users/:name/followers',
             name: 'userFollowers',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.followers,
                 username: username,
@@ -237,7 +257,9 @@ class AppRouter {
             path: '/users/:name/following',
             name: 'userFollowing',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.following,
                 username: username,
@@ -248,7 +270,9 @@ class AppRouter {
             path: '/users/:name/entries',
             name: 'userEntries',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.profile,
                 username: username,
@@ -259,7 +283,9 @@ class AppRouter {
             path: '/users/:name/invited',
             name: 'userInvited',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.invited,
                 username: username,
@@ -270,7 +296,9 @@ class AppRouter {
             path: '/users/:name/favorites',
             name: 'userFavorites',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.favorites,
                 username: username,
@@ -279,25 +307,25 @@ class AppRouter {
           ),
         ],
       ),
-      
+
       // Public shell route for feeds accessible without authentication
       ShellRoute(
         builder: (context, state, child) {
-          return ProviderScope(
-            child: HomeScreen(child: child),
-          );
+          return ProviderScope(child: HomeScreen(child: child));
         },
         routes: [
           // Public feed routes (accessible without authentication)
           GoRoute(
             path: '/feed/live',
             name: 'liveFeed',
-            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.live),
+            builder: (context, state) =>
+                const EntryFeedScreen(feedType: FeedType.live),
           ),
           GoRoute(
             path: '/feed/best',
             name: 'bestFeed',
-            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.best),
+            builder: (context, state) =>
+                const EntryFeedScreen(feedType: FeedType.best),
           ),
           GoRoute(
             path: '/entries/:id',
@@ -312,17 +340,16 @@ class AppRouter {
                 throw Exception('Invalid entry ID: $idParam');
               }
               final isPreview = state.uri.queryParameters['preview'] == 'true';
-              return EntryDetailScreen(
-                entryId: entryId,
-                isPreview: isPreview,
-              );
+              return EntryDetailScreen(entryId: entryId, isPreview: isPreview);
             },
           ),
           GoRoute(
             path: '/tags/:tagName',
             name: 'publicTagFeed',
             builder: (context, state) {
-              final tagName = Uri.decodeComponent(state.pathParameters['tagName']!);
+              final tagName = Uri.decodeComponent(
+                state.pathParameters['tagName']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.live,
                 tagFilter: tagName,
@@ -343,7 +370,9 @@ class AppRouter {
             path: '/users/:name',
             name: 'publicUserProfile',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return ProfileScreen(username: username);
             },
           ),
@@ -351,7 +380,9 @@ class AppRouter {
             path: '/users/:name/comments',
             name: 'publicUserComments',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return CommentFeedScreen(username: username);
             },
           ),
@@ -359,7 +390,9 @@ class AppRouter {
             path: '/users/:name/followers',
             name: 'publicUserFollowers',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.followers,
                 username: username,
@@ -370,7 +403,9 @@ class AppRouter {
             path: '/users/:name/following',
             name: 'publicUserFollowing',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.following,
                 username: username,
@@ -381,7 +416,9 @@ class AppRouter {
             path: '/users/:name/entries',
             name: 'publicUserEntries',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.profile,
                 username: username,
@@ -392,7 +429,9 @@ class AppRouter {
             path: '/users/:name/invited',
             name: 'publicUserInvited',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return UserListScreen(
                 type: UserListType.invited,
                 username: username,
@@ -403,7 +442,9 @@ class AppRouter {
             path: '/users/:name/favorites',
             name: 'publicUserFavorites',
             builder: (context, state) {
-              final username = Uri.decodeComponent(state.pathParameters['name']!);
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
               return EntryFeedScreen(
                 feedType: FeedType.favorites,
                 username: username,
@@ -412,7 +453,7 @@ class AppRouter {
           ),
         ],
       ),
-      
+
       // Unauthenticated routes
       GoRoute(
         path: '/login',
@@ -425,17 +466,14 @@ class AppRouter {
         builder: (context, state) => const AuthScreen(initialTabIndex: 1),
       ),
     ],
-    
+
     // Error handling
-    errorBuilder: (context, state) => _ErrorScreen(
-      error: state.error,
-    ),
+    errorBuilder: (context, state) => _ErrorScreen(error: state.error),
   );
 }
 
-
 /// Profile content widget.
-/// 
+///
 /// This will be replaced with actual profile content in future tasks.
 class _ProfileContent extends StatelessWidget {
   const _ProfileContent();
@@ -446,26 +484,16 @@ class _ProfileContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.person,
-            size: 64,
-            color: Color(0xFFFF5E3A),
-          ),
+          Icon(Icons.person, size: 64, color: Color(0xFFFF5E3A)),
           SizedBox(height: 16),
           Text(
             'Profile',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Your personal profile and settings',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
       ),
@@ -474,7 +502,7 @@ class _ProfileContent extends StatelessWidget {
 }
 
 /// Notifications content widget.
-/// 
+///
 /// This will be replaced with actual notifications content in future tasks.
 class _NotificationsContent extends StatelessWidget {
   const _NotificationsContent();
@@ -485,26 +513,16 @@ class _NotificationsContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications,
-            size: 64,
-            color: Color(0xFFFF5E3A),
-          ),
+          Icon(Icons.notifications, size: 64, color: Color(0xFFFF5E3A)),
           SizedBox(height: 16),
           Text(
             'Notifications',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Stay updated with your mindful journey',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
       ),
@@ -513,7 +531,7 @@ class _NotificationsContent extends StatelessWidget {
 }
 
 /// Chat content widget.
-/// 
+///
 /// This will be replaced with actual chat content in future tasks.
 class _ChatContent extends StatelessWidget {
   const _ChatContent();
@@ -524,26 +542,16 @@ class _ChatContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat,
-            size: 64,
-            color: Color(0xFFFF5E3A),
-          ),
+          Icon(Icons.chat, size: 64, color: Color(0xFFFF5E3A)),
           SizedBox(height: 16),
           Text(
             'Chat',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             'Connect with your support community',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
       ),
@@ -551,50 +559,48 @@ class _ChatContent extends StatelessWidget {
   }
 }
 
-
-
-
-
 /// Error screen widget for handling navigation errors.
 class _ErrorScreen extends StatelessWidget {
-  const _ErrorScreen({
-    required this.error,
-  });
+  const _ErrorScreen({required this.error});
 
   final Exception? error;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.error ?? 'Error'),
+      appBar: PlatformAppBar(
+        title: Text(
+          l10n?.error ?? 'Error',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        showHamburgerMenu: false, // Error screen should show back button
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error,
-              size: 64,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
               l10n?.somethingWentWrong ?? 'Something went wrong',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              error?.toString() ?? (l10n?.unknownError ?? 'Unknown error occurred'),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              error?.toString() ??
+                  (l10n?.unknownError ?? 'Unknown error occurred'),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

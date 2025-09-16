@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/theme/spacing.dart';
+import '../../../core/widgets/platform_app_bar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/feed_type.dart';
 import '../models/feed_tab_config.dart';
@@ -14,10 +15,10 @@ import '../widgets/feed_settings_bottom_sheet.dart';
 /// The main screen for the entry feed with tabbed navigation for different feed types.
 ///
 /// This screen features:
-/// - A [SliverAppBar] with the app title
+/// - A [PlatformAppBar] with the app title and actions
 /// - A [TabBar] for different feed types (Live, Best, etc.)
 /// - A [TabBarView] containing [EntryList] widgets for each feed type
-/// - A [FloatingActionButton] to navigate to the entry editor
+/// - A [FloatingActionButton] to navigate to the entry editor (when not in shell route)
 /// - A menu button to open the [FeedSettingsBottomSheet]
 class EntryFeedScreen extends ConsumerStatefulWidget {
   /// The specific feed type to display. If null, shows all feed types in tabs.
@@ -107,25 +108,21 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    // Check if we're within a shell route (HomeScreen) by looking for a Scaffold ancestor
-    final scaffoldAncestor = context.findAncestorWidgetOfExactType<Scaffold>();
-    final isWithinShellRoute = scaffoldAncestor != null;
+    // Check if we can pop to determine if we should show back button or menu
+    final canPop = ModalRoute.of(context)?.canPop ?? false;
 
     // Get tab configurations for the current feed type
     final tabConfigs = _getTabConfigurations();
 
     // If a specific feed type is provided, show that feed with its specific tabs
     if (widget.feedType != null && tabConfigs.isNotEmpty) {
-      return _buildSingleFeedViewWithTabs(
-        context,
-        l10n,
-        isWithinShellRoute,
-        tabConfigs,
-      );
+      return _buildSingleFeedViewWithTabs(context, l10n, canPop, tabConfigs);
     } else if (widget.feedType != null) {
       // If no specific tabs are configured, show single feed view
-      return _buildSingleFeedView(context, l10n, isWithinShellRoute);
+      return _buildSingleFeedView(context, l10n, canPop);
     }
 
     // For the main feed screen, show the default tabbed view
@@ -140,119 +137,97 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       );
     }
 
-    final content = NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                l10n?.appTitle ?? 'Mindwell',
-                style: const TextStyle(
-                  color: Color(0xFFFF5E3A),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+    final content = Scaffold(
+      appBar: PlatformAppBar(
+        title: Text(
+          l10n?.appTitle ?? 'Mindwell',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        leading: _buildLeadingButton(context),
+        actions: [
+          // Settings button
+          IconButton(
+            onPressed: _showFeedSettings,
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          // Menu button for refresh option
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: _handleMenuSelection,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'refresh',
+                child: Row(
+                  children: [
+                    const Icon(Icons.refresh),
+                    const SizedBox(width: MindwellSpacing.sm),
+                    Text(l10n?.refresh ?? 'Refresh'),
+                  ],
                 ),
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFF5E3A), Color(0xFFFF8A65)],
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.article_outlined,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            actions: [
-              // Settings button
-              IconButton(
-                onPressed: _showFeedSettings,
-                icon: const Icon(
-                  Icons.settings_outlined,
-                  color: Color(0xFFFF5E3A),
-                ),
-              ),
-              // Menu button for refresh option
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Color(0xFFFF5E3A)),
-                onSelected: _handleMenuSelection,
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'refresh',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.refresh),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.refresh ?? 'Refresh'),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _TabBarDelegate(
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicatorColor: const Color(0xFFFF5E3A),
-                indicatorWeight: 3,
-                labelColor: const Color(0xFFFF5E3A),
-                unselectedLabelColor: Colors.grey,
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
-                ),
-                tabs: _feedTypes.map((feedType) {
-                  return Tab(text: _getFeedTypeDisplayName(feedType, l10n));
-                }).toList(),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Tab bar
+          Container(
+            color: colorScheme.surface,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: colorScheme.primary,
+              indicatorWeight: 3,
+              labelColor: colorScheme.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+              ),
+              tabs: _feedTypes.map((feedType) {
+                return Tab(text: _getFeedTypeDisplayName(feedType, l10n));
+              }).toList(),
             ),
           ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: _feedTypes.map((feedType) {
-          return EntryList(
-            key: ValueKey(
-              '${feedType.name}_${_tabController.index}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}',
+          // Tab content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: _feedTypes.map((feedType) {
+                return EntryList(
+                  key: ValueKey(
+                    '${feedType.name}_${_tabController.index}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}',
+                  ),
+                  feedType: feedType,
+                  feedParameter:
+                      (feedType == FeedType.profile ||
+                          feedType == FeedType.favorites)
+                      ? (widget.username ?? currentUserFeedParameter)
+                      : null,
+                  tagFilter: widget.tagFilter,
+                  enablePullToRefresh: true,
+                  enableInfiniteScroll: true,
+                );
+              }).toList(),
             ),
-            feedType: feedType,
-            feedParameter:
-                (feedType == FeedType.profile || feedType == FeedType.favorites)
-                ? (widget.username ?? currentUserFeedParameter)
-                : null,
-            tagFilter: widget.tagFilter,
-            enablePullToRefresh: true,
-            enableInfiniteScroll: true,
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
 
-    // Conditionally wrap with Scaffold based on whether we're within a shell route
-    if (isWithinShellRoute) {
-      return content;
-    } else {
+    // Add floating action button if we can pop (standalone screen)
+    if (canPop) {
       return Scaffold(
         body: content,
         floatingActionButton: FloatingActionButton(
@@ -263,6 +238,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         ),
       );
     }
+
+    return content;
   }
 
   /// Get the localized display name for a feed type
@@ -431,12 +408,41 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
     context.push('/entries/new');
   }
 
+  /// Builds the leading button (back or drawer)
+  Widget _buildLeadingButton(BuildContext context) {
+    // Check if we can pop (i.e., if there's a previous route)
+    final canPop = ModalRoute.of(context)?.canPop ?? false;
+
+    if (canPop) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(),
+        tooltip: 'Back',
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: () {
+          // Find the Scaffold that has a drawer (could be an ancestor)
+          final scaffoldWithDrawer = context
+              .findAncestorStateOfType<ScaffoldState>();
+          if (scaffoldWithDrawer != null) {
+            scaffoldWithDrawer.openDrawer();
+          }
+        },
+        tooltip: 'Menu',
+      );
+    }
+  }
+
   /// Build a single feed view without tabs for specific feed types
   Widget _buildSingleFeedView(
     BuildContext context,
     AppLocalizations? l10n,
-    bool isWithinShellRoute,
+    bool canPop,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final feedType = widget.feedType!;
     final feedTitle = _getFeedTypeDisplayName(feedType, l10n);
 
@@ -450,71 +456,44 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       );
     }
 
-    final content = NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                feedTitle,
-                style: const TextStyle(
-                  color: Color(0xFFFF5E3A),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+    final content = Scaffold(
+      appBar: PlatformAppBar(
+        title: Text(
+          feedTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        leading: _buildLeadingButton(context),
+        actions: [
+          // Settings button
+          IconButton(
+            onPressed: _showFeedSettings,
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          // Menu button for additional options
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: _handleMenuSelection,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'refresh',
+                child: Row(
+                  children: [
+                    const Icon(Icons.refresh),
+                    const SizedBox(width: MindwellSpacing.sm),
+                    Text(l10n?.refresh ?? 'Refresh'),
+                  ],
                 ),
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFF5E3A), Color(0xFFFF8A65)],
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.article_outlined,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            actions: [
-              // Settings button
-              IconButton(
-                onPressed: _showFeedSettings,
-                icon: const Icon(
-                  Icons.settings_outlined,
-                  color: Color(0xFFFF5E3A),
-                ),
-              ),
-              // Menu button for additional options
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Color(0xFFFF5E3A)),
-                onSelected: _handleMenuSelection,
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'refresh',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.refresh),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.refresh ?? 'Refresh'),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-        ];
-      },
+        ],
+      ),
       body: EntryList(
         key: ValueKey(
           '${feedType.name}_single_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}',
@@ -530,10 +509,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       ),
     );
 
-    // Conditionally wrap with Scaffold based on whether we're within a shell route
-    if (isWithinShellRoute) {
-      return content;
-    } else {
+    // Add floating action button if we can pop (standalone screen)
+    if (canPop) {
       return Scaffold(
         body: content,
         floatingActionButton: FloatingActionButton(
@@ -544,15 +521,19 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         ),
       );
     }
+
+    return content;
   }
 
   /// Build a single feed view with specific tabs for the feed type
   Widget _buildSingleFeedViewWithTabs(
     BuildContext context,
     AppLocalizations? l10n,
-    bool isWithinShellRoute,
+    bool canPop,
     List<FeedTabConfig> tabConfigs,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final feedType = widget.feedType!;
     final feedTitle = _getFeedTypeDisplayName(feedType, l10n);
 
@@ -566,121 +547,97 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       );
     }
 
-    final content = NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                feedTitle,
-                style: const TextStyle(
-                  color: Color(0xFFFF5E3A),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+    final content = Scaffold(
+      appBar: PlatformAppBar(
+        title: Text(
+          feedTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        leading: _buildLeadingButton(context),
+        actions: [
+          // Settings button
+          IconButton(
+            onPressed: _showFeedSettings,
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          // Menu button for additional options
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: _handleMenuSelection,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'refresh',
+                child: Row(
+                  children: [
+                    const Icon(Icons.refresh),
+                    const SizedBox(width: MindwellSpacing.sm),
+                    Text(l10n?.refresh ?? 'Refresh'),
+                  ],
                 ),
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFF5E3A), Color(0xFFFF8A65)],
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.article_outlined,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            actions: [
-              // Settings button
-              IconButton(
-                onPressed: _showFeedSettings,
-                icon: const Icon(
-                  Icons.settings_outlined,
-                  color: Color(0xFFFF5E3A),
-                ),
-              ),
-              // Menu button for additional options
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Color(0xFFFF5E3A)),
-                onSelected: _handleMenuSelection,
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'refresh',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.refresh),
-                        const SizedBox(width: MindwellSpacing.sm),
-                        Text(l10n?.refresh ?? 'Refresh'),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _TabBarDelegate(
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicatorColor: const Color(0xFFFF5E3A),
-                indicatorWeight: 3,
-                labelColor: const Color(0xFFFF5E3A),
-                unselectedLabelColor: Colors.grey,
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
-                ),
-                tabs: tabConfigs.map((tabConfig) {
-                  return Tab(
-                    text: _getLocalizedTabLabel(tabConfig.label, l10n),
-                  );
-                }).toList(),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Tab bar
+          Container(
+            color: colorScheme.surface,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: colorScheme.primary,
+              indicatorWeight: 3,
+              labelColor: colorScheme.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+              ),
+              tabs: tabConfigs.map((tabConfig) {
+                return Tab(text: _getLocalizedTabLabel(tabConfig.label, l10n));
+              }).toList(),
             ),
           ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: tabConfigs.map((tabConfig) {
-          return EntryList(
-            key: ValueKey(
-              '${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}',
+          // Tab content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: tabConfigs.map((tabConfig) {
+                return EntryList(
+                  key: ValueKey(
+                    '${feedType.name}_${tabConfig.value}_${feedParameter ?? 'default'}_${widget.tagFilter ?? 'no_tag'}_${widget.username ?? 'no_user'}',
+                  ),
+                  feedType: feedType,
+                  feedParameter:
+                      (feedType == FeedType.profile ||
+                          feedType == FeedType.favorites)
+                      ? (widget.username ?? feedParameter)
+                      : '${feedParameter ?? ''}_${tabConfig.value}',
+                  tagFilter: widget.tagFilter,
+                  enablePullToRefresh: true,
+                  enableInfiniteScroll: true,
+                );
+              }).toList(),
             ),
-            feedType: feedType,
-            feedParameter:
-                (feedType == FeedType.profile || feedType == FeedType.favorites)
-                ? (widget.username ?? feedParameter)
-                : '${feedParameter ?? ''}_${tabConfig.value}',
-            tagFilter: widget.tagFilter,
-            enablePullToRefresh: true,
-            enableInfiniteScroll: true,
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
 
-    // Conditionally wrap with Scaffold based on whether we're within a shell route
-    if (isWithinShellRoute) {
-      return content;
-    } else {
+    // Add floating action button if we can pop (standalone screen)
+    if (canPop) {
       return Scaffold(
         body: content,
         floatingActionButton: FloatingActionButton(
@@ -691,6 +648,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         ),
       );
     }
+
+    return content;
   }
 
   /// Get localized tab label
@@ -719,32 +678,5 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
       default:
         return labelKey;
     }
-  }
-}
-
-/// A custom delegate for the persistent header that contains the TabBar
-class _TabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar _tabBar;
-
-  _TabBarDelegate(this._tabBar);
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Container(color: Colors.white, child: _tabBar);
-  }
-
-  @override
-  bool shouldRebuild(_TabBarDelegate oldDelegate) {
-    return false;
   }
 }

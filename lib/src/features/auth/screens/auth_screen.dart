@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../core/widgets/platform_app_bar.dart';
 
 import '../widgets/login_form.dart';
 import '../widgets/registration_form.dart';
 
 /// Authentication screen that hosts login and registration forms.
-/// 
+///
 /// This screen provides a tabbed interface allowing users to switch between
 /// login and registration forms. It uses a DefaultTabController with TabBar
 /// and TabBarView to manage the form switching.
 class AuthScreen extends ConsumerWidget {
   /// Creates an authentication screen.
-  const AuthScreen({
-    super.key,
-    this.initialTabIndex = 0,
-  });
+  const AuthScreen({super.key, this.initialTabIndex = 0});
 
   /// The initial tab index to show when the screen loads.
   /// 0 for login tab, 1 for registration tab.
@@ -26,7 +24,7 @@ class AuthScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     // Fallback to default strings if localization is not available
     final loginTabText = l10n?.login ?? 'Login';
     final registerTabText = l10n?.register ?? 'Register';
@@ -36,22 +34,23 @@ class AuthScreen extends ConsumerWidget {
       length: 2,
       initialIndex: initialTabIndex,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(appTitle),
+        appBar: PlatformAppBar(
+          title: Text(
+            appTitle,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           centerTitle: true,
           backgroundColor: colorScheme.surface,
           foregroundColor: colorScheme.onSurface,
           elevation: 0,
+          automaticallyImplyLeading:
+              true, // Allow navigation for unauthenticated access
           bottom: TabBar(
             tabs: [
-              Tab(
-                text: loginTabText,
-                icon: const Icon(Icons.login),
-              ),
-              Tab(
-                text: registerTabText,
-                icon: const Icon(Icons.person_add),
-              ),
+              Tab(text: loginTabText, icon: const Icon(Icons.login)),
+              Tab(text: registerTabText, icon: const Icon(Icons.person_add)),
             ],
             labelColor: colorScheme.primary,
             unselectedLabelColor: colorScheme.onSurfaceVariant,
@@ -83,15 +82,9 @@ class AuthScreen extends ConsumerWidget {
                 child: TabBarView(
                   children: [
                     // Login tab content
-                    _buildTabContent(
-                      context,
-                      child: const LoginForm(),
-                    ),
+                    _buildTabContent(context, child: const LoginForm()),
                     // Registration tab content
-                    _buildTabContent(
-                      context,
-                      child: const RegistrationForm(),
-                    ),
+                    _buildTabContent(context, child: const RegistrationForm()),
                   ],
                 ),
               ),
@@ -103,31 +96,30 @@ class AuthScreen extends ConsumerWidget {
   }
 
   /// Builds the content wrapper for each tab.
-  /// 
+  ///
   /// Provides consistent padding and scrolling behavior for both forms.
   Widget _buildTabContent(BuildContext context, {required Widget child}) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height - 
-                     MediaQuery.of(context).padding.top - 
-                     kToolbarHeight - 
-                     kBottomNavigationBarHeight - 
-                     48.0, // TabBar height
+          minHeight:
+              MediaQuery.of(context).size.height -
+              MediaQuery.of(context).padding.top -
+              kToolbarHeight -
+              kBottomNavigationBarHeight -
+              48.0, // TabBar height
         ),
         child: IntrinsicHeight(
           child: Column(
             children: [
               // Welcome section
               _buildWelcomeSection(context),
-              
+
               const SizedBox(height: 32),
-              
+
               // Form content
-              Expanded(
-                child: child,
-              ),
+              Expanded(child: child),
             ],
           ),
         ),
@@ -140,9 +132,10 @@ class AuthScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     final welcomeText = l10n?.appTitle ?? 'Mindwell';
-    final subtitleText = l10n?.appSubtitle ?? 'Your mindful journey starts here';
+    final subtitleText =
+        l10n?.appSubtitle ?? 'Your mindful journey starts here';
 
     return Column(
       children: [
@@ -154,15 +147,11 @@ class AuthScreen extends ConsumerWidget {
             color: colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Icon(
-            Icons.psychology,
-            size: 40,
-            color: colorScheme.primary,
-          ),
+          child: Icon(Icons.psychology, size: 40, color: colorScheme.primary),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // App title
         Text(
           welcomeText,
@@ -171,9 +160,9 @@ class AuthScreen extends ConsumerWidget {
             color: colorScheme.onSurface,
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Subtitle
         Text(
           subtitleText,

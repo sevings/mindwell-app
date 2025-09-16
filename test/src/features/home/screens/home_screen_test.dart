@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindwell/src/features/home/screens/home_screen.dart';
 import 'package:mindwell/src/features/auth/providers/auth_provider.dart';
 import 'package:mindwell/src/features/auth/models/auth_state.dart';
@@ -10,12 +11,13 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 /// Mock AuthNotifier for testing
 class MockAuthNotifier extends AuthNotifier {
-  MockAuthNotifier(AuthState initialState) : super(
-    tokenStorageService: _MockTokenStorageService(),
-    oauth2Api: _MockOauth2Api(),
-    accountApi: _MockAccountApi(),
-    meApi: _MockMeApi(),
-  ) {
+  MockAuthNotifier(AuthState initialState)
+    : super(
+        tokenStorageService: _MockTokenStorageService(),
+        oauth2Api: _MockOauth2Api(),
+        accountApi: _MockAccountApi(),
+        meApi: _MockMeApi(),
+      ) {
     state = initialState;
   }
 }
@@ -23,7 +25,10 @@ class MockAuthNotifier extends AuthNotifier {
 /// Mock implementations
 class _MockTokenStorageService implements TokenStorageService {
   @override
-  Future<void> saveUserTokens({required String accessToken, required String refreshToken}) async {}
+  Future<void> saveUserTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {}
   @override
   Future<String?> getAccessToken() async => null;
   @override
@@ -43,60 +48,78 @@ class _MockTokenStorageService implements TokenStorageService {
 }
 
 class _MockOauth2Api extends Mock implements Oauth2Api {}
+
 class _MockAccountApi extends Mock implements AccountApi {}
+
 class _MockMeApi extends Mock implements MeApi {}
 
 /// Helper function to create test user
 $MwUser _createTestUser() {
-  return $MwUser((b) => b
-    ..id = 1
-    ..name = 'testuser'
-    ..showName = 'Test User'
-    ..isTheme = false
-    ..isOnline = true
+  return $MwUser(
+    (b) => b
+      ..id = 1
+      ..name = 'testuser'
+      ..showName = 'Test User'
+      ..isTheme = false
+      ..isOnline = true,
+  );
+}
+
+/// Helper function to create a test widget with GoRouter context
+Widget _createTestWidget({
+  required Widget child,
+  required AuthState authState,
+  String initialLocation = '/test',
+}) {
+  return ProviderScope(
+    overrides: [
+      authProvider.overrideWith((ref) => MockAuthNotifier(authState)),
+    ],
+    child: MaterialApp.router(
+      routerConfig: GoRouter(
+        initialLocation: initialLocation,
+        routes: [GoRoute(path: '/test', builder: (context, state) => child)],
+      ),
+    ),
   );
 }
 
 void main() {
   group('HomeScreen', () {
-    testWidgets('renders correctly with child content', (WidgetTester tester) async {
+    testWidgets('renders correctly with child content', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: AuthState.authenticated(user: _createTestUser()),
         ),
       );
-      
+
       // Assert
       expect(find.text('Mindwell'), findsOneWidget);
       expect(find.text('Test Content'), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('displays platform app bar with correct title', (WidgetTester tester) async {
+    testWidgets('displays platform app bar with correct title', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: AuthState.authenticated(user: _createTestUser()),
         ),
       );
-      
+
       // Assert
       expect(find.text('Mindwell'), findsOneWidget);
       expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
@@ -105,92 +128,79 @@ void main() {
     testWidgets('displays child content in body', (WidgetTester tester) async {
       // Arrange
       const testChild = Column(
-        children: [
-          Text('First Child'),
-          Text('Second Child'),
-        ],
+        children: [Text('First Child'), Text('Second Child')],
       );
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: AuthState.authenticated(user: _createTestUser()),
         ),
       );
-      
+
       // Assert
       expect(find.text('First Child'), findsOneWidget);
       expect(find.text('Second Child'), findsOneWidget);
       expect(find.byType(Column), findsOneWidget);
     });
 
-    testWidgets('has correct scaffold structure with navigation components', (WidgetTester tester) async {
+    testWidgets('has correct scaffold structure with navigation components', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: AuthState.authenticated(user: _createTestUser()),
         ),
       );
-      
+
       // Assert
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
-      expect(scaffold.appBar, isNotNull);
+      expect(scaffold.appBar, isNotNull); // Should have app bar for /test route
       expect(scaffold.body, isNotNull);
       expect(scaffold.bottomNavigationBar, isNotNull);
       expect(scaffold.drawer, isNotNull);
       expect(scaffold.floatingActionButton, isNotNull);
     });
 
-    testWidgets('shows floating action button when authenticated', (WidgetTester tester) async {
+    testWidgets('shows floating action button when authenticated', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: AuthState.authenticated(user: _createTestUser()),
         ),
       );
-      
+
       // Assert
       expect(find.byType(FloatingActionButton), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('hides floating action button when not authenticated', (WidgetTester tester) async {
+    testWidgets('hides floating action button when not authenticated', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(const AuthState.unauthenticated())),
-          ],
-          child: const MaterialApp(
-            home: HomeScreen(child: testChild),
-          ),
+        _createTestWidget(
+          child: const HomeScreen(child: testChild),
+          authState: const AuthState.unauthenticated(),
         ),
       );
-      
+
       // Assert
       expect(find.byType(FloatingActionButton), findsNothing);
     });
@@ -198,14 +208,18 @@ void main() {
     testWidgets('applies theme colors correctly', (WidgetTester tester) async {
       // Arrange
       const testChild = Text('Test Content');
-      
+
       // Act
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(AuthState.authenticated(user: _createTestUser()))),
+            authProvider.overrideWith(
+              (ref) => MockAuthNotifier(
+                AuthState.authenticated(user: _createTestUser()),
+              ),
+            ),
           ],
-          child: MaterialApp(
+          child: MaterialApp.router(
             theme: ThemeData(
               colorScheme: const ColorScheme.light(
                 surface: Colors.blue,
@@ -214,13 +228,24 @@ void main() {
                 onPrimary: Colors.white,
               ),
             ),
-            home: const HomeScreen(child: testChild),
+            routerConfig: GoRouter(
+              initialLocation: '/test',
+              routes: [
+                GoRoute(
+                  path: '/test',
+                  builder: (context, state) =>
+                      const HomeScreen(child: testChild),
+                ),
+              ],
+            ),
           ),
         ),
       );
-      
+
       // Assert
-      final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
+      final fab = tester.widget<FloatingActionButton>(
+        find.byType(FloatingActionButton),
+      );
       expect(fab.backgroundColor, equals(Colors.orange));
       expect(fab.foregroundColor, equals(Colors.white));
     });

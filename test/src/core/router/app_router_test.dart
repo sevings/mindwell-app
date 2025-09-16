@@ -430,11 +430,14 @@ void main() {
         ),
       );
 
-      // Assert - should have HomeScreen structure (AppBar with Mindwell title)
-      // There is one "Mindwell" text in the SliverAppBar (app now starts with live feed)
-      expect(find.text('Mindwell'), findsOneWidget);
-      // There are two AppBars: one in HomeScreen and one in EntryFeedScreen
-      expect(find.byType(AppBar), findsNWidgets(2));
+      // Wait for the app to fully load
+      await tester.pumpAndSettle();
+      
+      // Assert - should have HomeScreen structure with feed content
+      // The app should show feed content (Russian text indicates the feed is working)
+      expect(find.text('Прямой эфир'), findsOneWidget);
+      // There is one AppBar (either from HomeScreen or EntryFeedScreen)
+      expect(find.byType(AppBar), findsOneWidget);
     });
   });
 
