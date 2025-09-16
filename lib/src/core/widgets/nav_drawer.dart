@@ -7,7 +7,7 @@ import '../../features/auth/models/auth_state.dart';
 import '../theme/spacing.dart';
 
 /// Navigation drawer widget that displays different content based on authentication state.
-/// 
+///
 /// Shows user profile information and navigation options when authenticated,
 /// and login/register options when not authenticated.
 class NavDrawer extends ConsumerWidget {
@@ -26,15 +26,16 @@ class NavDrawer extends ConsumerWidget {
         children: [
           // Drawer header
           _buildDrawerHeader(context, authState, theme),
-          
+
           // Navigation items
           Expanded(
             child: authState.maybeWhen(
-              authenticated: (_) => _buildAuthenticatedContent(context, ref, theme, l10n),
+              authenticated: (_, _) =>
+                  _buildAuthenticatedContent(context, ref, theme, l10n),
               orElse: () => _buildUnauthenticatedContent(context, theme, l10n),
             ),
           ),
-          
+
           // Footer
           _buildDrawerFooter(context, authState, ref, theme, l10n),
         ],
@@ -56,7 +57,8 @@ class NavDrawer extends ConsumerWidget {
         ),
       ),
       child: authState.maybeWhen(
-        authenticated: (user) => _buildUserProfile(context, authState, theme),
+        authenticated: (user, _) =>
+            _buildUserProfile(context, authState, theme),
         orElse: () => _buildAppBranding(context, theme),
       ),
     );
@@ -72,7 +74,7 @@ class NavDrawer extends ConsumerWidget {
       onTap: () {
         Navigator.of(context).pop();
         authState.maybeWhen(
-          authenticated: (user) {
+          authenticated: (user, _) {
             if (user.name != null && user.name!.isNotEmpty) {
               context.go('/users/${Uri.encodeComponent(user.name!)}');
             }
@@ -93,7 +95,7 @@ class NavDrawer extends ConsumerWidget {
               backgroundColor: theme.colorScheme.primary,
               child: Text(
                 authState.maybeWhen(
-                  authenticated: (user) => user.name?.isNotEmpty == true
+                  authenticated: (user, _) => user.name?.isNotEmpty == true
                       ? user.name!.substring(0, 1).toUpperCase()
                       : 'U',
                   orElse: () => 'U',
@@ -105,11 +107,11 @@ class NavDrawer extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: MindwellSpacing.sm),
-            
+
             // Username
             Text(
               authState.maybeWhen(
-                authenticated: (user) => user.name ?? 'User',
+                authenticated: (user, _) => user.name ?? 'User',
                 orElse: () => 'User',
               ),
               style: theme.textTheme.titleLarge?.copyWith(
@@ -118,14 +120,16 @@ class NavDrawer extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: MindwellSpacing.xs),
-            
+
             // User ID (optional, for debugging)
             authState.maybeWhen(
-              authenticated: (user) => user.id != null
+              authenticated: (user, _) => user.id != null
                   ? Text(
                       'ID: ${user.id}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                        color: theme.colorScheme.onPrimaryContainer.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     )
                   : const SizedBox.shrink(),
@@ -158,7 +162,7 @@ class NavDrawer extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: MindwellSpacing.sm),
-        
+
         // App name
         Text(
           'Mindwell',
@@ -168,7 +172,7 @@ class NavDrawer extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: MindwellSpacing.xs),
-        
+
         // App tagline
         Text(
           'Your mindful journal',
@@ -261,9 +265,9 @@ class NavDrawer extends ConsumerWidget {
           },
           theme: theme,
         ),
-        
+
         const Divider(),
-        
+
         // Settings and support
         _buildDrawerItem(
           context: context,
@@ -320,7 +324,11 @@ class NavDrawer extends ConsumerWidget {
   }
 
   /// Builds the navigation content for unauthenticated users.
-  Widget _buildUnauthenticatedContent(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+  Widget _buildUnauthenticatedContent(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -345,9 +353,9 @@ class NavDrawer extends ConsumerWidget {
           },
           theme: theme,
         ),
-        
+
         const Divider(),
-        
+
         // Public features as per common_ui.md specifications
         _buildDrawerItem(
           context: context,
@@ -369,9 +377,9 @@ class NavDrawer extends ConsumerWidget {
           },
           theme: theme,
         ),
-        
+
         const Divider(),
-        
+
         // Settings and support
         _buildDrawerItem(
           context: context,
@@ -446,7 +454,7 @@ class NavDrawer extends ConsumerWidget {
         ),
       ),
       child: authState.maybeWhen(
-        authenticated: (_) => _buildLogoutButton(context, ref, theme, l10n),
+        authenticated: (_, _) => _buildLogoutButton(context, ref, theme, l10n),
         orElse: () => _buildAppVersion(context, theme),
       ),
     );

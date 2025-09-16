@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
 import '../../../core/widgets/inputs/styled_text_field.dart';
@@ -8,7 +9,7 @@ import '../providers/auth_provider.dart';
 import '../models/auth_state.dart';
 
 /// A form widget for user login.
-/// 
+///
 /// This widget provides a complete login form with email and password fields,
 /// form validation, and integration with the authentication provider.
 /// It includes password visibility toggle and proper error handling.
@@ -23,22 +24,22 @@ class LoginForm extends ConsumerStatefulWidget {
 class _LoginFormState extends ConsumerState<LoginForm> {
   /// Form key for validation and state management
   final _formKey = GlobalKey<FormState>();
-  
+
   /// Controller for the email/username field
   final _emailOrUsernameController = TextEditingController();
-  
+
   /// Controller for the password field
   final _passwordController = TextEditingController();
-  
+
   /// Focus node for the email/username field
   final _emailOrUsernameFocusNode = FocusNode();
-  
+
   /// Focus node for the password field
   final _passwordFocusNode = FocusNode();
-  
+
   /// Whether the password is visible or obscured
   bool _isPasswordVisible = false;
-  
+
   /// Whether the form is currently being submitted
   bool _isSubmitting = false;
 
@@ -55,10 +56,11 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final l10n = AppLocalizations.of(context);
-    
+
     // Fallback to default strings if localization is not available
     final emailOrUsernameLabel = l10n?.emailOrUsername ?? 'Email or Username';
-    final emailOrUsernameHint = l10n?.emailOrUsernameHint ?? 'Enter your email or username';
+    final emailOrUsernameHint =
+        l10n?.emailOrUsernameHint ?? 'Enter your email or username';
     final passwordLabel = l10n?.password ?? 'Password';
     final passwordHint = l10n?.passwordHint ?? 'Enter your password';
     final loginButtonText = l10n?.loginButton ?? 'Login';
@@ -78,9 +80,15 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             );
           }
         },
-        authenticated: (_) {
+        authenticated: (_, authSource) {
           _isSubmitting = false;
-          // Navigation will be handled by the router
+          // Manually trigger navigation based on auth source
+          if (mounted) {
+            final redirectPath = authSource == AuthSource.registration
+                ? '/profile'
+                : '/feed/live';
+            context.go(redirectPath);
+          }
         },
         orElse: () {},
       );
@@ -105,9 +113,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             },
             prefixIcon: const Icon(Icons.person_outline),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Password field
           StyledTextField(
             controller: _passwordController,
@@ -134,9 +142,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               },
             ),
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           // Forgot password link
           Align(
             alignment: Alignment.centerRight,
@@ -145,14 +153,16 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               child: Text(forgotPasswordText),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Login button
           PrimaryButton(
             text: loginButtonText,
             onPressed: _isSubmitting ? null : _submitForm,
-            isLoading: _isSubmitting || authState.maybeWhen(loading: () => true, orElse: () => false),
+            isLoading:
+                _isSubmitting ||
+                authState.maybeWhen(loading: () => true, orElse: () => false),
             expanded: true,
           ),
         ],
@@ -161,37 +171,37 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   }
 
   /// Validates the email or username field.
-  /// 
+  ///
   /// Returns an error message if validation fails, null if valid.
   String? _validateEmailOrUsername(String? value) {
     final l10n = AppLocalizations.of(context);
-    
+
     if (value == null || value.trim().isEmpty) {
       return l10n?.emailOrUsernameRequired ?? 'Email or username is required';
     }
-    
+
     return null;
   }
 
   /// Validates the password field.
-  /// 
+  ///
   /// Returns an error message if validation fails, null if valid.
   String? _validatePassword(String? value) {
     final l10n = AppLocalizations.of(context);
-    
+
     if (value == null || value.isEmpty) {
       return l10n?.passwordRequired ?? 'Password is required';
     }
-    
+
     if (value.length < 6) {
       return l10n?.passwordTooShort ?? 'Password must be at least 6 characters';
     }
-    
+
     return null;
   }
 
   /// Submits the login form.
-  /// 
+  ///
   /// Validates the form and calls the authentication provider's login method.
   void _submitForm() {
     if (!_formKey.currentState!.validate()) {
@@ -206,14 +216,16 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     FocusScope.of(context).unfocus();
 
     // Call the authentication provider
-    ref.read(authProvider.notifier).login(
-      _emailOrUsernameController.text.trim(),
-      _passwordController.text,
-    );
+    ref
+        .read(authProvider.notifier)
+        .login(
+          _emailOrUsernameController.text.trim(),
+          _passwordController.text,
+        );
   }
 
   /// Handles the forgot password action.
-  /// 
+  ///
   /// This is a placeholder for future implementation of password recovery.
   void _handleForgotPassword() {
     // TODO: Implement forgot password functionality

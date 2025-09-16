@@ -132,7 +132,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
     if (_feedTypes.contains(FeedType.profile)) {
       final authState = ref.read(authProvider);
       authState.maybeWhen(
-        authenticated: (user) => currentUserFeedParameter = user.id?.toString(),
+        authenticated: (user, _) =>
+            currentUserFeedParameter = user.id?.toString(),
         orElse: () => currentUserFeedParameter = null,
       );
     }
@@ -310,7 +311,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         // Get the current user ID for profile feeds in the main tabbed view
         final authState = ref.read(authProvider);
         authState.maybeWhen(
-          authenticated: (user) => feedParameter = user.id?.toString(),
+          authenticated: (user, _) => feedParameter = user.id?.toString(),
           orElse: () => feedParameter = null,
         );
       } else {
@@ -376,7 +377,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         // Get the current user ID for profile feeds in the main tabbed view
         final authState = ref.read(authProvider);
         authState.maybeWhen(
-          authenticated: (user) => feedParameter = user.id?.toString(),
+          authenticated: (user, _) => feedParameter = user.id?.toString(),
           orElse: () => feedParameter = null,
         );
       } else {
@@ -451,7 +452,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
     if (feedType == FeedType.profile) {
       final authState = ref.read(authProvider);
       authState.maybeWhen(
-        authenticated: (user) => feedParameter = user.id?.toString(),
+        authenticated: (user, _) => feedParameter = user.id?.toString(),
         orElse: () => feedParameter = null,
       );
     }
@@ -542,7 +543,7 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
     if (feedType == FeedType.profile) {
       final authState = ref.read(authProvider);
       authState.maybeWhen(
-        authenticated: (user) => feedParameter = user.id?.toString(),
+        authenticated: (user, _) => feedParameter = user.id?.toString(),
         orElse: () => feedParameter = null,
       );
     }

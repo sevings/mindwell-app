@@ -5,6 +5,7 @@ import '../../../l10n/app_localizations.dart';
 import '../widgets/platform_app_bar.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/models/auth_state.dart';
 import '../../features/auth/screens/auth_screen.dart';
 import '../../features/entries/screens/entry_feed_screen.dart';
 import '../../features/entries/screens/entry_detail_screen.dart';
@@ -53,10 +54,12 @@ class AppRouter {
           // If we're still determining auth status, don't redirect yet
           return null;
         },
-        authenticated: (user) {
-          // If user is authenticated and trying to access login/register, redirect to live feed
+        authenticated: (user, authSource) {
+          // If user is authenticated and trying to access login/register, redirect based on auth source
           if (unauthenticatedRoutes.contains(currentPath)) {
-            return '/feed/live';
+            return authSource == AuthSource.registration
+                ? '/profile'
+                : '/feed/live';
           }
           // Allow access to protected routes
           return null;
@@ -101,7 +104,7 @@ class AppRouter {
               final authState = container.read(authProvider);
 
               return authState.when(
-                authenticated: (user) =>
+                authenticated: (user, authSource) =>
                     ProfileScreen(username: user.name ?? ''),
                 initial: () => const _ProfileContent(),
                 loading: () => const _ProfileContent(),
@@ -182,7 +185,7 @@ class AppRouter {
               final authState = container.read(authProvider);
 
               return authState.when(
-                authenticated: (user) => EntryFeedScreen(
+                authenticated: (user, authSource) => EntryFeedScreen(
                   feedType: FeedType.profile,
                   username: user.name ?? user.id?.toString(),
                 ),

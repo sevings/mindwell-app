@@ -83,7 +83,10 @@ class HomeScreen extends ConsumerWidget {
 
       // Floating action button will be added in future tasks
       floatingActionButton:
-          authState.maybeWhen(authenticated: (_) => true, orElse: () => false)
+          authState.maybeWhen(
+            authenticated: (_, _) => true,
+            orElse: () => false,
+          )
           ? FloatingActionButton(
               onPressed: () {
                 // TODO: Add new entry functionality

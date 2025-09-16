@@ -6,18 +6,15 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../theme/spacing.dart';
 
 /// Platform-aware bottom navigation bar widget.
-/// 
+///
 /// Displays navigation tabs for Home, Notifications, and Chat.
 /// Only visible when the user is authenticated.
 /// Uses NavigationBar for Material Design and CupertinoTabBar for iOS.
 class PlatformBottomNavBar extends ConsumerWidget {
   /// Creates a platform-aware bottom navigation bar.
-  /// 
+  ///
   /// The [currentIndex] parameter determines which tab is currently selected.
-  const PlatformBottomNavBar({
-    super.key,
-    required this.currentIndex,
-  });
+  const PlatformBottomNavBar({super.key, required this.currentIndex});
 
   /// The currently selected tab index.
   final int currentIndex;
@@ -90,7 +87,10 @@ class PlatformBottomNavBar extends ConsumerWidget {
     final platform = theme.platform;
 
     // Only show the bottom navigation bar when authenticated
-    if (!authState.maybeWhen(authenticated: (_) => true, orElse: () => false)) {
+    if (!authState.maybeWhen(
+      authenticated: (_, _) => true,
+      orElse: () => false,
+    )) {
       return const SizedBox.shrink();
     }
 
@@ -103,10 +103,7 @@ class PlatformBottomNavBar extends ConsumerWidget {
         activeColor: theme.colorScheme.primary,
         inactiveColor: theme.colorScheme.onSurfaceVariant,
         border: const Border(
-          top: BorderSide(
-            color: CupertinoColors.separator,
-            width: 0.5,
-          ),
+          top: BorderSide(color: CupertinoColors.separator, width: 0.5),
         ),
         height: MindwellSpacing.bottomNavHeight,
       );

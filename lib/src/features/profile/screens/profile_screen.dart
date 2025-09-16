@@ -117,7 +117,7 @@ class ProfileScreen extends ConsumerWidget {
     // Check if this is the user's own profile
     final authState = ref.read(authProvider);
     final isOwnProfile = authState.maybeWhen(
-      authenticated: (authUser) => authUser.id == user.id,
+      authenticated: (authUser, _) => authUser.id == user.id,
       orElse: () => false,
     );
 

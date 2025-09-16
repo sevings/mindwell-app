@@ -11,7 +11,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 
 /// A card-based profile header widget that fills the screen width.
-/// 
+///
 /// This widget displays the user's cover image with 3:1 aspect ratio,
 /// avatar overlapping the image and white section, user stats in a grid,
 /// and action buttons. It's designed to be placed at the top of the screen.
@@ -19,10 +19,7 @@ class ProfileHeaderCard extends ConsumerStatefulWidget {
   /// The username of the profile being displayed
   final String username;
 
-  const ProfileHeaderCard({
-    super.key,
-    required this.username,
-  });
+  const ProfileHeaderCard({super.key, required this.username});
 
   @override
   ConsumerState<ProfileHeaderCard> createState() => _ProfileHeaderCardState();
@@ -35,7 +32,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileProvider(widget.username));
     final l10n = AppLocalizations.of(context);
-    
+
     // Handle case where localizations are not available
     if (l10n == null) {
       return _buildLoadingCard(context);
@@ -44,8 +41,9 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     return profileState.when(
       initial: () => _buildLoadingCard(context),
       loading: () => _buildLoadingCard(context),
-      loaded: (user, badges, images, tags, calendarData, entries, hasMoreEntries) => 
-          _buildLoadedCard(context, l10n, user, ref),
+      loaded:
+          (user, badges, images, tags, calendarData, entries, hasMoreEntries) =>
+              _buildLoadedCard(context, l10n, user, ref),
       error: (message) => _buildErrorCard(context, l10n, message),
     );
   }
@@ -63,15 +61,14 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 2,
-      color: colorScheme.surfaceContainer, // Use theme's surface container color to match other cards
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-      ),
+      color: colorScheme
+          .surfaceContainer, // Use theme's surface container color to match other cards
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: Column(
         children: [
           // Header image section with 3:1 aspect ratio
           _buildHeaderImageSection(context, user, ref),
-          
+
           // White section with avatar, name, status and stats
           _buildWhiteSection(context, l10n, user, ref),
         ],
@@ -87,11 +84,11 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
     final isOwnProfile = authState.maybeWhen(
-      authenticated: (authUser) => authUser.id == user.id,
+      authenticated: (authUser, _) => authUser.id == user.id,
       orElse: () => false,
     );
 
@@ -99,7 +96,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
       builder: (context, constraints) {
         // Calculate height for 3:1 aspect ratio
         final imageHeight = constraints.maxWidth / 3;
-        
+
         return SizedBox(
           width: double.infinity,
           height: imageHeight,
@@ -135,8 +132,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
                     ),
                   ),
                 ),
-              
-              
+
               // Tappable overlay for own profile cover
               if (isOwnProfile && user.cover != null)
                 Positioned.fill(
@@ -166,7 +162,6 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     );
   }
 
-
   /// Builds the white section with avatar, name, status and stats
   Widget _buildWhiteSection(
     BuildContext context,
@@ -177,7 +172,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     // Check if this is the user's own profile
     final authState = ref.watch(authProvider);
     final isOwnProfile = authState.maybeWhen(
-      authenticated: (authUser) => authUser.id == user.id,
+      authenticated: (authUser, _) => authUser.id == user.id,
       orElse: () => false,
     );
 
@@ -188,15 +183,15 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
           offset: const Offset(0, -40), // Move avatar up to overlap
           child: _buildAvatar(context, user, ref, isOwnProfile),
         ),
-        
+
         // Name and online status
         _buildNameAndStatus(context, user),
-        
+
         const SizedBox(height: 16),
-        
+
         // User stats in grid layout
         _buildUserStatsGrid(context, l10n, user),
-        
+
         const SizedBox(height: 16),
       ],
     );
@@ -216,7 +211,8 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: colorScheme.surfaceContainer, // Use theme's surface container color for avatar border
+          color: colorScheme
+              .surfaceContainer, // Use theme's surface container color for avatar border
           width: 3.0,
         ),
         boxShadow: [
@@ -279,9 +275,9 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
           ),
           textAlign: TextAlign.center,
         ),
-        
+
         const SizedBox(height: 4),
-        
+
         // Online status
         _buildOnlineStatus(context, user),
       ],
@@ -293,7 +289,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
-    
+
     if (l10n == null) {
       return const SizedBox.shrink();
     }
@@ -346,77 +342,89 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
 
     // Create a list of all available stats
     final stats = <Widget>[];
-    
+
     // Entries count
     if (counts.entries != null && counts.entries! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.entries.toString(),
-        l10n.entries,
-        () => _navigateToEntries(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.entries.toString(),
+          l10n.entries,
+          () => _navigateToEntries(context, user.name),
+        ),
+      );
     }
-    
+
     // Comments count
     if (counts.comments != null && counts.comments! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.comments.toString(),
-        l10n.comments,
-        () => _navigateToComments(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.comments.toString(),
+          l10n.comments,
+          () => _navigateToComments(context, user.name),
+        ),
+      );
     }
-    
+
     // Favorites count
     if (counts.favorites != null && counts.favorites! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.favorites.toString(),
-        l10n.favorited,
-        () => _navigateToFavorited(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.favorites.toString(),
+          l10n.favorited,
+          () => _navigateToFavorited(context, user.name),
+        ),
+      );
     }
-    
+
     // Following count
     if (counts.followings != null && counts.followings! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.followings.toString(),
-        l10n.following,
-        () => _navigateToFollowing(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.followings.toString(),
+          l10n.following,
+          () => _navigateToFollowing(context, user.name),
+        ),
+      );
     }
-    
+
     // Followers count
     if (counts.followers != null && counts.followers! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.followers.toString(),
-        l10n.followers,
-        () => _navigateToFollowers(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.followers.toString(),
+          l10n.followers,
+          () => _navigateToFollowers(context, user.name),
+        ),
+      );
     }
-    
+
     // Invited count
     if (counts.invited != null && counts.invited! > 0) {
-      stats.add(_buildStatItem(
-        context,
-        theme,
-        l10n,
-        counts.invited.toString(),
-        l10n.invited,
-        () => _navigateToInvited(context, user.name),
-      ));
+      stats.add(
+        _buildStatItem(
+          context,
+          theme,
+          l10n,
+          counts.invited.toString(),
+          l10n.invited,
+          () => _navigateToInvited(context, user.name),
+        ),
+      );
     }
 
     if (stats.isEmpty) {
@@ -427,9 +435,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Row(
-          children: stats.map((stat) => Expanded(
-            child: stat,
-          )).toList(),
+          children: stats.map((stat) => Expanded(child: stat)).toList(),
         );
       },
     );
@@ -489,10 +495,9 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 2,
-      color: colorScheme.surfaceContainer, // Use theme's surface container color to match other cards
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-      ),
+      color: colorScheme
+          .surfaceContainer, // Use theme's surface container color to match other cards
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: Column(
         children: [
           // Loading header image
@@ -503,13 +508,11 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
                 width: double.infinity,
                 height: imageHeight,
                 color: colorScheme.surfaceContainerHighest,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: const Center(child: CircularProgressIndicator()),
               );
             },
           ),
-          
+
           // Loading white section
           Column(
             children: [
@@ -546,27 +549,30 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
               // Loading stats
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (index) => Column(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
+                children: List.generate(
+                  6,
+                  (index) => Column(
+                    children: [
+                      Container(
+                        height: 20,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      height: 12,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 12,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
-                    ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
             ],
@@ -588,9 +594,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: Container(
         color: colorScheme.errorContainer,
         padding: const EdgeInsets.all(32.0),
@@ -653,7 +657,6 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
     }
   }
 
-
   /// Handles avatar tap to change avatar image
   Future<void> _handleAvatarTap() async {
     try {
@@ -663,17 +666,17 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
         maxWidth: 512,
         maxHeight: 512,
       );
-      
+
       if (pickedFile != null) {
         final file = File(pickedFile.path);
-        await ref.read(profileProvider(widget.username).notifier).updateAvatar(file);
-        
+        await ref
+            .read(profileProvider(widget.username).notifier)
+            .updateAvatar(file);
+
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Avatar updated'),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: const Text('Avatar updated')));
         }
       }
     } catch (e) {
@@ -697,17 +700,17 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
         maxWidth: 1920,
         maxHeight: 1080,
       );
-      
+
       if (pickedFile != null) {
         final file = File(pickedFile.path);
-        await ref.read(profileProvider(widget.username).notifier).updateCover(file);
-        
+        await ref
+            .read(profileProvider(widget.username).notifier)
+            .updateCover(file);
+
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Cover updated'),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: const Text('Cover updated')));
         }
       }
     } catch (e) {
