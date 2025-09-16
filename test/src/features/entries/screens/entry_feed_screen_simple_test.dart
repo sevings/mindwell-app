@@ -30,30 +30,31 @@ class _MockEntryCacheService implements EntryCacheService {
 
 /// Mock EntryFeedNotifier that returns empty state
 class _MockEntryFeedNotifier extends EntryFeedNotifier {
-  _MockEntryFeedNotifier() : super(
-    feedType: FeedType.live,
-    entriesApi: _MockEntriesApi(),
-    usersApi: _MockUsersApi(),
-    cacheService: _MockEntryCacheService(),
-  ) {
+  _MockEntryFeedNotifier()
+    : super(
+        feedType: FeedType.live,
+        entriesApi: _MockEntriesApi(),
+        usersApi: _MockUsersApi(),
+        cacheServiceAsync: Future.value(_MockEntryCacheService()),
+      ) {
     state = const EntryFeedState.empty();
   }
-  
+
   @override
   Future<void> fetchInitialEntries() async {}
-  
+
   @override
   Future<void> fetchMoreEntries() async {}
-  
+
   @override
   Future<void> refresh() async {}
-  
+
   @override
   Future<void> updateSettings(dynamic newSettings) async {}
 }
 
 /// Simple widget tests for [EntryFeedScreen]
-/// 
+///
 /// Tests the basic UI structure without requiring provider setup
 void main() {
   group('EntryFeedScreen - Basic Structure', () {
@@ -62,8 +63,12 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -73,10 +78,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),
@@ -93,13 +95,19 @@ void main() {
       expect(find.byType(TabBar), findsOneWidget);
     });
 
-    testWidgets('displays SliverAppBar with correct title', (WidgetTester tester) async {
+    testWidgets('displays SliverAppBar with correct title', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -109,10 +117,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),
@@ -132,8 +137,12 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -143,10 +152,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),
@@ -159,13 +165,19 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('displays settings and menu buttons in app bar', (WidgetTester tester) async {
+    testWidgets('displays settings and menu buttons in app bar', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -175,10 +187,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),
@@ -198,8 +207,12 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -209,10 +222,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),
@@ -229,8 +239,12 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
           ],
           child: MaterialApp(
             home: const EntryFeedScreen(),
@@ -240,10 +254,7 @@ void main() {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('ru', ''),
-              Locale('en', ''),
-            ],
+            supportedLocales: const [Locale('ru', ''), Locale('en', '')],
             locale: const Locale('ru', ''),
           ),
         ),

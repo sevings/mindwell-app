@@ -16,7 +16,10 @@ import 'package:mindwell_api/mindwell_api.dart';
 /// Mock implementations for testing
 class _MockTokenStorageService implements TokenStorageService {
   @override
-  Future<void> saveUserTokens({required String accessToken, required String refreshToken}) async {}
+  Future<void> saveUserTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {}
 
   @override
   Future<void> saveAppToken(String appToken) async {}
@@ -73,7 +76,11 @@ class _MockEntryCacheService implements EntryCacheService {
   Future<void> initialize() async {}
 
   @override
-  Future<void> storeEntries(String feedType, List<MwEntry> entries, {int page = 1}) async {}
+  Future<void> storeEntries(
+    String feedType,
+    List<MwEntry> entries, {
+    int page = 1,
+  }) async {}
 
   @override
   Future<List<MwEntry>?> getEntries(String feedType, {int page = 1}) async {
@@ -103,7 +110,10 @@ class _MockEntryCacheService implements EntryCacheService {
   Future<void> close() async {}
 
   @override
-  Future<void> storeFeedSettings(String feedType, Map<String, dynamic> settings) async {}
+  Future<void> storeFeedSettings(
+    String feedType,
+    Map<String, dynamic> settings,
+  ) async {}
 
   @override
   Future<Map<String, dynamic>?> getFeedSettings(String feedType) async {
@@ -116,48 +126,51 @@ class _MockEntryCacheService implements EntryCacheService {
 
 /// Mock EntryFeedNotifier that returns empty state
 class _MockEntryFeedNotifier extends EntryFeedNotifier {
-  _MockEntryFeedNotifier() : super(
-    feedType: FeedType.live,
-    entriesApi: _MockEntriesApi(),
-    usersApi: _MockUsersApi(),
-    cacheService: _MockEntryCacheService(),
-  ) {
+  _MockEntryFeedNotifier()
+    : super(
+        feedType: FeedType.live,
+        entriesApi: _MockEntriesApi(),
+        usersApi: _MockUsersApi(),
+        cacheServiceAsync: Future.value(_MockEntryCacheService()),
+      ) {
     state = const EntryFeedState.empty();
   }
-  
+
   @override
   Future<void> fetchInitialEntries() async {}
-  
+
   @override
   Future<void> fetchMoreEntries() async {}
-  
+
   @override
   Future<void> refresh() async {}
-  
+
   @override
   Future<void> updateSettings(dynamic newSettings) async {}
 }
 
 /// Simple mock implementation that extends AuthNotifier
 class _MockAuthNotifier extends AuthNotifier {
-  _MockAuthNotifier(AuthState initialState) : super(
-    tokenStorageService: _MockTokenStorageService(),
-    oauth2Api: _MockOauth2Api(),
-    accountApi: _MockAccountApi(),
-    meApi: _MockMeApi(),
-  ) {
+  _MockAuthNotifier(AuthState initialState)
+    : super(
+        tokenStorageService: _MockTokenStorageService(),
+        oauth2Api: _MockOauth2Api(),
+        accountApi: _MockAccountApi(),
+        meApi: _MockMeApi(),
+      ) {
     state = initialState;
   }
 }
 
 /// Helper function to create an authenticated user for testing
 AuthState createAuthenticatedUser() {
-  final user = $MwUser((b) => b
-    ..id = 1
-    ..name = 'Test User'
-    ..showName = 'Test User'
-    ..isTheme = false
-    ..isOnline = true
+  final user = $MwUser(
+    (b) => b
+      ..id = 1
+      ..name = 'Test User'
+      ..showName = 'Test User'
+      ..isTheme = false
+      ..isOnline = true,
   );
   return AuthState.authenticated(user: user);
 }
@@ -170,9 +183,15 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -184,15 +203,23 @@ void main() {
       expect(find.text('Mindwell'), findsOneWidget);
     });
 
-    testWidgets('should apply light theme correctly', (WidgetTester tester) async {
+    testWidgets('should apply light theme correctly', (
+      WidgetTester tester,
+    ) async {
       // Build the app with mocked providers
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -200,26 +227,40 @@ void main() {
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
-      
+
       // Verify theme configuration
       expect(materialApp.theme, isNotNull);
       expect(materialApp.darkTheme, isNotNull);
       expect(materialApp.themeMode, equals(ThemeMode.system));
-      
+
       // Verify theme properties
-      expect(materialApp.theme!.colorScheme.primary, equals(MindwellTheme.lightTheme.colorScheme.primary));
-      expect(materialApp.darkTheme!.colorScheme.primary, equals(MindwellTheme.darkTheme.colorScheme.primary));
+      expect(
+        materialApp.theme!.colorScheme.primary,
+        equals(MindwellTheme.lightTheme.colorScheme.primary),
+      );
+      expect(
+        materialApp.darkTheme!.colorScheme.primary,
+        equals(MindwellTheme.darkTheme.colorScheme.primary),
+      );
     });
 
-    testWidgets('should configure localization correctly', (WidgetTester tester) async {
+    testWidgets('should configure localization correctly', (
+      WidgetTester tester,
+    ) async {
       // Build the app with mocked providers
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -227,28 +268,36 @@ void main() {
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
-      
+
       // Verify localization delegates are configured
       expect(materialApp.localizationsDelegates, isNotNull);
       expect(materialApp.localizationsDelegates!.length, equals(5));
-      
+
       // Verify supported locales
       expect(materialApp.supportedLocales, contains(const Locale('ru', '')));
       expect(materialApp.supportedLocales, contains(const Locale('en', '')));
-      
+
       // Verify default locale is Russian
       expect(materialApp.locale, equals(const Locale('ru', '')));
     });
 
-    testWidgets('should configure router correctly', (WidgetTester tester) async {
+    testWidgets('should configure router correctly', (
+      WidgetTester tester,
+    ) async {
       // Build the app with mocked providers
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -256,20 +305,28 @@ void main() {
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
-      
+
       // Verify router is configured
       expect(materialApp.routerConfig, isNotNull);
     });
 
-    testWidgets('should display home placeholder content', (WidgetTester tester) async {
+    testWidgets('should display home placeholder content', (
+      WidgetTester tester,
+    ) async {
       // Build the app with mocked providers
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -289,9 +346,15 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -299,7 +362,7 @@ void main() {
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
-      
+
       // Verify app title
       expect(materialApp.title, equals('Mindwell'));
     });
@@ -310,9 +373,15 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -320,7 +389,7 @@ void main() {
 
       // Get the MaterialApp widget
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
-      
+
       // Verify debug banner is hidden
       expect(materialApp.debugShowCheckedModeBanner, isFalse);
     });
@@ -333,9 +402,15 @@ void main() {
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -346,15 +421,23 @@ void main() {
       expect(find.text('Прямой эфир'), findsOneWidget); // Live in Russian
     });
 
-    testWidgets('should display all expected content', (WidgetTester tester) async {
+    testWidgets('should display all expected content', (
+      WidgetTester tester,
+    ) async {
       // Build the app to test the placeholder through the router
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),
@@ -368,15 +451,23 @@ void main() {
       expect(find.byType(Tab), findsWidgets);
     });
 
-    testWidgets('should center content vertically', (WidgetTester tester) async {
+    testWidgets('should center content vertically', (
+      WidgetTester tester,
+    ) async {
       // Build the app to test the placeholder through the router
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             entriesApiProvider.overrideWith((ref) => _MockEntriesApi()),
-            entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
-            entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
-            authProvider.overrideWith((ref) => _MockAuthNotifier(createAuthenticatedUser())),
+            entryCacheServiceProvider.overrideWith(
+              (ref) => _MockEntryCacheService(),
+            ),
+            entryFeedProvider.overrideWith(
+              (ref, feedType) => _MockEntryFeedNotifier(),
+            ),
+            authProvider.overrideWith(
+              (ref) => _MockAuthNotifier(createAuthenticatedUser()),
+            ),
           ],
           child: const MindWellApp(),
         ),

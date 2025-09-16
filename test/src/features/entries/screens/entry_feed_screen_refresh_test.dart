@@ -16,7 +16,9 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 /// Mock implementations for testing
 class MockEntriesApi extends Mock implements EntriesApi {}
+
 class MockUsersApi extends Mock implements UsersApi {}
+
 class MockEntryCacheService extends Mock implements EntryCacheService {}
 
 /// Mock EntryFeedNotifier that tracks refresh calls
@@ -24,28 +26,26 @@ class MockEntryFeedNotifier extends EntryFeedNotifier {
   bool refreshCalled = false;
   String? lastFeedType;
   String? lastFeedParameter;
-  
-  MockEntryFeedNotifier({
-    required super.feedType,
-    super.feedParameter,
-  }) : super(
-    entriesApi: MockEntriesApi(),
-    usersApi: MockUsersApi(),
-    cacheService: MockEntryCacheService(),
-  ) {
+
+  MockEntryFeedNotifier({required super.feedType, super.feedParameter})
+    : super(
+        entriesApi: MockEntriesApi(),
+        usersApi: MockUsersApi(),
+        cacheServiceAsync: Future.value(MockEntryCacheService()),
+      ) {
     state = EntryFeedState.loaded(
       entries: [],
       hasMore: false,
       settings: FeedSettings.defaultSettings,
     );
   }
-  
+
   @override
   Future<void> fetchInitialEntries() async {}
-  
+
   @override
   Future<void> fetchMoreEntries() async {}
-  
+
   @override
   Future<void> refresh() async {
     refreshCalled = true;
@@ -54,7 +54,7 @@ class MockEntryFeedNotifier extends EntryFeedNotifier {
     lastFeedType = 'unknown';
     lastFeedParameter = null;
   }
-  
+
   @override
   Future<void> updateSettings(dynamic newSettings) async {}
 }
@@ -83,8 +83,12 @@ void main() {
           usersApiProvider.overrideWith((ref) => mockUsersApi),
           entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
           // Override the unified feed provider with mock notifiers
-          entryFeedProvider.overrideWith((ref, params) => 
-            MockEntryFeedNotifier(feedType: params.feedType, feedParameter: params.feedParameter)),
+          entryFeedProvider.overrideWith(
+            (ref, params) => MockEntryFeedNotifier(
+              feedType: params.feedType,
+              feedParameter: params.feedParameter,
+            ),
+          ),
         ],
         child: MaterialApp(
           home: EntryFeedScreen(
@@ -98,23 +102,22 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('ru', ''),
-            Locale('en', ''),
-          ],
+          supportedLocales: const [Locale('ru', ''), Locale('en', '')],
           locale: locale,
         ),
       );
     }
 
-    testWidgets('displays refresh option in menu button', (WidgetTester tester) async {
+    testWidgets('displays refresh option in menu button', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
       // Find and tap the menu button
       final menuButton = find.byIcon(Icons.more_vert);
       expect(menuButton, findsOneWidget);
-      
+
       await tester.tap(menuButton);
       await tester.pump();
 
@@ -123,14 +126,16 @@ void main() {
       expect(find.byIcon(Icons.refresh), findsOneWidget);
     });
 
-    testWidgets('displays refresh option in Russian locale', (WidgetTester tester) async {
+    testWidgets('displays refresh option in Russian locale', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(locale: const Locale('ru', '')));
       await tester.pump();
 
       // Find and tap the menu button
       final menuButton = find.byIcon(Icons.more_vert);
       expect(menuButton, findsOneWidget);
-      
+
       await tester.tap(menuButton);
       await tester.pump();
 
@@ -139,7 +144,9 @@ void main() {
       expect(find.byIcon(Icons.refresh), findsOneWidget);
     });
 
-    testWidgets('only shows refresh option in menu (no other options)', (WidgetTester tester) async {
+    testWidgets('only shows refresh option in menu (no other options)', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -152,7 +159,7 @@ void main() {
       expect(find.text('Refresh'), findsOneWidget);
       expect(find.text('My Entries'), findsNothing);
       expect(find.text('Themes'), findsNothing);
-      
+
       // Verify only one menu item
       final popupMenuItems = find.byType(PopupMenuItem<String>);
       expect(popupMenuItems, findsOneWidget);
@@ -165,13 +172,15 @@ void main() {
       // Find the menu button
       final menuButton = find.byIcon(Icons.more_vert);
       expect(menuButton, findsOneWidget);
-      
+
       // Verify the icon button exists
       final iconButton = find.byType(IconButton);
       expect(iconButton, findsWidgets);
     });
 
-    testWidgets('refresh option has correct icon and spacing', (WidgetTester tester) async {
+    testWidgets('refresh option has correct icon and spacing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -186,7 +195,7 @@ void main() {
         matching: find.byType(Row),
       );
       expect(refreshRow, findsOneWidget);
-      
+
       // Verify icon is present
       expect(find.byIcon(Icons.refresh), findsOneWidget);
     });
@@ -199,7 +208,9 @@ void main() {
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
 
-    testWidgets('displays settings button in app bar', (WidgetTester tester) async {
+    testWidgets('displays settings button in app bar', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -207,7 +218,9 @@ void main() {
       expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
     });
 
-    testWidgets('both buttons are present in app bar', (WidgetTester tester) async {
+    testWidgets('both buttons are present in app bar', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -216,39 +229,47 @@ void main() {
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
 
-    testWidgets('menu button works for different feed types', (WidgetTester tester) async {
-      final feedTypes = [FeedType.live, FeedType.best, FeedType.friends, FeedType.profile];
-      
+    testWidgets('menu button works for different feed types', (
+      WidgetTester tester,
+    ) async {
+      final feedTypes = [
+        FeedType.live,
+        FeedType.best,
+        FeedType.friends,
+        FeedType.profile,
+      ];
+
       for (final feedType in feedTypes) {
         await tester.pumpWidget(createTestWidget(feedType: feedType));
         await tester.pump();
 
         // Verify menu button is present
         expect(find.byIcon(Icons.more_vert), findsOneWidget);
-        
+
         // Tap the menu button
         await tester.tap(find.byIcon(Icons.more_vert));
         await tester.pump();
 
         // Verify refresh option is shown
         expect(find.text('Refresh'), findsOneWidget);
-        
+
         // Clean up for next iteration
         await tester.pumpWidget(Container());
         await tester.pump();
       }
     });
 
-    testWidgets('menu button works for feed with tag filter', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        feedType: FeedType.live,
-        tagFilter: 'testtag',
-      ));
+    testWidgets('menu button works for feed with tag filter', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(feedType: FeedType.live, tagFilter: 'testtag'),
+      );
       await tester.pump();
 
       // Verify menu button is present
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
-      
+
       // Tap the menu button
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pump();
@@ -257,16 +278,17 @@ void main() {
       expect(find.text('Refresh'), findsOneWidget);
     });
 
-    testWidgets('menu button works for profile feed with username', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        feedType: FeedType.profile,
-        username: 'testuser',
-      ));
+    testWidgets('menu button works for profile feed with username', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(feedType: FeedType.profile, username: 'testuser'),
+      );
       await tester.pump();
 
       // Verify menu button is present
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
-      
+
       // Tap the menu button
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pump();
@@ -298,8 +320,12 @@ void main() {
           usersApiProvider.overrideWith((ref) => mockUsersApi),
           entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
           // Override the unified feed provider with mock notifiers
-          entryFeedProvider.overrideWith((ref, params) => 
-            MockEntryFeedNotifier(feedType: params.feedType, feedParameter: params.feedParameter)),
+          entryFeedProvider.overrideWith(
+            (ref, params) => MockEntryFeedNotifier(
+              feedType: params.feedType,
+              feedParameter: params.feedParameter,
+            ),
+          ),
         ],
         child: MaterialApp(
           home: EntryFeedScreen(
@@ -313,16 +339,15 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('ru', ''),
-            Locale('en', ''),
-          ],
+          supportedLocales: const [Locale('ru', ''), Locale('en', '')],
           locale: const Locale('en', ''),
         ),
       );
     }
 
-    testWidgets('app bar contains both settings and menu buttons', (WidgetTester tester) async {
+    testWidgets('app bar contains both settings and menu buttons', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -331,7 +356,9 @@ void main() {
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
 
-    testWidgets('menu button is a PopupMenuButton', (WidgetTester tester) async {
+    testWidgets('menu button is a PopupMenuButton', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -339,7 +366,9 @@ void main() {
       expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     });
 
-    testWidgets('menu contains only refresh option', (WidgetTester tester) async {
+    testWidgets('menu contains only refresh option', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -349,7 +378,7 @@ void main() {
 
       // Verify only one menu item exists
       expect(find.byType(PopupMenuItem<String>), findsOneWidget);
-      
+
       // Verify the menu item contains refresh text and icon
       expect(find.text('Refresh'), findsOneWidget);
       expect(find.byIcon(Icons.refresh), findsOneWidget);

@@ -12,9 +12,13 @@ import 'package:mindwell/src/features/entries/providers/entry_feed_provider.dart
 
 // Mock classes
 class MockEntriesApi extends Mock implements EntriesApi {}
+
 class MockUsersApi extends Mock implements UsersApi {}
+
 class MockEntryCacheService extends Mock implements EntryCacheService {}
+
 class MockMwFeed extends Mock implements MwFeed {}
+
 class MockMwEntry extends Mock implements MwEntry {}
 
 // Helper functions for testing state
@@ -48,17 +52,22 @@ bool isEmptyState(EntryFeedState state) {
   );
 }
 
-({List<MwEntry> entries, bool hasMore, FeedSettings settings})? getLoadedState(EntryFeedState state) {
+({List<MwEntry> entries, bool hasMore, FeedSettings settings})? getLoadedState(
+  EntryFeedState state,
+) {
   return state.when(
     initial: () => null,
     loading: () => null,
-    loaded: (entries, hasMore, settings) => (entries: entries, hasMore: hasMore, settings: settings),
+    loaded: (entries, hasMore, settings) =>
+        (entries: entries, hasMore: hasMore, settings: settings),
     error: (message, entries) => null,
     empty: () => null,
   );
 }
 
-({String message, List<MwEntry>? entries})? getErrorState(EntryFeedState state) {
+({String message, List<MwEntry>? entries})? getErrorState(
+  EntryFeedState state,
+) {
   return state.when(
     initial: () => null,
     loading: () => null,
@@ -82,27 +91,30 @@ void main() {
       mockUsersApi = MockUsersApi();
       mockCacheService = MockEntryCacheService();
       mockFeed = MockMwFeed();
-      
+
       // Create mock entries
-      mockEntries = [
-        MockMwEntry(),
-        MockMwEntry(),
-        MockMwEntry(),
-      ];
-      
+      mockEntries = [MockMwEntry(), MockMwEntry(), MockMwEntry()];
+
       // Setup default mock behavior
       when(() => mockFeed.entries).thenReturn(BuiltList(mockEntries));
       when(() => mockFeed.nextAfter).thenReturn('next_after_token');
       when(() => mockFeed.hasAfter).thenReturn(true);
       when(() => mockFeed.nextBefore).thenReturn('next_before_token');
       when(() => mockFeed.hasBefore).thenReturn(false);
-      
-      when(() => mockCacheService.getEntries(any(), page: any(named: 'page')))
-          .thenAnswer((_) async => null);
-      when(() => mockCacheService.storeEntries(any(), any(), page: any(named: 'page')))
-          .thenAnswer((_) async {});
-      when(() => mockCacheService.clearFeedCache(any()))
-          .thenAnswer((_) async {});
+
+      when(
+        () => mockCacheService.getEntries(any(), page: any(named: 'page')),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockCacheService.storeEntries(
+          any(),
+          any(),
+          page: any(named: 'page'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockCacheService.clearFeedCache(any()),
+      ).thenAnswer((_) async {});
     });
 
     group('fetchInitialEntries', () {
@@ -111,60 +123,72 @@ void main() {
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         // Start fetching
         final future = notifier.fetchInitialEntries();
-        
+
         // Check that state is loading
-        expect(notifier.state.when(
-          initial: () => false,
-          loading: () => true,
-          loaded: (entries, hasMore, settings) => false,
-          error: (message, entries) => false,
-          empty: () => false,
-        ), isTrue);
-        
+        expect(
+          notifier.state.when(
+            initial: () => false,
+            loading: () => true,
+            loaded: (entries, hasMore, settings) => false,
+            error: (message, entries) => false,
+            empty: () => false,
+          ),
+          isTrue,
+        );
+
         // Wait for completion
         await future;
       });
 
       test('should load from cache first if available', () async {
         final cachedEntries = [MockMwEntry(), MockMwEntry()];
-        
-        when(() => mockCacheService.getEntries(any(), page: any(named: 'page')))
-            .thenAnswer((_) async => cachedEntries);
-        
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+
+        when(
+          () => mockCacheService.getEntries(any(), page: any(named: 'page')),
+        ).thenAnswer((_) async => cachedEntries);
+
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
@@ -175,29 +199,33 @@ void main() {
         expect(loadedState, isNotNull);
         expect(loadedState!.entries, equals(mockEntries));
         expect(loadedState.hasMore, isTrue);
-        
+
         // Verify cache was checked
         verify(() => mockCacheService.getEntries('live', page: 1)).called(1);
       });
 
       test('should fetch from API and cache the result', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
@@ -206,33 +234,39 @@ void main() {
         final loadedState = getLoadedState(notifier.state);
         expect(loadedState!.entries, equals(mockEntries));
         expect(loadedState.hasMore, isTrue);
-        
+
         // Verify API was called and result was cached
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: 20,
-          after: null,
-          before: null,
-          source_: 'all',
-          section: 'entries',
-        )).called(1);
-        
-        verify(() => mockCacheService.storeEntries('live', mockEntries, page: 1)).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: 20,
+            after: null,
+            before: null,
+            source_: 'all',
+            section: 'entries',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockCacheService.storeEntries('live', mockEntries, page: 1),
+        ).called(1);
       });
 
       test('should handle API errors gracefully', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenThrow(Exception('Network error'));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenThrow(Exception('Network error'));
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
@@ -245,23 +279,26 @@ void main() {
 
       test('should show cached data with error if API fails', () async {
         final cachedEntries = [MockMwEntry()];
-        
-        when(() => mockCacheService.getEntries(any(), page: any(named: 'page')))
-            .thenAnswer((_) async => cachedEntries);
-        
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenThrow(Exception('Network error'));
+
+        when(
+          () => mockCacheService.getEntries(any(), page: any(named: 'page')),
+        ).thenAnswer((_) async => cachedEntries);
+
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenThrow(Exception('Network error'));
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
@@ -275,24 +312,28 @@ void main() {
       test('should show empty state when no data available', () async {
         when(() => mockFeed.entries).thenReturn(BuiltList([]));
         when(() => mockFeed.hasAfter).thenReturn(false);
-        
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
@@ -305,28 +346,32 @@ void main() {
       test('should append new entries to existing list', () async {
         final initialEntries = [MockMwEntry(), MockMwEntry()];
         final newEntries = [MockMwEntry(), MockMwEntry()];
-        
+
         when(() => mockFeed.entries).thenReturn(BuiltList(newEntries));
         when(() => mockFeed.nextAfter).thenReturn('new_next_after');
         when(() => mockFeed.hasAfter).thenReturn(false);
-        
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         // Set initial state
@@ -342,15 +387,17 @@ void main() {
         final loadedState = getLoadedState(notifier.state);
         expect(loadedState!.entries.length, equals(4)); // 2 initial + 2 new
         expect(loadedState.hasMore, isFalse);
-        
+
         // Verify API was called with correct pagination token
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: 20,
-          after: null, // Should use the stored nextAfter token
-          before: null,
-          source_: 'all',
-          section: 'entries',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: 20,
+            after: null, // Should use the stored nextAfter token
+            before: null,
+            source_: 'all',
+            section: 'entries',
+          ),
+        ).called(1);
       });
 
       test('should not fetch more if already loading', () async {
@@ -358,7 +405,7 @@ void main() {
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         // Set initial state
@@ -370,21 +417,23 @@ void main() {
 
         // Start first fetch
         final future1 = notifier.fetchMoreEntries();
-        
+
         // Try to start second fetch while first is still running
         final future2 = notifier.fetchMoreEntries();
-        
+
         await future1;
         await future2;
-        
+
         // Should only call API once
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).called(1);
       });
 
       test('should not fetch more if no more entries available', () async {
@@ -392,7 +441,7 @@ void main() {
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         // Set initial state with hasMore = false
@@ -405,72 +454,84 @@ void main() {
         await notifier.fetchMoreEntries();
 
         // Should not call API
-        verifyNever(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        ));
+        verifyNever(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        );
       });
     });
 
     group('refresh', () {
       test('should clear cache and fetch fresh data', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.refresh();
 
         // Verify cache was cleared
         verify(() => mockCacheService.clearFeedCache('live')).called(1);
-        
+
         // Verify fresh data was fetched
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: 20,
-          after: null,
-          before: null,
-          source_: 'all',
-          section: 'entries',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: 20,
+            after: null,
+            before: null,
+            source_: 'all',
+            section: 'entries',
+          ),
+        ).called(1);
       });
     });
 
     group('updateSettings', () {
       test('should clear cache and refetch with new settings', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         final newSettings = FeedSettings(
@@ -482,15 +543,17 @@ void main() {
 
         // Verify cache was cleared
         verify(() => mockCacheService.clearFeedCache('live')).called(1);
-        
+
         // Verify API was called with new limit
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: 50,
-          after: null,
-          before: null,
-          source_: 'all',
-          section: 'entries',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: 50,
+            after: null,
+            before: null,
+            source_: 'all',
+            section: 'entries',
+          ),
+        ).called(1);
       });
 
       test('should not refetch if settings are the same', () async {
@@ -498,83 +561,96 @@ void main() {
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.updateSettings(FeedSettings.defaultSettings);
 
         // Should not call API or clear cache
         verifyNever(() => mockCacheService.clearFeedCache(any()));
-        verifyNever(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        ));
+        verifyNever(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        );
       });
     });
 
     group('feedParameter in constructor', () {
       test('should create provider with feed parameter', () async {
-        when(() => mockUsersApi.usersNameTlogGet(
-          name: any(named: 'name'),
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          sort: any(named: 'sort'),
-          query: any(named: 'query'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockUsersApi.usersNameTlogGet(
+            name: any(named: 'name'),
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            sort: any(named: 'sort'),
+            query: any(named: 'query'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.profile,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           feedParameter: 'user123',
         );
 
         // Should start in initial state
-        expect(notifier.state.when(
-          initial: () => true,
-          loading: () => false,
-          loaded: (entries, hasMore, settings) => false,
-          error: (message, entries) => false,
-          empty: () => false,
-        ), isTrue);
-        
+        expect(
+          notifier.state.when(
+            initial: () => true,
+            loading: () => false,
+            loaded: (entries, hasMore, settings) => false,
+            error: (message, entries) => false,
+            empty: () => false,
+          ),
+          isTrue,
+        );
+
         // Fetch initial entries
         await notifier.fetchInitialEntries();
-        
+
         // Should now be in loaded state with new data
         expect(isLoadedState(notifier.state), isTrue);
       });
 
       test('should handle setFeedParameter for dynamic updates', () async {
-        when(() => mockUsersApi.usersNameTlogGet(
-          name: any(named: 'name'),
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          sort: any(named: 'sort'),
-          query: any(named: 'query'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockUsersApi.usersNameTlogGet(
+            name: any(named: 'name'),
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            sort: any(named: 'sort'),
+            query: any(named: 'query'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.profile,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         // Set initial state first
@@ -596,10 +672,10 @@ void main() {
           empty: () => 'empty',
         );
         expect(['initial', 'loading'].contains(stateAfterSet), isTrue);
-        
+
         // Wait for the async fetch to complete
         await Future.delayed(const Duration(milliseconds: 100));
-        
+
         // Should now be in loaded state with new data
         expect(isLoadedState(notifier.state), isTrue);
       });
@@ -607,24 +683,28 @@ void main() {
 
     group('setTagFilter', () {
       test('should update tag filter and refetch data', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         // Set initial state first
@@ -645,10 +725,10 @@ void main() {
           empty: () => 'empty',
         );
         expect(['initial', 'loading'].contains(stateAfterSet), isTrue);
-        
+
         // Wait for the async fetch to complete
         await Future.delayed(const Duration(milliseconds: 100));
-        
+
         // Should now be in loaded state with new data
         expect(isLoadedState(notifier.state), isTrue);
       });
@@ -658,7 +738,7 @@ void main() {
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           tagFilter: 'flutter',
         );
 
@@ -678,325 +758,398 @@ void main() {
 
     group('tag filtering', () {
       test('should include tag parameter in live feed API call', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           tagFilter: 'flutter',
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockEntriesApi.entriesLiveGet(
-          limit: 20,
-          after: null,
-          before: null,
-          tag: 'flutter',
-          source_: 'all',
-          section: 'entries',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: 20,
+            after: null,
+            before: null,
+            tag: 'flutter',
+            source_: 'all',
+            section: 'entries',
+          ),
+        ).called(1);
       });
 
       test('should include tag parameter in best feed API call', () async {
-        when(() => mockEntriesApi.entriesBestGet(
-          limit: any(named: 'limit'),
-          tag: any(named: 'tag'),
-          query: any(named: 'query'),
-          source_: any(named: 'source_'),
-          category: any(named: 'category'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesBestGet(
+            limit: any(named: 'limit'),
+            tag: any(named: 'tag'),
+            query: any(named: 'query'),
+            source_: any(named: 'source_'),
+            category: any(named: 'category'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.best,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           tagFilter: 'dart',
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockEntriesApi.entriesBestGet(
-          limit: 20,
-          tag: 'dart',
-          query: null,
-          source_: 'all',
-          category: 'month',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesBestGet(
+            limit: 20,
+            tag: 'dart',
+            query: null,
+            source_: 'all',
+            category: 'month',
+          ),
+        ).called(1);
       });
 
       test('should use tag filter in cache key', () async {
-        when(() => mockCacheService.getEntries(any(), page: any(named: 'page')))
-            .thenAnswer((_) async => null);
-        
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockCacheService.getEntries(any(), page: any(named: 'page')),
+        ).thenAnswer((_) async => null);
+
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           tagFilter: 'flutter',
         );
 
         await notifier.fetchInitialEntries();
 
         // Verify cache was accessed with tag-specific key
-        verify(() => mockCacheService.getEntries('live_tag_flutter', page: 1)).called(1);
-        verify(() => mockCacheService.storeEntries('live_tag_flutter', mockEntries, page: 1)).called(1);
+        verify(
+          () => mockCacheService.getEntries('live_tag_flutter', page: 1),
+        ).called(1);
+        verify(
+          () => mockCacheService.storeEntries(
+            'live_tag_flutter',
+            mockEntries,
+            page: 1,
+          ),
+        ).called(1);
       });
 
       test('should clear tag-specific cache on refresh', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesLiveGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            source_: any(named: 'source_'),
+            section: any(named: 'section'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.live,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           tagFilter: 'flutter',
         );
 
         await notifier.refresh();
 
         // Verify tag-specific cache was cleared
-        verify(() => mockCacheService.clearFeedCache('live_tag_flutter')).called(1);
+        verify(
+          () => mockCacheService.clearFeedCache('live_tag_flutter'),
+        ).called(1);
       });
     });
 
     group('different feed types', () {
       test('should call correct API method for best feed', () async {
-        when(() => mockEntriesApi.entriesBestGet(
-          limit: any(named: 'limit'),
-          tag: any(named: 'tag'),
-          query: any(named: 'query'),
-          source_: any(named: 'source_'),
-          category: any(named: 'category'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesBestGet(
+            limit: any(named: 'limit'),
+            tag: any(named: 'tag'),
+            query: any(named: 'query'),
+            source_: any(named: 'source_'),
+            category: any(named: 'category'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.best,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockEntriesApi.entriesBestGet(
-          limit: 20,
-          tag: null,
-          query: null,
-          source_: 'all',
-          category: 'month',
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesBestGet(
+            limit: 20,
+            tag: null,
+            query: null,
+            source_: 'all',
+            category: 'month',
+          ),
+        ).called(1);
       });
 
       test('should call correct API method for friends feed', () async {
-        when(() => mockEntriesApi.entriesFriendsGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          query: any(named: 'query'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockEntriesApi.entriesFriendsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            query: any(named: 'query'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.friends,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockEntriesApi.entriesFriendsGet(
-          limit: 20,
-          after: null,
-          before: null,
-          tag: null,
-          query: null,
-        )).called(1);
+        verify(
+          () => mockEntriesApi.entriesFriendsGet(
+            limit: 20,
+            after: null,
+            before: null,
+            tag: null,
+            query: null,
+          ),
+        ).called(1);
       });
 
-      test('should call watching API for friends feed with watching parameter', () async {
-        when(() => mockEntriesApi.entriesWatchingGet(
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+      test(
+        'should call watching API for friends feed with watching parameter',
+        () async {
+          when(
+            () => mockEntriesApi.entriesWatchingGet(
+              limit: any(named: 'limit'),
+              after: any(named: 'after'),
+              before: any(named: 'before'),
+            ),
+          ).thenAnswer(
+            (_) async => Response<MwFeed>(
+              data: mockFeed,
+              statusCode: 200,
+              requestOptions: RequestOptions(path: '/test'),
+            ),
+          );
 
-        notifier = EntryFeedNotifier(
-          feedType: FeedType.friends,
-          entriesApi: mockEntriesApi,
-          usersApi: mockUsersApi,
-          cacheService: mockCacheService,
-          feedParameter: '_watching',
-        );
+          notifier = EntryFeedNotifier(
+            feedType: FeedType.friends,
+            entriesApi: mockEntriesApi,
+            usersApi: mockUsersApi,
+            cacheServiceAsync: Future.value(mockCacheService),
+            feedParameter: '_watching',
+          );
 
-        await notifier.fetchInitialEntries();
+          await notifier.fetchInitialEntries();
 
-        verify(() => mockEntriesApi.entriesWatchingGet(
-          limit: 20,
-          after: null,
-          before: null,
-        )).called(1);
-      });
+          verify(
+            () => mockEntriesApi.entriesWatchingGet(
+              limit: 20,
+              after: null,
+              before: null,
+            ),
+          ).called(1);
+        },
+      );
 
       test('should call correct API method for profile feed', () async {
-        when(() => mockUsersApi.usersNameTlogGet(
-          name: any(named: 'name'),
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          sort: any(named: 'sort'),
-          query: any(named: 'query'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockUsersApi.usersNameTlogGet(
+            name: any(named: 'name'),
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+            tag: any(named: 'tag'),
+            sort: any(named: 'sort'),
+            query: any(named: 'query'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.profile,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           feedParameter: 'testuser',
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockUsersApi.usersNameTlogGet(
-          name: 'testuser',
-          limit: 20,
-          after: null,
-          before: null,
-          tag: null,
-          sort: 'new',
-          query: null,
-        )).called(1);
+        verify(
+          () => mockUsersApi.usersNameTlogGet(
+            name: 'testuser',
+            limit: 20,
+            after: null,
+            before: null,
+            tag: null,
+            sort: 'new',
+            query: null,
+          ),
+        ).called(1);
       });
 
       test('should call correct API method for favorites feed', () async {
-        when(() => mockUsersApi.usersNameFavoritesGet(
-          name: any(named: 'name'),
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+        when(
+          () => mockUsersApi.usersNameFavoritesGet(
+            name: any(named: 'name'),
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwFeed>(
+            data: mockFeed,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/test'),
+          ),
+        );
 
         notifier = EntryFeedNotifier(
           feedType: FeedType.favorites,
           entriesApi: mockEntriesApi,
           usersApi: mockUsersApi,
-          cacheService: mockCacheService,
+          cacheServiceAsync: Future.value(mockCacheService),
           feedParameter: 'testuser',
         );
 
         await notifier.fetchInitialEntries();
 
-        verify(() => mockUsersApi.usersNameFavoritesGet(
-          name: 'testuser',
-          limit: 20,
-          after: null,
-          before: null,
-        )).called(1);
+        verify(
+          () => mockUsersApi.usersNameFavoritesGet(
+            name: 'testuser',
+            limit: 20,
+            after: null,
+            before: null,
+          ),
+        ).called(1);
       });
 
-      test('should include tag filter in profile feed API call when tag is provided', () async {
-        when(() => mockUsersApi.usersNameTlogGet(
-          name: any(named: 'name'),
-          limit: any(named: 'limit'),
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-          tag: any(named: 'tag'),
-          sort: any(named: 'sort'),
-          query: any(named: 'query'),
-        )).thenAnswer((_) async => Response<MwFeed>(
-          data: mockFeed,
-          statusCode: 200,
-          requestOptions: RequestOptions(path: '/test'),
-        ));
+      test(
+        'should include tag filter in profile feed API call when tag is provided',
+        () async {
+          when(
+            () => mockUsersApi.usersNameTlogGet(
+              name: any(named: 'name'),
+              limit: any(named: 'limit'),
+              after: any(named: 'after'),
+              before: any(named: 'before'),
+              tag: any(named: 'tag'),
+              sort: any(named: 'sort'),
+              query: any(named: 'query'),
+            ),
+          ).thenAnswer(
+            (_) async => Response<MwFeed>(
+              data: mockFeed,
+              statusCode: 200,
+              requestOptions: RequestOptions(path: '/test'),
+            ),
+          );
 
-        notifier = EntryFeedNotifier(
-          feedType: FeedType.profile,
-          entriesApi: mockEntriesApi,
-          usersApi: mockUsersApi,
-          cacheService: mockCacheService,
-          feedParameter: 'testuser',
-          tagFilter: 'flutter',
-        );
+          notifier = EntryFeedNotifier(
+            feedType: FeedType.profile,
+            entriesApi: mockEntriesApi,
+            usersApi: mockUsersApi,
+            cacheServiceAsync: Future.value(mockCacheService),
+            feedParameter: 'testuser',
+            tagFilter: 'flutter',
+          );
 
-        await notifier.fetchInitialEntries();
+          await notifier.fetchInitialEntries();
 
-        verify(() => mockUsersApi.usersNameTlogGet(
-          name: 'testuser',
-          limit: 20,
-          after: null,
-          before: null,
-          tag: 'flutter', // Tag filter should be passed when provided
-          sort: 'new',
-          query: null,
-        )).called(1);
-      });
+          verify(
+            () => mockUsersApi.usersNameTlogGet(
+              name: 'testuser',
+              limit: 20,
+              after: null,
+              before: null,
+              tag: 'flutter', // Tag filter should be passed when provided
+              sort: 'new',
+              query: null,
+            ),
+          ).called(1);
+        },
+      );
     });
   });
 }

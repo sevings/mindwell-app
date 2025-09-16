@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:mindwell/src/features/entries/models/feed_type.dart';
 import 'package:mindwell/src/features/entries/widgets/feed_settings_bottom_sheet.dart';
+import 'package:mindwell/src/features/entries/providers/entry_feed_provider.dart';
+import 'package:mindwell/src/core/services/entry_cache_service.dart';
+
+// Mock classes
+class MockEntryCacheService extends Mock implements EntryCacheService {}
 
 void main() {
   group('FeedSettingsBottomSheet', () {
@@ -10,7 +16,14 @@ void main() {
       FeedType feedType = FeedType.live,
       String? feedParameter,
     }) {
+      final mockCacheService = MockEntryCacheService();
+
       return ProviderScope(
+        overrides: [
+          entryCacheServiceProvider.overrideWith(
+            (ref) async => mockCacheService,
+          ),
+        ],
         child: MaterialApp(
           home: Scaffold(
             body: FeedSettingsBottomSheet(
@@ -22,7 +35,9 @@ void main() {
       );
     }
 
-    testWidgets('should display all settings sections for live feed', (WidgetTester tester) async {
+    testWidgets('should display all settings sections for live feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.live));
       await tester.pumpAndSettle();
 
@@ -34,7 +49,9 @@ void main() {
       expect(find.text('Apply Settings'), findsOneWidget);
     });
 
-    testWidgets('should display all settings sections for best feed', (WidgetTester tester) async {
+    testWidgets('should display all settings sections for best feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.best));
       await tester.pumpAndSettle();
 
@@ -46,7 +63,9 @@ void main() {
       expect(find.text('Apply Settings'), findsOneWidget);
     });
 
-    testWidgets('should not display source options for friends feed', (WidgetTester tester) async {
+    testWidgets('should not display source options for friends feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.friends));
       await tester.pumpAndSettle();
 
@@ -54,12 +73,14 @@ void main() {
       expect(find.text('Source Options'), findsNothing);
       expect(find.text('Include Tlogs'), findsNothing);
       expect(find.text('Include Themes'), findsNothing);
-      
+
       // Verify entry count is not displayed
       expect(find.text('Entry Count'), findsNothing);
     });
 
-    testWidgets('should display sort order for profile feed', (WidgetTester tester) async {
+    testWidgets('should display sort order for profile feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.profile));
       await tester.pumpAndSettle();
 
@@ -68,15 +89,17 @@ void main() {
       expect(find.text('Newest First'), findsOneWidget);
       expect(find.text('Oldest First'), findsOneWidget);
       expect(find.text('Best First'), findsOneWidget);
-      
+
       // Verify source options are not displayed
       expect(find.text('Source Options'), findsNothing);
-      
+
       // Verify entry count is not displayed
       expect(find.text('Entry Count'), findsNothing);
     });
 
-    testWidgets('should display display format options', (WidgetTester tester) async {
+    testWidgets('should display display format options', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -87,7 +110,9 @@ void main() {
       expect(find.byIcon(Icons.view_list), findsOneWidget);
     });
 
-    testWidgets('should allow selecting display format', (WidgetTester tester) async {
+    testWidgets('should allow selecting display format', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -103,7 +128,9 @@ void main() {
       expect(find.text('Full'), findsOneWidget);
     });
 
-    testWidgets('should display sort order options for profile feed', (WidgetTester tester) async {
+    testWidgets('should display sort order options for profile feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.profile));
       await tester.pumpAndSettle();
 
@@ -113,7 +140,9 @@ void main() {
       expect(find.text('Best First'), findsOneWidget);
     });
 
-    testWidgets('should allow selecting sort order for profile feed', (WidgetTester tester) async {
+    testWidgets('should allow selecting sort order for profile feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.profile));
       await tester.pumpAndSettle();
 
@@ -125,7 +154,9 @@ void main() {
       expect(find.text('Oldest First'), findsOneWidget);
     });
 
-    testWidgets('should display source options for live feed', (WidgetTester tester) async {
+    testWidgets('should display source options for live feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.live));
       await tester.pumpAndSettle();
 
@@ -139,7 +170,9 @@ void main() {
       expect(find.byType(Switch), findsNWidgets(2));
     });
 
-    testWidgets('should allow toggling source options', (WidgetTester tester) async {
+    testWidgets('should allow toggling source options', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.live));
       await tester.pumpAndSettle();
 
@@ -156,7 +189,9 @@ void main() {
       expect(switchWidget.value, isFalse);
     });
 
-    testWidgets('should prevent disabling both source options', (WidgetTester tester) async {
+    testWidgets('should prevent disabling both source options', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.live));
       await tester.pumpAndSettle();
 
@@ -181,11 +216,17 @@ void main() {
       expect(themesSwitch.value, isTrue);
     });
 
-
-    testWidgets('should handle different feed types', (WidgetTester tester) async {
+    testWidgets('should handle different feed types', (
+      WidgetTester tester,
+    ) async {
       // Test with different feed types
-      final feedTypes = [FeedType.live, FeedType.best, FeedType.friends, FeedType.profile];
-      
+      final feedTypes = [
+        FeedType.live,
+        FeedType.best,
+        FeedType.friends,
+        FeedType.profile,
+      ];
+
       for (final feedType in feedTypes) {
         await tester.pumpWidget(createTestWidget(feedType: feedType));
         await tester.pumpAndSettle();
@@ -200,17 +241,24 @@ void main() {
       }
     });
 
-    testWidgets('should display entry count options for best feed', (WidgetTester tester) async {
+    testWidgets('should display entry count options for best feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.best));
       await tester.pumpAndSettle();
 
       // Verify entry count options are displayed
       expect(find.text('Entry Count'), findsOneWidget);
-      expect(find.text('Number of entries to display per page'), findsOneWidget);
+      expect(
+        find.text('Number of entries to display per page'),
+        findsOneWidget,
+      );
       expect(find.text('20 entries'), findsOneWidget); // Default value
     });
 
-    testWidgets('should allow selecting entry count for best feed', (WidgetTester tester) async {
+    testWidgets('should allow selecting entry count for best feed', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget(feedType: FeedType.best));
       await tester.pumpAndSettle();
 
