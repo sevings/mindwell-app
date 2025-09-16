@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/models/auth_state.dart';
 import '../theme/spacing.dart';
+import 'images/cached_image.dart';
 
 /// Navigation drawer widget that displays different content based on authentication state.
 ///
@@ -70,72 +72,89 @@ class NavDrawer extends ConsumerWidget {
     AuthState authState,
     ThemeData theme,
   ) {
+    return authState.maybeWhen(
+      authenticated: (user, _) =>
+          _buildAuthenticatedUserProfile(context, user, theme),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  /// Builds the authenticated user profile with avatar and show name.
+  Widget _buildAuthenticatedUserProfile(
+    BuildContext context,
+    $MwUser user,
+    ThemeData theme,
+  ) {
+    final showName = user.showName ?? user.name ?? 'User';
+    final avatarUrl = user.avatar?.x92 ?? user.avatar?.x42;
+
     return InkWell(
       onTap: () {
         Navigator.of(context).pop();
-        authState.maybeWhen(
-          authenticated: (user, _) {
-            if (user.name != null && user.name!.isNotEmpty) {
-              context.go('/users/${Uri.encodeComponent(user.name!)}');
-            }
-          },
-          orElse: () {},
-        );
+        if (user.name != null && user.name!.isNotEmpty) {
+          context.go('/users/${Uri.encodeComponent(user.name!)}');
+        }
       },
       borderRadius: BorderRadius.circular(MindwellSpacing.borderRadius),
-      child: Padding(
-        padding: const EdgeInsets.all(MindwellSpacing.sm),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            // Avatar
-            CircleAvatar(
-              radius: MindwellSpacing.avatarMd / 2,
-              backgroundColor: theme.colorScheme.primary,
-              child: Text(
-                authState.maybeWhen(
-                  authenticated: (user, _) => user.name?.isNotEmpty == true
-                      ? user.name!.substring(0, 1).toUpperCase()
-                      : 'U',
-                  orElse: () => 'U',
-                ),
-                style: theme.textTheme.headlineSmall?.copyWith(
+      child: Container(
+        height: 120, // Fixed height for the profile section
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(MindwellSpacing.borderRadius),
+          color: theme.colorScheme.primaryContainer,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(MindwellSpacing.md),
+          child: Row(
+            children: [
+              // Avatar
+              CachedAvatar(
+                imageUrl: avatarUrl,
+                size: MindwellSpacing.avatarLg,
+                fallbackText: showName.isNotEmpty
+                    ? showName.substring(0, 1).toUpperCase()
+                    : 'U',
+                backgroundColor: theme.colorScheme.primary,
+                fallbackTextStyle: theme.textTheme.headlineSmall?.copyWith(
                   color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-            const SizedBox(height: MindwellSpacing.sm),
+              const SizedBox(width: MindwellSpacing.md),
 
-            // Username
-            Text(
-              authState.maybeWhen(
-                authenticated: (user, _) => user.name ?? 'User',
-                orElse: () => 'User',
-              ),
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: MindwellSpacing.xs),
-
-            // User ID (optional, for debugging)
-            authState.maybeWhen(
-              authenticated: (user, _) => user.id != null
-                  ? Text(
-                      'ID: ${user.id}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer.withValues(
-                          alpha: 0.7,
-                        ),
+              // User info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Show name
+                    Text(
+                      showName,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
-                  : const SizedBox.shrink(),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          ],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: MindwellSpacing.xs),
+
+                    // Username (if different from show name)
+                    if (user.name != null && user.name != showName)
+                      Text(
+                        '@${user.name}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.7),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -295,7 +314,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.news,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to 'mindwell' user profile entries
+            context.go('/users/mindwell/entries');
           },
           theme: theme,
         ),
