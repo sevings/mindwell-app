@@ -5,14 +5,14 @@ import 'package:logging/logging.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 /// Service for caching entries in local storage using Hive.
-/// 
+///
 /// Provides offline support by storing and retrieving lists of entries
 /// for different feed types. Cache entries have a TTL (time-to-live) for
 /// automatic expiration.
 class EntryCacheService {
   static const String _boxName = 'entry_cache';
   static const Duration _cacheTtl = Duration(hours: 1);
-  
+
   late Box<String> _box;
   final Logger _logger = Logger('EntryCacheService');
 
@@ -28,7 +28,7 @@ class EntryCacheService {
   }
 
   /// Store a list of entries for a specific feed type.
-  /// 
+  ///
   /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
   /// [entries] - List of entries to cache
   /// [page] - Page number for pagination (default: 1)
@@ -45,7 +45,7 @@ class EntryCacheService {
         'page': page,
         'feedType': feedType,
       };
-      
+
       await _box.put(cacheKey, _serializeMap(cacheData));
       _logger.fine('Stored ${entries.length} entries for $feedType page $page');
     } catch (e) {
@@ -55,58 +55,57 @@ class EntryCacheService {
   }
 
   /// Retrieve cached entries for a specific feed type and page.
-  /// 
+  ///
   /// Returns null if no cached data exists or if the cache has expired.
-  Future<List<MwEntry>?> getEntries(
-    String feedType, {
-    int page = 1,
-  }) async {
+  Future<List<MwEntry>?> getEntries(String feedType, {int page = 1}) async {
     try {
       final cacheKey = _getCacheKey(feedType, page);
       final cacheDataString = _box.get(cacheKey);
-      
+
       if (cacheDataString == null) {
         _logger.fine('No cached entries found for $feedType page $page');
         return null;
       }
-      
+
       final cacheData = _deserializeMap(cacheDataString);
       if (cacheData == null) {
         _logger.warning('Invalid cache data for $feedType page $page');
         await _box.delete(cacheKey);
         return null;
       }
-      
+
       final timestamp = cacheData['timestamp'] as int?;
       if (timestamp == null) {
         _logger.warning('Invalid cache data for $feedType page $page');
         await _box.delete(cacheKey);
         return null;
       }
-      
+
       final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
       final now = DateTime.now();
-      
+
       if (now.difference(cacheTime) > _cacheTtl) {
         _logger.fine('Cache expired for $feedType page $page');
         await _box.delete(cacheKey);
         return null;
       }
-      
+
       final entriesData = cacheData['entries'] as List?;
       if (entriesData == null) {
         _logger.warning('Invalid entries data for $feedType page $page');
         await _box.delete(cacheKey);
         return null;
       }
-      
+
       final entries = entriesData
           .map((entryData) => _deserializeEntry(entryData as String))
           .where((entry) => entry != null)
           .cast<MwEntry>()
           .toList();
-      
-      _logger.fine('Retrieved ${entries.length} cached entries for $feedType page $page');
+
+      _logger.fine(
+        'Retrieved ${entries.length} cached entries for $feedType page $page',
+      );
       return entries;
     } catch (e) {
       _logger.warning('Failed to retrieve cached entries for $feedType: $e');
@@ -115,10 +114,7 @@ class EntryCacheService {
   }
 
   /// Check if cached entries exist for a specific feed type and page.
-  Future<bool> hasCachedEntries(
-    String feedType, {
-    int page = 1,
-  }) async {
+  Future<bool> hasCachedEntries(String feedType, {int page = 1}) async {
     final entries = await getEntries(feedType, page: page);
     return entries != null && entries.isNotEmpty;
   }
@@ -127,18 +123,20 @@ class EntryCacheService {
   Future<void> clearFeedCache(String feedType) async {
     try {
       final keysToDelete = <String>[];
-      
+
       for (final key in _box.keys) {
         if (key is String && key.startsWith('${feedType}_')) {
           keysToDelete.add(key);
         }
       }
-      
+
       for (final key in keysToDelete) {
         await _box.delete(key);
       }
-      
-      _logger.info('Cleared cache for feed type: $feedType (${keysToDelete.length} entries)');
+
+      _logger.info(
+        'Cleared cache for feed type: $feedType (${keysToDelete.length} entries)',
+      );
     } catch (e) {
       _logger.warning('Failed to clear cache for $feedType: $e');
     }
@@ -160,10 +158,10 @@ class EntryCacheService {
       'totalEntries': _box.length,
       'cacheTtl': _cacheTtl.inMinutes,
     };
-    
+
     final feedTypes = <String>{};
     final now = DateTime.now();
-    
+
     for (final key in _box.keys) {
       if (key is String) {
         final parts = key.split('_');
@@ -172,9 +170,9 @@ class EntryCacheService {
         }
       }
     }
-    
+
     stats['feedTypes'] = feedTypes.toList();
-    
+
     // Count expired entries
     int expiredCount = 0;
     for (final key in _box.keys) {
@@ -190,9 +188,9 @@ class EntryCacheService {
         }
       }
     }
-    
+
     stats['expiredEntries'] = expiredCount;
-    
+
     return stats;
   }
 
@@ -201,7 +199,7 @@ class EntryCacheService {
     try {
       final keysToDelete = <String>[];
       final now = DateTime.now();
-      
+
       for (final key in _box.keys) {
         final dataString = _box.get(key);
         if (dataString != null) {
@@ -215,11 +213,11 @@ class EntryCacheService {
           }
         }
       }
-      
+
       for (final key in keysToDelete) {
         await _box.delete(key);
       }
-      
+
       if (keysToDelete.isNotEmpty) {
         _logger.info('Cleaned up ${keysToDelete.length} expired cache entries');
       }
@@ -243,24 +241,40 @@ class EntryCacheService {
     return '${feedType}_$page';
   }
 
-  /// Serialize an entry to JSON string.
+  /// Serialize an entry to string representation.
   String _serializeEntry(MwEntry entry) {
     try {
       // Use the built-in serializer from the API
       final serializers = standardSerializers;
-      return serializers.serialize(entry).toString();
+      final serialized = serializers.serialize(entry);
+
+      // The serializer returns a Map with special structure: {"\$": "MwEntry", "": [actual_data]}
+      // We need to extract the actual list data from the "" key
+      if (serialized is Map<String, dynamic> && serialized.containsKey('')) {
+        final listData = serialized[''] as List<Object?>;
+        return _listToString(listData);
+      } else {
+        // Fallback: try to handle as list directly
+        return _listToString(serialized as List<Object?>);
+      }
     } catch (e) {
       _logger.warning('Failed to serialize entry: $e');
       return '';
     }
   }
 
-  /// Deserialize an entry from JSON string.
-  MwEntry? _deserializeEntry(String entryJson) {
+  /// Deserialize an entry from string representation.
+  MwEntry? _deserializeEntry(String entryString) {
     try {
       // Use the built-in serializer from the API
       final serializers = standardSerializers;
-      return serializers.deserialize(entryJson) as MwEntry?;
+      // Parse string back to List<Object?>
+      final listData = _stringToList(entryString);
+
+      // Reconstruct the Map structure that the deserializer expects
+      final serialized = <String, dynamic>{r'$': 'MwEntry', '': listData};
+
+      return serializers.deserialize(serialized) as MwEntry?;
     } catch (e) {
       _logger.warning('Failed to deserialize entry: $e');
       return null;
@@ -294,17 +308,20 @@ class EntryCacheService {
   }
 
   /// Store feed settings for a specific feed type.
-  /// 
+  ///
   /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
   /// [settings] - The feed settings to store
-  Future<void> storeFeedSettings(String feedType, Map<String, dynamic> settings) async {
+  Future<void> storeFeedSettings(
+    String feedType,
+    Map<String, dynamic> settings,
+  ) async {
     try {
       final settingsKey = 'settings_$feedType';
       final settingsData = {
         'settings': settings,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       };
-      
+
       await _box.put(settingsKey, _serializeMap(settingsData));
       _logger.fine('Stored settings for $feedType');
     } catch (e) {
@@ -313,23 +330,23 @@ class EntryCacheService {
   }
 
   /// Retrieve feed settings for a specific feed type.
-  /// 
+  ///
   /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
   /// Returns the stored settings or null if not found
   Future<Map<String, dynamic>?> getFeedSettings(String feedType) async {
     try {
       final settingsKey = 'settings_$feedType';
       final settingsJson = _box.get(settingsKey);
-      
+
       if (settingsJson == null) {
         return null;
       }
-      
+
       final settingsData = _deserializeMap(settingsJson);
       if (settingsData == null) {
         return null;
       }
-      
+
       _logger.fine('Retrieved settings for $feedType');
       return settingsData['settings'] as Map<String, dynamic>?;
     } catch (e) {
@@ -339,7 +356,7 @@ class EntryCacheService {
   }
 
   /// Clear feed settings for a specific feed type.
-  /// 
+  ///
   /// [feedType] - The type of feed (e.g., 'live', 'best', 'profile_123')
   Future<void> clearFeedSettings(String feedType) async {
     try {
@@ -348,6 +365,32 @@ class EntryCacheService {
       _logger.fine('Cleared settings for $feedType');
     } catch (e) {
       _logger.warning('Failed to clear settings for $feedType: $e');
+    }
+  }
+
+  /// Convert a List&lt;Object?&gt; to a string representation that can be parsed back.
+  String _listToString(List<Object?> list) {
+    try {
+      // Use JSON encoding for the list, which should work correctly
+      return jsonEncode(list);
+    } catch (e) {
+      _logger.warning('Failed to convert list to string: $e');
+      return '[]';
+    }
+  }
+
+  /// Convert a string representation back to List&lt;Object?&gt;.
+  List<Object?> _stringToList(String string) {
+    try {
+      // Parse the JSON string back to a list
+      final decoded = jsonDecode(string);
+      if (decoded is List) {
+        return decoded.cast<Object?>();
+      }
+      throw FormatException('Expected a list, got ${decoded.runtimeType}');
+    } catch (e) {
+      _logger.warning('Failed to convert string to list: $e');
+      return [];
     }
   }
 }
