@@ -9,8 +9,11 @@ import 'package:mindwell/src/features/profile/widgets/user_card.dart';
 
 // Mock classes
 class MockMwFriend extends Mock implements MwFriend {}
+
 class MockMwAvatar extends Mock implements MwAvatar {}
+
 class MockMwCover extends Mock implements MwCover {}
+
 class MockMwFriendAllOfCounts extends Mock implements MwFriendAllOfCounts {}
 
 void main() {
@@ -37,18 +40,30 @@ void main() {
       when(() => mockUser.counts).thenReturn(mockCounts);
       when(() => mockUser.gender).thenReturn(MwFriendGenderEnum.male);
       when(() => mockUser.privacy).thenReturn(MwFriendPrivacyEnum.all);
-      when(() => mockUser.chatPrivacy).thenReturn(MwFriendChatPrivacyEnum.followers);
+      when(
+        () => mockUser.chatPrivacy,
+      ).thenReturn(MwFriendChatPrivacyEnum.followers);
       when(() => mockUser.title).thenReturn('Software Developer');
       when(() => mockUser.lastSeenAt).thenReturn(1640995200.0);
 
       // Setup avatar mock
-      when(() => mockAvatar.x42).thenReturn('https://example.com/avatar_42.jpg');
-      when(() => mockAvatar.x92).thenReturn('https://example.com/avatar_92.jpg');
-      when(() => mockAvatar.x124).thenReturn('https://example.com/avatar_124.jpg');
+      when(
+        () => mockAvatar.x42,
+      ).thenReturn('https://example.com/avatar_42.jpg');
+      when(
+        () => mockAvatar.x92,
+      ).thenReturn('https://example.com/avatar_92.jpg');
+      when(
+        () => mockAvatar.x124,
+      ).thenReturn('https://example.com/avatar_124.jpg');
 
       // Setup cover mock
-      when(() => mockCover.x318).thenReturn('https://example.com/cover_318.jpg');
-      when(() => mockCover.x1920).thenReturn('https://example.com/cover_1920.jpg');
+      when(
+        () => mockCover.x318,
+      ).thenReturn('https://example.com/cover_318.jpg');
+      when(
+        () => mockCover.x1920,
+      ).thenReturn('https://example.com/cover_1920.jpg');
 
       // Setup counts mock
       when(() => mockCounts.entries).thenReturn(25);
@@ -89,31 +104,37 @@ void main() {
       );
     }
 
-    testWidgets('displays user information correctly', (WidgetTester tester) async {
+    testWidgets('displays user information correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
       // Check if user name is displayed
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
+      // Username (@testuser) is no longer displayed
+      expect(find.text('@testuser'), findsNothing);
 
       // Check if online status is displayed
       expect(find.text('Online'), findsOneWidget);
 
-      // Check if stats are displayed
+      // Check if stats are displayed (always show entries, followers, and rank)
       expect(find.text('25'), findsOneWidget); // entries count
       expect(find.text('150'), findsOneWidget); // followers count
+      expect(find.text('42.5'), findsOneWidget); // rank count
       expect(find.text('entries'), findsOneWidget);
       expect(find.text('followers'), findsOneWidget);
+      expect(find.text('Rank'), findsOneWidget);
 
-      // Check if rank is displayed
-      expect(find.text('42.5'), findsOneWidget);
-      expect(find.byIcon(Icons.star), findsOneWidget);
+      // Check if profile title is displayed
+      expect(find.text('Software Developer'), findsOneWidget);
     });
 
-    testWidgets('displays offline status correctly', (WidgetTester tester) async {
+    testWidgets('displays offline status correctly', (
+      WidgetTester tester,
+    ) async {
       when(() => mockUser.isOnline).thenReturn(false);
-      
+
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
@@ -121,27 +142,38 @@ void main() {
       expect(find.text('Online'), findsNothing);
     });
 
-    testWidgets('handles missing user data gracefully', (WidgetTester tester) async {
+    testWidgets('handles missing user data gracefully', (
+      WidgetTester tester,
+    ) async {
       final minimalUser = MockMwFriend();
       when(() => minimalUser.name).thenReturn('minimaluser');
       when(() => minimalUser.showName).thenReturn('Minimal User');
       when(() => minimalUser.isOnline).thenReturn(false);
       when(() => minimalUser.counts).thenReturn(null);
+      when(() => minimalUser.rank).thenReturn(0);
 
       await tester.pumpWidget(createTestWidget(user: minimalUser));
       await tester.pump();
 
       // Should still display basic info
       expect(find.text('Minimal User'), findsOneWidget);
-      expect(find.text('@minimaluser'), findsOneWidget);
+      // Username is no longer displayed
+      expect(find.text('@minimaluser'), findsNothing);
       expect(find.text('Offline'), findsOneWidget);
 
-      // Should not display stats since counts is null
-      expect(find.text('entries'), findsNothing);
-      expect(find.text('followers'), findsNothing);
+      // Should still display stats with zero values since counts is null
+      expect(
+        find.text('0'),
+        findsNWidgets(3),
+      ); // entries, followers, and rank all show 0
+      expect(find.text('entries'), findsOneWidget);
+      expect(find.text('followers'), findsOneWidget);
+      expect(find.text('Rank'), findsOneWidget);
     });
 
-    testWidgets('handles missing avatar gracefully', (WidgetTester tester) async {
+    testWidgets('handles missing avatar gracefully', (
+      WidgetTester tester,
+    ) async {
       when(() => mockUser.avatar).thenReturn(null);
 
       await tester.pumpWidget(createTestWidget());
@@ -151,7 +183,9 @@ void main() {
       expect(find.byIcon(Icons.person), findsOneWidget);
     });
 
-    testWidgets('handles missing cover image gracefully', (WidgetTester tester) async {
+    testWidgets('handles missing cover image gracefully', (
+      WidgetTester tester,
+    ) async {
       when(() => mockUser.cover).thenReturn(null);
 
       await tester.pumpWidget(createTestWidget());
@@ -163,10 +197,10 @@ void main() {
 
     testWidgets('calls onTap when card is tapped', (WidgetTester tester) async {
       bool onTapCalled = false;
-      
-      await tester.pumpWidget(createTestWidget(
-        onTap: () => onTapCalled = true,
-      ));
+
+      await tester.pumpWidget(
+        createTestWidget(onTap: () => onTapCalled = true),
+      );
       await tester.pump();
 
       await tester.tap(find.byType(UserCard));
@@ -178,43 +212,73 @@ void main() {
     testWidgets('handles zero counts gracefully', (WidgetTester tester) async {
       when(() => mockCounts.entries).thenReturn(0);
       when(() => mockCounts.followers).thenReturn(0);
-      when(() => mockCounts.followings).thenReturn(0);
-      when(() => mockCounts.comments).thenReturn(0);
-      when(() => mockCounts.favorites).thenReturn(0);
-      when(() => mockCounts.tags).thenReturn(0);
-      when(() => mockCounts.days).thenReturn(0);
-      when(() => mockCounts.badges).thenReturn(0);
-      when(() => mockCounts.ignored).thenReturn(0);
-      when(() => mockCounts.invited).thenReturn(0);
+      when(() => mockUser.rank).thenReturn(0);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      // Should not display any stats
-      expect(find.text('entries'), findsNothing);
-      expect(find.text('followers'), findsNothing);
+      // Should still display all stats with zero values
+      expect(
+        find.text('0'),
+        findsNWidgets(3),
+      ); // entries, followers, and rank all show 0
+      expect(find.text('entries'), findsOneWidget);
+      expect(find.text('followers'), findsOneWidget);
+      expect(find.text('Rank'), findsOneWidget);
     });
 
     testWidgets('handles null counts gracefully', (WidgetTester tester) async {
       when(() => mockUser.counts).thenReturn(null);
+      when(() => mockUser.rank).thenReturn(0);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      // Should not display any stats
-      expect(find.text('entries'), findsNothing);
-      expect(find.text('followers'), findsNothing);
+      // Should still display all stats with zero values
+      expect(
+        find.text('0'),
+        findsNWidgets(3),
+      ); // entries, followers, and rank all show 0
+      expect(find.text('entries'), findsOneWidget);
+      expect(find.text('followers'), findsOneWidget);
+      expect(find.text('Rank'), findsOneWidget);
     });
 
-    testWidgets('handles missing showName gracefully', (WidgetTester tester) async {
+    testWidgets('handles missing showName gracefully', (
+      WidgetTester tester,
+    ) async {
       when(() => mockUser.showName).thenReturn(null);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      // Should fall back to username
+      // Should fall back to username (but no @ prefix displayed)
       expect(find.text('testuser'), findsOneWidget);
-      expect(find.text('@testuser'), findsOneWidget);
+      expect(find.text('@testuser'), findsNothing);
+    });
+
+    testWidgets('handles empty profile title gracefully', (
+      WidgetTester tester,
+    ) async {
+      when(() => mockUser.title).thenReturn('');
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      // Should not display empty title
+      expect(find.text('Software Developer'), findsNothing);
+    });
+
+    testWidgets('handles null profile title gracefully', (
+      WidgetTester tester,
+    ) async {
+      when(() => mockUser.title).thenReturn(null);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      // Should not display null title
+      expect(find.text('Software Developer'), findsNothing);
     });
   });
 }

@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../src/core/widgets/images/cached_image.dart';
 
 /// A reusable widget to display a user's information in a compact card format.
-/// 
+///
 /// This widget displays the user's cover image, avatar, name, online status,
 /// and key statistics (entries, followers, etc.) in a card layout suitable for
 /// use in user lists and grids.
-/// 
+///
 /// ## Usage Examples:
-/// 
+///
 /// ```dart
 /// // Basic usage with MwFriend data
 /// UserCard(
 ///   user: friendUser,
 ///   onTap: () => context.go('/users/${user.name}'),
 /// )
-/// 
+///
 /// // With custom tap handlers for specific elements
 /// UserCard(
 ///   user: friendUser,
@@ -30,22 +31,22 @@ import '../../../../src/core/widgets/images/cached_image.dart';
 class UserCard extends StatelessWidget {
   /// The user data to display
   final MwFriend user;
-  
+
   /// Callback when the entire card is tapped
   final VoidCallback? onTap;
-  
+
   /// Callback when the entries count is tapped
   final VoidCallback? onEntriesTap;
-  
+
   /// Callback when the followers count is tapped
   final VoidCallback? onFollowersTap;
-  
+
   /// Whether to show the cover image
   final bool showCover;
-  
+
   /// The height of the card
   final double? cardHeight;
-  
+
   /// The border radius of the card
   final double borderRadius;
 
@@ -65,7 +66,7 @@ class UserCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
-    
+
     // Handle case where localizations are not available
     if (l10n == null) {
       return _buildErrorCard(context, 'Localization not available');
@@ -91,23 +92,41 @@ class UserCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Cover image section
-                if (showCover && user.cover != null) 
+                if (showCover && user.cover != null)
                   _buildCoverSection(context, colorScheme),
-                
-                // Content section
+
+                // Avatar overlapping the cover and content sections
+                Transform.translate(
+                  offset: showCover && user.cover != null
+                      ? const Offset(0, -46) // Move avatar up to overlap
+                      : Offset.zero,
+                  child: Center(child: _buildAvatar(context, theme)),
+                ),
+
+                // Content section - positioned below the overlapping avatar
                 Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.only(
+                    left: 12.0,
+                    right: 12.0,
+                    top: showCover && user.cover != null ? 0.0 : 12.0,
+                    bottom: 12.0,
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Avatar and basic info
-                      _buildAvatarAndInfo(context, theme, l10n),
-                      
-                      const SizedBox(height: 8),
-                      
-                      // User stats
+                      // User info (name and status) - centered below avatar
+                      _buildUserInfo(context, theme, l10n),
+
+                      const SizedBox(height: 16), // More space before stats
+                      // User stats (always show exactly 3 counts) - at bottom
                       _buildUserStats(context, theme, l10n),
+
+                      // Profile title if not empty
+                      if (user.title != null && user.title!.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        _buildProfileTitle(context, theme),
+                      ],
                     ],
                   ),
                 ),
@@ -119,134 +138,119 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  /// Builds the cover image section
+  /// Builds the cover image section with 3:1 aspect ratio
   Widget _buildCoverSection(BuildContext context, ColorScheme colorScheme) {
-    return Container(
-      height: 80,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(borderRadius),
-          topRight: Radius.circular(borderRadius),
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(borderRadius),
-          topRight: Radius.circular(borderRadius),
-        ),
-        child: CachedImage(
-          imageUrl: user.cover?.x318 ?? user.cover?.x1920 ?? '',
-          fit: BoxFit.cover,
-          useSkeletonLoader: true,
-          errorWidget: Container(
-            color: colorScheme.surfaceContainerHighest,
-            child: Center(
-              child: Icon(
-                Icons.image_not_supported_outlined,
-                size: 24,
-                color: colorScheme.onSurfaceVariant,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate height for 3:1 aspect ratio
+        final imageHeight = constraints.maxWidth / 3;
+
+        return Container(
+          height: imageHeight,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(borderRadius),
+              topRight: Radius.circular(borderRadius),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(borderRadius),
+              topRight: Radius.circular(borderRadius),
+            ),
+            child: CachedImage(
+              imageUrl: user.cover?.x318 ?? user.cover?.x1920 ?? '',
+              fit: BoxFit.cover,
+              useSkeletonLoader: true,
+              errorWidget: Container(
+                color: colorScheme.surfaceContainerHighest,
+                child: Center(
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 24,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        );
+      },
+    );
+  }
+
+  /// Builds the avatar with online status indicator
+  Widget _buildAvatar(BuildContext context, ThemeData theme) {
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: colorScheme.surface, width: 3.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          CachedAvatar(
+            imageUrl: user.avatar?.x92 ?? user.avatar?.x42,
+            size: 92.0, // Avatar size set to 92px
+            fallbackIcon: Icons.person,
+          ),
+
+          // Online status indicator
+          if (user.isOnline == true)
+            Positioned(
+              bottom: 2,
+              right: 2,
+              child: Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colorScheme.surface, width: 2.0),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  /// Builds the avatar and user information section
-  Widget _buildAvatarAndInfo(
+  /// Builds the user information section (name, status)
+  Widget _buildUserInfo(
     BuildContext context,
     ThemeData theme,
     AppLocalizations l10n,
   ) {
     final colorScheme = theme.colorScheme;
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Avatar with online status indicator
-        Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: colorScheme.surface,
-                  width: 2.0,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4.0,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: CachedAvatar(
-                imageUrl: user.avatar?.x92 ?? user.avatar?.x42,
-                size: 48.0,
-                fallbackIcon: Icons.person,
-              ),
-            ),
-            
-            // Online status indicator
-            if (user.isOnline == true)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: colorScheme.surface,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        
-        const SizedBox(width: 12),
-        
-        // User info
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Display name
-              Text(
-                user.showName ?? user.name ?? '',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              
-              const SizedBox(height: 2),
-              
-              // Username
-              Text(
-                '@${user.name ?? ''}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              
-              const SizedBox(height: 2),
-              
-              // Online status text
-              _buildOnlineStatus(context, theme, l10n),
-            ],
+        // Display name - more prominent and centered
+        Text(
+          user.showName ?? user.name ?? '',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
+
+        const SizedBox(height: 8),
+
+        // Online status text - centered
+        _buildOnlineStatus(context, theme, l10n),
       ],
     );
   }
@@ -266,6 +270,7 @@ class UserCard extends StatelessWidget {
           color: Colors.green,
           fontWeight: FontWeight.w500,
         ),
+        textAlign: TextAlign.center,
       );
     }
 
@@ -274,10 +279,11 @@ class UserCard extends StatelessWidget {
       style: theme.textTheme.labelSmall?.copyWith(
         color: colorScheme.onSurfaceVariant,
       ),
+      textAlign: TextAlign.center,
     );
   }
 
-  /// Builds the user statistics section
+  /// Builds the user statistics section (always shows entries, followers, and rank)
   Widget _buildUserStats(
     BuildContext context,
     ThemeData theme,
@@ -285,46 +291,38 @@ class UserCard extends StatelessWidget {
   ) {
     final counts = user.counts;
 
-    // Only show stats if we have count data
-    if (counts == null) {
-      return const SizedBox.shrink();
-    }
+    // Always show exactly 3 stats: entries, followers, and rank
+    final statsToShow = <_StatInfo>[
+      _StatInfo(
+        count: (counts?.entries ?? 0).toString(),
+        label: l10n.entries,
+        onTap: () => _navigateToEntries(context),
+      ),
+      _StatInfo(
+        count: (counts?.followers ?? 0).toString(),
+        label: l10n.followers,
+        onTap: () => _navigateToFollowers(context),
+      ),
+      _StatInfo(
+        count: (user.rank ?? 0).toString(),
+        label: 'Rank', // TODO: Add to localization files
+        onTap: null, // Rank is not clickable
+      ),
+    ];
 
     return Row(
-      children: [
-        // Entries count
-        if (counts.entries != null && counts.entries! > 0)
-          _buildStatItem(
+      children: statsToShow.map((stat) {
+        return Expanded(
+          child: _buildStatItem(
             context,
             theme,
             l10n,
-            counts.entries.toString(),
-            l10n.entries,
-            onEntriesTap,
+            stat.count,
+            stat.label,
+            stat.onTap,
           ),
-        
-        // Followers count
-        if (counts.followers != null && counts.followers! > 0) ...[
-          if (counts.entries != null && counts.entries! > 0)
-            const SizedBox(width: 16),
-          _buildStatItem(
-            context,
-            theme,
-            l10n,
-            counts.followers.toString(),
-            _getFollowersLabel(l10n, counts.followers!),
-            onFollowersTap,
-          ),
-        ],
-        
-        // Rank indicator (if available)
-        if (user.rank != null) ...[
-          if ((counts.entries != null && counts.entries! > 0) ||
-              (counts.followers != null && counts.followers! > 0))
-            const SizedBox(width: 16),
-          _buildRankIndicator(context, theme, user.rank!),
-        ],
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -344,24 +342,28 @@ class UserCard extends StatelessWidget {
       button: onTap != null,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 count,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: colorScheme.primary,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 4),
               Text(
                 label,
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -370,66 +372,52 @@ class UserCard extends StatelessWidget {
     );
   }
 
-  /// Builds the rank indicator
-  Widget _buildRankIndicator(BuildContext context, ThemeData theme, num rank) {
+  /// Builds the profile title section
+  Widget _buildProfileTitle(BuildContext context, ThemeData theme) {
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
+    return Text(
+      user.title!,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+        fontStyle: FontStyle.italic,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.star,
-            size: 12,
-            color: colorScheme.onPrimaryContainer,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            rank.toString(),
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
-  /// Gets the appropriate followers label based on count
-  String _getFollowersLabel(AppLocalizations l10n, int count) {
-    // For now, we'll use a simple approach
-    // In a real app, you might want to add proper pluralization
-    return count == 1 ? 'follower' : 'followers';
+  // Navigation methods
+  void _navigateToEntries(BuildContext context) {
+    if (user.name != null && user.name!.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(user.name!)}/entries');
+    }
+  }
+
+  void _navigateToFollowers(BuildContext context) {
+    if (user.name != null && user.name!.isNotEmpty) {
+      context.go('/users/${Uri.encodeComponent(user.name!)}/followers');
+    }
   }
 
   /// Gets the semantic label for accessibility
   String _getSemanticLabel(AppLocalizations l10n) {
     final name = user.showName ?? user.name ?? 'Unknown User';
-    final username = user.name != null ? '@${user.name}' : '';
     final status = user.isOnline == true ? l10n.online : l10n.offline;
     final counts = user.counts;
-    
-    String stats = '';
-    if (counts != null) {
-      final parts = <String>[];
-      if (counts.entries != null && counts.entries! > 0) {
-        parts.add('${counts.entries} ${l10n.entries}');
-      }
-      if (counts.followers != null && counts.followers! > 0) {
-        parts.add('${counts.followers} ${_getFollowersLabel(l10n, counts.followers!)}');
-      }
-      if (parts.isNotEmpty) {
-        stats = ', ${parts.join(', ')}';
-      }
-    }
-    
-    return '$name $username, $status$stats';
+
+    final parts = <String>[];
+    parts.add('${counts?.entries ?? 0} ${l10n.entries}');
+    parts.add('${counts?.followers ?? 0} ${l10n.followers}');
+    parts.add('${user.rank ?? 0} Rank');
+
+    final stats = ', ${parts.join(', ')}';
+    final title = user.title != null && user.title!.isNotEmpty
+        ? ', ${user.title}'
+        : '';
+
+    return '$name, $status$stats$title';
   }
 
   /// Builds an error card when localization is not available
@@ -457,4 +445,13 @@ class UserCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Helper class to hold stat information
+class _StatInfo {
+  final String count;
+  final String label;
+  final VoidCallback? onTap;
+
+  const _StatInfo({required this.count, required this.label, this.onTap});
 }
