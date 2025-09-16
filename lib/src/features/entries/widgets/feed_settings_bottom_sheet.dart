@@ -8,14 +8,14 @@ import '../models/feed_type.dart';
 import '../providers/entry_feed_provider.dart';
 
 /// A bottom sheet widget for configuring feed display settings.
-/// 
+///
 /// This widget allows users to change various [FeedSettings] options
 /// such as display format, sort order, and filtering options.
 /// When settings are changed, it calls [updateSettings] on the provider.
 class FeedSettingsBottomSheet extends ConsumerStatefulWidget {
   /// The current feed type to update settings for
   final FeedType feedType;
-  
+
   /// Optional parameter for profile/theme feeds
   final String? feedParameter;
 
@@ -26,10 +26,12 @@ class FeedSettingsBottomSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FeedSettingsBottomSheet> createState() => _FeedSettingsBottomSheetState();
+  ConsumerState<FeedSettingsBottomSheet> createState() =>
+      _FeedSettingsBottomSheetState();
 }
 
-class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomSheet> {
+class _FeedSettingsBottomSheetState
+    extends ConsumerState<FeedSettingsBottomSheet> {
   FeedSettings? _currentSettings;
 
   @override
@@ -42,9 +44,14 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     // Get current settings from the provider state
-    final feedState = ref.watch(entryFeedProvider((feedType: widget.feedType, feedParameter: null)));
+    final feedState = ref.watch(
+      entryFeedProvider((
+        feedType: widget.feedType,
+        feedParameter: widget.feedParameter,
+      )),
+    );
     final settings = feedState.when(
       initial: () => FeedSettings.defaultSettings,
       loading: () => FeedSettings.defaultSettings,
@@ -52,10 +59,10 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
       error: (message, entries) => FeedSettings.defaultSettings,
       empty: () => FeedSettings.defaultSettings,
     );
-    
+
     // Initialize current settings if not set
     _currentSettings ??= settings;
-    
+
     return Container(
       padding: const EdgeInsets.all(MindwellSpacing.lg),
       decoration: const BoxDecoration(
@@ -67,109 +74,108 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n?.settings ?? 'Settings',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: MindwellSpacing.md),
+
+            // Display Format Section
+            Text(
+              l10n?.displayFormat ?? 'Display Format',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: MindwellSpacing.sm),
+            _buildDisplayFormatSelector(),
+
+            const SizedBox(height: MindwellSpacing.lg),
+
+            // Sort Order Section (only for profile feed)
+            if (_shouldShowSortOrder()) ...[
               Text(
-                l10n?.settings ?? 'Settings',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: MindwellSpacing.md),
-          
-          // Display Format Section
-          Text(
-            l10n?.displayFormat ?? 'Display Format',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: MindwellSpacing.sm),
-          _buildDisplayFormatSelector(),
-          
-          const SizedBox(height: MindwellSpacing.lg),
-          
-          // Sort Order Section (only for profile feed)
-          if (_shouldShowSortOrder()) ...[
-            Text(
-              l10n?.sortOrder ?? 'Sort Order',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: MindwellSpacing.sm),
-            _buildSortOrderSelector(),
-            
-            const SizedBox(height: MindwellSpacing.lg),
-          ],
-          
-          // Source Options Section (only for live and best feeds)
-          if (_shouldShowSourceOptions()) ...[
-            Text(
-              l10n?.sourceOptions ?? 'Source Options',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: MindwellSpacing.sm),
-            _buildSourceOptions(),
-            
-            const SizedBox(height: MindwellSpacing.lg),
-          ],
-          
-          // Entry Count Section (only for best feed)
-          if (_shouldShowEntryCount()) ...[
-            Text(
-              l10n?.entryCount ?? 'Entry Count',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: MindwellSpacing.sm),
-            _buildEntryCountSelector(),
-            
-            const SizedBox(height: MindwellSpacing.lg),
-          ],
-          
-          // Apply Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _applySettings,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF5E3A),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: MindwellSpacing.md),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                l10n?.applySettings ?? 'Apply Settings',
+                l10n?.sortOrder ?? 'Sort Order',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              const SizedBox(height: MindwellSpacing.sm),
+              _buildSortOrderSelector(),
+
+              const SizedBox(height: MindwellSpacing.lg),
+            ],
+
+            // Source Options Section (only for live and best feeds)
+            if (_shouldShowSourceOptions()) ...[
+              Text(
+                l10n?.sourceOptions ?? 'Source Options',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: MindwellSpacing.sm),
+              _buildSourceOptions(),
+
+              const SizedBox(height: MindwellSpacing.lg),
+            ],
+
+            // Entry Count Section (only for best feed)
+            if (_shouldShowEntryCount()) ...[
+              Text(
+                l10n?.entryCount ?? 'Entry Count',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: MindwellSpacing.sm),
+              _buildEntryCountSelector(),
+
+              const SizedBox(height: MindwellSpacing.lg),
+            ],
+
+            // Apply Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _applySettings,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF5E3A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: MindwellSpacing.md,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  l10n?.applySettings ?? 'Apply Settings',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
-          ),
-          
-          // Add bottom padding for safe area
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
+
+            // Add bottom padding for safe area
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
       ),
@@ -178,7 +184,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildDisplayFormatSelector() {
     final l10n = AppLocalizations.of(context);
-    
+
     return Row(
       children: [
         Expanded(
@@ -202,7 +208,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildFormatOption(DisplayFormat format, String label, IconData icon) {
     final isSelected = _currentSettings?.displayFormat == format;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -212,9 +218,13 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
       child: Container(
         padding: const EdgeInsets.all(MindwellSpacing.md),
         decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFFF5E3A).withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
-        border: Border.all(
-          color: isSelected ? const Color(0xFFFF5E3A) : Colors.grey.withValues(alpha: 0.3),
+          color: isSelected
+              ? const Color(0xFFFF5E3A).withValues(alpha: 0.1)
+              : Colors.grey.withValues(alpha: 0.1),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFFF5E3A)
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(8),
@@ -242,7 +252,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildSortOrderSelector() {
     final l10n = AppLocalizations.of(context);
-    
+
     return Column(
       children: [
         _buildSortOption(SortOrder.newest, l10n?.newestFirst ?? 'Newest First'),
@@ -256,7 +266,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildSortOption(SortOrder order, String label) {
     final isSelected = _currentSettings?.sortOrder == order;
-    
+
     return ListTile(
       title: Text(label),
       leading: Container(
@@ -271,11 +281,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
           color: isSelected ? const Color(0xFFFF5E3A) : Colors.transparent,
         ),
         child: isSelected
-            ? const Icon(
-                Icons.circle,
-                size: 8,
-                color: Colors.white,
-              )
+            ? const Icon(Icons.circle, size: 8, color: Colors.white)
             : null,
       ),
       onTap: () {
@@ -283,12 +289,9 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
           _currentSettings = _currentSettings?.copyWith(sortOrder: order);
         });
       },
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
-
 
   /// Check if sort order should be shown for the current feed type
   bool _shouldShowSortOrder() {
@@ -307,27 +310,35 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildSourceOptions() {
     final l10n = AppLocalizations.of(context);
-    
+
     return Column(
       children: [
         SwitchListTile(
           title: Text(l10n?.includeTlogs ?? 'Include Tlogs'),
-          subtitle: Text(l10n?.includeTlogsSubtitle ?? 'Show entries from diaries'),
+          subtitle: Text(
+            l10n?.includeTlogsSubtitle ?? 'Show entries from diaries',
+          ),
           value: _currentSettings?.includeTlogs ?? true,
           onChanged: (value) {
             setState(() {
-              _currentSettings = _currentSettings?.copyWithValidated(includeTlogs: value);
+              _currentSettings = _currentSettings?.copyWithValidated(
+                includeTlogs: value,
+              );
             });
           },
           activeThumbColor: const Color(0xFFFF5E3A),
         ),
         SwitchListTile(
           title: Text(l10n?.includeThemes ?? 'Include Themes'),
-          subtitle: Text(l10n?.includeThemesSubtitle ?? 'Show entries from themes'),
+          subtitle: Text(
+            l10n?.includeThemesSubtitle ?? 'Show entries from themes',
+          ),
           value: _currentSettings?.includeThemes ?? true,
           onChanged: (value) {
             setState(() {
-              _currentSettings = _currentSettings?.copyWithValidated(includeThemes: value);
+              _currentSettings = _currentSettings?.copyWithValidated(
+                includeThemes: value,
+              );
             });
           },
           activeThumbColor: const Color(0xFFFF5E3A),
@@ -338,10 +349,10 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
 
   Widget _buildEntryCountSelector() {
     final l10n = AppLocalizations.of(context);
-    
+
     // Specific entry count options: 10, 20, 30, 50, 100
     final entryCountOptions = [10, 20, 30, 50, 100];
-    
+
     return Container(
       padding: const EdgeInsets.all(MindwellSpacing.md),
       decoration: BoxDecoration(
@@ -353,10 +364,7 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
         children: [
           Text(
             l10n?.entryCountSubtitle ?? 'Number of entries to display per page',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: MindwellSpacing.sm),
           DropdownButton<int>(
@@ -371,20 +379,16 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
             onChanged: (value) {
               if (value != null) {
                 setState(() {
-                  _currentSettings = _currentSettings?.copyWith(entriesPerPage: value);
+                  _currentSettings = _currentSettings?.copyWith(
+                    entriesPerPage: value,
+                  );
                 });
               }
             },
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
             dropdownColor: Colors.white,
             icon: const Icon(Icons.arrow_drop_down, color: Color(0xFFFF5E3A)),
-            underline: Container(
-              height: 1,
-              color: const Color(0xFFFF5E3A),
-            ),
+            underline: Container(height: 1, color: const Color(0xFFFF5E3A)),
           ),
         ],
       ),
@@ -412,10 +416,16 @@ class _FeedSettingsBottomSheetState extends ConsumerState<FeedSettingsBottomShee
   void _applySettings() {
     // Update the provider with new settings
     if (_currentSettings != null) {
-      ref.read(entryFeedProvider((feedType: widget.feedType, feedParameter: null)).notifier)
+      ref
+          .read(
+            entryFeedProvider((
+              feedType: widget.feedType,
+              feedParameter: widget.feedParameter,
+            )).notifier,
+          )
           .updateSettings(_currentSettings!);
     }
-    
+
     // Close the bottom sheet
     Navigator.of(context).pop();
   }

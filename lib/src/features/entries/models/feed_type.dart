@@ -1,23 +1,23 @@
 /// Types of entry feeds available in the application.
-/// 
+///
 /// Each feed type corresponds to a different API endpoint and
 /// provides a different view of entries.
 enum FeedType {
   /// Real-time feed of entries
   live,
-  
+
   /// Highly-rated entries
   best,
-  
+
   /// Entries from followed users
   friends,
-  
+
   /// Entries from a specific user profile
   profile,
-  
+
   /// Entries from a specific theme
   theme,
-  
+
   /// Favorited entries from a specific user
   favorites,
 }
@@ -41,16 +41,16 @@ extension FeedTypeExtension on FeedType {
         return 'Favorites';
     }
   }
-  
+
   /// Get the cache key for this feed type.
-  /// 
-  /// For profile and theme feeds, additional parameters may be needed.
+  ///
+  /// For profile, theme, live, and best feeds, additional parameters may be needed.
   String getCacheKey([String? parameter]) {
     switch (this) {
       case FeedType.live:
-        return 'live';
+        return parameter != null ? 'live_$parameter' : 'live';
       case FeedType.best:
-        return 'best';
+        return parameter != null ? 'best_$parameter' : 'best';
       case FeedType.friends:
         return 'friends';
       case FeedType.profile:
