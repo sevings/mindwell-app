@@ -867,6 +867,34 @@ void main() {
         )).called(1);
       });
 
+      test('should call watching API for friends feed with watching parameter', () async {
+        when(() => mockEntriesApi.entriesWatchingGet(
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.friends,
+          entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
+          cacheService: mockCacheService,
+          feedParameter: '_watching',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockEntriesApi.entriesWatchingGet(
+          limit: 20,
+          after: null,
+          before: null,
+        )).called(1);
+      });
+
       test('should call correct API method for profile feed', () async {
         when(() => mockUsersApi.usersNameTlogGet(
           name: any(named: 'name'),

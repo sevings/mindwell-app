@@ -382,6 +382,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
           return response.data;
           
         case FeedType.friends:
+          // For subscriptions feed, check the feed parameter to determine which endpoint to use
+          if (_feedParameter != null && _feedParameter!.contains('_')) {
+            final endpoint = _feedParameter!.split('_').last;
+            if (endpoint == 'watching') {
+              final response = await _entriesApi.entriesWatchingGet(
+                limit: _settings.entriesPerPage,
+                after: after,
+                before: before,
+              );
+              return response.data;
+            }
+          }
+          // Default to friends endpoint
           final response = await _entriesApi.entriesFriendsGet(
             limit: _settings.entriesPerPage,
             after: after,
