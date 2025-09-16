@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
 import 'package:mindwell_api/mindwell_api.dart';
@@ -268,8 +270,8 @@ class EntryCacheService {
   /// Serialize a map to JSON string.
   String _serializeMap(Map<String, dynamic> map) {
     try {
-      // Simple JSON encoding - in a real app you might want to use a more robust approach
-      return map.toString();
+      // Use dart:convert for proper JSON encoding
+      return jsonEncode(map);
     } catch (e) {
       _logger.warning('Failed to serialize map: $e');
       return '{}';
@@ -279,9 +281,12 @@ class EntryCacheService {
   /// Deserialize a map from JSON string.
   Map<String, dynamic>? _deserializeMap(String mapJson) {
     try {
-      // Simple JSON decoding - in a real app you might want to use a more robust approach
-      // For now, return a basic structure to avoid parsing errors
-      return <String, dynamic>{};
+      // Use dart:convert for proper JSON decoding
+      final decoded = jsonDecode(mapJson);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      return null;
     } catch (e) {
       _logger.warning('Failed to deserialize map: $e');
       return null;
