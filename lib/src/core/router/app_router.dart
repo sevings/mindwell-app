@@ -168,7 +168,22 @@ class AppRouter {
           GoRoute(
             path: '/feed/my-entries',
             name: 'myEntriesFeed',
-            builder: (context, state) => const EntryFeedScreen(feedType: FeedType.profile),
+            builder: (context, state) {
+              // Get current user from auth state
+              final container = ProviderScope.containerOf(context);
+              final authState = container.read(authProvider);
+              
+              return authState.when(
+                authenticated: (user) => EntryFeedScreen(
+                  feedType: FeedType.profile,
+                  username: user.name ?? user.id?.toString(),
+                ),
+                initial: () => const EntryFeedScreen(feedType: FeedType.profile),
+                loading: () => const EntryFeedScreen(feedType: FeedType.profile),
+                unauthenticated: () => const EntryFeedScreen(feedType: FeedType.profile),
+                error: (message) => const EntryFeedScreen(feedType: FeedType.profile),
+              );
+            },
           ),
           GoRoute(
             path: '/tags/:tagName',

@@ -255,7 +255,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
               feedType: feedType,
               feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) 
             ? (widget.username ?? currentUserFeedParameter) 
-            : widget.tagFilter,
+            : null,
+              tagFilter: widget.tagFilter,
               enablePullToRefresh: true,
               enableInfiniteScroll: true,
             );
@@ -484,7 +485,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
         feedType: feedType,
         feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) 
             ? (widget.username ?? feedParameter) 
-            : (widget.tagFilter ?? feedParameter),
+            : null,
+        tagFilter: widget.tagFilter,
         enablePullToRefresh: true,
         enableInfiniteScroll: true,
       ),
@@ -651,7 +653,8 @@ class _EntryFeedScreenState extends ConsumerState<EntryFeedScreen>
             feedType: feedType,
             feedParameter: (feedType == FeedType.profile || feedType == FeedType.favorites) 
                 ? (widget.username ?? feedParameter) 
-                : (widget.tagFilter ?? '${feedParameter ?? ''}_${tabConfig.value}'),
+                : '${feedParameter ?? ''}_${tabConfig.value}',
+            tagFilter: widget.tagFilter,
             enablePullToRefresh: true,
             enableInfiniteScroll: true,
           );

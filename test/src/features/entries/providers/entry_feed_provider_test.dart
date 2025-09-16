@@ -517,12 +517,14 @@ void main() {
 
     group('feedParameter in constructor', () {
       test('should create provider with feed parameter', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
+        when(() => mockUsersApi.usersNameTlogGet(
+          name: any(named: 'name'),
           limit: any(named: 'limit'),
           after: any(named: 'after'),
           before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
+          tag: any(named: 'tag'),
+          sort: any(named: 'sort'),
+          query: any(named: 'query'),
         )).thenAnswer((_) async => Response<MwFeed>(
           data: mockFeed,
           statusCode: 200,
@@ -554,12 +556,14 @@ void main() {
       });
 
       test('should handle setFeedParameter for dynamic updates', () async {
-        when(() => mockEntriesApi.entriesLiveGet(
+        when(() => mockUsersApi.usersNameTlogGet(
+          name: any(named: 'name'),
           limit: any(named: 'limit'),
           after: any(named: 'after'),
           before: any(named: 'before'),
-          source_: any(named: 'source_'),
-          section: any(named: 'section'),
+          tag: any(named: 'tag'),
+          sort: any(named: 'sort'),
+          query: any(named: 'query'),
         )).thenAnswer((_) async => Response<MwFeed>(
           data: mockFeed,
           statusCode: 200,
@@ -859,6 +863,109 @@ void main() {
           after: null,
           before: null,
           tag: null,
+          query: null,
+        )).called(1);
+      });
+
+      test('should call correct API method for profile feed', () async {
+        when(() => mockUsersApi.usersNameTlogGet(
+          name: any(named: 'name'),
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          sort: any(named: 'sort'),
+          query: any(named: 'query'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.profile,
+          entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
+          cacheService: mockCacheService,
+          feedParameter: 'testuser',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockUsersApi.usersNameTlogGet(
+          name: 'testuser',
+          limit: 20,
+          after: null,
+          before: null,
+          tag: null,
+          sort: 'new',
+          query: null,
+        )).called(1);
+      });
+
+      test('should call correct API method for favorites feed', () async {
+        when(() => mockUsersApi.usersNameFavoritesGet(
+          name: any(named: 'name'),
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.favorites,
+          entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
+          cacheService: mockCacheService,
+          feedParameter: 'testuser',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockUsersApi.usersNameFavoritesGet(
+          name: 'testuser',
+          limit: 20,
+          after: null,
+          before: null,
+        )).called(1);
+      });
+
+      test('should include tag filter in profile feed API call when tag is provided', () async {
+        when(() => mockUsersApi.usersNameTlogGet(
+          name: any(named: 'name'),
+          limit: any(named: 'limit'),
+          after: any(named: 'after'),
+          before: any(named: 'before'),
+          tag: any(named: 'tag'),
+          sort: any(named: 'sort'),
+          query: any(named: 'query'),
+        )).thenAnswer((_) async => Response<MwFeed>(
+          data: mockFeed,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        ));
+
+        notifier = EntryFeedNotifier(
+          feedType: FeedType.profile,
+          entriesApi: mockEntriesApi,
+          usersApi: mockUsersApi,
+          cacheService: mockCacheService,
+          feedParameter: 'testuser',
+          tagFilter: 'flutter',
+        );
+
+        await notifier.fetchInitialEntries();
+
+        verify(() => mockUsersApi.usersNameTlogGet(
+          name: 'testuser',
+          limit: 20,
+          after: null,
+          before: null,
+          tag: 'flutter', // Tag filter should be passed when provided
+          sort: 'new',
           query: null,
         )).called(1);
       });

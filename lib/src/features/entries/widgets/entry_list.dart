@@ -28,6 +28,9 @@ class EntryList extends ConsumerStatefulWidget {
   /// Optional parameter for profile/theme feeds (e.g., user ID, theme ID)
   final String? feedParameter;
   
+  /// Optional tag filter for filtering entries by tag
+  final String? tagFilter;
+  
   /// Whether to enable pull-to-refresh
   final bool enablePullToRefresh;
   
@@ -41,6 +44,7 @@ class EntryList extends ConsumerStatefulWidget {
     super.key,
     required this.feedType,
     this.feedParameter,
+    this.tagFilter,
     this.enablePullToRefresh = true,
     this.enableInfiniteScroll = true,
     this.loadMoreThreshold = 3,
@@ -69,13 +73,11 @@ class _EntryListState extends ConsumerState<EntryList> {
           ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
           : entryFeedProvider(widget.feedType);
       
-      // Check if the parameter is a tag filter and set it
-      if (widget.feedParameter != null) {
-        final notifier = ref.read(provider.notifier);
-        if (widget.feedParameter!.startsWith('#') || 
-            (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-'))) {
-          notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
-        }
+      final notifier = ref.read(provider.notifier);
+      
+      // Set tag filter if provided
+      if (widget.tagFilter != null) {
+        notifier.setTagFilter(widget.tagFilter);
       }
       
       ref.read(provider.notifier).fetchInitialEntries();
@@ -92,20 +94,23 @@ class _EntryListState extends ConsumerState<EntryList> {
   void didUpdateWidget(EntryList oldWidget) {
     super.didUpdateWidget(oldWidget);
     
-    // Update feed parameter if it changed
-    if (widget.feedParameter != oldWidget.feedParameter) {
+    // Update feed parameter or tag filter if they changed
+    if (widget.feedParameter != oldWidget.feedParameter || widget.tagFilter != oldWidget.tagFilter) {
       final provider = widget.feedParameter != null
           ? entryFeedWithParameterProvider((feedType: widget.feedType, feedParameter: widget.feedParameter))
           : entryFeedProvider(widget.feedType);
       
       final notifier = ref.read(provider.notifier);
-      // Check if the parameter is a tag filter (starts with # or is a simple tag name)
-      if (widget.feedParameter != null && 
-          (widget.feedParameter!.startsWith('#') || 
-           (!widget.feedParameter!.contains('_') && !widget.feedParameter!.contains('-')))) {
-        notifier.setTagFilter(widget.feedParameter!.replaceFirst('#', ''));
+      
+      // Set tag filter if provided
+      if (widget.tagFilter != null) {
+        notifier.setTagFilter(widget.tagFilter);
       }
-      // Feed parameter is handled by the provider constructor, so we don't need to call setFeedParameter
+      
+      // Set feed parameter if provided
+      if (widget.feedParameter != null) {
+        notifier.setFeedParameter(widget.feedParameter);
+      }
     }
   }
 

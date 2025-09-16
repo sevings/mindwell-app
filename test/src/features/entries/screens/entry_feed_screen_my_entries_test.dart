@@ -16,6 +16,7 @@ import 'package:mindwell/src/core/services/token_storage_service.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 class MockEntriesApi extends Mock implements EntriesApi {}
+class MockUsersApi extends Mock implements UsersApi {}
 class MockEntryCacheService extends Mock implements EntryCacheService {}
 
 class MockEntryFeedNotifier extends StateNotifier<EntryFeedState> implements EntryFeedNotifier {
@@ -28,6 +29,7 @@ class MockEntryFeedNotifier extends StateNotifier<EntryFeedState> implements Ent
   @override
   Future<void> fetchInitialEntries() async {
     // Don't do anything - just return immediately
+    // This prevents real API calls and timer creation
   }
   
   @override
@@ -115,11 +117,13 @@ void main() {
   group('EntryFeedScreen My Entries', () {
     late MockEntryFeedNotifier mockNotifier;
     late MockEntriesApi mockEntriesApi;
+    late MockUsersApi mockUsersApi;
     late MockEntryCacheService mockCacheService;
 
     setUp(() {
       mockNotifier = MockEntryFeedNotifier();
       mockEntriesApi = MockEntriesApi();
+      mockUsersApi = MockUsersApi();
       mockCacheService = MockEntryCacheService();
       
       // Mock the cache service methods to avoid timer issues
@@ -138,10 +142,15 @@ void main() {
     Widget createTestWidget({AuthState? authState}) {
       final overrides = <Override>[
         entriesApiProvider.overrideWith((ref) => mockEntriesApi),
+        usersApiProvider.overrideWith((ref) => mockUsersApi),
         entryCacheServiceProvider.overrideWith((ref) => mockCacheService),
         // Override all possible feed providers
-        for (final ft in FeedType.values)
+        for (final ft in FeedType.values) ...[
           entryFeedProvider(ft).overrideWith((ref) => mockNotifier),
+          // Also override parameterized providers for all feed types
+          entryFeedWithParameterProvider((feedType: ft, feedParameter: null))
+              .overrideWith((ref) => mockNotifier),
+        ],
       ];
       
       if (authState != null) {

@@ -390,18 +390,19 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
           return response.data;
           
         case FeedType.profile:
-          // For profile feeds, we need the user ID parameter
+          // For profile feeds, we need the username parameter
           if (_feedParameter == null) {
-            throw Exception('Profile feed requires a user ID parameter');
+            throw Exception('Profile feed requires a username parameter');
           }
-          // Note: This would need a specific API endpoint for user entries
-          // For now, we'll use the live feed as a fallback
-          final response = await _entriesApi.entriesLiveGet(
+          // Use the proper user tlog API endpoint
+          final response = await _usersApi.usersNameTlogGet(
+            name: _feedParameter!,
             limit: _settings.entriesPerPage,
             after: after,
             before: before,
-            source_: 'all',
-            section: 'entries',
+            tag: _tagFilter,
+            sort: _settings.sortOrder == SortOrder.newest ? 'new' : 
+                  _settings.sortOrder == SortOrder.oldest ? 'old' : 'best',
           );
           return response.data;
           
