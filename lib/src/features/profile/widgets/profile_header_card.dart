@@ -629,7 +629,7 @@ class _ProfileHeaderCardState extends ConsumerState<ProfileHeaderCard> {
 
   void _navigateToComments(BuildContext context, String? username) {
     if (username != null && username.isNotEmpty) {
-      context.go('/users/${Uri.encodeComponent(username)}/comments');
+      context.push('/users/${Uri.encodeComponent(username)}/comments');
     }
   }
 

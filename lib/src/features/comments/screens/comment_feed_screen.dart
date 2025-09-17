@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../core/widgets/platform_app_bar.dart';
 import '../widgets/comment_feed_list.dart';
 
 /// Screen that displays a feed of comments by a specific user.
@@ -24,37 +23,55 @@ class CommentFeedScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: PlatformAppBar(
-        title: Text(
-          l10n?.commentsByUser(username) ?? 'Comments by @$username',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+    return Column(
+      children: [
+        // Custom app bar for this screen
+        Container(
+          height: kToolbarHeight,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.outline.withValues(alpha: 0.2),
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              // Back button
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: 'Back',
+              ),
+
+              // Title
+              Expanded(
+                child: Text(
+                  l10n?.commentsByUser(username) ?? 'Comments by @$username',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              // Spacer for symmetry
+              const SizedBox(width: 48),
+            ],
           ),
         ),
-        centerTitle: true,
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Find the Scaffold that has a drawer (could be an ancestor)
-            final scaffoldWithDrawer = context
-                .findAncestorStateOfType<ScaffoldState>();
-            if (scaffoldWithDrawer != null) {
-              scaffoldWithDrawer.openDrawer();
-            }
-          },
-          tooltip: l10n?.settings ?? 'Menu',
+
+        // Content
+        Expanded(
+          child: CommentFeedList(
+            username: username,
+            enablePullToRefresh: true,
+            enableInfiniteScroll: true,
+          ),
         ),
-      ),
-      body: CommentFeedList(
-        username: username,
-        enablePullToRefresh: true,
-        enableInfiniteScroll: true,
-      ),
+      ],
     );
   }
 }

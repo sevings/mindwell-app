@@ -34,19 +34,26 @@ class HomeScreen extends ConsumerWidget {
     const routesWithOwnAppBar = [
       '/', // Root route (feed)
       '/profile',
-      '/users/',
-      '/entries/',
+      '/entries/', // Entry-related routes (detail, edit, new)
       '/notifications',
       '/chat',
       '/feed/',
+      '/users/', // User-related routes (profile, followers, following, comments, etc.)
+      '/themes/', // Theme-related routes (new entry)
     ];
 
     // Check if current route should hide the HomeScreen app bar
-    final shouldHideAppBar = routesWithOwnAppBar.any(
-      (route) => route == '/'
-          ? currentLocation == '/'
-          : currentLocation.startsWith(route),
-    );
+    final shouldHideAppBar = routesWithOwnAppBar.any((route) {
+      if (route == '/') {
+        return currentLocation == '/';
+      } else if (route == '/users/') {
+        // Special handling for users routes - match both /users and /users/*
+        return currentLocation == '/users' ||
+            currentLocation.startsWith('/users/');
+      } else {
+        return currentLocation.startsWith(route);
+      }
+    });
 
     return Scaffold(
       // Platform-aware app bar - only show for routes that don't have their own

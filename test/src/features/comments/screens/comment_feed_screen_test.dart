@@ -55,7 +55,12 @@ void main() {
 
     Widget createTestWidget({required String username}) {
       return ProviderScope(
-        overrides: [usersApiProvider.overrideWithValue(mockUsersApi)],
+        overrides: [
+          usersApiProvider.overrideWithValue(mockUsersApi),
+          commentFeedProvider(
+            username,
+          ).overrideWith((ref) => MockCommentFeedNotifier()),
+        ],
         child: MaterialApp(home: CommentFeedScreen(username: username)),
       );
     }
@@ -68,11 +73,11 @@ void main() {
       await tester.pumpWidget(createTestWidget(username: testUsername));
       await tester.pumpAndSettle();
 
-      // Verify that the app bar is present
-      expect(find.byType(AppBar), findsOneWidget);
+      // Verify that the custom app bar container is present
+      expect(find.byType(Container), findsWidgets);
 
-      // Verify that the title contains the username (fallback text if localization fails)
-      expect(find.textContaining('@$testUsername'), findsOneWidget);
+      // Verify that the title contains the username (localized format)
+      expect(find.textContaining('Comments by @$testUsername'), findsOneWidget);
     });
 
     testWidgets('renders CommentFeedList widget', (WidgetTester tester) async {
@@ -120,20 +125,35 @@ void main() {
       expect(commentFeedList.enableInfiniteScroll, isTrue);
     });
 
-    testWidgets('shows menu button in app bar', (WidgetTester tester) async {
+    testWidgets('shows back button in app bar', (WidgetTester tester) async {
       const testUsername = 'testuser';
 
       await tester.pumpWidget(createTestWidget(username: testUsername));
       await tester.pumpAndSettle();
 
-      // Verify that the app bar has a custom leading widget (menu button)
-      // CommentFeedScreen uses a custom leading widget instead of automaticallyImplyLeading
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.automaticallyImplyLeading, isFalse);
-      expect(appBar.leading, isNotNull);
+      // Verify that the back button IconButton is present
+      expect(find.byType(IconButton), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      expect(find.byIcon(Icons.menu), findsNothing);
+    });
 
-      // Verify that the menu button is present
-      expect(find.byIcon(Icons.menu), findsOneWidget);
+    testWidgets('back button is tappable', (WidgetTester tester) async {
+      const testUsername = 'testuser';
+
+      await tester.pumpWidget(createTestWidget(username: testUsername));
+      await tester.pumpAndSettle();
+
+      // Find the back button by IconButton
+      final backButtonFinder = find.byType(IconButton);
+      expect(backButtonFinder, findsOneWidget);
+
+      // Act - tap the back button (this will cause navigation)
+      await tester.tap(backButtonFinder);
+      await tester.pumpAndSettle();
+
+      // Assert - The tap should not throw an exception
+      // Note: We don't check for the IconButton after tap because
+      // Navigator.pop() removes the screen from the navigation stack
     });
 
     testWidgets('can be instantiated with different usernames', (
@@ -146,7 +166,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify that the title contains the correct username
-        expect(find.textContaining('@$username'), findsOneWidget);
+        expect(find.textContaining('Comments by @$username'), findsOneWidget);
 
         // Verify that the CommentFeedList receives the correct username
         final commentFeedList = tester.widget<CommentFeedList>(
@@ -169,13 +189,104 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify that the title contains the special username
-      expect(find.textContaining('@$specialUsername'), findsOneWidget);
+      expect(
+        find.textContaining('Comments by @$specialUsername'),
+        findsOneWidget,
+      );
 
       // Verify that the CommentFeedList receives the correct username
       final commentFeedList = tester.widget<CommentFeedList>(
         find.byType(CommentFeedList),
       );
       expect(commentFeedList.username, equals(specialUsername));
+    });
+
+    group('App Bar Functionality', () {
+      testWidgets('app bar has correct styling and structure', (
+        WidgetTester tester,
+      ) async {
+        const testUsername = 'testuser';
+
+        await tester.pumpWidget(createTestWidget(username: testUsername));
+        await tester.pumpAndSettle();
+
+        // Assert - Find the custom app bar container
+        final container = find.byType(Container).first;
+        expect(container, findsOneWidget);
+
+        // Verify the container has the correct height
+        final containerWidget = tester.widget<Container>(container);
+        expect(containerWidget.constraints?.maxHeight, equals(kToolbarHeight));
+
+        // Verify the app bar structure
+        expect(find.byType(IconButton), findsOneWidget);
+        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+        expect(
+          find.textContaining('Comments by @$testUsername'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('app bar title is centered', (WidgetTester tester) async {
+        const testUsername = 'testuser';
+
+        await tester.pumpWidget(createTestWidget(username: testUsername));
+        await tester.pumpAndSettle();
+
+        // Find the title text widget
+        final titleText = find.textContaining('Comments by @$testUsername');
+        expect(titleText, findsOneWidget);
+
+        // Verify it's in an Expanded widget (which centers it)
+        final expandedWidget = find.ancestor(
+          of: titleText,
+          matching: find.byType(Expanded),
+        );
+        expect(expandedWidget, findsOneWidget);
+      });
+
+      testWidgets('app bar has proper spacing for symmetry', (
+        WidgetTester tester,
+      ) async {
+        const testUsername = 'testuser';
+
+        await tester.pumpWidget(createTestWidget(username: testUsername));
+        await tester.pumpAndSettle();
+
+        // Find the spacer widget (SizedBox with width 48)
+        final spacers = find.byType(SizedBox);
+        expect(spacers, findsWidgets);
+
+        // Find the specific spacer with width 48
+        SizedBox? spacerWidget;
+        for (int i = 0; i < tester.widgetList(spacers).length; i++) {
+          final widget = tester.widget<SizedBox>(spacers.at(i));
+          if (widget.width == 48.0) {
+            spacerWidget = widget;
+            break;
+          }
+        }
+        expect(spacerWidget, isNotNull);
+        expect(spacerWidget!.width, equals(48.0));
+      });
+
+      testWidgets('app bar has border decoration', (WidgetTester tester) async {
+        const testUsername = 'testuser';
+
+        await tester.pumpWidget(createTestWidget(username: testUsername));
+        await tester.pumpAndSettle();
+
+        // Find the container with decoration
+        final container = find.byType(Container).first;
+        final containerWidget = tester.widget<Container>(container);
+
+        // Verify it has a decoration with border
+        expect(containerWidget.decoration, isNotNull);
+        expect(containerWidget.decoration, isA<BoxDecoration>());
+
+        final decoration = containerWidget.decoration as BoxDecoration;
+        expect(decoration.border, isNotNull);
+      });
     });
   });
 }

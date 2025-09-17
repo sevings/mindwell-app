@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
-import '../../../core/widgets/platform_app_bar.dart';
 import '../models/user_list_state.dart';
 import '../providers/user_list_provider.dart';
 import '../widgets/user_card.dart';
@@ -136,35 +135,75 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: PlatformAppBar(
-        title: Text(
-          _getAppBarTitle(l10n),
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+    return Column(
+      children: [
+        // Custom app bar for this screen
+        Container(
+          height: kToolbarHeight,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.outline.withValues(alpha: 0.2),
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              // Leading widget (hamburger menu or back button)
+              if (widget.username.isEmpty)
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    // Find the Scaffold that has a drawer (could be an ancestor)
+                    final scaffoldWithDrawer = context
+                        .findAncestorStateOfType<ScaffoldState>();
+                    if (scaffoldWithDrawer != null) {
+                      scaffoldWithDrawer.openDrawer();
+                    }
+                  },
+                  tooltip: 'Open navigation menu',
+                )
+              else
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: 'Back',
+                ),
+
+              // Title
+              Expanded(
+                child: Text(
+                  _getAppBarTitle(l10n),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              // Actions
+              IconButton(
+                onPressed: _refreshUsers,
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Refresh',
+              ),
+            ],
           ),
         ),
-        centerTitle: true,
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        automaticallyImplyLeading: true,
-        actions: [
-          // Refresh button
-          IconButton(
-            onPressed: _refreshUsers,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+
+        // Content
+        Expanded(
+          child: userListState.when(
+            initial: () => _buildLoadingScreen(context),
+            loading: () => _buildLoadingScreen(context),
+            loaded: (users, hasMore, nextAfter, nextBefore) =>
+                _buildLoadedScreen(context, l10n, users, hasMore),
+            error: (message) => _buildErrorScreen(context, l10n, message),
           ),
-        ],
-      ),
-      body: userListState.when(
-        initial: () => _buildLoadingScreen(context),
-        loading: () => _buildLoadingScreen(context),
-        loaded: (users, hasMore, nextAfter, nextBefore) =>
-            _buildLoadedScreen(context, l10n, users, hasMore),
-        error: (message) => _buildErrorScreen(context, l10n, message),
-      ),
+        ),
+      ],
     );
   }
 

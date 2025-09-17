@@ -12,6 +12,17 @@ class Config {
     }
   }
 
+  static String get wsUrl {
+    switch (buildType) {
+      case 'prod':
+        return 'wss://mindwell.win/centrifugo/connection/websocket';
+      case 'test':
+        return 'wss://mindwell.win/centrifugo/connection/websocket';
+      default:
+        return 'ws://127.0.0.1:8000/centrifugo/connection/websocket';
+    }
+  }
+
   static int get clientId {
     switch (buildType) {
       case 'prod':

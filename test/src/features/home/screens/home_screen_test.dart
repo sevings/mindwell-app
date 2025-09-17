@@ -78,7 +78,27 @@ Widget _createTestWidget({
     child: MaterialApp.router(
       routerConfig: GoRouter(
         initialLocation: initialLocation,
-        routes: [GoRoute(path: '/test', builder: (context, state) => child)],
+        routes: [
+          GoRoute(path: '/test', builder: (context, state) => child),
+          GoRoute(path: '/', builder: (context, state) => child),
+          GoRoute(path: '/profile', builder: (context, state) => child),
+          GoRoute(path: '/entries/:id', builder: (context, state) => child),
+          GoRoute(path: '/feed/live', builder: (context, state) => child),
+          GoRoute(path: '/users', builder: (context, state) => child),
+          GoRoute(path: '/users/:name', builder: (context, state) => child),
+          GoRoute(
+            path: '/users/:name/followers',
+            builder: (context, state) => child,
+          ),
+          GoRoute(
+            path: '/users/:name/comments',
+            builder: (context, state) => child,
+          ),
+          GoRoute(
+            path: '/themes/:themeName/entries/new',
+            builder: (context, state) => child,
+          ),
+        ],
       ),
     ),
   );
@@ -248,6 +268,205 @@ void main() {
       );
       expect(fab.backgroundColor, equals(Colors.orange));
       expect(fab.foregroundColor, equals(Colors.white));
+    });
+
+    group('App Bar Route Detection', () {
+      testWidgets('shows app bar for routes without their own app bar', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/test',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNotNull);
+        expect(find.text('Mindwell'), findsOneWidget);
+      });
+
+      testWidgets('hides app bar for root route', (WidgetTester tester) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for profile route', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/profile',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for entries routes', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/entries/123',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for feed routes', (WidgetTester tester) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/feed/live',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for users route (exact match)', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/users',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for user profile routes', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/users/john_doe',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for user followers route', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/users/john_doe/followers',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for user comments route', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/users/john_doe/comments',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
+
+      testWidgets('hides app bar for themes routes', (
+        WidgetTester tester,
+      ) async {
+        // Arrange
+        const testChild = Text('Test Content');
+
+        // Act
+        await tester.pumpWidget(
+          _createTestWidget(
+            child: const HomeScreen(child: testChild),
+            authState: AuthState.authenticated(user: _createTestUser()),
+            initialLocation: '/themes/theme1/entries/new',
+          ),
+        );
+
+        // Assert
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.appBar, isNull);
+      });
     });
   });
 }
