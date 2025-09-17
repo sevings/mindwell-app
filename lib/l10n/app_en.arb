@@ -1185,5 +1185,29 @@
   "timeJustNow": "Just now",
   "@timeJustNow": {
     "description": "Just now time format"
+  },
+  "chats": "Chats",
+  "@chats": {
+    "description": "Chats screen title"
+  },
+  "noConversations": "No conversations yet",
+  "@noConversations": {
+    "description": "Message when user has no chat conversations"
+  },
+  "noConversationsSubtitle": "Start a conversation with someone to see it here",
+  "@noConversationsSubtitle": {
+    "description": "Subtitle for no conversations message"
+  },
+  "loadingChats": "Loading chats...",
+  "@loadingChats": {
+    "description": "Loading chats message"
+  },
+  "lastMessage": "Last message",
+  "@lastMessage": {
+    "description": "Last message accessibility label"
+  },
+  "unreadMessages": "Unread messages",
+  "@unreadMessages": {
+    "description": "Unread messages accessibility label"
   }
 }

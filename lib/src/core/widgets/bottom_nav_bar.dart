@@ -43,7 +43,7 @@ class PlatformBottomNavBar extends ConsumerWidget {
     NavigationDestination(
       icon: Icon(Icons.chat_outlined),
       selectedIcon: Icon(Icons.chat),
-      label: 'Chat',
+      label: 'Chats',
       tooltip: 'View chat messages',
     ),
   ];
@@ -68,7 +68,7 @@ class PlatformBottomNavBar extends ConsumerWidget {
     BottomNavigationBarItem(
       icon: Icon(Icons.chat_outlined),
       activeIcon: Icon(Icons.chat),
-      label: 'Chat',
+      label: 'Chats',
     ),
   ];
 
@@ -77,7 +77,7 @@ class PlatformBottomNavBar extends ConsumerWidget {
     '/',
     '/profile',
     '/notifications',
-    '/chat',
+    '/chats',
   ];
 
   @override
@@ -158,7 +158,7 @@ class BottomNavBarIndexProvider extends ConsumerWidget {
         case '/notifications':
           currentIndex = 2; // Notifications
           break;
-        case '/chat':
+        case '/chats':
           currentIndex = 3; // Chat
           break;
         default:

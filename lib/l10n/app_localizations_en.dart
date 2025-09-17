@@ -911,4 +911,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeJustNow => 'Just now';
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSubtitle =>
+      'Start a conversation with someone to see it here';
+
+  @override
+  String get loadingChats => 'Loading chats...';
+
+  @override
+  String get lastMessage => 'Last message';
+
+  @override
+  String get unreadMessages => 'Unread messages';
 }

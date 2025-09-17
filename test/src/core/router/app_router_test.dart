@@ -20,6 +20,8 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:mindwell/src/core/widgets/notification_shimmer.dart';
 import 'package:mindwell/src/features/notifications/providers/notification_list_provider.dart';
 import 'package:mindwell/src/features/notifications/models/notification_list_state.dart';
+import 'package:mindwell/src/features/chat/providers/chat_list_provider.dart';
+import 'package:mindwell/src/features/chat/models/chat_list_state.dart';
 
 /// Mock implementations for testing
 class _MockTokenStorageService implements TokenStorageService {
@@ -166,6 +168,39 @@ class _MockRelationsApi implements RelationsApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+class _MockChatsApi implements ChatsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+/// Mock ChatListNotifier that doesn't make HTTP requests
+class _MockChatListNotifier extends ChatListNotifier {
+  _MockChatListNotifier() : super(_MockRef()) {
+    state = const ChatListState.loaded(chats: [], hasMore: false);
+  }
+
+  // Override the private method to prevent HTTP requests
+  // ignore: unused_element
+  Future<void> _loadInitialChats() async {
+    // Do nothing to prevent HTTP requests
+  }
+}
+
+/// Mock Ref for testing
+class _MockRef implements Ref {
+  @override
+  T read<T>(ProviderListenable<T> provider) {
+    // Return mock APIs when requested
+    if (provider.runtimeType == chatsApiProvider.runtimeType) {
+      return _MockChatsApi() as T;
+    }
+    throw UnimplementedError('Provider not mocked: $provider');
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
 /// Mock ProfileNotifier that doesn't make HTTP requests
 class _MockProfileNotifier extends ProfileNotifier {
   _MockProfileNotifier(ProfileState initialState)
@@ -217,10 +252,13 @@ Widget createTestWidget(Widget child, {AuthState? authState}) {
     entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
     usersApiProvider.overrideWith((ref) => _MockUsersApi()),
     notificationsApiProvider.overrideWith((ref) => _MockNotificationsApi()),
+    chatsApiProvider.overrideWith((ref) => _MockChatsApi()),
     // Override notificationListProvider to prevent HTTP requests
     notificationListProvider.overrideWith(
       (ref) => _MockNotificationListNotifier(),
     ),
+    // Override chatListProvider to prevent HTTP requests
+    chatListProvider.overrideWith((ref) => _MockChatListNotifier()),
     // Override profileProvider to prevent HTTP requests
     profileProvider.overrideWith(
       (ref, username) => _MockProfileNotifier(const ProfileState.initial()),
@@ -335,13 +373,15 @@ void main() {
       await tester.pump();
 
       // Navigate to chat
-      AppRouter.router.go('/chat');
+      AppRouter.router.go('/chats');
       await tester.pump();
       await tester.pump(); // Additional pump to ensure navigation completes
 
       // Assert
-      expect(find.text('Chat'), findsAtLeastNWidgets(1));
-      expect(find.text('Connect with your support community'), findsOneWidget);
+      expect(
+        find.text('Chats'),
+        findsAtLeastNWidgets(1),
+      ); // App bar title and nav bar label
 
       // Clean up any pending timers by pumping a few more times
       await tester.pump();

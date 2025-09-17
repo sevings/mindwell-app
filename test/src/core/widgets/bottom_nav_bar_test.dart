@@ -10,22 +10,26 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 void main() {
   group('PlatformBottomNavBar', () {
-    testWidgets('renders correctly when authenticated', (WidgetTester tester) async {
+    testWidgets('renders correctly when authenticated', (
+      WidgetTester tester,
+    ) async {
       // Create a mock user
-      final mockUser = $MwUser((b) => b
-        ..id = 1
-        ..name = 'testuser'
-        ..showName = 'Test User'
-        ..isTheme = false
-        ..isOnline = true
+      final mockUser = $MwUser(
+        (b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true,
       );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(
-              AuthState.authenticated(user: mockUser),
-            )),
+            authProvider.overrideWith(
+              (ref) =>
+                  MockAuthNotifier(AuthState.authenticated(user: mockUser)),
+            ),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -40,16 +44,16 @@ void main() {
       expect(find.text('Feed'), findsAtLeastNWidgets(1));
       expect(find.text('Profile'), findsAtLeastNWidgets(1));
       expect(find.text('Notifications'), findsAtLeastNWidgets(1));
-      expect(find.text('Chat'), findsAtLeastNWidgets(1));
+      expect(find.text('Chats'), findsAtLeastNWidgets(1));
     });
 
     testWidgets('hides when not authenticated', (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(
-              const AuthState.unauthenticated(),
-            )),
+            authProvider.overrideWith(
+              (ref) => MockAuthNotifier(const AuthState.unauthenticated()),
+            ),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -65,20 +69,22 @@ void main() {
 
     testWidgets('shows correct selected tab', (WidgetTester tester) async {
       // Create a mock user
-      final mockUser = $MwUser((b) => b
-        ..id = 1
-        ..name = 'testuser'
-        ..showName = 'Test User'
-        ..isTheme = false
-        ..isOnline = true
+      final mockUser = $MwUser(
+        (b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true,
       );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(
-              AuthState.authenticated(user: mockUser),
-            )),
+            authProvider.overrideWith(
+              (ref) =>
+                  MockAuthNotifier(AuthState.authenticated(user: mockUser)),
+            ),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -89,26 +95,30 @@ void main() {
         ),
       );
 
-      final navigationBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+      final navigationBar = tester.widget<NavigationBar>(
+        find.byType(NavigationBar),
+      );
       expect(navigationBar.selectedIndex, 1);
     });
 
     testWidgets('displays all navigation items', (WidgetTester tester) async {
       // Create a mock user
-      final mockUser = $MwUser((b) => b
-        ..id = 1
-        ..name = 'testuser'
-        ..showName = 'Test User'
-        ..isTheme = false
-        ..isOnline = true
+      final mockUser = $MwUser(
+        (b) => b
+          ..id = 1
+          ..name = 'testuser'
+          ..showName = 'Test User'
+          ..isTheme = false
+          ..isOnline = true,
       );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            authProvider.overrideWith((ref) => MockAuthNotifier(
-              AuthState.authenticated(user: mockUser),
-            )),
+            authProvider.overrideWith(
+              (ref) =>
+                  MockAuthNotifier(AuthState.authenticated(user: mockUser)),
+            ),
           ],
           child: const MaterialApp(
             home: Scaffold(
@@ -123,25 +133,29 @@ void main() {
       expect(find.text('Feed'), findsAtLeastNWidgets(1));
       expect(find.text('Profile'), findsAtLeastNWidgets(1));
       expect(find.text('Notifications'), findsAtLeastNWidgets(1));
-      expect(find.text('Chat'), findsAtLeastNWidgets(1));
+      expect(find.text('Chats'), findsAtLeastNWidgets(1));
     });
   });
 }
 
 /// Mock AuthNotifier for testing
 class MockAuthNotifier extends AuthNotifier {
-  MockAuthNotifier(AuthState initialState) : super(
-    tokenStorageService: MockTokenStorageService(),
-    oauth2Api: MockOauth2Api(),
-    accountApi: MockAccountApi(),
-    meApi: MockMeApi(),
-  ) {
+  MockAuthNotifier(AuthState initialState)
+    : super(
+        tokenStorageService: MockTokenStorageService(),
+        oauth2Api: MockOauth2Api(),
+        accountApi: MockAccountApi(),
+        meApi: MockMeApi(),
+      ) {
     state = initialState;
   }
 }
 
 // Mock classes for dependencies
 class MockTokenStorageService extends Mock implements TokenStorageService {}
+
 class MockOauth2Api extends Mock implements Oauth2Api {}
+
 class MockAccountApi extends Mock implements AccountApi {}
+
 class MockMeApi extends Mock implements MeApi {}

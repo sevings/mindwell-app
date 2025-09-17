@@ -1218,5 +1218,29 @@
   "timeJustNow": "Только что",
   "@timeJustNow": {
     "description": "Just now time format"
+  },
+  "chats": "Чаты",
+  "@chats": {
+    "description": "Chats screen title"
+  },
+  "noConversations": "Пока нет разговоров",
+  "@noConversations": {
+    "description": "Message when user has no chat conversations"
+  },
+  "noConversationsSubtitle": "Начните разговор с кем-нибудь, чтобы увидеть его здесь",
+  "@noConversationsSubtitle": {
+    "description": "Subtitle for no conversations message"
+  },
+  "loadingChats": "Загрузка чатов...",
+  "@loadingChats": {
+    "description": "Loading chats message"
+  },
+  "lastMessage": "Последнее сообщение",
+  "@lastMessage": {
+    "description": "Last message accessibility label"
+  },
+  "unreadMessages": "Непрочитанные сообщения",
+  "@unreadMessages": {
+    "description": "Unread messages accessibility label"
   }
 }

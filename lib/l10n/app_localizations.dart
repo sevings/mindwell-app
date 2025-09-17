@@ -1825,6 +1825,42 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Только что'**
   String get timeJustNow;
+
+  /// Chats screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Чаты'**
+  String get chats;
+
+  /// Message when user has no chat conversations
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет разговоров'**
+  String get noConversations;
+
+  /// Subtitle for no conversations message
+  ///
+  /// In ru, this message translates to:
+  /// **'Начните разговор с кем-нибудь, чтобы увидеть его здесь'**
+  String get noConversationsSubtitle;
+
+  /// Loading chats message
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка чатов...'**
+  String get loadingChats;
+
+  /// Last message accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Последнее сообщение'**
+  String get lastMessage;
+
+  /// Unread messages accessibility label
+  ///
+  /// In ru, this message translates to:
+  /// **'Непрочитанные сообщения'**
+  String get unreadMessages;
 }
 
 class _AppLocalizationsDelegate

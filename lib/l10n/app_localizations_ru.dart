@@ -919,4 +919,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get timeJustNow => 'Только что';
+
+  @override
+  String get chats => 'Чаты';
+
+  @override
+  String get noConversations => 'Пока нет разговоров';
+
+  @override
+  String get noConversationsSubtitle =>
+      'Начните разговор с кем-нибудь, чтобы увидеть его здесь';
+
+  @override
+  String get loadingChats => 'Загрузка чатов...';
+
+  @override
+  String get lastMessage => 'Последнее сообщение';
+
+  @override
+  String get unreadMessages => 'Непрочитанные сообщения';
 }

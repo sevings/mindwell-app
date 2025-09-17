@@ -3,38 +3,24 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 part 'chat_list_state.freezed.dart';
 
-/// Represents the current state of the chat list.
+/// State for the chat list feature.
 ///
-/// This sealed class uses freezed to ensure immutability and provides
-/// different states for various chat list loading scenarios.
+/// Represents the different states the chat list can be in:
+/// - loading: Initial loading state
+/// - loaded: Successfully loaded with chat data
+/// - error: Error state with error message
 @freezed
-sealed class ChatListState with _$ChatListState {
-  /// Initial state when the chat list is first created
-  const factory ChatListState.initial() = _Initial;
+class ChatListState with _$ChatListState {
+  /// Initial loading state
+  const factory ChatListState.loading() = ChatListLoading;
 
-  /// Loading state when chats are being fetched
-  const factory ChatListState.loading() = _Loading;
-
-  /// Loaded state when chats have been successfully fetched
-  ///
-  /// [chats] List of chats to display
-  /// [hasMore] Whether there are more chats to load
-  /// [unreadCount] Total number of unread messages across all chats
+  /// Successfully loaded state with chat data
   const factory ChatListState.loaded({
     required List<MwChat> chats,
+    @Default(false) bool isFetchingMore,
     @Default(false) bool hasMore,
-    @Default(0) int unreadCount,
-  }) = _Loaded;
+  }) = ChatListLoaded;
 
-  /// Error state when fetching chats fails
-  ///
-  /// [message] The error message describing what went wrong
-  /// [chats] Previously loaded chats (if any) to maintain UI state
-  const factory ChatListState.error({
-    required String message,
-    List<MwChat>? chats,
-  }) = _Error;
-
-  /// Empty state when no chats are available
-  const factory ChatListState.empty() = _Empty;
+  /// Error state with error message
+  const factory ChatListState.error(String message) = ChatListError;
 }

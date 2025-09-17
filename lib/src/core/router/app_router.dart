@@ -16,6 +16,7 @@ import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/user_list_screen.dart';
 import '../../features/profile/models/user_list_state.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
+import '../../features/chat/screens/chat_list_screen.dart';
 
 /// Application router configuration using GoRouter.
 ///
@@ -35,7 +36,7 @@ class AppRouter {
         '/',
         '/profile',
         '/notifications',
-        '/chat',
+        '/chats',
         '/feed/subscriptions',
         '/feed/my-entries',
       ];
@@ -120,9 +121,9 @@ class AppRouter {
             builder: (context, state) => const NotificationsScreen(),
           ),
           GoRoute(
-            path: '/chat',
-            name: 'chat',
-            builder: (context, state) => const _ChatContent(),
+            path: '/chats',
+            name: 'chats',
+            builder: (context, state) => const ChatListScreen(),
           ),
           GoRoute(
             path: '/entries/new',
@@ -497,35 +498,6 @@ class _ProfileContent extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Your personal profile and settings',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Chat content widget.
-///
-/// This will be replaced with actual chat content in future tasks.
-class _ChatContent extends StatelessWidget {
-  const _ChatContent();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.chat, size: 64, color: Color(0xFFFF5E3A)),
-          SizedBox(height: 16),
-          Text(
-            'Chat',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Connect with your support community',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
