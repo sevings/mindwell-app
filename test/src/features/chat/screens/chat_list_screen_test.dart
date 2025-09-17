@@ -7,6 +7,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:mindwell/src/features/chat/screens/chat_list_screen.dart';
 import 'package:mindwell/src/features/chat/models/chat_list_state.dart';
 import 'package:mindwell/src/features/chat/providers/chat_list_provider.dart';
+import 'package:mindwell/src/features/chat/widgets/chat_list_shimmer.dart';
 import 'package:mindwell/l10n/app_localizations.dart';
 
 class MockChatListNotifier extends StateNotifier<ChatListState>
@@ -73,8 +74,10 @@ void main() {
 
       await tester.pumpWidget(createWidgetUnderTest());
 
-      expect(find.text('Loading chats...'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      // Should display shimmer instead of loading text and spinner
+      expect(find.byType(ChatListShimmer), findsOneWidget);
+      expect(find.text('Loading chats...'), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('displays empty state correctly', (WidgetTester tester) async {
@@ -104,6 +107,7 @@ void main() {
       expect(find.text('Test User'), findsOneWidget);
       expect(find.text('Hello, this is a test message'), findsOneWidget);
       expect(find.text('3'), findsOneWidget); // Unread count
+      expect(find.byType(Badge), findsOneWidget); // Should use Badge widget
     });
 
     testWidgets('displays error state correctly', (WidgetTester tester) async {
@@ -174,8 +178,9 @@ void main() {
 
       await tester.pumpWidget(createWidgetUnderTest());
 
-      // Scroll to bottom to trigger load more
-      await tester.drag(find.byType(ListView), const Offset(0, -500));
+      // Scroll to bottom to trigger load more - find the specific CustomScrollView in the RefreshIndicator
+      final refreshIndicator = find.byType(RefreshIndicator);
+      await tester.drag(refreshIndicator, const Offset(0, -500));
       await tester.pumpAndSettle();
 
       // In a real test, you would verify that loadMore was called
@@ -214,7 +219,7 @@ void main() {
       // Start with loading state
       mockNotifier.state = const ChatListState.loading();
       await tester.pumpWidget(createWidgetUnderTest());
-      expect(find.text('Loading chats...'), findsOneWidget);
+      expect(find.byType(ChatListShimmer), findsOneWidget);
 
       // Change to loaded state
       mockNotifier.state = ChatListState.loaded(
@@ -223,7 +228,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Test User'), findsOneWidget);
-      expect(find.text('Loading chats...'), findsNothing);
+      expect(find.byType(ChatListShimmer), findsNothing);
 
       // Change to error state
       mockNotifier.state = const ChatListState.error('Test error');

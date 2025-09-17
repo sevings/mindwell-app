@@ -17,6 +17,7 @@ import 'package:mindwell/src/features/profile/screens/profile_screen.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:mindwell/src/core/services/websocket_service.dart';
 import 'package:mindwell/src/core/widgets/notification_shimmer.dart';
 import 'package:mindwell/src/features/notifications/providers/notification_list_provider.dart';
 import 'package:mindwell/src/features/notifications/models/notification_list_state.dart';
@@ -173,6 +174,12 @@ class _MockChatsApi implements ChatsApi {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+/// Mock WebsocketService for testing
+class _MockWebsocketService extends WebSocketService {
+  _MockWebsocketService()
+    : super(accountApi: _MockAccountApi(), ref: _MockRef());
+}
+
 /// Mock ChatListNotifier that doesn't make HTTP requests
 class _MockChatListNotifier extends ChatListNotifier {
   _MockChatListNotifier() : super(_MockRef()) {
@@ -194,7 +201,19 @@ class _MockRef implements Ref {
     if (provider.runtimeType == chatsApiProvider.runtimeType) {
       return _MockChatsApi() as T;
     }
-    throw UnimplementedError('Provider not mocked: $provider');
+    if (provider.runtimeType.toString().contains('WebsocketServiceProvider') ||
+        provider.runtimeType.toString().contains('websocketServiceProvider') ||
+        provider.runtimeType.toString().contains('WebSocketService') ||
+        T.toString().contains('WebSocketService')) {
+      return _MockWebsocketService() as T;
+    }
+    if (provider.runtimeType.toString().contains('accountApiProvider') ||
+        provider.runtimeType.toString().contains('AccountApiProvider')) {
+      return _MockAccountApi() as T;
+    }
+    throw UnimplementedError(
+      'Provider not mocked: $provider (type: ${T.toString()})',
+    );
   }
 
   @override

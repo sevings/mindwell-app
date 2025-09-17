@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +10,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:mindwell/src/features/chat/models/chat_list_state.dart';
 import 'package:mindwell/src/features/chat/providers/chat_list_provider.dart';
 import 'package:mindwell/src/core/api/api_provider.dart';
+import 'package:mindwell/src/core/providers/websocket_provider.dart';
+import 'package:mindwell/src/core/services/websocket_service.dart';
 
 class MockChatsApi extends Mock implements ChatsApi {}
 
@@ -15,9 +19,12 @@ class MockMwChat extends Mock implements MwChat {}
 
 class MockMwChatList extends Mock implements MwChatList {}
 
+class MockWebSocketService extends Mock implements WebSocketService {}
+
 void main() {
   group('ChatListNotifier', () {
     late MockChatsApi mockChatsApi;
+    late MockWebSocketService mockWebSocketService;
     late ChatListNotifier notifier;
     late MockMwChat mockChat;
     late MockMwChatList mockChatList;
@@ -25,6 +32,7 @@ void main() {
 
     setUp(() {
       mockChatsApi = MockChatsApi();
+      mockWebSocketService = MockWebSocketService();
       mockChat = MockMwChat();
       mockChatList = MockMwChatList();
 
@@ -51,9 +59,17 @@ void main() {
         ),
       ).thenAnswer((_) async => mockResponse);
 
-      // Create container with mocked API
+      // Setup WebSocket service mock
+      when(
+        () => mockWebSocketService.messageMessagesStream,
+      ).thenAnswer((_) => Stream.empty());
+
+      // Create container with mocked dependencies
       container = ProviderContainer(
-        overrides: [chatsApiProvider.overrideWithValue(mockChatsApi)],
+        overrides: [
+          chatsApiProvider.overrideWithValue(mockChatsApi),
+          websocketServiceProvider.overrideWithValue(mockWebSocketService),
+        ],
       );
 
       notifier = container.read(chatListProvider.notifier);
@@ -381,6 +397,301 @@ void main() {
           loaded: (chats, isFetchingMore, hasMore) {
             expect(chats, hasLength(1));
             expect(chats.first.id, 2);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+    });
+
+    group('WebSocket integration', () {
+      late StreamController<Map<String, dynamic>> messageStreamController;
+
+      setUp(() {
+        messageStreamController =
+            StreamController<Map<String, dynamic>>.broadcast();
+        when(
+          () => mockWebSocketService.messageMessagesStream,
+        ).thenAnswer((_) => messageStreamController.stream);
+      });
+
+      tearDown(() {
+        messageStreamController.close();
+      });
+
+      test('handles new message event for existing chat', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(1);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - send new message event
+        final newMessageEvent = {
+          'action': 'new',
+          'chat_id': 1,
+          'id': 2,
+          'content': 'New message',
+          'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
+        };
+
+        messageStreamController.add(newMessageEvent);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert - chat should be moved to top
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+
+      test('handles updated message event', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(1);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - send updated message event
+        final updatedMessageEvent = {
+          'action': 'updated',
+          'chat_id': 1,
+          'id': 1,
+          'content': 'Updated message',
+          'edit_content': 'Updated message',
+          'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
+        };
+
+        messageStreamController.add(updatedMessageEvent);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert - message should be updated
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+
+      test('handles read message event', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(3);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - send read message event
+        final readMessageEvent = {'action': 'read', 'chat_id': 1};
+
+        messageStreamController.add(readMessageEvent);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert - unread count should be updated
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+
+      test('handles removed message event', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(1);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - send removed message event
+        final removedMessageEvent = {'action': 'removed', 'chat_id': 1};
+
+        messageStreamController.add(removedMessageEvent);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert - message should be removed
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+
+      test('ignores WebSocket events during refresh', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(1);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - start refresh and send WebSocket event
+        final refreshFuture = notifier.refresh();
+
+        final newMessageEvent = {
+          'action': 'new',
+          'chat_id': 1,
+          'id': 2,
+          'content': 'New message',
+          'created_at': DateTime.now().millisecondsSinceEpoch / 1000,
+        };
+
+        messageStreamController.add(newMessageEvent);
+        await refreshFuture;
+
+        // Assert - WebSocket event should be ignored during refresh
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
+          },
+          error: (message) => fail('Should not be in error state: $message'),
+        );
+      });
+
+      test('ignores WebSocket events with invalid action', () async {
+        // Arrange - set up initial state
+        final mockChat1 = MockMwChat();
+        when(() => mockChat1.id).thenReturn(1);
+        when(() => mockChat1.unreadCount).thenReturn(1);
+
+        final mockChatList = MockMwChatList();
+        when(() => mockChatList.data).thenReturn(BuiltList([mockChat1]));
+        when(() => mockChatList.hasAfter).thenReturn(false);
+
+        final mockResponse = Response<MwChatList>(
+          data: mockChatList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/chats'),
+        );
+
+        when(
+          () => mockChatsApi.chatsGet(
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        await notifier.refresh();
+
+        // Act - send invalid WebSocket event
+        final invalidEvent = {'action': 'invalid_action', 'chat_id': 1};
+
+        messageStreamController.add(invalidEvent);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert - state should remain unchanged
+        notifier.state.when(
+          loading: () => fail('Should not be in loading state'),
+          loaded: (chats, isFetchingMore, hasMore) {
+            expect(chats, hasLength(1));
+            expect(chats.first.id, 1);
           },
           error: (message) => fail('Should not be in error state: $message'),
         );

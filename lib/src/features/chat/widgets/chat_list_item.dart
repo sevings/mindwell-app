@@ -171,22 +171,17 @@ class ChatListItem extends StatelessWidget {
         const SizedBox(height: 4),
         // Unread badge
         if (unreadCount > 0)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            constraints: const BoxConstraints(minWidth: 20),
-            child: Text(
+          Badge(
+            label: Text(
               unreadCount > 99 ? '99+' : unreadCount.toString(),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 11,
               ),
-              textAlign: TextAlign.center,
             ),
+            backgroundColor: theme.colorScheme.primary,
+            textColor: theme.colorScheme.onPrimary,
           ),
       ],
     );

@@ -71,6 +71,8 @@ void main() {
     testWidgets('displays unread count badge', (WidgetTester tester) async {
       await tester.pumpWidget(createWidgetUnderTest());
 
+      // Should find the Badge widget with the unread count
+      expect(find.byType(Badge), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
     });
 
@@ -208,6 +210,41 @@ void main() {
       expect(semantics.label, contains('Test User'));
       expect(semantics.label, contains('Hello, this is a test message'));
       expect(semantics.label, contains('Unread messages: 3'));
+    });
+
+    testWidgets('does not display badge when unread count is zero', (
+      WidgetTester tester,
+    ) async {
+      final chatWithNoUnread = MwChat(
+        (b) => b
+          ..id = 1
+          ..partner = mockPartner
+          ..lastMessage.replace(mockLastMessage)
+          ..unreadCount = 0,
+      );
+
+      await tester.pumpWidget(createWidgetUnderTest(chat: chatWithNoUnread));
+
+      // Should not find the Badge widget when unread count is 0
+      expect(find.byType(Badge), findsNothing);
+    });
+
+    testWidgets('displays badge with 99+ for large unread counts', (
+      WidgetTester tester,
+    ) async {
+      final chatWithLargeUnread = MwChat(
+        (b) => b
+          ..id = 1
+          ..partner = mockPartner
+          ..lastMessage.replace(mockLastMessage)
+          ..unreadCount = 150,
+      );
+
+      await tester.pumpWidget(createWidgetUnderTest(chat: chatWithLargeUnread));
+
+      // Should find the Badge widget with "99+" text
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text('99+'), findsOneWidget);
     });
   });
 }

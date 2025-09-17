@@ -4,6 +4,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/chat_list_item.dart';
+import '../widgets/chat_list_shimmer.dart';
 import '../providers/chat_list_provider.dart';
 
 /// Screen that displays a list of chat conversations.
@@ -86,23 +87,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
   /// Builds the loading state
   Widget _buildLoadingState(AppLocalizations l10n, ThemeData theme) {
-    return SliverFillRemaining(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              'Loading chats...',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const ChatListShimmer(itemCount: 8);
   }
 
   /// Builds the loaded state with chat list
@@ -120,18 +105,20 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     return SliverFillRemaining(
       child: RefreshIndicator(
         onRefresh: _onRefresh,
-        child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 16),
-          itemCount: chats.length + (isFetchingMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == chats.length) {
-              // Loading indicator at the bottom
-              return _buildLoadingIndicator(theme);
-            }
-
-            final chat = chats[index];
-            return ChatListItem(chat: chat, onTap: () => _navigateToChat(chat));
-          },
+        child: CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final chat = chats[index];
+                return ChatListItem(
+                  chat: chat,
+                  onTap: () => _navigateToChat(chat),
+                );
+              }, childCount: chats.length),
+            ),
+            if (isFetchingMore)
+              SliverToBoxAdapter(child: _buildLoadingIndicator(theme)),
+          ],
         ),
       ),
     );
