@@ -22,17 +22,24 @@ import 'image_gallery_screen.dart';
 /// navigation and theming. It displays the full entry content, author information, images,
 /// tags, and comments with voting and favoriting capabilities.
 class EntryDetailScreen extends ConsumerStatefulWidget {
-  /// The ID of the entry to display
-  final int entryId;
+  /// The ID of the entry to display (used when loading from server)
+  final int? entryId;
+
+  /// The entry data to display directly (used for preview mode)
+  final MwEntry? entryData;
 
   /// Whether this is a preview mode (showing a draft entry)
   final bool isPreview;
 
   const EntryDetailScreen({
     super.key,
-    required this.entryId,
+    this.entryId,
+    this.entryData,
     this.isPreview = false,
-  });
+  }) : assert(
+         (entryId != null) != (entryData != null),
+         'Either entryId or entryData must be provided, but not both',
+       );
 
   @override
   ConsumerState<EntryDetailScreen> createState() => _EntryDetailScreenState();
@@ -56,15 +63,34 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      // Load more comments when near bottom
-      ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
+      // Load more comments when near bottom (only if we have an entryId)
+      if (widget.entryId != null) {
+        ref
+            .read(entryDetailProvider(widget.entryId!).notifier)
+            .loadMoreComments();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(entryDetailProvider(widget.entryId));
+
+    // If we have entry data directly, use it for preview mode
+    if (widget.entryData != null) {
+      return _buildLoadedState(
+        context,
+        l10n,
+        widget.entryData!,
+        [], // No comments in preview mode
+        false, // No more comments
+        false, // Not loading comments
+        null, // No adjacent entries in preview
+      );
+    }
+
+    // Otherwise, use the provider to load entry by ID
+    final entryState = ref.watch(entryDetailProvider(widget.entryId!));
 
     return Scaffold(
       body: entryState.when(
@@ -694,12 +720,13 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         const SizedBox(height: 16),
 
         // Add comment form - now beneath the comment list
-        AddCommentForm(
-          entryId: widget.entryId,
-          onCommentSubmitted: _onCommentSubmitted,
-          onError: _onCommentError,
-          compact: true,
-        ),
+        if (widget.entryId != null)
+          AddCommentForm(
+            entryId: widget.entryId!,
+            onCommentSubmitted: _onCommentSubmitted,
+            onError: _onCommentError,
+            compact: true,
+          ),
       ],
     );
   }
@@ -749,12 +776,13 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => ref
-                    .read(entryDetailProvider(widget.entryId).notifier)
-                    .refresh(),
-                child: const Text('Retry'),
-              ),
+              if (widget.entryId != null)
+                ElevatedButton(
+                  onPressed: () => ref
+                      .read(entryDetailProvider(widget.entryId!).notifier)
+                      .refresh(),
+                  child: const Text('Retry'),
+                ),
             ],
           ),
         ),
@@ -781,11 +809,17 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onVote(bool isUpvote) {
-    ref.read(entryDetailProvider(widget.entryId).notifier).voteEntry(isUpvote);
+    if (widget.entryId != null) {
+      ref
+          .read(entryDetailProvider(widget.entryId!).notifier)
+          .voteEntry(isUpvote);
+    }
   }
 
   void _onToggleFavorite() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).toggleFavorite();
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).toggleFavorite();
+    }
   }
 
   void _onTagTapped(String tag) {
@@ -794,18 +828,24 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _openImageGallery(List<MwImage> images, int initialIndex) {
-    final entryState = ref.read(entryDetailProvider(widget.entryId));
-    final entry = entryState.maybeWhen(
-      loaded: (entry, _, _, _, _) => entry,
-      orElse: () => null,
-    );
+    String? title;
+
+    if (widget.entryData != null) {
+      title = widget.entryData!.title;
+    } else if (widget.entryId != null) {
+      final entryState = ref.read(entryDetailProvider(widget.entryId!));
+      title = entryState.maybeWhen(
+        loaded: (entry, _, _, _, _) => entry.title,
+        orElse: () => null,
+      );
+    }
 
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ImageGalleryScreen(
           images: images,
           initialIndex: initialIndex,
-          title: entry?.title,
+          title: title,
         ),
         fullscreenDialog: true,
       ),
@@ -813,13 +853,19 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _loadMoreComments() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).loadMoreComments();
+    if (widget.entryId != null) {
+      ref
+          .read(entryDetailProvider(widget.entryId!).notifier)
+          .loadMoreComments();
+    }
   }
 
   void _onCommentSubmitted(String content) async {
+    if (widget.entryId == null) return; // Can't add comments in preview mode
+
     // Call the provider to add the comment
     final success = await ref
-        .read(entryDetailProvider(widget.entryId).notifier)
+        .read(entryDetailProvider(widget.entryId!).notifier)
         .addComment(content);
 
     // Check if widget is still mounted before using context
@@ -880,57 +926,65 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onCommentVote(MwComment comment, bool isUpvote) {
-    if (comment.id != null) {
+    if (comment.id != null && widget.entryId != null) {
       ref
-          .read(entryDetailProvider(widget.entryId).notifier)
+          .read(entryDetailProvider(widget.entryId!).notifier)
           .voteComment(comment.id!, isUpvote);
     }
   }
 
   void _onPinEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).pinEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n?.entryPinned ?? 'Entry pinned'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).pinEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.entryPinned ?? 'Entry pinned'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _onUnpinEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).unpinEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n?.entryUnpinned ?? 'Entry unpinned'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).unpinEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.entryUnpinned ?? 'Entry unpinned'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _onFollowEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).followEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n?.entryFollowed ?? 'Now following this entry'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).followEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.entryFollowed ?? 'Now following this entry'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _onUnfollowEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).unfollowEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n?.entryUnfollowed ?? 'No longer following this entry',
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).unfollowEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.entryUnfollowed ?? 'No longer following this entry',
+          ),
+          duration: const Duration(seconds: 2),
         ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+      );
+    }
   }
 
   void _onEditEntry() {
@@ -941,28 +995,32 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onDeleteEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).deleteEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n?.entryDeleted ?? 'Entry deleted successfully'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    // TODO: Navigate back or show deleted state
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).deleteEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.entryDeleted ?? 'Entry deleted successfully'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      // TODO: Navigate back or show deleted state
+    }
   }
 
   void _onComplainEntry() {
-    ref.read(entryDetailProvider(widget.entryId).notifier).complainEntry();
-    final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n?.complaintSubmitted ?? 'Complaint submitted successfully',
+    if (widget.entryId != null) {
+      ref.read(entryDetailProvider(widget.entryId!).notifier).complainEntry();
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.complaintSubmitted ?? 'Complaint submitted successfully',
+          ),
+          duration: const Duration(seconds: 2),
         ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+      );
+    }
   }
 
   void _onShareEntry() {
@@ -990,9 +1048,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onDeleteComment(MwComment comment) {
-    if (comment.id != null) {
+    if (comment.id != null && widget.entryId != null) {
       ref
-          .read(entryDetailProvider(widget.entryId).notifier)
+          .read(entryDetailProvider(widget.entryId!).notifier)
           .deleteComment(comment.id!);
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1005,9 +1063,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onComplainComment(MwComment comment) {
-    if (comment.id != null) {
+    if (comment.id != null && widget.entryId != null) {
       ref
-          .read(entryDetailProvider(widget.entryId).notifier)
+          .read(entryDetailProvider(widget.entryId!).notifier)
           .complainComment(comment.id!);
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(

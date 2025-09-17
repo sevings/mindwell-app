@@ -13,12 +13,17 @@ import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
 
 // Mock classes
 class MockGoRouter extends Mock implements GoRouter {}
+
 class MockMwEntry extends Mock implements MwEntry {}
+
 class MockMwUser extends Mock implements MwUser {}
+
 class MockMwAvatar extends Mock implements MwAvatar {}
+
 class MockMwComment extends Mock implements MwComment {}
 
-class MockEntryDetailNotifier extends StateNotifier<EntryDetailState> implements EntryDetailNotifier {
+class MockEntryDetailNotifier extends StateNotifier<EntryDetailState>
+    implements EntryDetailNotifier {
   MockEntryDetailNotifier() : super(const EntryDetailState.initial());
 
   @override
@@ -84,7 +89,9 @@ void main() {
       when(() => mockEntry.id).thenReturn(123);
       when(() => mockEntry.title).thenReturn('Test Entry');
       when(() => mockEntry.content).thenReturn('<p>Test content</p>');
-      when(() => mockEntry.tags).thenReturn(BuiltList(['flutter', 'dart', 'mobile']));
+      when(
+        () => mockEntry.tags,
+      ).thenReturn(BuiltList(['flutter', 'dart', 'mobile']));
       when(() => mockEntry.author).thenReturn(mockAuthor);
       when(() => mockEntry.createdAt).thenReturn(1640995200.0); // 2022-01-01
       when(() => mockEntry.commentCount).thenReturn(5);
@@ -99,23 +106,30 @@ void main() {
       when(() => mockAvatar.x92).thenReturn('https://example.com/avatar.jpg');
     });
 
-    Widget createTestWidget() {
+    Widget createTestWidget({
+      int? entryId,
+      MwEntry? entryData,
+      bool isPreview = false,
+    }) {
       return ProviderScope(
-        overrides: [
-          entryDetailProvider(123).overrideWith((ref) => mockNotifier),
-        ],
+        overrides: entryId != null
+            ? [entryDetailProvider(entryId).overrideWith((ref) => mockNotifier)]
+            : [],
         child: MaterialApp.router(
           routerConfig: GoRouter(
             routes: [
               GoRoute(
                 path: '/',
-                builder: (context, state) => const EntryDetailScreen(entryId: 123),
+                builder: (context, state) => EntryDetailScreen(
+                  entryId: entryId,
+                  entryData: entryData,
+                  isPreview: isPreview,
+                ),
               ),
               GoRoute(
                 path: '/tags/:tagName',
-                builder: (context, state) => const Scaffold(
-                  body: Text('Tag Feed'),
-                ),
+                builder: (context, state) =>
+                    const Scaffold(body: Text('Tag Feed')),
               ),
             ],
           ),
@@ -123,7 +137,9 @@ void main() {
       );
     }
 
-    testWidgets('should display tags and make them tappable', (WidgetTester tester) async {
+    testWidgets('should display tags and make them tappable', (
+      WidgetTester tester,
+    ) async {
       // Setup mock state
       mockNotifier.state = EntryDetailState.loaded(
         entry: mockEntry,
@@ -133,7 +149,7 @@ void main() {
         adjacentEntries: null,
       );
 
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(entryId: 123));
       await tester.pump();
 
       // Verify tags are displayed
@@ -150,7 +166,9 @@ void main() {
       expect(find.text('#flutter'), findsOneWidget);
     });
 
-    testWidgets('should display entry content correctly', (WidgetTester tester) async {
+    testWidgets('should display entry content correctly', (
+      WidgetTester tester,
+    ) async {
       // Setup mock state
       mockNotifier.state = EntryDetailState.loaded(
         entry: mockEntry,
@@ -160,7 +178,7 @@ void main() {
         adjacentEntries: null,
       );
 
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(entryId: 123));
       await tester.pump();
 
       // Verify entry content is displayed
@@ -173,7 +191,7 @@ void main() {
       // Setup loading state
       mockNotifier.state = const EntryDetailState.loading();
 
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(entryId: 123));
       await tester.pump();
 
       // Verify skeleton loaders are shown (the actual implementation uses SkeletonLoader, not CircularProgressIndicator)
@@ -182,14 +200,103 @@ void main() {
 
     testWidgets('should show error state', (WidgetTester tester) async {
       // Setup error state
-      mockNotifier.state = const EntryDetailState.error(message: 'Something went wrong');
+      mockNotifier.state = const EntryDetailState.error(
+        message: 'Something went wrong',
+      );
 
-      await tester.pumpWidget(createTestWidget());
+      await tester.pumpWidget(createTestWidget(entryId: 123));
       await tester.pump();
 
       // Verify error message is displayed (there are 2 widgets with "Something went wrong" - title and message)
       expect(find.text('Something went wrong'), findsNWidgets(2));
       expect(find.text('Retry'), findsOneWidget);
     });
+
+    testWidgets(
+      'should display entry data directly when entryData is provided',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(createTestWidget(entryData: mockEntry));
+        await tester.pump();
+
+        // Verify entry content is displayed
+        expect(find.text('Test Entry'), findsOneWidget);
+        expect(find.text('Test User'), findsOneWidget);
+        expect(find.text('#flutter'), findsOneWidget);
+        expect(find.text('#dart'), findsOneWidget);
+        expect(find.text('#mobile'), findsOneWidget);
+      },
+    );
+
+    testWidgets('should show preview mode indicators when isPreview is true', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(entryData: mockEntry, isPreview: true),
+      );
+      await tester.pump();
+
+      // Verify preview mode indicators are shown
+      expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Preview Mode - Interactions Disabled'), findsOneWidget);
+      expect(
+        find.text(
+          'Comments are disabled in preview mode. Publish the entry to enable comments.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('should disable interactive elements in preview mode', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(entryData: mockEntry, isPreview: true),
+      );
+      await tester.pump();
+
+      // Verify that interactive elements are disabled
+      // The action buttons should show the preview mode message instead of vote/favorite buttons
+      expect(find.text('Preview Mode - Interactions Disabled'), findsOneWidget);
+
+      // Comments section should show preview message
+      expect(
+        find.text(
+          'Comments are disabled in preview mode. Publish the entry to enable comments.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'should show back button in preview mode instead of context menu',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          createTestWidget(entryData: mockEntry, isPreview: true),
+        );
+        await tester.pump();
+
+        // Verify back button is present (tooltip should be 'Back to editor')
+        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'should throw assertion error when both entryId and entryData are provided',
+      (WidgetTester tester) async {
+        // This test verifies the assertion in the constructor
+        expect(
+          () => EntryDetailScreen(entryId: 123, entryData: mockEntry),
+          throwsA(isA<AssertionError>()),
+        );
+      },
+    );
+
+    testWidgets(
+      'should throw assertion error when neither entryId nor entryData are provided',
+      (WidgetTester tester) async {
+        // This test verifies the assertion in the constructor
+        expect(() => EntryDetailScreen(), throwsA(isA<AssertionError>()));
+      },
+    );
   });
 }

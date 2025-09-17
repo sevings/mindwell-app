@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/platform_app_bar.dart';
@@ -15,6 +14,7 @@ import '../widgets/tag_manager.dart';
 import '../widgets/entry_settings_bottom_sheet.dart';
 import '../widgets/markdown_toolbar.dart';
 import '../utils/markdown_converter.dart';
+import 'entry_detail_screen.dart';
 
 /// Screen for creating and editing entries.
 ///
@@ -241,28 +241,6 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
     );
   }
 
-  /// Show inline preview of the draft entry.
-  void _showInlinePreview() {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => _DraftPreviewDialog(
-        entryId: widget.entryId,
-        themeName: widget.themeName,
-      ),
-    ).then((_) {
-      // Reset the provider state when dialog is closed to return to editing mode
-      ref
-          .read(
-            entryEditorProvider((
-              entryId: widget.entryId,
-              themeName: widget.themeName,
-            )).notifier,
-          )
-          .resetFromPreview();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -345,19 +323,26 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
             }
           },
           preview: (entry) {
-            // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  l10n?.previewCreated ?? 'Preview created successfully!',
-                ),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-
-            // Show inline preview instead of navigating
-            _showInlinePreview();
+            // Navigate to entry detail screen with the preview entry data
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        EntryDetailScreen(entryData: entry, isPreview: true),
+                    fullscreenDialog: true,
+                  ),
+                )
+                .then((_) {
+                  // Reset the provider state when preview is closed to return to editing mode
+                  ref
+                      .read(
+                        entryEditorProvider((
+                          entryId: widget.entryId,
+                          themeName: widget.themeName,
+                        )).notifier,
+                      )
+                      .resetFromPreview();
+                });
           },
           error: (message, canRetry) {
             // Show error snackbar
@@ -927,455 +912,5 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         ),
       ),
     );
-  }
-}
-
-/// Dialog that shows a preview of the draft entry.
-class _DraftPreviewDialog extends ConsumerWidget {
-  final int? entryId;
-  final String? themeName;
-
-  const _DraftPreviewDialog({required this.entryId, required this.themeName});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(
-      entryEditorProvider((entryId: entryId, themeName: themeName)),
-    );
-
-    return entryState.when(
-      initial: () => const Center(child: CircularProgressIndicator()),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      editing:
-          (
-            title,
-            content,
-            tags,
-            privacy,
-            isCommentable,
-            isVotable,
-            inLive,
-            isShared,
-            isDraft,
-            images,
-            entryId,
-            hasUnsavedChanges,
-            themeName,
-            isAnonymous,
-          ) => _buildPreviewContent(
-            context,
-            l10n,
-            title,
-            content,
-            tags,
-            privacy,
-            isCommentable,
-            isVotable,
-            inLive,
-            isShared,
-            isAnonymous,
-          ),
-      publishing: (isUploadingImages, uploadProgress) =>
-          const Center(child: CircularProgressIndicator()),
-      success: (entry) => const Center(child: CircularProgressIndicator()),
-      preview: (entry) => _buildPreviewFromEntry(context, l10n, entry),
-      error: (message, canRetry) => _buildErrorContent(context, l10n, message),
-    );
-  }
-
-  Widget _buildPreviewContent(
-    BuildContext context,
-    AppLocalizations? l10n,
-    String title,
-    String content,
-    List<String> tags,
-    String privacy,
-    bool isCommentable,
-    bool isVotable,
-    bool inLive,
-    bool isShared,
-    bool isAnonymous,
-  ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Dialog(
-      insetPadding: const EdgeInsets.all(16),
-      child: SizedBox(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: SizedBox(
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.visibility,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            l10n?.preview ?? 'Preview',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.close, color: colorScheme.onSurface),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title
-                      if (title.isNotEmpty) ...[
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Author info with draft indicator
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.grey[300],
-                            child: Icon(Icons.person, color: Colors.grey[600]),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isAnonymous
-                                      ? (l10n?.anonymous ?? 'Anonymous')
-                                      : 'You',
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(height: 2),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    l10n?.thisIsDraft ?? 'This is a draft',
-                                    style: TextStyle(
-                                      color: Colors.orange.shade700,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Content
-                      if (content.isNotEmpty) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            content,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Tags
-                      if (tags.isNotEmpty) ...[
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: tags
-                              .map(
-                                (tag) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    '#$tag',
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimaryContainer,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Settings info
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.blue.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n?.entrySettings ?? 'Entry Settings',
-                              style: TextStyle(
-                                color: Colors.blue.shade700,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _buildSettingRow(
-                              l10n?.privacy ?? 'Privacy',
-                              _getPrivacyText(privacy, l10n),
-                            ),
-                            _buildSettingRow(
-                              l10n?.comments ?? 'Comments',
-                              isCommentable
-                                  ? (l10n?.enabled ?? 'Enabled')
-                                  : (l10n?.disabled ?? 'Disabled'),
-                            ),
-                            _buildSettingRow(
-                              l10n?.liveFeed ?? 'Live Feed',
-                              inLive
-                                  ? (l10n?.enabled ?? 'Enabled')
-                                  : (l10n?.disabled ?? 'Disabled'),
-                            ),
-                            _buildSettingRow(
-                              l10n?.sharing ?? 'Sharing',
-                              isShared
-                                  ? (l10n?.enabled ?? 'Enabled')
-                                  : (l10n?.disabled ?? 'Disabled'),
-                            ),
-                            if (isAnonymous)
-                              _buildSettingRow(
-                                l10n?.anonymous ?? 'Anonymous',
-                                l10n?.enabled ?? 'Enabled',
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Comments section
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.orange.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.comment_outlined,
-                                  color: Colors.orange,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  l10n?.comments ?? 'Comments',
-                                  style: TextStyle(
-                                    color: Colors.orange.shade700,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              l10n?.entryNotPublishedYet ??
-                                  'This entry is not published yet',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 14,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreviewFromEntry(
-    BuildContext context,
-    AppLocalizations? l10n,
-    MwEntry entry,
-  ) {
-    return _buildPreviewContent(
-      context,
-      l10n,
-      entry.title ?? '',
-      entry.content ?? '',
-      entry.tags?.toList() ?? [],
-      entry.privacy?.name ?? 'all',
-      entry.isCommentable ?? true,
-      true, // Voting is always enabled in the API
-      entry.inLive ?? true,
-      entry.isShared ?? false,
-      entry.isAnonymous ?? false,
-    );
-  }
-
-  Widget _buildErrorContent(
-    BuildContext context,
-    AppLocalizations? l10n,
-    String message,
-  ) {
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n?.error ?? 'Error',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n?.close ?? 'Close'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 12)),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getPrivacyText(String privacy, AppLocalizations? l10n) {
-    switch (privacy) {
-      case 'all':
-        return l10n?.privacyAll ?? 'All';
-      case 'registered':
-        return l10n?.privacyRegistered ?? 'Registered';
-      case 'invited':
-        return l10n?.privacyInvited ?? 'Invited';
-      case 'followers':
-        return l10n?.privacyFollowers ?? 'Followers';
-      case 'some':
-        return l10n?.privacySome ?? 'Some';
-      case 'me':
-        return l10n?.privacyMe ?? 'Me';
-      default:
-        return l10n?.privacyAll ?? 'All';
-    }
   }
 }
