@@ -807,4 +807,108 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unhideFromLive => 'Unhide from Live';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get loadingNotifications => 'Loading notifications...';
+
+  @override
+  String get noNotifications => 'No notifications';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'You\'ll see notifications here when you receive them';
+
+  @override
+  String notificationCommentText(String userName) {
+    return '$userName commented on your entry';
+  }
+
+  @override
+  String notificationCommentGeneralText(String userName) {
+    return '$userName commented on your content';
+  }
+
+  @override
+  String notificationFollowerText(String userName) {
+    return '$userName started following you';
+  }
+
+  @override
+  String notificationRequestText(String userName) {
+    return '$userName sent you a follow request';
+  }
+
+  @override
+  String notificationAcceptText(String userName) {
+    return '$userName accepted your follow request';
+  }
+
+  @override
+  String notificationInviteText(String userName) {
+    return '$userName invited you to join';
+  }
+
+  @override
+  String notificationInvitedText(String userName) {
+    return 'You were invited by $userName';
+  }
+
+  @override
+  String get notificationWelcomeText => 'Welcome to Mindwell!';
+
+  @override
+  String notificationBadgeText(String badgeName) {
+    return 'You earned a new badge: $badgeName';
+  }
+
+  @override
+  String get notificationBadgeGeneralText => 'You earned a new badge!';
+
+  @override
+  String notificationAdmSentText(String userName) {
+    return 'You sent a message to $userName';
+  }
+
+  @override
+  String notificationAdmReceivedText(String userName) {
+    return 'You received a message from $userName';
+  }
+
+  @override
+  String notificationWishCreatedText(String userName) {
+    return '$userName created a wish';
+  }
+
+  @override
+  String notificationWishReceivedText(String userName) {
+    return 'You received a wish from $userName';
+  }
+
+  @override
+  String get notificationEntryMovedText => 'Your entry was moved';
+
+  @override
+  String get notificationInfoText => 'New information available';
+
+  @override
+  String get notificationDefaultText => 'New notification';
+
+  @override
+  String timeHoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String timeMinutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String get timeJustNow => 'Just now';
 }

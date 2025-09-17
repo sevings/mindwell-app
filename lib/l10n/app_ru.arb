@@ -1048,5 +1048,175 @@
   "unhideFromLive": "Показать в ленте",
   "@unhideFromLive": {
     "description": "Unhide from live action text"
+  },
+  "notifications": "Уведомления",
+  "@notifications": {
+    "description": "Notifications screen title"
+  },
+  "markAllAsRead": "Отметить все как прочитанные",
+  "@markAllAsRead": {
+    "description": "Mark all notifications as read button"
+  },
+  "loadingNotifications": "Загрузка уведомлений...",
+  "@loadingNotifications": {
+    "description": "Loading notifications message"
+  },
+  "noNotifications": "Нет уведомлений",
+  "@noNotifications": {
+    "description": "No notifications message"
+  },
+  "noNotificationsSubtitle": "Здесь будут отображаться ваши уведомления",
+  "@noNotificationsSubtitle": {
+    "description": "No notifications subtitle"
+  },
+  "notificationCommentText": "{userName} прокомментировал вашу запись",
+  "@notificationCommentText": {
+    "description": "Comment notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationCommentGeneralText": "{userName} прокомментировал ваш контент",
+  "@notificationCommentGeneralText": {
+    "description": "General comment notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationFollowerText": "{userName} начал отслеживать вас",
+  "@notificationFollowerText": {
+    "description": "Follower notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRequestText": "{userName} отправил запрос на подписку",
+  "@notificationRequestText": {
+    "description": "Follow request notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationAcceptText": "{userName} принял ваш запрос на подписку",
+  "@notificationAcceptText": {
+    "description": "Follow accept notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationInviteText": "{userName} пригласил вас присоединиться",
+  "@notificationInviteText": {
+    "description": "Invite notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationInvitedText": "Вас пригласил {userName}",
+  "@notificationInvitedText": {
+    "description": "Invited notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWelcomeText": "Добро пожаловать в Mindwell!",
+  "@notificationWelcomeText": {
+    "description": "Welcome notification text"
+  },
+  "notificationBadgeText": "Вы заработали новый значок: {badgeName}",
+  "@notificationBadgeText": {
+    "description": "Badge notification text",
+    "placeholders": {
+      "badgeName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationBadgeGeneralText": "Вы заработали новый значок!",
+  "@notificationBadgeGeneralText": {
+    "description": "General badge notification text"
+  },
+  "notificationAdmSentText": "Вы отправили сообщение {userName}",
+  "@notificationAdmSentText": {
+    "description": "Admin message sent notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationAdmReceivedText": "Вы получили сообщение от {userName}",
+  "@notificationAdmReceivedText": {
+    "description": "Admin message received notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWishCreatedText": "{userName} создал желание",
+  "@notificationWishCreatedText": {
+    "description": "Wish created notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWishReceivedText": "Вы получили желание от {userName}",
+  "@notificationWishReceivedText": {
+    "description": "Wish received notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationEntryMovedText": "Ваша запись была перемещена",
+  "@notificationEntryMovedText": {
+    "description": "Entry moved notification text"
+  },
+  "notificationInfoText": "Доступна новая информация",
+  "@notificationInfoText": {
+    "description": "Info notification text"
+  },
+  "notificationDefaultText": "Новое уведомление",
+  "@notificationDefaultText": {
+    "description": "Default notification text"
+  },
+  "timeHoursAgo": "{hours}ч назад",
+  "@timeHoursAgo": {
+    "description": "Hours ago time format",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "timeMinutesAgo": "{minutes}м назад",
+  "@timeMinutesAgo": {
+    "description": "Minutes ago time format",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timeJustNow": "Только что",
+  "@timeJustNow": {
+    "description": "Just now time format"
   }
 }

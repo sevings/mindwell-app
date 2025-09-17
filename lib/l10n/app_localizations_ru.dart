@@ -815,4 +815,108 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get unhideFromLive => 'Показать в ленте';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get markAllAsRead => 'Отметить все как прочитанные';
+
+  @override
+  String get loadingNotifications => 'Загрузка уведомлений...';
+
+  @override
+  String get noNotifications => 'Нет уведомлений';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'Здесь будут отображаться ваши уведомления';
+
+  @override
+  String notificationCommentText(String userName) {
+    return '$userName прокомментировал вашу запись';
+  }
+
+  @override
+  String notificationCommentGeneralText(String userName) {
+    return '$userName прокомментировал ваш контент';
+  }
+
+  @override
+  String notificationFollowerText(String userName) {
+    return '$userName начал отслеживать вас';
+  }
+
+  @override
+  String notificationRequestText(String userName) {
+    return '$userName отправил запрос на подписку';
+  }
+
+  @override
+  String notificationAcceptText(String userName) {
+    return '$userName принял ваш запрос на подписку';
+  }
+
+  @override
+  String notificationInviteText(String userName) {
+    return '$userName пригласил вас присоединиться';
+  }
+
+  @override
+  String notificationInvitedText(String userName) {
+    return 'Вас пригласил $userName';
+  }
+
+  @override
+  String get notificationWelcomeText => 'Добро пожаловать в Mindwell!';
+
+  @override
+  String notificationBadgeText(String badgeName) {
+    return 'Вы заработали новый значок: $badgeName';
+  }
+
+  @override
+  String get notificationBadgeGeneralText => 'Вы заработали новый значок!';
+
+  @override
+  String notificationAdmSentText(String userName) {
+    return 'Вы отправили сообщение $userName';
+  }
+
+  @override
+  String notificationAdmReceivedText(String userName) {
+    return 'Вы получили сообщение от $userName';
+  }
+
+  @override
+  String notificationWishCreatedText(String userName) {
+    return '$userName создал желание';
+  }
+
+  @override
+  String notificationWishReceivedText(String userName) {
+    return 'Вы получили желание от $userName';
+  }
+
+  @override
+  String get notificationEntryMovedText => 'Ваша запись была перемещена';
+
+  @override
+  String get notificationInfoText => 'Доступна новая информация';
+
+  @override
+  String get notificationDefaultText => 'Новое уведомление';
+
+  @override
+  String timeHoursAgo(int hours) {
+    return '$hoursч назад';
+  }
+
+  @override
+  String timeMinutesAgo(int minutes) {
+    return '$minutesм назад';
+  }
+
+  @override
+  String get timeJustNow => 'Только что';
 }

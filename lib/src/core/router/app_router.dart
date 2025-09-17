@@ -15,6 +15,7 @@ import '../../features/comments/screens/comment_feed_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/user_list_screen.dart';
 import '../../features/profile/models/user_list_state.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
 
 /// Application router configuration using GoRouter.
 ///
@@ -116,7 +117,7 @@ class AppRouter {
           GoRoute(
             path: '/notifications',
             name: 'notifications',
-            builder: (context, state) => const _NotificationsContent(),
+            builder: (context, state) => const NotificationsScreen(),
           ),
           GoRoute(
             path: '/chat',
@@ -496,35 +497,6 @@ class _ProfileContent extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Your personal profile and settings',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Notifications content widget.
-///
-/// This will be replaced with actual notifications content in future tasks.
-class _NotificationsContent extends StatelessWidget {
-  const _NotificationsContent();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.notifications, size: 64, color: Color(0xFFFF5E3A)),
-          SizedBox(height: 16),
-          Text(
-            'Notifications',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Stay updated with your mindful journey',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],

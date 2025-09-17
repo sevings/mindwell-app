@@ -1015,5 +1015,175 @@
   "unhideFromLive": "Unhide from Live",
   "@unhideFromLive": {
     "description": "Unhide from live action text"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications screen title"
+  },
+  "markAllAsRead": "Mark all as read",
+  "@markAllAsRead": {
+    "description": "Mark all notifications as read button"
+  },
+  "loadingNotifications": "Loading notifications...",
+  "@loadingNotifications": {
+    "description": "Loading notifications message"
+  },
+  "noNotifications": "No notifications",
+  "@noNotifications": {
+    "description": "No notifications message"
+  },
+  "noNotificationsSubtitle": "You'll see notifications here when you receive them",
+  "@noNotificationsSubtitle": {
+    "description": "No notifications subtitle"
+  },
+  "notificationCommentText": "{userName} commented on your entry",
+  "@notificationCommentText": {
+    "description": "Comment notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationCommentGeneralText": "{userName} commented on your content",
+  "@notificationCommentGeneralText": {
+    "description": "General comment notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationFollowerText": "{userName} started following you",
+  "@notificationFollowerText": {
+    "description": "Follower notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRequestText": "{userName} sent you a follow request",
+  "@notificationRequestText": {
+    "description": "Follow request notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationAcceptText": "{userName} accepted your follow request",
+  "@notificationAcceptText": {
+    "description": "Follow accept notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationInviteText": "{userName} invited you to join",
+  "@notificationInviteText": {
+    "description": "Invite notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationInvitedText": "You were invited by {userName}",
+  "@notificationInvitedText": {
+    "description": "Invited notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWelcomeText": "Welcome to Mindwell!",
+  "@notificationWelcomeText": {
+    "description": "Welcome notification text"
+  },
+  "notificationBadgeText": "You earned a new badge: {badgeName}",
+  "@notificationBadgeText": {
+    "description": "Badge notification text",
+    "placeholders": {
+      "badgeName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationBadgeGeneralText": "You earned a new badge!",
+  "@notificationBadgeGeneralText": {
+    "description": "General badge notification text"
+  },
+  "notificationAdmSentText": "You sent a message to {userName}",
+  "@notificationAdmSentText": {
+    "description": "Admin message sent notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationAdmReceivedText": "You received a message from {userName}",
+  "@notificationAdmReceivedText": {
+    "description": "Admin message received notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWishCreatedText": "{userName} created a wish",
+  "@notificationWishCreatedText": {
+    "description": "Wish created notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationWishReceivedText": "You received a wish from {userName}",
+  "@notificationWishReceivedText": {
+    "description": "Wish received notification text",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationEntryMovedText": "Your entry was moved",
+  "@notificationEntryMovedText": {
+    "description": "Entry moved notification text"
+  },
+  "notificationInfoText": "New information available",
+  "@notificationInfoText": {
+    "description": "Info notification text"
+  },
+  "notificationDefaultText": "New notification",
+  "@notificationDefaultText": {
+    "description": "Default notification text"
+  },
+  "timeHoursAgo": "{hours}h ago",
+  "@timeHoursAgo": {
+    "description": "Hours ago time format",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "timeMinutesAgo": "{minutes}m ago",
+  "@timeMinutesAgo": {
+    "description": "Minutes ago time format",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timeJustNow": "Just now",
+  "@timeJustNow": {
+    "description": "Just now time format"
   }
 }

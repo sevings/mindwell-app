@@ -1675,6 +1675,156 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Показать в ленте'**
   String get unhideFromLive;
+
+  /// Notifications screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления'**
+  String get notifications;
+
+  /// Mark all notifications as read button
+  ///
+  /// In ru, this message translates to:
+  /// **'Отметить все как прочитанные'**
+  String get markAllAsRead;
+
+  /// Loading notifications message
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка уведомлений...'**
+  String get loadingNotifications;
+
+  /// No notifications message
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет уведомлений'**
+  String get noNotifications;
+
+  /// No notifications subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Здесь будут отображаться ваши уведомления'**
+  String get noNotificationsSubtitle;
+
+  /// Comment notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} прокомментировал вашу запись'**
+  String notificationCommentText(String userName);
+
+  /// General comment notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} прокомментировал ваш контент'**
+  String notificationCommentGeneralText(String userName);
+
+  /// Follower notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} начал отслеживать вас'**
+  String notificationFollowerText(String userName);
+
+  /// Follow request notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} отправил запрос на подписку'**
+  String notificationRequestText(String userName);
+
+  /// Follow accept notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} принял ваш запрос на подписку'**
+  String notificationAcceptText(String userName);
+
+  /// Invite notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} пригласил вас присоединиться'**
+  String notificationInviteText(String userName);
+
+  /// Invited notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вас пригласил {userName}'**
+  String notificationInvitedText(String userName);
+
+  /// Welcome notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Добро пожаловать в Mindwell!'**
+  String get notificationWelcomeText;
+
+  /// Badge notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы заработали новый значок: {badgeName}'**
+  String notificationBadgeText(String badgeName);
+
+  /// General badge notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы заработали новый значок!'**
+  String get notificationBadgeGeneralText;
+
+  /// Admin message sent notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы отправили сообщение {userName}'**
+  String notificationAdmSentText(String userName);
+
+  /// Admin message received notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы получили сообщение от {userName}'**
+  String notificationAdmReceivedText(String userName);
+
+  /// Wish created notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'{userName} создал желание'**
+  String notificationWishCreatedText(String userName);
+
+  /// Wish received notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы получили желание от {userName}'**
+  String notificationWishReceivedText(String userName);
+
+  /// Entry moved notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваша запись была перемещена'**
+  String get notificationEntryMovedText;
+
+  /// Info notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Доступна новая информация'**
+  String get notificationInfoText;
+
+  /// Default notification text
+  ///
+  /// In ru, this message translates to:
+  /// **'Новое уведомление'**
+  String get notificationDefaultText;
+
+  /// Hours ago time format
+  ///
+  /// In ru, this message translates to:
+  /// **'{hours}ч назад'**
+  String timeHoursAgo(int hours);
+
+  /// Minutes ago time format
+  ///
+  /// In ru, this message translates to:
+  /// **'{minutes}м назад'**
+  String timeMinutesAgo(int minutes);
+
+  /// Just now time format
+  ///
+  /// In ru, this message translates to:
+  /// **'Только что'**
+  String get timeJustNow;
 }
 
 class _AppLocalizationsDelegate
