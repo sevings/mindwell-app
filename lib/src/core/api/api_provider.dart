@@ -13,18 +13,20 @@ final tokenStorageServiceProvider = Provider<TokenStorageService>((ref) {
 /// Provider for the configured Dio instance with authentication interceptor.
 final dioProvider = Provider<Dio>((ref) {
   final tokenStorageService = ref.read(tokenStorageServiceProvider);
-  
-  final dio = Dio(BaseOptions(
-    baseUrl: '${Config.baseUrl}/api/v1',
-    connectTimeout: const Duration(milliseconds: 5000),
-    receiveTimeout: const Duration(milliseconds: 3000),
-  ));
-  
+
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: '${Config.baseUrl}/api/v1',
+      connectTimeout: const Duration(milliseconds: 5000),
+      receiveTimeout: const Duration(milliseconds: 3000),
+    ),
+  );
+
   // Add authentication interceptor
-  dio.interceptors.add(AuthInterceptor(
-    tokenStorageService: tokenStorageService,
-  ));
-  
+  dio.interceptors.add(
+    AuthInterceptor(tokenStorageService: tokenStorageService),
+  );
+
   return dio;
 });
 
@@ -82,8 +84,14 @@ final usersApiProvider = Provider<UsersApi>((ref) {
   return api.getUsersApi();
 });
 
+/// Provider for the NotificationsApi instance.
+final notificationsApiProvider = Provider<NotificationsApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getNotificationsApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
-/// 
+///
 /// This interceptor:
 /// 1. Automatically adds the Authorization header with the appropriate token
 /// 2. Uses user access token if available, otherwise uses app token
@@ -91,13 +99,15 @@ final usersApiProvider = Provider<UsersApi>((ref) {
 /// 4. Logs out the user if token refresh fails
 class AuthInterceptor extends Interceptor {
   final TokenStorageService _tokenStorageService;
-  
-  AuthInterceptor({
-    required TokenStorageService tokenStorageService,
-  })  : _tokenStorageService = tokenStorageService;
+
+  AuthInterceptor({required TokenStorageService tokenStorageService})
+    : _tokenStorageService = tokenStorageService;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     try {
       // First try to get user access token
       final accessToken = await _tokenStorageService.getAccessToken();
@@ -106,7 +116,7 @@ class AuthInterceptor extends Interceptor {
         handler.next(options);
         return;
       }
-      
+
       // If no user token, try to get app token
       final appToken = await _tokenStorageService.getAppToken();
       if (appToken != null) {
@@ -114,7 +124,7 @@ class AuthInterceptor extends Interceptor {
         handler.next(options);
         return;
       }
-      
+
       // If no tokens available, continue without Authorization header
       handler.next(options);
     } catch (error) {
