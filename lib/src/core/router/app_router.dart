@@ -17,6 +17,7 @@ import '../../features/profile/screens/user_list_screen.dart';
 import '../../features/profile/models/user_list_state.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';
+import '../../features/chat/screens/chat_messages_screen.dart';
 
 /// Application router configuration using GoRouter.
 ///
@@ -124,6 +125,16 @@ class AppRouter {
             path: '/chats',
             name: 'chats',
             builder: (context, state) => const ChatListScreen(),
+          ),
+          GoRoute(
+            path: '/chats/:name',
+            name: 'chatMessages',
+            builder: (context, state) {
+              final username = Uri.decodeComponent(
+                state.pathParameters['name']!,
+              );
+              return ChatMessagesScreen(username: username);
+            },
           ),
           GoRoute(
             path: '/entries/new',
