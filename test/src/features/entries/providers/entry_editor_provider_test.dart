@@ -5,8 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:built_collection/built_collection.dart';
 
 import 'package:mindwell/src/features/entries/models/entry_editor_state.dart';
+import 'package:mindwell/src/features/entries/models/attached_image.dart';
 import 'package:mindwell/src/features/entries/providers/entry_editor_provider.dart';
 import 'package:mindwell/src/core/services/image_upload_service.dart';
+import 'package:mindwell/src/core/services/image_polling_service.dart';
 
 class MockEntriesApi extends Mock implements EntriesApi {}
 
@@ -18,12 +20,15 @@ class MockMwEntry extends Mock implements MwEntry {}
 
 class MockImageUploadService extends Mock implements ImageUploadService {}
 
+class MockImagePollingService extends Mock implements ImagePollingService {}
+
 void main() {
   group('EntryEditorNotifier', () {
     late MockEntriesApi mockEntriesApi;
     late MockMeApi mockMeApi;
     late MockThemesApi mockThemesApi;
     late MockImageUploadService mockImageUploadService;
+    late MockImagePollingService mockImagePollingService;
     late EntryEditorNotifier notifier;
 
     setUp(() {
@@ -31,6 +36,7 @@ void main() {
       mockMeApi = MockMeApi();
       mockThemesApi = MockThemesApi();
       mockImageUploadService = MockImageUploadService();
+      mockImagePollingService = MockImagePollingService();
     });
 
     group('New Entry Creation', () {
@@ -42,6 +48,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
       });
 
@@ -329,6 +336,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
       });
 
@@ -352,6 +360,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
         expect(notifierWithId.entryId, equals(123));
       });
@@ -366,6 +375,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
         expect(notifierWithId.isEditingExisting, isTrue);
       });
@@ -380,6 +390,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
       });
 
@@ -489,6 +500,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
 
         // Wait for initialization
@@ -517,6 +529,109 @@ void main() {
           orElse: () => fail('Expected preview state'),
         );
       });
+
+      test('should preserve attached images when closing preview', () async {
+        // Create mock MwImage instances
+        final mockImage1 = MwImage(
+          (b) => b
+            ..id = 1
+            ..processing = false
+            ..thumbnail = (MwImageSizeBuilder()
+              ..url = 'https://example.com/thumb1.jpg'
+              ..width = 150
+              ..height = 150)
+            ..small = (MwImageSizeBuilder()
+              ..url = 'https://example.com/small1.jpg'
+              ..width = 300
+              ..height = 300)
+            ..medium = (MwImageSizeBuilder()
+              ..url = 'https://example.com/medium1.jpg'
+              ..width = 600
+              ..height = 600)
+            ..large = (MwImageSizeBuilder()
+              ..url = 'https://example.com/large1.jpg'
+              ..width = 1200
+              ..height = 1200),
+        );
+
+        final mockImage2 = MwImage(
+          (b) => b
+            ..id = 2
+            ..processing = false
+            ..thumbnail = (MwImageSizeBuilder()
+              ..url = 'https://example.com/thumb2.jpg'
+              ..width = 150
+              ..height = 150)
+            ..small = (MwImageSizeBuilder()
+              ..url = 'https://example.com/small2.jpg'
+              ..width = 300
+              ..height = 300)
+            ..medium = (MwImageSizeBuilder()
+              ..url = 'https://example.com/medium2.jpg'
+              ..width = 600
+              ..height = 600)
+            ..large = (MwImageSizeBuilder()
+              ..url = 'https://example.com/large2.jpg'
+              ..width = 1200
+              ..height = 1200),
+        );
+
+        // Add some attached images
+        final attachedImages = [
+          AttachedImage.ready(id: 1, image: mockImage1),
+          AttachedImage.ready(id: 2, image: mockImage2),
+        ];
+
+        // Set up editing state with images
+        notifier.state = EntryEditorState.editing(
+          title: 'Test Entry',
+          content: 'Test content with images',
+          images: attachedImages,
+          themeName: null,
+        );
+
+        // Act: Create preview
+        await notifier.previewEntry();
+
+        // Verify we're in preview state
+        final isPreview = notifier.state.maybeWhen(
+          preview: (entry) => true,
+          orElse: () => false,
+        );
+        expect(isPreview, isTrue);
+
+        // Act: Close preview (reset from preview)
+        notifier.resetFromPreview();
+
+        // Assert: Images should be preserved
+        final editingState = notifier.state.maybeWhen(
+          editing:
+              (
+                title,
+                content,
+                tags,
+                privacy,
+                isCommentable,
+                isVotable,
+                inLive,
+                isShared,
+                isDraft,
+                images,
+                entryId,
+                hasUnsavedChanges,
+                themeName,
+                isAnonymous,
+              ) => (images: images),
+          orElse: () => null,
+        );
+
+        expect(editingState, isNotNull);
+        expect(editingState!.images, hasLength(2));
+        expect(editingState.images[0].id, equals(1));
+        expect(editingState.images[0].image.id, equals(1));
+        expect(editingState.images[1].id, equals(2));
+        expect(editingState.images[1].image.id, equals(2));
+      });
     });
 
     group('Theme Entry Creation', () {
@@ -528,6 +643,7 @@ void main() {
           meApi: mockMeApi,
           themesApi: mockThemesApi,
           imageUploadService: mockImageUploadService,
+          imagePollingService: mockImagePollingService,
         );
       });
 

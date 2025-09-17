@@ -6,8 +6,10 @@ import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/platform_app_bar.dart';
+import '../../../core/widgets/images/cached_image.dart';
 import '../providers/entry_editor_provider.dart';
 import '../models/entry_editor_state.dart';
+import '../models/attached_image.dart';
 import '../widgets/image_manager.dart';
 import '../widgets/tag_manager.dart';
 import '../widgets/entry_settings_bottom_sheet.dart';
@@ -142,6 +144,101 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
         );
       }
     }
+  }
+
+  /// Show image in fullscreen
+  void _showImageFullscreen(AttachedImage attachedImage) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            // Fullscreen image
+            Center(
+              child: InteractiveViewer(
+                child: CachedImage(
+                  imageUrl:
+                      attachedImage.fullUrl ??
+                      '/api/v1/images/${attachedImage.id}',
+                  fit: BoxFit.contain,
+                  errorWidget: Container(
+                    color: Colors.black,
+                    child: const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.white,
+                        size: 64,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Close button
+            Positioned(
+              top: 16,
+              right: 16,
+              child: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                style: IconButton.styleFrom(backgroundColor: Colors.black54),
+              ),
+            ),
+
+            // Image info
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Image ${attachedImage.id}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      attachedImage.when(
+                        processing: (id, image, isUploading, uploadProgress) =>
+                            'Processing...',
+                        ready: (id, image) => 'Ready',
+                        failed: (id, image, errorMessage) =>
+                            'Failed: $errorMessage',
+                      ),
+                      style: TextStyle(
+                        color: attachedImage.when(
+                          processing:
+                              (id, image, isUploading, uploadProgress) =>
+                                  Colors.orange,
+                          ready: (id, image) => Colors.green,
+                          failed: (id, image, errorMessage) => Colors.red,
+                        ),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// Show inline preview of the draft entry.
@@ -507,7 +604,7 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
     );
   }
 
-  Widget _buildEditingForm(List<String> tags, List<int> images) {
+  Widget _buildEditingForm(List<String> tags, List<AttachedImage> images) {
     final l10n = AppLocalizations.of(context);
 
     return Column(
@@ -560,65 +657,103 @@ class _EntryEditorScreenState extends ConsumerState<EntryEditorScreen> {
           ),
         ),
 
-        // Image manager
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ImageManager(
-            imageIds: images,
-            onRemoveImage: (imageId) {
-              ref
-                  .read(
-                    entryEditorProvider((
-                      entryId: widget.entryId,
-                      themeName: widget.themeName,
-                    )).notifier,
-                  )
-                  .removeImage(imageId);
-            },
-            onAddImages: (files) {
-              ref
-                  .read(
-                    entryEditorProvider((
-                      entryId: widget.entryId,
-                      themeName: widget.themeName,
-                    )).notifier,
-                  )
-                  .uploadImages(files);
-            },
+        // Bottom section with image manager and tag manager
+        Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
           ),
-        ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Image manager
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ImageManager(
+                    images: images,
+                    onRemoveImage: (imageId) {
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .removeImage(imageId);
+                    },
+                    onAddImages: (files) {
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .uploadImages(files);
+                    },
+                    onReorderImages: (oldIndex, newIndex) {
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .reorderImages(oldIndex, newIndex);
+                    },
+                    onOpenImage: (attachedImage) {
+                      _showImageFullscreen(attachedImage);
+                    },
+                    onInsertImage: (attachedImage) {
+                      final imageUrl =
+                          attachedImage.fullUrl ??
+                          '/api/v1/images/${attachedImage.id}';
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .insertImageMarkdown(attachedImage.id, imageUrl);
+                    },
+                  ),
+                ),
 
-        const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-        // Tag manager
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TagManager(
-            tags: tags,
-            onRemoveTag: (tag) {
-              final currentTags = List<String>.from(tags);
-              currentTags.remove(tag);
-              ref
-                  .read(
-                    entryEditorProvider((
-                      entryId: widget.entryId,
-                      themeName: widget.themeName,
-                    )).notifier,
-                  )
-                  .updateTags(currentTags);
-            },
-            onAddTag: (tag) {
-              final currentTags = List<String>.from(tags);
-              currentTags.add(tag);
-              ref
-                  .read(
-                    entryEditorProvider((
-                      entryId: widget.entryId,
-                      themeName: widget.themeName,
-                    )).notifier,
-                  )
-                  .updateTags(currentTags);
-            },
+                // Tag manager
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TagManager(
+                    tags: tags,
+                    onRemoveTag: (tag) {
+                      final currentTags = List<String>.from(tags);
+                      currentTags.remove(tag);
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .updateTags(currentTags);
+                    },
+                    onAddTag: (tag) {
+                      final currentTags = List<String>.from(tags);
+                      currentTags.add(tag);
+                      ref
+                          .read(
+                            entryEditorProvider((
+                              entryId: widget.entryId,
+                              themeName: widget.themeName,
+                            )).notifier,
+                          )
+                          .updateTags(currentTags);
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

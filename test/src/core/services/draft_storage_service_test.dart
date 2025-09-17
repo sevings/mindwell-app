@@ -4,6 +4,8 @@ import 'package:hive/hive.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell/src/core/services/draft_storage_service.dart';
 import 'package:mindwell/src/features/entries/models/entry_editor_state.dart';
+import 'package:mindwell/src/features/entries/models/attached_image.dart';
+import 'package:mindwell_api/mindwell_api.dart';
 
 class MockBox extends Mock implements Box<String> {}
 
@@ -18,23 +20,26 @@ void main() {
     });
 
     group('saveDraft', () {
-      test('should save draft when in editing state with unsaved changes', () async {
-        // Arrange
-        final draft = const EntryEditorState.editing(
-          title: 'Test Title',
-          content: 'Test content',
-          tags: ['tag1', 'tag2'],
-          hasUnsavedChanges: true,
-        );
+      test(
+        'should save draft when in editing state with unsaved changes',
+        () async {
+          // Arrange
+          final draft = const EntryEditorState.editing(
+            title: 'Test Title',
+            content: 'Test content',
+            tags: ['tag1', 'tag2'],
+            hasUnsavedChanges: true,
+          );
 
-        when(() => mockBox.put(any(), any())).thenAnswer((_) async {});
+          when(() => mockBox.put(any(), any())).thenAnswer((_) async {});
 
-        // Act
-        await service.saveDraft(draft);
+          // Act
+          await service.saveDraft(draft);
 
-        // Assert
-        verify(() => mockBox.put('current_draft', any())).called(1);
-      });
+          // Assert
+          verify(() => mockBox.put('current_draft', any())).called(1);
+        },
+      );
 
       test('should not save draft when hasUnsavedChanges is false', () async {
         // Arrange
@@ -69,7 +74,9 @@ void main() {
           hasUnsavedChanges: true,
         );
 
-        when(() => mockBox.put(any(), any())).thenThrow(Exception('Save failed'));
+        when(
+          () => mockBox.put(any(), any()),
+        ).thenThrow(Exception('Save failed'));
 
         // Act & Assert - should not throw
         await service.saveDraft(draft);
@@ -77,7 +84,7 @@ void main() {
 
       test('should serialize draft data correctly', () async {
         // Arrange
-        final draft = const EntryEditorState.editing(
+        final draft = EntryEditorState.editing(
           title: 'Test Title',
           content: '<p>Test content</p>',
           tags: ['tag1', 'tag2'],
@@ -87,7 +94,11 @@ void main() {
           inLive: false,
           isShared: true,
           isDraft: true,
-          images: [1, 2, 3],
+          images: [
+            AttachedImage.ready(id: 1, image: MwImage()),
+            AttachedImage.ready(id: 2, image: MwImage()),
+            AttachedImage.ready(id: 3, image: MwImage()),
+          ],
           entryId: 123,
           hasUnsavedChanges: true,
         );
@@ -156,17 +167,34 @@ void main() {
         // Assert
         expect(result, isNotNull);
         expect(result, isA<EntryEditorState>());
-        
+
         result!.when(
           initial: () => fail('Expected editing state'),
           loading: () => fail('Expected editing state'),
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
-            expect(title, equals('Test Title'));
-            expect(content, equals('Test content'));
-            expect(tags, equals(['tag1']));
-            expect(hasUnsavedChanges, equals(false));
-          },
-          publishing: (isUploadingImages, uploadProgress) => fail('Expected editing state'),
+          editing:
+              (
+                title,
+                content,
+                tags,
+                privacy,
+                isCommentable,
+                isVotable,
+                inLive,
+                isShared,
+                isDraft,
+                images,
+                entryId,
+                hasUnsavedChanges,
+                themeName,
+                isAnonymous,
+              ) {
+                expect(title, equals('Test Title'));
+                expect(content, equals('Test content'));
+                expect(tags, equals(['tag1']));
+                expect(hasUnsavedChanges, equals(false));
+              },
+          publishing: (isUploadingImages, uploadProgress) =>
+              fail('Expected editing state'),
           success: (entry) => fail('Expected editing state'),
           preview: (entry) => fail('Expected editing state'),
           error: (message, canRetry) => fail('Expected editing state'),
@@ -188,7 +216,9 @@ void main() {
 
       test('should handle load errors gracefully', () async {
         // Arrange
-        when(() => mockBox.get('current_draft')).thenThrow(Exception('Load failed'));
+        when(
+          () => mockBox.get('current_draft'),
+        ).thenThrow(Exception('Load failed'));
 
         // Act & Assert - should not throw
         final result = await service.loadDraft();
@@ -210,25 +240,42 @@ void main() {
         // Assert
         expect(result, isNotNull);
         expect(result, isA<EntryEditorState>());
-        
+
         result!.when(
           initial: () => fail('Expected editing state'),
           loading: () => fail('Expected editing state'),
-          editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
-            expect(title, equals('Test Title'));
-            expect(content, equals('')); // default
-            expect(tags, equals([])); // default
-            expect(privacy, equals('all')); // default
-            expect(isCommentable, equals(true)); // default
-            expect(isVotable, equals(true)); // default
-            expect(inLive, equals(true)); // default
-            expect(isShared, equals(false)); // default
-            expect(isDraft, equals(false)); // default
-            expect(images, equals([])); // default
-            expect(entryId, isNull); // default
-            expect(hasUnsavedChanges, equals(false)); // default
-          },
-          publishing: (isUploadingImages, uploadProgress) => fail('Expected editing state'),
+          editing:
+              (
+                title,
+                content,
+                tags,
+                privacy,
+                isCommentable,
+                isVotable,
+                inLive,
+                isShared,
+                isDraft,
+                images,
+                entryId,
+                hasUnsavedChanges,
+                themeName,
+                isAnonymous,
+              ) {
+                expect(title, equals('Test Title'));
+                expect(content, equals('')); // default
+                expect(tags, equals([])); // default
+                expect(privacy, equals('all')); // default
+                expect(isCommentable, equals(true)); // default
+                expect(isVotable, equals(true)); // default
+                expect(inLive, equals(true)); // default
+                expect(isShared, equals(false)); // default
+                expect(isDraft, equals(false)); // default
+                expect(images, equals([])); // default
+                expect(entryId, isNull); // default
+                expect(hasUnsavedChanges, equals(false)); // default
+              },
+          publishing: (isUploadingImages, uploadProgress) =>
+              fail('Expected editing state'),
           success: (entry) => fail('Expected editing state'),
           preview: (entry) => fail('Expected editing state'),
           error: (message, canRetry) => fail('Expected editing state'),
@@ -261,7 +308,9 @@ void main() {
 
       test('should handle errors gracefully', () async {
         // Arrange
-        when(() => mockBox.containsKey('current_draft')).thenThrow(Exception('Check failed'));
+        when(
+          () => mockBox.containsKey('current_draft'),
+        ).thenThrow(Exception('Check failed'));
 
         // Act & Assert - should not throw
         final result = await service.hasDraft();
@@ -283,7 +332,9 @@ void main() {
 
       test('should handle delete errors gracefully', () async {
         // Arrange
-        when(() => mockBox.delete('current_draft')).thenThrow(Exception('Delete failed'));
+        when(
+          () => mockBox.delete('current_draft'),
+        ).thenThrow(Exception('Delete failed'));
 
         // Act & Assert - should not throw
         await service.clearDraft();
@@ -329,7 +380,10 @@ void main() {
         expect(result!['hasTitle'], isTrue);
         expect(result['hasContent'], isTrue);
         expect(result['tagsCount'], equals(2));
-        expect(result['imagesCount'], equals(2));
+        expect(
+          result['imagesCount'],
+          equals(0),
+        ); // Images are not restored from draft
         expect(result['isDraft'], isTrue);
         expect(result['hasUnsavedChanges'], isTrue);
         expect(result['dataSize'], isA<int>());
@@ -349,7 +403,9 @@ void main() {
 
       test('should handle errors gracefully', () async {
         // Arrange
-        when(() => mockBox.get('current_draft')).thenThrow(Exception('Metadata failed'));
+        when(
+          () => mockBox.get('current_draft'),
+        ).thenThrow(Exception('Metadata failed'));
 
         // Act & Assert - should not throw
         final result = await service.getDraftMetadata();

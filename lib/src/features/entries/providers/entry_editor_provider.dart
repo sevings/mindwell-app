@@ -6,7 +6,9 @@ import 'package:built_collection/built_collection.dart';
 
 import '../../../core/api/api_provider.dart';
 import '../../../core/services/image_upload_service.dart';
+import '../../../core/services/image_polling_service.dart';
 import '../models/entry_editor_state.dart';
+import '../models/attached_image.dart';
 import '../services/entry_settings_backup_service.dart';
 
 /// Provider for the EntryEditorNotifier that manages the state of entry editing.
@@ -24,6 +26,7 @@ final entryEditorProvider =
       final meApi = ref.read(meApiProvider);
       final themesApi = ref.read(themesApiProvider);
       final imageUploadService = ref.read(imageUploadServiceProvider);
+      final imagePollingService = ref.read(imagePollingServiceProvider);
 
       return EntryEditorNotifier(
         entryId: params.entryId,
@@ -32,6 +35,7 @@ final entryEditorProvider =
         meApi: meApi,
         themesApi: themesApi,
         imageUploadService: imageUploadService,
+        imagePollingService: imagePollingService,
       );
     });
 
@@ -51,9 +55,14 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   final MeApi _meApi;
   final ThemesApi _themesApi;
   final ImageUploadService _imageUploadService;
+  final ImagePollingService _imagePollingService;
   final Logger _logger = Logger('EntryEditorNotifier');
 
   bool _isInitialized = false;
+  final Set<int> _deletedImageIds =
+      {}; // Track images deleted from existing entries
+  EntryEditorState?
+  _previewBackup; // Store original editing state before preview
 
   EntryEditorNotifier({
     required int? entryId,
@@ -62,12 +71,14 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     required MeApi meApi,
     required ThemesApi themesApi,
     required ImageUploadService imageUploadService,
+    required ImagePollingService imagePollingService,
   }) : _entryId = entryId,
        _themeName = themeName,
        _entriesApi = entriesApi,
        _meApi = meApi,
        _themesApi = themesApi,
        _imageUploadService = imageUploadService,
+       _imagePollingService = imagePollingService,
        super(const EntryEditorState.initial()) {
     _initialize();
   }
@@ -116,8 +127,13 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         isDraft: false, // Existing entries are not drafts
         images:
             entry.images
-                ?.map((img) => img.id ?? 0)
-                .where((id) => id > 0)
+                ?.map(
+                  (img) => img.id != null
+                      ? AttachedImage.ready(id: img.id!, image: img)
+                      : null,
+                )
+                .where((attachedImage) => attachedImage != null)
+                .cast<AttachedImage>()
                 .toList() ??
             [],
         entryId: _entryId,
@@ -335,7 +351,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
     bool inLive,
     bool isShared,
     bool isDraft,
-    List<int> images,
+    List<AttachedImage> images,
     int? entryId,
     bool hasUnsavedChanges,
     String? themeName,
@@ -708,10 +724,12 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   }
 
   /// Add an image to the entry.
-  void addImage(int imageId) {
+  void addImage(AttachedImage attachedImage) {
     state = state.when(
-      initial: () =>
-          EntryEditorState.editing(images: [imageId], hasUnsavedChanges: true),
+      initial: () => EntryEditorState.editing(
+        images: [attachedImage],
+        hasUnsavedChanges: true,
+      ),
       loading: () => state,
       editing:
           (
@@ -739,7 +757,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
             inLive: inLive,
             isShared: isShared,
             isDraft: isDraft,
-            images: [...images, imageId],
+            images: [...images, attachedImage],
             entryId: entryId,
             hasUnsavedChanges: true,
             themeName: themeName,
@@ -747,8 +765,10 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
           ),
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
-      preview: (entry) =>
-          EntryEditorState.editing(images: [imageId], hasUnsavedChanges: true),
+      preview: (entry) => EntryEditorState.editing(
+        images: [attachedImage],
+        hasUnsavedChanges: true,
+      ),
       error: (message, canRetry) => state,
     );
   }
@@ -774,22 +794,43 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
             hasUnsavedChanges,
             themeName,
             isAnonymous,
-          ) => EntryEditorState.editing(
-            title: title,
-            content: content,
-            tags: tags,
-            privacy: privacy,
-            isCommentable: isCommentable,
-            isVotable: isVotable,
-            inLive: inLive,
-            isShared: isShared,
-            isDraft: isDraft,
-            images: images.where((id) => id != imageId).toList(),
-            entryId: entryId,
-            hasUnsavedChanges: true,
-            themeName: themeName,
-            isAnonymous: isAnonymous,
-          ),
+          ) {
+            // Find the image to remove (for validation)
+            images.firstWhere(
+              (img) => img.id == imageId,
+              orElse: () => throw StateError('Image not found'),
+            );
+
+            // Remove from state
+            final newImages = images
+                .where((attachedImage) => attachedImage.id != imageId)
+                .toList();
+
+            // If this is a new entry (no entryId), delete the image from server immediately
+            if (entryId == null) {
+              _deleteImageFromServer(imageId);
+            } else {
+              // For existing entries, track the image for deletion after saving
+              _deletedImageIds.add(imageId);
+            }
+
+            return EntryEditorState.editing(
+              title: title,
+              content: content,
+              tags: tags,
+              privacy: privacy,
+              isCommentable: isCommentable,
+              isVotable: isVotable,
+              inLive: inLive,
+              isShared: isShared,
+              isDraft: isDraft,
+              images: newImages,
+              entryId: entryId,
+              hasUnsavedChanges: true,
+              themeName: themeName,
+              isAnonymous: isAnonymous,
+            );
+          },
       publishing: (isUploadingImages, uploadProgress) => state,
       success: (entry) => state,
       preview: (entry) => EntryEditorState.editing(hasUnsavedChanges: true),
@@ -798,7 +839,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   }
 
   /// Update the list of images.
-  void updateImages(List<int> images) {
+  void updateImages(List<AttachedImage> images) {
     state = state.when(
       initial: () =>
           EntryEditorState.editing(images: images, hasUnsavedChanges: true),
@@ -849,6 +890,43 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
 
     _logger.info('Starting upload of ${files.length} images');
 
+    // Store the original editing data before changing state
+    final originalEditingData = state.maybeWhen(
+      editing:
+          (
+            title,
+            content,
+            tags,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            images,
+            entryId,
+            hasUnsavedChanges,
+            themeName,
+            isAnonymous,
+          ) => (
+            title: title,
+            content: content,
+            tags: tags,
+            privacy: privacy,
+            isCommentable: isCommentable,
+            isVotable: isVotable,
+            inLive: inLive,
+            isShared: isShared,
+            isDraft: isDraft,
+            images: images,
+            entryId: entryId,
+            hasUnsavedChanges: hasUnsavedChanges,
+            themeName: themeName,
+            isAnonymous: isAnonymous,
+          ),
+      orElse: () => null,
+    );
+
     // Update state to show uploading
     state = state.when(
       initial: () => const EntryEditorState.publishing(isUploadingImages: true),
@@ -888,99 +966,59 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         },
       );
 
-      // Filter out failed uploads (null values)
-      final successfulUploads = uploadedImages
-          .where((image) => image != null)
-          .map((image) => image!.id!)
-          .toList();
+      // Process uploaded images and create AttachedImage objects
+      final attachedImages = <AttachedImage>[];
 
-      if (successfulUploads.isNotEmpty) {
-        // Add uploaded images to current images
-        final currentState = state;
-        final currentImages = currentState.maybeWhen(
-          editing:
-              (
-                title,
-                content,
-                tags,
-                privacy,
-                isCommentable,
-                isVotable,
-                inLive,
-                isShared,
-                isDraft,
-                images,
-                entryId,
-                hasUnsavedChanges,
-                themeName,
-                isAnonymous,
-              ) => images,
-          orElse: () => <int>[],
-        );
+      for (int i = 0; i < uploadedImages.length; i++) {
+        final image = uploadedImages[i];
+        if (image != null && image.id != null) {
+          // Check if image is still processing
+          if (image.processing == true) {
+            final attachedImage = AttachedImage.processing(
+              id: image.id!,
+              image: image,
+            );
+            attachedImages.add(attachedImage);
 
-        updateImages([...currentImages, ...successfulUploads]);
-        _logger.info(
-          'Successfully uploaded ${successfulUploads.length} images',
-        );
+            // Start polling for this image
+            _startImagePolling(image.id!);
+          } else {
+            attachedImages.add(
+              AttachedImage.ready(id: image.id!, image: image),
+            );
+          }
+        }
       }
 
-      // Return to editing state
-      final currentState = state;
-      final editingData = currentState.maybeWhen(
-        editing:
-            (
-              title,
-              content,
-              tags,
-              privacy,
-              isCommentable,
-              isVotable,
-              inLive,
-              isShared,
-              isDraft,
-              images,
-              entryId,
-              hasUnsavedChanges,
-              themeName,
-              isAnonymous,
-            ) => (
-              title: title,
-              content: content,
-              tags: tags,
-              privacy: privacy,
-              isCommentable: isCommentable,
-              isVotable: isVotable,
-              inLive: inLive,
-              isShared: isShared,
-              isDraft: isDraft,
-              images: images,
-              entryId: entryId,
-              hasUnsavedChanges: hasUnsavedChanges,
-              themeName: themeName,
-              isAnonymous: isAnonymous,
-            ),
-        orElse: () => null,
-      );
-
-      if (editingData != null) {
+      // Return to editing state with uploaded images
+      if (originalEditingData != null) {
+        final updatedImages = [
+          ...originalEditingData.images,
+          ...attachedImages,
+        ];
         state = EntryEditorState.editing(
-          title: editingData.title,
-          content: editingData.content,
-          tags: editingData.tags,
-          privacy: editingData.privacy,
-          isCommentable: editingData.isCommentable,
-          isVotable: editingData.isVotable,
-          inLive: editingData.inLive,
-          isShared: editingData.isShared,
-          isDraft: editingData.isDraft,
-          images: editingData.images,
-          entryId: editingData.entryId,
-          hasUnsavedChanges: editingData.hasUnsavedChanges,
-          themeName: editingData.themeName,
-          isAnonymous: editingData.isAnonymous,
+          title: originalEditingData.title,
+          content: originalEditingData.content,
+          tags: originalEditingData.tags,
+          privacy: originalEditingData.privacy,
+          isCommentable: originalEditingData.isCommentable,
+          isVotable: originalEditingData.isVotable,
+          inLive: originalEditingData.inLive,
+          isShared: originalEditingData.isShared,
+          isDraft: originalEditingData.isDraft,
+          images: updatedImages,
+          entryId: originalEditingData.entryId,
+          hasUnsavedChanges: originalEditingData.hasUnsavedChanges,
+          themeName: originalEditingData.themeName,
+          isAnonymous: originalEditingData.isAnonymous,
         );
+        _logger.info('Successfully uploaded ${attachedImages.length} images');
       } else {
-        state = const EntryEditorState.editing();
+        // If we weren't in editing state, create a new editing state with the uploaded images
+        state = EntryEditorState.editing(images: attachedImages);
+        _logger.info(
+          'Successfully uploaded ${attachedImages.length} images to new entry',
+        );
       }
     } catch (e, stackTrace) {
       _logger.severe('Failed to upload images', e, stackTrace);
@@ -1084,6 +1122,12 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
 
       if (result != null) {
         _logger.info('Successfully published entry ${result.id}');
+
+        // Delete tracked images for existing entries
+        if (editingData.entryId != null) {
+          await _deleteTrackedImages();
+        }
+
         state = EntryEditorState.success(entry: result);
       } else {
         throw Exception('Failed to publish entry - no data returned');
@@ -1098,14 +1142,14 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   }
 
   /// Upload images for publishing with progress tracking.
-  Future<void> _uploadImagesForPublishing(List<int> imageIds) async {
+  Future<void> _uploadImagesForPublishing(List<AttachedImage> images) async {
     // This is a placeholder for image upload progress tracking
     // In a real implementation, you would track the upload progress of each image
     // and update the state accordingly
 
-    for (int i = 0; i < imageIds.length; i++) {
+    for (int i = 0; i < images.length; i++) {
       // Simulate upload progress
-      final progress = (i + 1) / imageIds.length;
+      final progress = (i + 1) / images.length;
       state = EntryEditorState.publishing(
         isUploadingImages: true,
         uploadProgress: progress,
@@ -1128,7 +1172,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       bool inLive,
       bool isShared,
       bool isDraft,
-      List<int> images,
+      List<AttachedImage> images,
       int? entryId,
       String? themeName,
       bool isAnonymous,
@@ -1144,7 +1188,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         privacy: editingData.privacy,
         title: editingData.title,
         images: editingData.images.isNotEmpty
-            ? BuiltSet<int>(editingData.images)
+            ? BuiltSet<int>(editingData.images.map((img) => img.id).toList())
             : null,
         tags: editingData.tags.isNotEmpty
             ? BuiltSet<String>(editingData.tags)
@@ -1165,7 +1209,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
         privacy: editingData.privacy,
         title: editingData.title,
         images: editingData.images.isNotEmpty
-            ? BuiltSet<int>(editingData.images)
+            ? BuiltSet<int>(editingData.images.map((img) => img.id).toList())
             : null,
         tags: editingData.tags.isNotEmpty
             ? BuiltSet<String>(editingData.tags)
@@ -1193,7 +1237,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       bool inLive,
       bool isShared,
       bool isDraft,
-      List<int> images,
+      List<AttachedImage> images,
       int? entryId,
       String? themeName,
       bool isAnonymous,
@@ -1234,6 +1278,9 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   /// The preview shows how the entry will look when published.
   Future<void> previewEntry() async {
     final currentState = state;
+
+    // Store the current editing state as backup before creating preview
+    _previewBackup = currentState;
 
     // Get current editing state
     final editingData = currentState.when(
@@ -1316,7 +1363,7 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
       bool inLive,
       bool isShared,
       bool isDraft,
-      List<int> images,
+      List<AttachedImage> images,
       int? entryId,
       String? themeName,
       bool isAnonymous,
@@ -1387,47 +1434,18 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
   void resetFromPreview() {
     final currentState = state;
 
-    // Get the current editing data from the preview state
-    final editingData = currentState.maybeWhen(
-      preview: (entry) => (
-        title: entry.title ?? '',
-        content: entry.content ?? '',
-        tags: entry.tags?.toList() ?? [],
-        privacy: entry.privacy?.name ?? 'all',
-        isCommentable: entry.isCommentable ?? true,
-        isVotable: true, // Voting is always enabled
-        inLive: entry.inLive ?? true,
-        isShared: entry.isShared ?? false,
-        isDraft: false,
-        images: <int>[], // Images would need special handling
-        entryId: _entryId,
-        hasUnsavedChanges: true,
-        themeName: _themeName,
-        isAnonymous: entry.isAnonymous ?? false,
-      ),
-      orElse: () => null,
+    // Check if we're in preview state and have a backup
+    final isPreview = currentState.maybeWhen(
+      preview: (entry) => true,
+      orElse: () => false,
     );
 
-    if (editingData != null) {
-      // Return to editing state with the current data
-      state = EntryEditorState.editing(
-        title: editingData.title,
-        content: editingData.content,
-        tags: editingData.tags,
-        privacy: editingData.privacy,
-        isCommentable: editingData.isCommentable,
-        isVotable: editingData.isVotable,
-        inLive: editingData.inLive,
-        isShared: editingData.isShared,
-        isDraft: editingData.isDraft,
-        images: editingData.images,
-        entryId: editingData.entryId,
-        hasUnsavedChanges: editingData.hasUnsavedChanges,
-        themeName: editingData.themeName,
-        isAnonymous: editingData.isAnonymous,
-      );
+    if (isPreview && _previewBackup != null) {
+      // Restore the original editing state from backup
+      state = _previewBackup!;
+      _previewBackup = null; // Clear the backup
     } else {
-      // Fallback to normal reset if not in preview state
+      // Fallback to normal reset if not in preview state or no backup
       reset();
     }
   }
@@ -1512,4 +1530,250 @@ class EntryEditorNotifier extends StateNotifier<EntryEditorState> {
 
   /// Check if this is editing an existing entry.
   bool get isEditingExisting => _entryId != null;
+
+  /// Update the status of a specific image.
+  void updateImageStatus(int imageId, AttachedImage newStatus) {
+    state = state.when(
+      initial: () => state,
+      loading: () => state,
+      editing:
+          (
+            title,
+            content,
+            tags,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            images,
+            entryId,
+            hasUnsavedChanges,
+            themeName,
+            isAnonymous,
+          ) => EntryEditorState.editing(
+            title: title,
+            content: content,
+            tags: tags,
+            privacy: privacy,
+            isCommentable: isCommentable,
+            isVotable: isVotable,
+            inLive: inLive,
+            isShared: isShared,
+            isDraft: isDraft,
+            images: images
+                .map((img) => img.id == imageId ? newStatus : img)
+                .toList(),
+            entryId: entryId,
+            hasUnsavedChanges: hasUnsavedChanges,
+            themeName: themeName,
+            isAnonymous: isAnonymous,
+          ),
+      publishing: (isUploadingImages, uploadProgress) => state,
+      success: (entry) => state,
+      preview: (entry) => state,
+      error: (message, canRetry) => state,
+    );
+  }
+
+  /// Reorder images in the list.
+  void reorderImages(int oldIndex, int newIndex) {
+    state = state.when(
+      initial: () => state,
+      loading: () => state,
+      editing:
+          (
+            title,
+            content,
+            tags,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            images,
+            entryId,
+            hasUnsavedChanges,
+            themeName,
+            isAnonymous,
+          ) {
+            final newImages = List<AttachedImage>.from(images);
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            final item = newImages.removeAt(oldIndex);
+            newImages.insert(newIndex, item);
+
+            return EntryEditorState.editing(
+              title: title,
+              content: content,
+              tags: tags,
+              privacy: privacy,
+              isCommentable: isCommentable,
+              isVotable: isVotable,
+              inLive: inLive,
+              isShared: isShared,
+              isDraft: isDraft,
+              images: newImages,
+              entryId: entryId,
+              hasUnsavedChanges: true,
+              themeName: themeName,
+              isAnonymous: isAnonymous,
+            );
+          },
+      publishing: (isUploadingImages, uploadProgress) => state,
+      success: (entry) => state,
+      preview: (entry) => state,
+      error: (message, canRetry) => state,
+    );
+  }
+
+  /// Start polling for an image's processing status.
+  void _startImagePolling(int imageId) {
+    _imagePollingService.startPolling(
+      imageId: imageId,
+      onUpdate: (image) {
+        // Update the image status in state
+        final newStatus = image.processing == true
+            ? AttachedImage.processing(id: imageId, image: image)
+            : AttachedImage.ready(id: imageId, image: image);
+        updateImageStatus(imageId, newStatus);
+      },
+      onComplete: (image) {
+        // Mark image as ready
+        final readyStatus = AttachedImage.ready(id: imageId, image: image);
+        updateImageStatus(imageId, readyStatus);
+        _logger.info('Image $imageId processing completed');
+      },
+      onError: (error) {
+        // Mark image as failed
+        final currentState = state;
+        final currentImage = currentState.maybeWhen(
+          editing:
+              (
+                title,
+                content,
+                tags,
+                privacy,
+                isCommentable,
+                isVotable,
+                inLive,
+                isShared,
+                isDraft,
+                images,
+                entryId,
+                hasUnsavedChanges,
+                themeName,
+                isAnonymous,
+              ) {
+                return images.firstWhere(
+                  (img) => img.id == imageId,
+                  orElse: () => throw StateError('Image not found'),
+                );
+              },
+          orElse: () => throw StateError('Not in editing state'),
+        );
+
+        final failedStatus = AttachedImage.failed(
+          id: imageId,
+          image: currentImage.image,
+          errorMessage: error,
+        );
+        updateImageStatus(imageId, failedStatus);
+        _logger.warning('Image $imageId polling failed: $error');
+      },
+    );
+  }
+
+  /// Insert image markdown into content at current cursor position.
+  void insertImageMarkdown(int imageId, String imageUrl) {
+    state = state.when(
+      initial: () => state,
+      loading: () => state,
+      editing:
+          (
+            title,
+            content,
+            tags,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            images,
+            entryId,
+            hasUnsavedChanges,
+            themeName,
+            isAnonymous,
+          ) {
+            // Insert image markdown after current paragraph
+            final imageMarkdown = '\n\n![Image]($imageUrl)\n\n';
+            final newContent = content + imageMarkdown;
+
+            return EntryEditorState.editing(
+              title: title,
+              content: newContent,
+              tags: tags,
+              privacy: privacy,
+              isCommentable: isCommentable,
+              isVotable: isVotable,
+              inLive: inLive,
+              isShared: isShared,
+              isDraft: isDraft,
+              images: images,
+              entryId: entryId,
+              hasUnsavedChanges: true,
+              themeName: themeName,
+              isAnonymous: isAnonymous,
+            );
+          },
+      publishing: (isUploadingImages, uploadProgress) => state,
+      success: (entry) => state,
+      preview: (entry) => state,
+      error: (message, canRetry) => state,
+    );
+  }
+
+  /// Delete an image from the server.
+  Future<void> _deleteImageFromServer(int imageId) async {
+    try {
+      _logger.info('Deleting image $imageId from server');
+      // Note: The API doesn't seem to have a delete endpoint for images
+      // This would need to be implemented in the API
+      // For now, we'll just log the deletion
+      _logger.info(
+        'Image $imageId marked for deletion (API endpoint not available)',
+      );
+    } catch (e, stackTrace) {
+      _logger.severe(
+        'Failed to delete image $imageId from server',
+        e,
+        stackTrace,
+      );
+    }
+  }
+
+  /// Delete all tracked images from the server.
+  Future<void> _deleteTrackedImages() async {
+    if (_deletedImageIds.isEmpty) return;
+
+    _logger.info(
+      'Deleting ${_deletedImageIds.length} tracked images from server',
+    );
+
+    for (final imageId in _deletedImageIds) {
+      await _deleteImageFromServer(imageId);
+    }
+
+    _deletedImageIds.clear();
+  }
+
+  @override
+  void dispose() {
+    _imagePollingService.stopAllPolling();
+    super.dispose();
+  }
 }

@@ -2,21 +2,22 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
 import 'package:mindwell/src/features/entries/models/entry_editor_state.dart';
+import 'package:mindwell/src/features/entries/models/attached_image.dart';
 
 /// Service for automatically saving and loading entry drafts.
-/// 
+///
 /// Uses Hive to store a single entry draft locally. This provides
 /// automatic saving functionality for the entry editor to prevent
 /// data loss when users navigate away or the app is closed.
 class DraftStorageService {
   static const String _boxName = 'entry_drafts';
   static const String _draftKey = 'current_draft';
-  
+
   late Box<String> _box;
   final Logger _logger = Logger('DraftStorageService');
 
   /// Creates a DraftStorageService with an optional box for testing.
-  /// 
+  ///
   /// [box] Optional box instance for testing. If not provided, will be
   /// initialized when [initialize] is called.
   DraftStorageService({Box<String>? box}) {
@@ -39,9 +40,9 @@ class DraftStorageService {
   }
 
   /// Save an entry draft to local storage.
-  /// 
+  ///
   /// [draft] The entry editor state containing the draft data
-  /// 
+  ///
   /// Only saves if the state is in editing mode and has unsaved changes.
   /// The draft is automatically serialized to JSON for storage.
   Future<void> saveDraft(EntryEditorState draft) async {
@@ -54,27 +55,56 @@ class DraftStorageService {
         loading: () {
           _logger.fine('Skipping draft save - loading state');
         },
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
-          if (!hasUnsavedChanges) {
-            _logger.fine('Skipping draft save - no unsaved changes');
-            return;
-          }
+        editing:
+            (
+              title,
+              content,
+              tags,
+              privacy,
+              isCommentable,
+              isVotable,
+              inLive,
+              isShared,
+              isDraft,
+              images,
+              entryId,
+              hasUnsavedChanges,
+              themeName,
+              isAnonymous,
+            ) {
+              if (!hasUnsavedChanges) {
+                _logger.fine('Skipping draft save - no unsaved changes');
+                return;
+              }
 
-          final draftData = _serializeDraft(
-            title, content, tags, privacy, isCommentable, isVotable, 
-            inLive, isShared, isDraft, images, entryId, hasUnsavedChanges
-          );
-          if (draftData == null) {
-            _logger.warning('Failed to serialize draft data');
-            return;
-          }
+              final draftData = _serializeDraft(
+                title,
+                content,
+                tags,
+                privacy,
+                isCommentable,
+                isVotable,
+                inLive,
+                isShared,
+                isDraft,
+                images,
+                entryId,
+                hasUnsavedChanges,
+              );
+              if (draftData == null) {
+                _logger.warning('Failed to serialize draft data');
+                return;
+              }
 
-          _box.put(_draftKey, draftData).then((_) {
-            _logger.fine('Draft saved successfully');
-          }).catchError((e) {
-            _logger.warning('Failed to save draft: $e');
-          });
-        },
+              _box
+                  .put(_draftKey, draftData)
+                  .then((_) {
+                    _logger.fine('Draft saved successfully');
+                  })
+                  .catchError((e) {
+                    _logger.warning('Failed to save draft: $e');
+                  });
+            },
         publishing: (isUploadingImages, uploadProgress) {
           _logger.fine('Skipping draft save - publishing state');
         },
@@ -95,7 +125,7 @@ class DraftStorageService {
   }
 
   /// Load the saved entry draft from local storage.
-  /// 
+  ///
   /// Returns the draft data as an EntryEditorState if found,
   /// null if no draft exists or if there was an error loading it.
   Future<EntryEditorState?> loadDraft() async {
@@ -108,7 +138,9 @@ class DraftStorageService {
 
       final draft = _deserializeDraft(draftData);
       if (draft == null) {
-        _logger.warning('Failed to deserialize draft data, clearing corrupted draft');
+        _logger.warning(
+          'Failed to deserialize draft data, clearing corrupted draft',
+        );
         await clearDraft();
         return null;
       }
@@ -122,7 +154,7 @@ class DraftStorageService {
   }
 
   /// Check if a draft exists in local storage.
-  /// 
+  ///
   /// Returns true if a draft is stored, false otherwise.
   Future<bool> hasDraft() async {
     try {
@@ -134,7 +166,7 @@ class DraftStorageService {
   }
 
   /// Clear the saved draft from local storage.
-  /// 
+  ///
   /// This is typically called when:
   /// - The entry is successfully published
   /// - The user explicitly discards the draft
@@ -149,7 +181,7 @@ class DraftStorageService {
   }
 
   /// Get draft metadata for debugging purposes.
-  /// 
+  ///
   /// Returns information about the stored draft including
   /// creation time, size, and basic content info.
   Future<Map<String, dynamic>?> getDraftMetadata() async {
@@ -167,18 +199,35 @@ class DraftStorageService {
       return draft.when(
         initial: () => null,
         loading: () => null,
-        editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) {
-          return {
-            'hasTitle': title.isNotEmpty,
-            'hasContent': content.isNotEmpty,
-            'tagsCount': tags.length,
-            'imagesCount': images.length,
-            'isDraft': isDraft,
-            'hasUnsavedChanges': hasUnsavedChanges,
-            'dataSize': draftData.length,
-            'createdAt': DateTime.now().toIso8601String(), // We don't store creation time, so use current time
-          };
-        },
+        editing:
+            (
+              title,
+              content,
+              tags,
+              privacy,
+              isCommentable,
+              isVotable,
+              inLive,
+              isShared,
+              isDraft,
+              images,
+              entryId,
+              hasUnsavedChanges,
+              themeName,
+              isAnonymous,
+            ) {
+              return {
+                'hasTitle': title.isNotEmpty,
+                'hasContent': content.isNotEmpty,
+                'tagsCount': tags.length,
+                'imagesCount': images.length,
+                'isDraft': isDraft,
+                'hasUnsavedChanges': hasUnsavedChanges,
+                'dataSize': draftData.length,
+                'createdAt': DateTime.now()
+                    .toIso8601String(), // We don't store creation time, so use current time
+              };
+            },
         publishing: (isUploadingImages, uploadProgress) => null,
         success: (entry) => null,
         preview: (entry) => null,
@@ -201,7 +250,7 @@ class DraftStorageService {
   }
 
   /// Serialize a draft to JSON string for storage.
-  /// 
+  ///
   /// Returns the JSON string representation or null if serialization fails.
   String? _serializeDraft(
     String title,
@@ -213,7 +262,7 @@ class DraftStorageService {
     bool inLive,
     bool isShared,
     bool isDraft,
-    List<int> images,
+    List<AttachedImage> images,
     int? entryId,
     bool hasUnsavedChanges,
   ) {
@@ -228,7 +277,7 @@ class DraftStorageService {
         'inLive': inLive,
         'isShared': isShared,
         'isDraft': isDraft,
-        'images': images,
+        'images': images.map((img) => img.id).toList(),
         'entryId': entryId,
         'hasUnsavedChanges': hasUnsavedChanges,
         'savedAt': DateTime.now().millisecondsSinceEpoch,
@@ -242,14 +291,14 @@ class DraftStorageService {
   }
 
   /// Deserialize a draft from JSON string.
-  /// 
+  ///
   /// [draftJson] The JSON string to deserialize
-  /// 
+  ///
   /// Returns the EntryEditorState or null if deserialization fails.
   EntryEditorState? _deserializeDraft(String draftJson) {
     try {
       final draftMap = jsonDecode(draftJson) as Map<String, dynamic>;
-      
+
       return EntryEditorState.editing(
         title: draftMap['title'] as String? ?? '',
         content: draftMap['content'] as String? ?? '',
@@ -260,7 +309,7 @@ class DraftStorageService {
         inLive: draftMap['inLive'] as bool? ?? true,
         isShared: draftMap['isShared'] as bool? ?? false,
         isDraft: draftMap['isDraft'] as bool? ?? false,
-        images: (draftMap['images'] as List<dynamic>?)?.cast<int>() ?? [],
+        images: [], // Images will be restored from the entry editor state
         entryId: draftMap['entryId'] as int?,
         hasUnsavedChanges: draftMap['hasUnsavedChanges'] as bool? ?? false,
       );

@@ -30,7 +30,7 @@ mixin _$EntryEditorState {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -57,7 +57,7 @@ mixin _$EntryEditorState {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -84,7 +84,7 @@ mixin _$EntryEditorState {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -201,7 +201,7 @@ class _$InitialImpl implements _Initial {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -231,7 +231,7 @@ class _$InitialImpl implements _Initial {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -261,7 +261,7 @@ class _$InitialImpl implements _Initial {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -380,7 +380,7 @@ class _$LoadingImpl implements _Loading {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -410,7 +410,7 @@ class _$LoadingImpl implements _Loading {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -440,7 +440,7 @@ class _$LoadingImpl implements _Loading {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -525,7 +525,7 @@ abstract class _$$EditingImplCopyWith<$Res> {
       bool inLive,
       bool isShared,
       bool isDraft,
-      List<int> images,
+      List<AttachedImage> images,
       int? entryId,
       bool hasUnsavedChanges,
       String? themeName,
@@ -598,7 +598,7 @@ class __$$EditingImplCopyWithImpl<$Res>
       images: null == images
           ? _value._images
           : images // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<AttachedImage>,
       entryId: freezed == entryId
           ? _value.entryId
           : entryId // ignore: cast_nullable_to_non_nullable
@@ -632,7 +632,7 @@ class _$EditingImpl implements _Editing {
       this.inLive = true,
       this.isShared = false,
       this.isDraft = false,
-      final List<int> images = const [],
+      final List<AttachedImage> images = const [],
       this.entryId,
       this.hasUnsavedChanges = false,
       this.themeName,
@@ -673,10 +673,10 @@ class _$EditingImpl implements _Editing {
   @override
   @JsonKey()
   final bool isDraft;
-  final List<int> _images;
+  final List<AttachedImage> _images;
   @override
   @JsonKey()
-  List<int> get images {
+  List<AttachedImage> get images {
     if (_images is EqualUnmodifiableListView) return _images;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_images);
@@ -764,7 +764,7 @@ class _$EditingImpl implements _Editing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -808,7 +808,7 @@ class _$EditingImpl implements _Editing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -852,7 +852,7 @@ class _$EditingImpl implements _Editing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -942,7 +942,7 @@ abstract class _Editing implements EntryEditorState {
       final bool inLive,
       final bool isShared,
       final bool isDraft,
-      final List<int> images,
+      final List<AttachedImage> images,
       final int? entryId,
       final bool hasUnsavedChanges,
       final String? themeName,
@@ -957,7 +957,7 @@ abstract class _Editing implements EntryEditorState {
   bool get inLive;
   bool get isShared;
   bool get isDraft;
-  List<int> get images;
+  List<AttachedImage> get images;
   int? get entryId;
   bool get hasUnsavedChanges;
   String? get themeName;
@@ -1057,7 +1057,7 @@ class _$PublishingImpl implements _Publishing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1087,7 +1087,7 @@ class _$PublishingImpl implements _Publishing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1117,7 +1117,7 @@ class _$PublishingImpl implements _Publishing {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1270,7 +1270,7 @@ class _$SuccessImpl implements _Success {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1300,7 +1300,7 @@ class _$SuccessImpl implements _Success {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1330,7 +1330,7 @@ class _$SuccessImpl implements _Success {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1480,7 +1480,7 @@ class _$PreviewImpl implements _Preview {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1510,7 +1510,7 @@ class _$PreviewImpl implements _Preview {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1540,7 +1540,7 @@ class _$PreviewImpl implements _Preview {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1700,7 +1700,7 @@ class _$ErrorImpl implements _Error {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1730,7 +1730,7 @@ class _$ErrorImpl implements _Error {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,
@@ -1760,7 +1760,7 @@ class _$ErrorImpl implements _Error {
             bool inLive,
             bool isShared,
             bool isDraft,
-            List<int> images,
+            List<AttachedImage> images,
             int? entryId,
             bool hasUnsavedChanges,
             String? themeName,

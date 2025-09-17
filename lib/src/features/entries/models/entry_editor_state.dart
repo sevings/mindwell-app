@@ -1,10 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
+import 'attached_image.dart';
+
 part 'entry_editor_state.freezed.dart';
 
 /// Represents the current state of the entry editor.
-/// 
+///
 /// This sealed class uses freezed to ensure immutability and provides
 /// different states for various entry editing scenarios.
 @freezed
@@ -16,7 +18,7 @@ sealed class EntryEditorState with _$EntryEditorState {
   const factory EntryEditorState.loading() = _Loading;
 
   /// Editing state when the user is actively editing an entry
-  /// 
+  ///
   /// [title] The current title of the entry
   /// [content] The current content of the entry (HTML format)
   /// [tags] List of tags for the entry
@@ -26,7 +28,7 @@ sealed class EntryEditorState with _$EntryEditorState {
   /// [inLive] Whether the entry should appear in live feed
   /// [isShared] Whether the entry can be shared
   /// [isDraft] Whether this is a draft entry
-  /// [images] List of image IDs attached to the entry
+  /// [images] List of attached images with their processing status
   /// [entryId] ID of the entry being edited (null for new entries)
   /// [hasUnsavedChanges] Whether there are unsaved changes
   /// [themeName] The name of the theme for theme entries (null for personal entries)
@@ -41,7 +43,7 @@ sealed class EntryEditorState with _$EntryEditorState {
     @Default(true) bool inLive,
     @Default(false) bool isShared,
     @Default(false) bool isDraft,
-    @Default([]) List<int> images,
+    @Default([]) List<AttachedImage> images,
     int? entryId,
     @Default(false) bool hasUnsavedChanges,
     String? themeName,
@@ -49,7 +51,7 @@ sealed class EntryEditorState with _$EntryEditorState {
   }) = _Editing;
 
   /// Publishing state when the entry is being saved/published
-  /// 
+  ///
   /// [isUploadingImages] Whether images are currently being uploaded
   /// [uploadProgress] Progress of image upload (0.0 to 1.0)
   const factory EntryEditorState.publishing({
@@ -58,21 +60,17 @@ sealed class EntryEditorState with _$EntryEditorState {
   }) = _Publishing;
 
   /// Success state when the entry has been successfully saved/published
-  /// 
+  ///
   /// [entry] The created/updated entry
-  const factory EntryEditorState.success({
-    required MwEntry entry,
-  }) = _Success;
+  const factory EntryEditorState.success({required MwEntry entry}) = _Success;
 
   /// Preview state when the entry has been saved as draft for preview
-  /// 
+  ///
   /// [entry] The draft entry created for preview
-  const factory EntryEditorState.preview({
-    required MwEntry entry,
-  }) = _Preview;
+  const factory EntryEditorState.preview({required MwEntry entry}) = _Preview;
 
   /// Error state when saving/publishing fails
-  /// 
+  ///
   /// [message] The error message describing what went wrong
   /// [canRetry] Whether the user can retry the operation
   const factory EntryEditorState.error({

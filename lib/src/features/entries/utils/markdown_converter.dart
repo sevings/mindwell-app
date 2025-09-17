@@ -2,7 +2,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:dart_quill_delta/dart_quill_delta.dart';
 
 /// Utility class for converting Quill Delta to Markdown format.
-/// 
+///
 /// This converter handles the following markdown elements:
 /// - Headings (H3, H4, H5, H6)
 /// - Bold, italic, strikethrough text
@@ -15,14 +15,16 @@ class MarkdownConverter {
   static String documentToMarkdown(Document document) {
     final buffer = StringBuffer();
     final operations = document.toDelta().toList();
-    
+
     for (int i = 0; i < operations.length; i++) {
       final operation = operations[i];
-      final nextOperation = i + 1 < operations.length ? operations[i + 1] : null;
-      
+      final nextOperation = i + 1 < operations.length
+          ? operations[i + 1]
+          : null;
+
       _processOperation(operation, nextOperation, buffer);
     }
-    
+
     return buffer.toString().trim();
   }
 
@@ -35,13 +37,13 @@ class MarkdownConverter {
     if (operation.data is String) {
       final text = operation.data as String;
       final attributes = operation.attributes ?? <String, dynamic>{};
-      
+
       // Handle line breaks
       if (text == '\n') {
         _handleLineBreak(attributes, buffer);
         return;
       }
-      
+
       // Apply formatting to text
       final formattedText = _applyFormatting(text, attributes);
       buffer.write(formattedText);
@@ -84,7 +86,7 @@ class MarkdownConverter {
   /// Apply inline formatting to text
   static String _applyFormatting(String text, Map<String, dynamic> attributes) {
     String result = text;
-    
+
     // Apply formatting in reverse order of precedence
     if (attributes.containsKey(Attribute.link.key)) {
       final link = attributes[Attribute.link.key];
@@ -92,23 +94,23 @@ class MarkdownConverter {
         result = '[$result](${link.value})';
       }
     }
-    
+
     if (attributes.containsKey(Attribute.inlineCode.key)) {
       result = '`$result`';
     }
-    
+
     if (attributes.containsKey(Attribute.strikeThrough.key)) {
       result = '~~$result~~';
     }
-    
+
     if (attributes.containsKey(Attribute.italic.key)) {
       result = '*$result*';
     }
-    
+
     if (attributes.containsKey(Attribute.bold.key)) {
       result = '**$result**';
     }
-    
+
     return result;
   }
 
@@ -125,21 +127,21 @@ class MarkdownConverter {
   }
 
   /// Convert markdown string to Quill Document
-  /// 
+  ///
   /// This is a basic implementation that handles common markdown elements.
   /// For more complex markdown parsing, consider using a dedicated markdown parser.
   static Document markdownToDocument(String markdown) {
     final lines = markdown.split('\n');
     final delta = Delta();
-    
+
     for (final line in lines) {
       final trimmedLine = line.trim();
-      
+
       if (trimmedLine.isEmpty) {
         delta.insert('\n');
         continue;
       }
-      
+
       // Handle headings
       if (trimmedLine.startsWith('### ')) {
         delta.insert(trimmedLine.substring(4), Attribute.h3.toJson());
@@ -171,12 +173,13 @@ class MarkdownConverter {
       }
       // Handle regular text with inline formatting
       else {
-        delta.insert(_parseInlineFormatting(trimmedLine));
+        final inlineDelta = _parseInlineFormatting(trimmedLine);
+        delta.concat(inlineDelta);
       }
-      
+
       delta.insert('\n');
     }
-    
+
     return Document.fromDelta(delta);
   }
 
@@ -189,10 +192,10 @@ class MarkdownConverter {
     bool inStrikethrough = false;
     bool inCode = false;
     bool inLink = false;
-    
+
     for (int i = 0; i < text.length; i++) {
       final char = text[i];
-      
+
       // Handle bold (**text**)
       if (char == '*' && i + 1 < text.length && text[i + 1] == '*') {
         if (inBold) {
@@ -207,7 +210,7 @@ class MarkdownConverter {
         i++; // Skip next asterisk
         continue;
       }
-      
+
       // Handle italic (*text*)
       if (char == '*' && !inBold) {
         if (inItalic) {
@@ -221,7 +224,7 @@ class MarkdownConverter {
         }
         continue;
       }
-      
+
       // Handle strikethrough (~~text~~)
       if (char == '~' && i + 1 < text.length && text[i + 1] == '~') {
         if (inStrikethrough) {
@@ -236,7 +239,7 @@ class MarkdownConverter {
         i++; // Skip next tilde
         continue;
       }
-      
+
       // Handle inline code (`text`)
       if (char == '`') {
         if (inCode) {
@@ -250,7 +253,7 @@ class MarkdownConverter {
         }
         continue;
       }
-      
+
       // Handle links ([text](url))
       if (char == '[' && !inLink) {
         delta.insert(buffer.toString());
@@ -258,18 +261,18 @@ class MarkdownConverter {
         inLink = true;
         continue;
       }
-      
+
       if (char == ']' && inLink && i + 1 < text.length && text[i + 1] == '(') {
         final linkText = buffer.toString();
         buffer.clear();
         i += 2; // Skip ']('
-        
+
         // Find closing parenthesis
         final urlStart = i;
         while (i < text.length && text[i] != ')') {
           i++;
         }
-        
+
         if (i < text.length) {
           final url = text.substring(urlStart, i);
           delta.insert(linkText, LinkAttribute(url).toJson());
@@ -278,15 +281,15 @@ class MarkdownConverter {
           continue;
         }
       }
-      
+
       buffer.write(char);
     }
-    
+
     // Add remaining text
     if (buffer.isNotEmpty) {
       delta.insert(buffer.toString());
     }
-    
+
     return delta;
   }
 }
