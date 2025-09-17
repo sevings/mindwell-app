@@ -45,3 +45,4 @@ app.*.map.json
 #api/
 
 lib/config/config.dart
+test_temp/

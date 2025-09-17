@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import 'package:mindwell/src/features/chat/widgets/message_bubble.dart';
@@ -27,9 +28,15 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(message: testMessage, isFromCurrentUser: false),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage, 
+                isFromCurrentUser: false,
+                chatUsername: 'testuser',
+              ),
+            ),
           ),
         ),
       );
@@ -41,12 +48,15 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: testMessage,
-              isFromCurrentUser: true,
-              messageStatus: MessageStatus.sent,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage,
+                isFromCurrentUser: true,
+                messageStatus: MessageStatus.sent,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -63,9 +73,15 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(message: testMessage, isFromCurrentUser: false),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage, 
+                isFromCurrentUser: false,
+                chatUsername: 'testuser',
+              ),
+            ),
           ),
         ),
       );
@@ -76,12 +92,15 @@ void main() {
 
     testWidgets('shows sending status indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: testMessage,
-              isFromCurrentUser: true,
-              messageStatus: MessageStatus.sending,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage,
+                isFromCurrentUser: true,
+                messageStatus: MessageStatus.sending,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -92,12 +111,15 @@ void main() {
 
     testWidgets('shows failed status indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: testMessage,
-              isFromCurrentUser: true,
-              messageStatus: MessageStatus.failed,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage,
+                isFromCurrentUser: true,
+                messageStatus: MessageStatus.failed,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -108,12 +130,15 @@ void main() {
 
     testWidgets('shows read status indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: testMessage,
-              isFromCurrentUser: true,
-              messageStatus: MessageStatus.read,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage,
+                isFromCurrentUser: true,
+                messageStatus: MessageStatus.read,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -128,12 +153,15 @@ void main() {
       bool longPressCalled = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: testMessage,
-              isFromCurrentUser: false,
-              onLongPress: () => longPressCalled = true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage,
+                isFromCurrentUser: false,
+                onLongPress: () => longPressCalled = true,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -145,9 +173,15 @@ void main() {
 
     testWidgets('displays timestamp correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(message: testMessage, isFromCurrentUser: false),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: testMessage, 
+                isFromCurrentUser: false,
+                chatUsername: 'testuser',
+              ),
+            ),
           ),
         ),
       );
@@ -170,11 +204,14 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(
-              message: emptyMessage,
-              isFromCurrentUser: false,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: emptyMessage,
+                isFromCurrentUser: false,
+                chatUsername: 'testuser',
+              ),
             ),
           ),
         ),
@@ -198,9 +235,15 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MessageBubble(message: nullMessage, isFromCurrentUser: false),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: MessageBubble(
+                message: nullMessage, 
+                isFromCurrentUser: false,
+                chatUsername: 'testuser',
+              ),
+            ),
           ),
         ),
       );

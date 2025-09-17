@@ -7,8 +7,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import 'package:mindwell/src/core/services/websocket_service.dart';
+import 'package:mindwell/src/core/services/connection_service.dart';
+import 'package:mindwell/src/core/models/connection_status.dart' as core;
 import 'package:mindwell/src/features/chat/models/chat_messages_state.dart';
 import 'package:mindwell/src/features/chat/providers/chat_messages_provider.dart';
+import 'package:mindwell/src/features/chat/services/offline_message_service.dart';
 
 class MockChatsApi extends Mock implements ChatsApi {}
 
@@ -17,10 +20,50 @@ class MockWebSocketService extends Mock implements WebSocketService {
   Stream<Map<String, dynamic>> get messageMessagesStream => Stream.empty();
 }
 
+class MockConnectionService extends Mock implements ConnectionService {
+  @override
+  Stream<core.ConnectionStatus> get statusStream =>
+      Stream.value(core.ConnectionStatus.connected);
+
+  @override
+  core.ConnectionStatus get currentStatus => core.ConnectionStatus.connected;
+}
+
+class MockOfflineMessageService extends Mock implements OfflineMessageService {
+  @override
+  List<MwMessage> getCachedMessages(String chatUsername) => [];
+
+  @override
+  List<Map<String, dynamic>> getQueuedMessages() => [];
+
+  @override
+  Future<void> cacheMessages(
+    String chatUsername,
+    List<MwMessage> messages,
+  ) async {}
+
+  @override
+  Future<void> queueMessage(String chatUsername, String content) async {}
+
+  @override
+  Future<void> removeQueuedMessage(String chatUsername, int messageId) async {}
+
+  @override
+  Future<void> markMessagesAsRead(
+    String chatUsername,
+    List<int> messageIds,
+  ) async {}
+
+  @override
+  Set<int> getReadMessageIds(String chatUsername) => {};
+}
+
 void main() {
   group('ChatMessagesNotifier', () {
     late MockChatsApi mockChatsApi;
     late MockWebSocketService mockWebSocketService;
+    late MockConnectionService mockConnectionService;
+    late MockOfflineMessageService mockOfflineMessageService;
     late ChatMessagesNotifier notifier;
 
     const testUsername = 'testuser';
@@ -30,11 +73,15 @@ void main() {
     setUp(() {
       mockChatsApi = MockChatsApi();
       mockWebSocketService = MockWebSocketService();
+      mockConnectionService = MockConnectionService();
+      mockOfflineMessageService = MockOfflineMessageService();
 
       notifier = ChatMessagesNotifier(
         username: testUsername,
         chatsApi: mockChatsApi,
         websocketService: mockWebSocketService,
+        connectionService: mockConnectionService,
+        offlineMessageService: mockOfflineMessageService,
       );
     });
 

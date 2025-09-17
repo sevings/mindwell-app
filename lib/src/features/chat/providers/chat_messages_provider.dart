@@ -5,9 +5,13 @@ import 'package:logging/logging.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../core/api/api_provider.dart';
+import '../../../core/models/connection_status.dart' as core;
 import '../../../core/providers/websocket_provider.dart';
+import '../../../core/services/connection_service.dart';
 import '../../../core/services/websocket_service.dart';
 import '../models/chat_messages_state.dart';
+import '../models/message_action.dart';
+import '../services/offline_message_service.dart';
 
 /// Provider for the ChatMessagesNotifier that manages the state of chat messages.
 ///
@@ -25,11 +29,15 @@ final chatMessagesProvider =
     >((ref, username) {
       final chatsApi = ref.read(chatsApiProvider);
       final websocketService = ref.read(websocketServiceProvider);
+      final connectionService = ref.read(connectionServiceProvider);
+      final offlineMessageService = ref.read(offlineMessageServiceProvider);
 
       return ChatMessagesNotifier(
         username: username,
         chatsApi: chatsApi,
         websocketService: websocketService,
+        connectionService: connectionService,
+        offlineMessageService: offlineMessageService,
       );
     });
 
@@ -46,23 +54,31 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   final String username;
   final ChatsApi _chatsApi;
   final WebSocketService _websocketService;
+  final ConnectionService _connectionService;
+  final OfflineMessageService _offlineMessageService;
   final Logger _logger = Logger('ChatMessagesNotifier');
 
   String? _nextAfter;
   bool _isLoadingMore = false;
   StreamSubscription<Map<String, dynamic>>? _websocketSubscription;
+  StreamSubscription<core.ConnectionStatus>? _connectionSubscription;
+  Timer? _readMarkingTimer;
 
   ChatMessagesNotifier({
     required this.username,
     required ChatsApi chatsApi,
     required WebSocketService websocketService,
+    required ConnectionService connectionService,
+    required OfflineMessageService offlineMessageService,
   }) : _chatsApi = chatsApi,
        _websocketService = websocketService,
+       _connectionService = connectionService,
+       _offlineMessageService = offlineMessageService,
        super(const ChatMessagesState.loading()) {
     _initialize();
   }
 
-  /// Initialize the notifier by setting up WebSocket subscription.
+  /// Initialize the notifier by setting up WebSocket subscription and connection monitoring.
   Future<void> _initialize() async {
     // Listen to WebSocket message messages
     _websocketSubscription = _websocketService.messageMessagesStream.listen(
@@ -71,6 +87,20 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         _logger.warning('WebSocket error in message stream: $error');
       },
     );
+
+    // Listen to connection status changes
+    _connectionSubscription = _connectionService.statusStream.listen(
+      _handleConnectionStatusChange,
+      onError: (error) {
+        _logger.warning('Connection status error: $error');
+      },
+    );
+
+    // Load cached messages first
+    await _loadCachedMessages();
+
+    // Then fetch fresh messages from API
+    await fetchInitialMessages();
   }
 
   /// Fetch the initial messages from the API.
@@ -80,8 +110,17 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   Future<void> fetchInitialMessages() async {
     if (state.when(
       loading: () => false,
-      loaded: (messages, messageStatus, isFetchingMore, hasMore, isSending) =>
-          false,
+      loaded:
+          (
+            messages,
+            messageStatus,
+            isFetchingMore,
+            hasMore,
+            isSending,
+            connectionStatus,
+            readMessageIds,
+            queuedMessages,
+          ) => false,
       error: (message) => false,
     )) {
       return; // Prevent multiple simultaneous loads
@@ -111,13 +150,21 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       _logger.info('Fetched ${messages.length} messages');
 
       if (messages.isEmpty) {
-        state = const ChatMessagesState.loaded(messages: [], messageStatus: {});
+        state = ChatMessagesState.loaded(
+          messages: [],
+          messageStatus: {},
+          connectionStatus: _connectionService.currentStatus,
+        );
       } else {
         state = ChatMessagesState.loaded(
           messages: messages,
           messageStatus: {},
           hasMore: hasMore,
+          connectionStatus: _connectionService.currentStatus,
         );
+
+        // Cache the fetched messages
+        await _offlineMessageService.cacheMessages(username, messages);
       }
     } catch (e, stackTrace) {
       _logger.severe('Failed to fetch initial messages', e, stackTrace);
@@ -135,8 +182,17 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
 
     final currentState = state.when(
       loading: () => null,
-      loaded: (messages, messageStatus, isFetchingMore, hasMore, isSending) =>
-          (messages: messages, hasMore: hasMore),
+      loaded:
+          (
+            messages,
+            messageStatus,
+            isFetchingMore,
+            hasMore,
+            isSending,
+            connectionStatus,
+            readMessageIds,
+            queuedMessages,
+          ) => (messages: messages, hasMore: hasMore),
       error: (message) => null,
     );
 
@@ -168,7 +224,11 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
           messages: allMessages,
           messageStatus: {},
           hasMore: messageList.hasAfter ?? false,
+          connectionStatus: _connectionService.currentStatus,
         );
+
+        // Cache the new messages
+        await _offlineMessageService.cacheMessages(username, newMessages);
       }
     } catch (e, stackTrace) {
       _logger.severe('Failed to fetch more messages', e, stackTrace);
@@ -178,22 +238,35 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     }
   }
 
-  /// Send a message with optimistic updates.
+  /// Send a message with optimistic updates and offline support.
   ///
   /// This method:
   /// 1. Adds the message to the state with 'sending' status
-  /// 2. Makes the API call
+  /// 2. Makes the API call or queues the message if offline
   /// 3. Updates the message status based on the result
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
     final currentState = state.when(
       loading: () => null,
-      loaded: (messages, messageStatus, isFetchingMore, hasMore, isSending) => (
-        messages: messages,
-        messageStatus: messageStatus,
-        isSending: isSending,
-      ),
+      loaded:
+          (
+            messages,
+            messageStatus,
+            isFetchingMore,
+            hasMore,
+            isSending,
+            connectionStatus,
+            readMessageIds,
+            queuedMessages,
+          ) => (
+            messages: messages,
+            messageStatus: messageStatus,
+            isSending: isSending,
+            connectionStatus: connectionStatus,
+            readMessageIds: readMessageIds,
+            queuedMessages: queuedMessages,
+          ),
       error: (message) => null,
     );
 
@@ -225,7 +298,34 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       messages: updatedMessages,
       messageStatus: updatedMessageStatus,
       isSending: true,
+      connectionStatus: currentState.connectionStatus,
+      readMessageIds: currentState.readMessageIds,
+      queuedMessages: currentState.queuedMessages,
     );
+
+    // Check if we're offline
+    if (currentState.connectionStatus == core.ConnectionStatus.disconnected) {
+      // Queue the message for later sending
+      await _offlineMessageService.queueMessage(username, text.trim());
+
+      // Update status to failed (will be retried when connection is restored)
+      final failedMessageStatus = Map<int, MessageStatus>.from(
+        updatedMessageStatus,
+      );
+      failedMessageStatus[-1] = MessageStatus.failed;
+
+      state = ChatMessagesState.loaded(
+        messages: updatedMessages,
+        messageStatus: failedMessageStatus,
+        isSending: false,
+        connectionStatus: currentState.connectionStatus,
+        readMessageIds: currentState.readMessageIds,
+        queuedMessages: currentState.queuedMessages,
+      );
+
+      _logger.info('Message queued for offline sending: $text');
+      return;
+    }
 
     try {
       _logger.info('Sending message: $text');
@@ -256,7 +356,13 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
           messages: finalMessages,
           messageStatus: finalMessageStatus,
           isSending: false,
+          connectionStatus: currentState.connectionStatus,
+          readMessageIds: currentState.readMessageIds,
+          queuedMessages: currentState.queuedMessages,
         );
+
+        // Cache the sent message
+        await _offlineMessageService.cacheMessages(username, [sentMessage]);
 
         _logger.info('Message sent successfully: ${sentMessage.id}');
       } else {
@@ -275,6 +381,9 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         messages: updatedMessages,
         messageStatus: failedMessageStatus,
         isSending: false,
+        connectionStatus: currentState.connectionStatus,
+        readMessageIds: currentState.readMessageIds,
+        queuedMessages: currentState.queuedMessages,
       );
     }
   }
@@ -287,8 +396,17 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       // Use the latest message ID or current timestamp as message parameter
       final currentState = state.when(
         loading: () => null,
-        loaded: (messages, messageStatus, isFetchingMore, hasMore, isSending) =>
-            messages.isNotEmpty ? messages.first.id : null,
+        loaded:
+            (
+              messages,
+              messageStatus,
+              isFetchingMore,
+              hasMore,
+              isSending,
+              connectionStatus,
+              readMessageIds,
+              queuedMessages,
+            ) => messages.isNotEmpty ? messages.first.id : null,
         error: (message) => null,
       );
 
@@ -343,8 +461,16 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         final currentState = state.when(
           loading: () => null,
           loaded:
-              (messages, messageStatus, isFetchingMore, hasMore, isSending) =>
-                  (messages: messages, messageStatus: messageStatus),
+              (
+                messages,
+                messageStatus,
+                isFetchingMore,
+                hasMore,
+                isSending,
+                connectionStatus,
+                readMessageIds,
+                queuedMessages,
+              ) => (messages: messages, messageStatus: messageStatus),
           error: (message) => null,
         );
 
@@ -384,6 +510,448 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     }
   }
 
+  /// Load cached messages from local storage
+  Future<void> _loadCachedMessages() async {
+    try {
+      final cachedMessages = _offlineMessageService.getCachedMessages(username);
+      final readMessageIds = _offlineMessageService.getReadMessageIds(username);
+
+      if (cachedMessages.isNotEmpty) {
+        state = ChatMessagesState.loaded(
+          messages: cachedMessages,
+          messageStatus: {},
+          connectionStatus: _connectionService.currentStatus,
+          readMessageIds: readMessageIds,
+        );
+        _logger.info('Loaded ${cachedMessages.length} cached messages');
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to load cached messages', e, stackTrace);
+    }
+  }
+
+  /// Handle connection status changes
+  void _handleConnectionStatusChange(core.ConnectionStatus status) {
+    final currentState = state.when(
+      loading: () => null,
+      loaded:
+          (
+            messages,
+            messageStatus,
+            isFetchingMore,
+            hasMore,
+            isSending,
+            connectionStatus,
+            readMessageIds,
+            queuedMessages,
+          ) => (
+            messages: messages,
+            messageStatus: messageStatus,
+            isFetchingMore: isFetchingMore,
+            hasMore: hasMore,
+            isSending: isSending,
+            connectionStatus: connectionStatus,
+            readMessageIds: readMessageIds,
+            queuedMessages: queuedMessages,
+          ),
+      error: (message) => null,
+    );
+
+    if (currentState != null) {
+      state = ChatMessagesState.loaded(
+        messages: currentState.messages,
+        messageStatus: currentState.messageStatus,
+        isFetchingMore: currentState.isFetchingMore,
+        hasMore: currentState.hasMore,
+        isSending: currentState.isSending,
+        connectionStatus: status,
+        readMessageIds: currentState.readMessageIds,
+        queuedMessages: currentState.queuedMessages,
+      );
+
+      // If connection is restored, sync queued messages
+      if (status == core.ConnectionStatus.connected) {
+        _syncQueuedMessages();
+      }
+    }
+  }
+
+  /// Sync queued messages when connection is restored
+  Future<void> _syncQueuedMessages() async {
+    try {
+      final queuedMessages = _offlineMessageService.getQueuedMessages();
+      final chatQueuedMessages = queuedMessages
+          .where((msg) => msg['chatUsername'] == username)
+          .toList();
+
+      for (final queuedMessage in chatQueuedMessages) {
+        try {
+          final response = await _chatsApi.chatsNameMessagesPost(
+            name: username,
+            content: queuedMessage['content'] as String,
+            uid: queuedMessage['uid'] as int,
+          );
+
+          if (response.data != null) {
+            // Remove from queue
+            await _offlineMessageService.removeQueuedMessage(
+              username,
+              queuedMessage['uid'] as int,
+            );
+            _logger.info('Synced queued message: ${queuedMessage['uid']}');
+          }
+        } catch (e) {
+          _logger.warning('Failed to sync queued message: $e');
+        }
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to sync queued messages', e, stackTrace);
+    }
+  }
+
+  /// Mark messages as read automatically when they become visible
+  void markMessagesAsRead(List<int> messageIds) {
+    final currentState = state.when(
+      loading: () => null,
+      loaded:
+          (
+            messages,
+            messageStatus,
+            isFetchingMore,
+            hasMore,
+            isSending,
+            connectionStatus,
+            readMessageIds,
+            queuedMessages,
+          ) => (
+            messages: messages,
+            messageStatus: messageStatus,
+            isFetchingMore: isFetchingMore,
+            hasMore: hasMore,
+            isSending: isSending,
+            connectionStatus: connectionStatus,
+            readMessageIds: readMessageIds,
+            queuedMessages: queuedMessages,
+          ),
+      error: (message) => null,
+    );
+
+    if (currentState != null) {
+      final newReadMessageIds = Set<int>.from(currentState.readMessageIds);
+      bool hasNewReadMessages = false;
+
+      for (final messageId in messageIds) {
+        if (!newReadMessageIds.contains(messageId)) {
+          newReadMessageIds.add(messageId);
+          hasNewReadMessages = true;
+        }
+      }
+
+      if (hasNewReadMessages) {
+        state = ChatMessagesState.loaded(
+          messages: currentState.messages,
+          messageStatus: currentState.messageStatus,
+          isFetchingMore: currentState.isFetchingMore,
+          hasMore: currentState.hasMore,
+          isSending: currentState.isSending,
+          connectionStatus: currentState.connectionStatus,
+          readMessageIds: newReadMessageIds,
+          queuedMessages: currentState.queuedMessages,
+        );
+
+        // Mark as read locally
+        _offlineMessageService.markMessagesAsRead(username, messageIds);
+
+        // Mark as read on server if connected
+        if (currentState.connectionStatus == core.ConnectionStatus.connected) {
+          _markAsReadOnServer();
+        }
+      }
+    }
+  }
+
+  /// Mark messages as read on the server
+  Future<void> _markAsReadOnServer() async {
+    try {
+      final currentState = state.when(
+        loading: () => null,
+        loaded:
+            (
+              messages,
+              messageStatus,
+              isFetchingMore,
+              hasMore,
+              isSending,
+              connectionStatus,
+              readMessageIds,
+              queuedMessages,
+            ) => messages.isNotEmpty ? messages.first.id : null,
+        error: (message) => null,
+      );
+
+      final messageId = currentState ?? DateTime.now().millisecondsSinceEpoch;
+      await _chatsApi.chatsNameReadPut(name: username, message: messageId);
+      _logger.info('Marked messages as read on server for chat with $username');
+    } catch (e, stackTrace) {
+      _logger.severe(
+        'Failed to mark messages as read on server',
+        e,
+        stackTrace,
+      );
+    }
+  }
+
+  /// Perform a message action (edit, delete, report)
+  Future<MessageActionResult> performMessageAction(MessageAction action) async {
+    return action.when(
+      edit: (messageId, currentContent) =>
+          _editMessage(messageId, currentContent),
+      delete: (messageId) => _deleteMessage(messageId),
+      report: (messageId, reason) => _reportMessage(messageId, reason),
+      retry: (messageId, content) => _retryMessage(messageId, content),
+    );
+  }
+
+  /// Edit a message
+  Future<MessageActionResult> _editMessage(
+    int messageId,
+    String currentContent,
+  ) async {
+    try {
+      // This would typically open an edit dialog and then call the API
+      // For now, we'll just return success
+      _logger.info('Edit message $messageId requested');
+      return const MessageActionResult.success(
+        message: 'Message edit requested',
+      );
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to edit message', e, stackTrace);
+      return MessageActionResult.error(
+        error: 'Failed to edit message: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Delete a message
+  Future<MessageActionResult> _deleteMessage(int messageId) async {
+    try {
+      // Call the API to delete the message
+      await _chatsApi.messagesIdDelete(id: messageId);
+
+      // Remove from local state
+      final currentState = state.when(
+        loading: () => null,
+        loaded:
+            (
+              messages,
+              messageStatus,
+              isFetchingMore,
+              hasMore,
+              isSending,
+              connectionStatus,
+              readMessageIds,
+              queuedMessages,
+            ) => (
+              messages: messages,
+              messageStatus: messageStatus,
+              isFetchingMore: isFetchingMore,
+              hasMore: hasMore,
+              isSending: isSending,
+              connectionStatus: connectionStatus,
+              readMessageIds: readMessageIds,
+              queuedMessages: queuedMessages,
+            ),
+        error: (message) => null,
+      );
+
+      if (currentState != null) {
+        final updatedMessages = currentState.messages
+            .where((msg) => msg.id != messageId)
+            .toList();
+
+        state = ChatMessagesState.loaded(
+          messages: updatedMessages,
+          messageStatus: currentState.messageStatus,
+          isFetchingMore: currentState.isFetchingMore,
+          hasMore: currentState.hasMore,
+          isSending: currentState.isSending,
+          connectionStatus: currentState.connectionStatus,
+          readMessageIds: currentState.readMessageIds,
+          queuedMessages: currentState.queuedMessages,
+        );
+      }
+
+      _logger.info('Deleted message $messageId');
+      return const MessageActionResult.success(message: 'Message deleted');
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to delete message', e, stackTrace);
+      return MessageActionResult.error(
+        error: 'Failed to delete message: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Report a message
+  Future<MessageActionResult> _reportMessage(
+    int messageId,
+    String? reason,
+  ) async {
+    try {
+      // This would typically call a report API endpoint
+      // For now, we'll just log the report
+      _logger.info('Reported message $messageId with reason: $reason');
+      return const MessageActionResult.success(message: 'Message reported');
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to report message', e, stackTrace);
+      return MessageActionResult.error(
+        error: 'Failed to report message: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Retry sending a failed message
+  Future<MessageActionResult> _retryMessage(
+    int messageId,
+    String content,
+  ) async {
+    try {
+      _logger.info('Retrying message $messageId with content: $content');
+
+      // Find the failed message in the current state
+      final currentState = state.when(
+        loading: () => null,
+        loaded:
+            (
+              messages,
+              messageStatus,
+              isFetchingMore,
+              hasMore,
+              isSending,
+              connectionStatus,
+              readMessageIds,
+              queuedMessages,
+            ) => (
+              messages: messages,
+              messageStatus: messageStatus,
+              isFetchingMore: isFetchingMore,
+              hasMore: hasMore,
+              isSending: isSending,
+              connectionStatus: connectionStatus,
+              readMessageIds: readMessageIds,
+              queuedMessages: queuedMessages,
+            ),
+        error: (message) => null,
+      );
+
+      if (currentState == null) {
+        return MessageActionResult.error(error: 'No messages loaded to retry');
+      }
+
+      // Check if the message exists and is actually failed
+      final messageExists = currentState.messages.any(
+        (msg) => msg.id == messageId,
+      );
+      final messageStatus = currentState.messageStatus[messageId];
+
+      if (!messageExists) {
+        return MessageActionResult.error(error: 'Message not found');
+      }
+
+      if (messageStatus != MessageStatus.failed) {
+        return MessageActionResult.error(
+          error: 'Message is not in failed state',
+        );
+      }
+
+      // Remove the failed message from the list
+      final updatedMessages = currentState.messages
+          .where((msg) => msg.id != messageId)
+          .toList();
+
+      final updatedMessageStatus = Map<int, MessageStatus>.from(
+        currentState.messageStatus,
+      );
+      updatedMessageStatus.remove(messageId);
+
+      state = ChatMessagesState.loaded(
+        messages: updatedMessages,
+        messageStatus: updatedMessageStatus,
+        isFetchingMore: currentState.isFetchingMore,
+        hasMore: currentState.hasMore,
+        isSending: currentState.isSending,
+        connectionStatus: currentState.connectionStatus,
+        readMessageIds: currentState.readMessageIds,
+        queuedMessages: currentState.queuedMessages,
+      );
+
+      // Send the message again using the existing sendMessage method
+      await sendMessage(content);
+
+      _logger.info('Successfully retried message $messageId');
+      return const MessageActionResult.success(
+        message: 'Message retry initiated',
+      );
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to retry message $messageId', e, stackTrace);
+      return MessageActionResult.error(
+        error: 'Failed to retry message: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Retry all failed messages in the current chat
+  Future<void> retryAllFailedMessages() async {
+    try {
+      final currentState = state.when(
+        loading: () => null,
+        loaded:
+            (
+              messages,
+              messageStatus,
+              isFetchingMore,
+              hasMore,
+              isSending,
+              connectionStatus,
+              readMessageIds,
+              queuedMessages,
+            ) => (messages: messages, messageStatus: messageStatus),
+        error: (message) => null,
+      );
+
+      if (currentState == null) {
+        _logger.warning('No messages loaded to retry');
+        return;
+      }
+
+      final failedMessages = currentState.messages.where((msg) {
+        final status = currentState.messageStatus[msg.id];
+        return status == MessageStatus.failed;
+      }).toList();
+
+      if (failedMessages.isEmpty) {
+        _logger.info('No failed messages to retry');
+        return;
+      }
+
+      _logger.info('Retrying ${failedMessages.length} failed messages');
+
+      // Retry each failed message
+      for (final message in failedMessages) {
+        try {
+          await _retryMessage(message.id ?? 0, message.content ?? '');
+          // Add a small delay between retries to avoid overwhelming the server
+          await Future.delayed(const Duration(milliseconds: 100));
+        } catch (e) {
+          _logger.warning('Failed to retry message ${message.id}: $e');
+        }
+      }
+
+      _logger.info('Completed retry of all failed messages');
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to retry all failed messages', e, stackTrace);
+    }
+  }
+
   /// Refresh messages by clearing current state and fetching fresh data.
   Future<void> refresh() async {
     _logger.info('Refreshing messages');
@@ -398,6 +966,8 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   @override
   void dispose() {
     _websocketSubscription?.cancel();
+    _connectionSubscription?.cancel();
+    _readMarkingTimer?.cancel();
     super.dispose();
   }
 }

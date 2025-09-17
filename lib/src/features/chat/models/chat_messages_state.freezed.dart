@@ -24,7 +24,10 @@ mixin _$ChatMessagesState {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)
         loaded,
     required TResult Function(String message) error,
   }) =>
@@ -37,7 +40,10 @@ mixin _$ChatMessagesState {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult? Function(String message)? error,
   }) =>
@@ -50,7 +56,10 @@ mixin _$ChatMessagesState {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -143,7 +152,10 @@ class _$ChatMessagesLoadingImpl implements ChatMessagesLoading {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)
         loaded,
     required TResult Function(String message) error,
   }) {
@@ -159,7 +171,10 @@ class _$ChatMessagesLoadingImpl implements ChatMessagesLoading {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -175,7 +190,10 @@ class _$ChatMessagesLoadingImpl implements ChatMessagesLoading {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -236,7 +254,10 @@ abstract class _$$ChatMessagesLoadedImplCopyWith<$Res> {
       Map<int, MessageStatus> messageStatus,
       bool isFetchingMore,
       bool hasMore,
-      bool isSending});
+      bool isSending,
+      ConnectionStatus connectionStatus,
+      Set<int> readMessageIds,
+      List<MwMessage> queuedMessages});
 }
 
 /// @nodoc
@@ -255,6 +276,9 @@ class __$$ChatMessagesLoadedImplCopyWithImpl<$Res>
     Object? isFetchingMore = null,
     Object? hasMore = null,
     Object? isSending = null,
+    Object? connectionStatus = null,
+    Object? readMessageIds = null,
+    Object? queuedMessages = null,
   }) {
     return _then(_$ChatMessagesLoadedImpl(
       messages: null == messages
@@ -277,6 +301,18 @@ class __$$ChatMessagesLoadedImplCopyWithImpl<$Res>
           ? _value.isSending
           : isSending // ignore: cast_nullable_to_non_nullable
               as bool,
+      connectionStatus: null == connectionStatus
+          ? _value.connectionStatus
+          : connectionStatus // ignore: cast_nullable_to_non_nullable
+              as ConnectionStatus,
+      readMessageIds: null == readMessageIds
+          ? _value._readMessageIds
+          : readMessageIds // ignore: cast_nullable_to_non_nullable
+              as Set<int>,
+      queuedMessages: null == queuedMessages
+          ? _value._queuedMessages
+          : queuedMessages // ignore: cast_nullable_to_non_nullable
+              as List<MwMessage>,
     ));
   }
 }
@@ -289,9 +325,14 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
       final Map<int, MessageStatus> messageStatus = const {},
       this.isFetchingMore = false,
       this.hasMore = false,
-      this.isSending = false})
+      this.isSending = false,
+      this.connectionStatus = ConnectionStatus.unknown,
+      final Set<int> readMessageIds = const {},
+      final List<MwMessage> queuedMessages = const []})
       : _messages = messages,
-        _messageStatus = messageStatus;
+        _messageStatus = messageStatus,
+        _readMessageIds = readMessageIds,
+        _queuedMessages = queuedMessages;
 
   final List<MwMessage> _messages;
   @override
@@ -319,10 +360,30 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
   @override
   @JsonKey()
   final bool isSending;
+  @override
+  @JsonKey()
+  final ConnectionStatus connectionStatus;
+  final Set<int> _readMessageIds;
+  @override
+  @JsonKey()
+  Set<int> get readMessageIds {
+    if (_readMessageIds is EqualUnmodifiableSetView) return _readMessageIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableSetView(_readMessageIds);
+  }
+
+  final List<MwMessage> _queuedMessages;
+  @override
+  @JsonKey()
+  List<MwMessage> get queuedMessages {
+    if (_queuedMessages is EqualUnmodifiableListView) return _queuedMessages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_queuedMessages);
+  }
 
   @override
   String toString() {
-    return 'ChatMessagesState.loaded(messages: $messages, messageStatus: $messageStatus, isFetchingMore: $isFetchingMore, hasMore: $hasMore, isSending: $isSending)';
+    return 'ChatMessagesState.loaded(messages: $messages, messageStatus: $messageStatus, isFetchingMore: $isFetchingMore, hasMore: $hasMore, isSending: $isSending, connectionStatus: $connectionStatus, readMessageIds: $readMessageIds, queuedMessages: $queuedMessages)';
   }
 
   @override
@@ -337,7 +398,13 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
                 other.isFetchingMore == isFetchingMore) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
             (identical(other.isSending, isSending) ||
-                other.isSending == isSending));
+                other.isSending == isSending) &&
+            (identical(other.connectionStatus, connectionStatus) ||
+                other.connectionStatus == connectionStatus) &&
+            const DeepCollectionEquality()
+                .equals(other._readMessageIds, _readMessageIds) &&
+            const DeepCollectionEquality()
+                .equals(other._queuedMessages, _queuedMessages));
   }
 
   @override
@@ -347,7 +414,10 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
       const DeepCollectionEquality().hash(_messageStatus),
       isFetchingMore,
       hasMore,
-      isSending);
+      isSending,
+      connectionStatus,
+      const DeepCollectionEquality().hash(_readMessageIds),
+      const DeepCollectionEquality().hash(_queuedMessages));
 
   @JsonKey(ignore: true)
   @override
@@ -365,11 +435,15 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)
         loaded,
     required TResult Function(String message) error,
   }) {
-    return loaded(messages, messageStatus, isFetchingMore, hasMore, isSending);
+    return loaded(messages, messageStatus, isFetchingMore, hasMore, isSending,
+        connectionStatus, readMessageIds, queuedMessages);
   }
 
   @override
@@ -381,12 +455,15 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult? Function(String message)? error,
   }) {
-    return loaded?.call(
-        messages, messageStatus, isFetchingMore, hasMore, isSending);
+    return loaded?.call(messages, messageStatus, isFetchingMore, hasMore,
+        isSending, connectionStatus, readMessageIds, queuedMessages);
   }
 
   @override
@@ -398,14 +475,17 @@ class _$ChatMessagesLoadedImpl implements ChatMessagesLoaded {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(
-          messages, messageStatus, isFetchingMore, hasMore, isSending);
+      return loaded(messages, messageStatus, isFetchingMore, hasMore, isSending,
+          connectionStatus, readMessageIds, queuedMessages);
     }
     return orElse();
   }
@@ -451,13 +531,19 @@ abstract class ChatMessagesLoaded implements ChatMessagesState {
       final Map<int, MessageStatus> messageStatus,
       final bool isFetchingMore,
       final bool hasMore,
-      final bool isSending}) = _$ChatMessagesLoadedImpl;
+      final bool isSending,
+      final ConnectionStatus connectionStatus,
+      final Set<int> readMessageIds,
+      final List<MwMessage> queuedMessages}) = _$ChatMessagesLoadedImpl;
 
   List<MwMessage> get messages;
   Map<int, MessageStatus> get messageStatus;
   bool get isFetchingMore;
   bool get hasMore;
   bool get isSending;
+  ConnectionStatus get connectionStatus;
+  Set<int> get readMessageIds;
+  List<MwMessage> get queuedMessages;
   @JsonKey(ignore: true)
   _$$ChatMessagesLoadedImplCopyWith<_$ChatMessagesLoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -534,7 +620,10 @@ class _$ChatMessagesErrorImpl implements ChatMessagesError {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)
         loaded,
     required TResult Function(String message) error,
   }) {
@@ -550,7 +639,10 @@ class _$ChatMessagesErrorImpl implements ChatMessagesError {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult? Function(String message)? error,
   }) {
@@ -566,7 +658,10 @@ class _$ChatMessagesErrorImpl implements ChatMessagesError {
             Map<int, MessageStatus> messageStatus,
             bool isFetchingMore,
             bool hasMore,
-            bool isSending)?
+            bool isSending,
+            ConnectionStatus connectionStatus,
+            Set<int> readMessageIds,
+            List<MwMessage> queuedMessages)?
         loaded,
     TResult Function(String message)? error,
     required TResult orElse(),

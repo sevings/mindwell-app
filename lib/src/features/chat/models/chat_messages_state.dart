@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
+import '../../../core/models/connection_status.dart';
+
 part 'chat_messages_state.freezed.dart';
 
 /// Message status for tracking message delivery and read states
@@ -39,6 +41,9 @@ class ChatMessagesState with _$ChatMessagesState {
     @Default(false) bool isFetchingMore,
     @Default(false) bool hasMore,
     @Default(false) bool isSending,
+    @Default(ConnectionStatus.unknown) ConnectionStatus connectionStatus,
+    @Default({}) Set<int> readMessageIds,
+    @Default([]) List<MwMessage> queuedMessages,
   }) = ChatMessagesLoaded;
 
   /// Error state with error message

@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../core/models/connection_status.dart';
 import '../../../core/widgets/platform_app_bar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/models/auth_state.dart';
@@ -29,6 +33,9 @@ class ChatMessagesScreen extends ConsumerStatefulWidget {
 class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isInitialized = false;
+  List<int> _previousMessageIds = [];
+  final Set<int> _newMessageIds = {};
+  Timer? _newMessageTimer;
 
   @override
   void initState() {
@@ -39,6 +46,7 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _newMessageTimer?.cancel();
     super.dispose();
   }
 
@@ -89,12 +97,16 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
                     isFetchingMore,
                     hasMore,
                     isSending,
+                    connectionStatus,
+                    readMessageIds,
+                    queuedMessages,
                   ) => _buildMessagesList(
                     theme,
                     messages,
                     messageStatus,
                     isFetchingMore,
                     hasMore,
+                    connectionStatus,
                   ),
               error: (error) => _buildErrorState(l10n, theme, error),
             ),
@@ -103,12 +115,20 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
           chatState.when(
             loading: () => const SizedBox.shrink(),
             loaded:
-                (messages, messageStatus, isFetchingMore, hasMore, isSending) =>
-                    MessageInput(
-                      onSendMessage: _sendMessage,
-                      isDisabled: isSending,
-                      placeholder: 'Type a message...',
-                    ),
+                (
+                  messages,
+                  messageStatus,
+                  isFetchingMore,
+                  hasMore,
+                  isSending,
+                  connectionStatus,
+                  readMessageIds,
+                  queuedMessages,
+                ) => MessageInput(
+                  onSendMessage: _sendMessage,
+                  isDisabled: isSending,
+                  placeholder: 'Type a message...',
+                ),
             error: (error) => const SizedBox.shrink(),
           ),
         ],
@@ -173,10 +193,14 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
     Map<int, MessageStatus> messageStatus,
     bool isFetchingMore,
     bool hasMore,
+    ConnectionStatus connectionStatus,
   ) {
     if (messages.isEmpty) {
       return _buildEmptyState(theme);
     }
+
+    // Track new messages for animations and accessibility announcements
+    _trackNewMessages(messages);
 
     return Column(
       children: [
@@ -200,11 +224,14 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
               final message = messages[index];
               final isFromCurrentUser = _isFromCurrentUser(message);
               final status = messageStatus[message.id];
+              final isNewMessage = _newMessageIds.contains(message.id);
 
               return MessageBubble(
                 message: message,
                 isFromCurrentUser: isFromCurrentUser,
                 messageStatus: status,
+                chatUsername: widget.username,
+                isNewMessage: isNewMessage,
                 onLongPress: () => _showMessageContextMenu(message),
               );
             },
@@ -380,5 +407,52 @@ class _ChatMessagesScreenState extends ConsumerState<ChatMessagesScreen> {
   /// Navigates to the partner's profile
   void _navigateToProfile() {
     context.push('/users/${widget.username}');
+  }
+
+  /// Tracks new messages for animations and accessibility announcements
+  void _trackNewMessages(List<MwMessage> messages) {
+    final currentMessageIds = messages.map((msg) => msg.id ?? 0).toList();
+
+    // Find new messages that weren't in the previous list
+    final newIds = currentMessageIds
+        .where((id) => !_previousMessageIds.contains(id))
+        .toSet();
+
+    if (newIds.isNotEmpty) {
+      _newMessageIds.addAll(newIds);
+
+      // Announce new messages for screen readers
+      _announceNewMessages(newIds, messages);
+
+      // Clear the new message IDs after a delay to prevent re-animating
+      _newMessageTimer?.cancel();
+      _newMessageTimer = Timer(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _newMessageIds.clear();
+          });
+        }
+      });
+    }
+
+    _previousMessageIds = currentMessageIds;
+  }
+
+  /// Announces new messages to screen readers
+  void _announceNewMessages(Set<int> newMessageIds, List<MwMessage> messages) {
+    final newMessages = messages
+        .where((msg) => newMessageIds.contains(msg.id ?? 0))
+        .toList();
+
+    for (final message in newMessages) {
+      final isFromCurrentUser = _isFromCurrentUser(message);
+      final sender = isFromCurrentUser
+          ? 'You'
+          : (message.author?.name ?? 'Unknown');
+      final content = message.content ?? '';
+
+      // Announce the new message
+      SemanticsService.announce('$sender: $content', TextDirection.ltr);
+    }
   }
 }
