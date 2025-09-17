@@ -5,7 +5,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../providers/entry_editor_provider.dart';
 
 /// Bottom sheet widget for configuring entry settings.
-/// 
+///
 /// This widget provides controls for all entry settings including:
 /// - Privacy level (Public, Friends Only, Private)
 /// - Comment and vote permissions
@@ -28,14 +28,43 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final entryState = ref.watch(entryEditorProvider((entryId: entryId, themeName: null)));
-    
+    final entryState = ref.watch(
+      entryEditorProvider((entryId: entryId, themeName: null)),
+    );
+
     return entryState.when(
       initial: () => const SizedBox.shrink(),
       loading: () => const SizedBox.shrink(),
-      editing: (title, content, tags, privacy, isCommentable, isVotable, inLive, isShared, isDraft, images, entryId, hasUnsavedChanges, themeName, isAnonymous) => 
-        _buildSettingsSheet(context, ref, l10n, privacy, isCommentable, isVotable, inLive, isShared, isDraft, isAnonymous),
-      publishing: (isUploadingImages, uploadProgress) => const SizedBox.shrink(),
+      editing:
+          (
+            title,
+            content,
+            tags,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            images,
+            entryId,
+            hasUnsavedChanges,
+            themeName,
+            isAnonymous,
+          ) => _buildSettingsSheet(
+            context,
+            ref,
+            l10n,
+            privacy,
+            isCommentable,
+            isVotable,
+            inLive,
+            isShared,
+            isDraft,
+            isAnonymous,
+          ),
+      publishing: (isUploadingImages, uploadProgress) =>
+          const SizedBox.shrink(),
       success: (entry) => const SizedBox.shrink(),
       preview: (entry) => const SizedBox.shrink(),
       error: (message, canRetry) => const SizedBox.shrink(),
@@ -73,46 +102,52 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           // Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Text(
               l10n?.entrySettings ?? 'Entry Settings',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Scrollable content
           Flexible(
             child: SingleChildScrollView(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
+                bottom:
+                    MediaQuery.of(context).viewInsets.bottom +
+                    MediaQuery.of(context).padding.bottom +
+                    16,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Privacy Level Section
                   _buildPrivacySection(context, ref, l10n, privacy),
-                  
+
                   // Comment and Vote Settings Section (hidden for 'me' privacy)
                   if (privacy != 'me')
-                    _buildCommentVoteSection(context, ref, l10n, isCommentable, isVotable),
-                  
+                    _buildCommentVoteSection(
+                      context,
+                      ref,
+                      l10n,
+                      isCommentable,
+                      isVotable,
+                    ),
+
                   // Live Feed Section (hidden for 'me' and 'followers' privacy)
                   if (privacy != 'me' && privacy != 'followers')
                     _buildLiveFeedSection(context, ref, l10n, inLive),
-                  
+
                   // Sharing Section (always visible)
                   _buildSharingSection(context, ref, l10n, isShared),
-                  
+
                   // Anonymous Posting Section (only for theme entries)
-                  if (isThemeEntry) 
+                  if (isThemeEntry)
                     _buildAnonymousSection(context, ref, l10n, isAnonymous),
                 ],
               ),
@@ -193,7 +228,14 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowComments ?? 'Allow Comments',
           l10n?.allowCommentsSubtitle ?? 'Let others comment on this entry',
           isCommentable,
-          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsCommentable(value),
+          (value) => ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updateIsCommentable(value),
           Icons.comment_outlined,
           key: const ValueKey('allowComments'),
         ),
@@ -204,7 +246,14 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowVotes ?? 'Allow Votes',
           l10n?.allowVotesSubtitle ?? 'Let others vote on this entry',
           isVotable,
-          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsVotable(value),
+          (value) => ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updateIsVotable(value),
           Icons.how_to_vote_outlined,
           key: const ValueKey('allowVotes'),
         ),
@@ -228,7 +277,14 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.postInLive ?? 'Post in Live Feed',
           l10n?.postInLiveSubtitle ?? 'Show this entry in the live feed',
           inLive,
-          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateInLive(value),
+          (value) => ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updateInLive(value),
           Icons.live_tv_outlined,
           key: const ValueKey('postInLive'),
         ),
@@ -252,7 +308,14 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           l10n?.allowSharing ?? 'Allow Sharing',
           l10n?.allowSharingSubtitle ?? 'Let others share this entry',
           isShared,
-          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsShared(value),
+          (value) => ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updateIsShared(value),
           Icons.share_outlined,
           key: const ValueKey('allowSharing'),
         ),
@@ -274,9 +337,17 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
           ref,
           l10n,
           l10n?.postAnonymously ?? 'Post Anonymously',
-          l10n?.postAnonymouslySubtitle ?? 'Hide your identity when posting in themes',
+          l10n?.postAnonymouslySubtitle ??
+              'Hide your identity when posting in themes',
           isAnonymous,
-          (value) => ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updateIsAnonymous(value),
+          (value) => ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updateIsAnonymous(value),
           Icons.visibility_off_outlined,
           key: const ValueKey('postAnonymously'),
         ),
@@ -316,11 +387,18 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
     String currentPrivacy,
   ) {
     final isSelected = currentPrivacy == privacyValue;
-    
+
     return ListTile(
       leading: GestureDetector(
         onTap: () {
-          ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updatePrivacy(privacyValue);
+          ref
+              .read(
+                entryEditorProvider((
+                  entryId: entryId,
+                  themeName: null,
+                )).notifier,
+              )
+              .updatePrivacy(privacyValue);
         },
         child: Container(
           width: 24,
@@ -334,17 +412,17 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
             color: isSelected ? const Color(0xFFFF5E3A) : Colors.transparent,
           ),
           child: isSelected
-              ? const Icon(
-                  Icons.check,
-                  size: 16,
-                  color: Colors.white,
-                )
+              ? const Icon(Icons.check, size: 16, color: Colors.white)
               : null,
         ),
       ),
       title: Text(title),
       onTap: () {
-        ref.read(entryEditorProvider((entryId: entryId, themeName: null)).notifier).updatePrivacy(privacyValue);
+        ref
+            .read(
+              entryEditorProvider((entryId: entryId, themeName: null)).notifier,
+            )
+            .updatePrivacy(privacyValue);
       },
     );
   }
@@ -365,10 +443,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
       title: Text(title),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
+        style: const TextStyle(fontSize: 12, color: Colors.grey),
       ),
       value: value,
       onChanged: onChanged,
@@ -384,7 +459,7 @@ class EntrySettingsBottomSheet extends ConsumerWidget {
 }
 
 /// Shows the entry settings bottom sheet.
-/// 
+///
 /// [entryId] The ID of the entry being edited, or null for new entries.
 /// [isThemeEntry] Whether this is for a theme entry (shows anonymous posting option).
 Future<void> showEntrySettingsBottomSheet({
@@ -397,9 +472,9 @@ Future<void> showEntrySettingsBottomSheet({
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),

@@ -65,9 +65,9 @@ class _FeedSettingsBottomSheetState
 
     return Container(
       padding: const EdgeInsets.all(MindwellSpacing.lg),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SingleChildScrollView(
         child: Column(
