@@ -90,6 +90,12 @@ final notificationsApiProvider = Provider<NotificationsApi>((ref) {
   return api.getNotificationsApi();
 });
 
+/// Provider for the ChatsApi instance.
+final chatsApiProvider = Provider<ChatsApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getChatsApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 ///
 /// This interceptor:
