@@ -97,6 +97,18 @@ class NotificationItem extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
+
+                    // Comment preview for comment notifications
+                    if (notificationType == MwNotificationTypeEnum.comment &&
+                        notification.comment?.content != null)
+                      _buildCommentPreview(
+                        notification.comment!.content!,
+                        notification.entry?.title,
+                        theme,
+                        colorScheme,
+                        isRead,
+                      ),
+
                     const SizedBox(height: MindwellSpacing.xs),
 
                     // Timestamp
@@ -331,6 +343,64 @@ class NotificationItem extends StatelessWidget {
       default:
         return l10n?.notificationDefaultText ?? 'New notification';
     }
+  }
+
+  /// Build comment preview for comment notifications.
+  Widget _buildCommentPreview(
+    String commentContent,
+    String? entryTitle,
+    ThemeData theme,
+    ColorScheme colorScheme,
+    bool isRead,
+  ) {
+    // Extract first 4 lines of comment content
+    final lines = commentContent.split('\n');
+    final previewLines = lines.take(4).join('\n');
+
+    return Container(
+      margin: const EdgeInsets.only(top: MindwellSpacing.xs),
+      padding: const EdgeInsets.all(MindwellSpacing.sm),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Entry title if available
+          if (entryTitle != null && entryTitle.isNotEmpty)
+            Text(
+              entryTitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.primary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+          if (entryTitle != null && entryTitle.isNotEmpty)
+            const SizedBox(height: MindwellSpacing.xs),
+
+          // Comment content preview
+          Text(
+            previewLines,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isRead
+                  ? colorScheme.onSurface.withValues(alpha: 0.6)
+                  : colorScheme.onSurface.withValues(alpha: 0.8),
+              fontStyle: FontStyle.italic,
+            ),
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
   }
 
   /// Format the timestamp for display.

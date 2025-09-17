@@ -75,7 +75,8 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
     if (state.when(
       initial: () => false,
       loading: () => true,
-      loaded: (notifications, unreadCount, hasMore) => false,
+      loaded: (notifications, unreadCount, hasMore, newNotificationIds) =>
+          false,
       error: (message, notifications) => false,
       empty: () => false,
     )) {
@@ -113,6 +114,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
           notifications: notifications,
           unreadCount: unreadCount,
           hasMore: hasMore,
+          newNotificationIds: {}, // No new notifications on initial load
         );
       }
     } catch (e, stackTrace) {
@@ -132,10 +134,11 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
     final currentState = state.when(
       initial: () => null,
       loading: () => null,
-      loaded: (notifications, unreadCount, hasMore) => (
+      loaded: (notifications, unreadCount, hasMore, newNotificationIds) => (
         notifications: notifications,
         unreadCount: unreadCount,
         hasMore: hasMore,
+        newNotificationIds: newNotificationIds,
       ),
       error: (message, notifications) => null,
       empty: () => null,
@@ -158,7 +161,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
         final newNotifications = notificationList.notifications?.toList() ?? [];
         _nextAfter = notificationList.nextAfter;
 
-        final allNotifications = [
+        final allNotifications = <MwNotification>[
           ...currentState.notifications,
           ...newNotifications,
         ];
@@ -168,6 +171,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
           notifications: allNotifications,
           unreadCount: currentState.unreadCount,
           hasMore: notificationList.hasAfter ?? false,
+          newNotificationIds: currentState.newNotificationIds,
         );
       }
     } catch (e, stackTrace) {
@@ -191,10 +195,11 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
       final currentState = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (notifications, unreadCount, hasMore) => (
+        loaded: (notifications, unreadCount, hasMore, newNotificationIds) => (
           notifications: notifications,
           unreadCount: unreadCount,
           hasMore: hasMore,
+          newNotificationIds: newNotificationIds,
         ),
         error: (message, notifications) => null,
         empty: () => null,
@@ -220,6 +225,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
           notifications: updatedNotifications,
           unreadCount: newUnreadCount,
           hasMore: currentState.hasMore,
+          newNotificationIds: currentState.newNotificationIds,
         );
 
         _logger.info('Marked notification $notificationId as read');
@@ -241,10 +247,11 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
       final currentState = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (notifications, unreadCount, hasMore) => (
+        loaded: (notifications, unreadCount, hasMore, newNotificationIds) => (
           notifications: notifications,
           unreadCount: unreadCount,
           hasMore: hasMore,
+          newNotificationIds: newNotificationIds,
         ),
         error: (message, notifications) => null,
         empty: () => null,
@@ -264,6 +271,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
           notifications: updatedNotifications,
           unreadCount: 0, // All notifications are now read
           hasMore: currentState.hasMore,
+          newNotificationIds: currentState.newNotificationIds,
         );
 
         _logger.info('Marked all notifications as read');
@@ -308,10 +316,11 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
       final currentState = state.when(
         initial: () => null,
         loading: () => null,
-        loaded: (notifications, unreadCount, hasMore) => (
+        loaded: (notifications, unreadCount, hasMore, newNotificationIds) => (
           notifications: notifications,
           unreadCount: unreadCount,
           hasMore: hasMore,
+          newNotificationIds: newNotificationIds,
         ),
         error: (message, notifications) => null,
         empty: () => null,
@@ -319,7 +328,7 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
 
       if (currentState != null) {
         // Add new notification to the beginning of the list
-        final updatedNotifications = [
+        final updatedNotifications = <MwNotification>[
           newNotification,
           ...currentState.notifications,
         ];
@@ -328,10 +337,17 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
         final newUnreadCount =
             currentState.unreadCount + (newNotification.read == false ? 1 : 0);
 
+        // Add the new notification ID to the animation set
+        final newNotificationIds = <int>{
+          ...currentState.newNotificationIds,
+          if (newNotification.id != null) newNotification.id!,
+        };
+
         state = NotificationListState.loaded(
           notifications: updatedNotifications,
           unreadCount: newUnreadCount,
           hasMore: currentState.hasMore,
+          newNotificationIds: newNotificationIds,
         );
 
         _logger.info(
@@ -386,6 +402,38 @@ class NotificationListNotifier extends StateNotifier<NotificationListState> {
         return MwNotificationTypeEnum.info;
       default:
         return null;
+    }
+  }
+
+  /// Clear animation flags for notifications that have finished animating.
+  void clearAnimationFlags(Set<int> notificationIds) {
+    final currentState = state.when(
+      initial: () => null,
+      loading: () => null,
+      loaded: (notifications, unreadCount, hasMore, newNotificationIds) => (
+        notifications: notifications,
+        unreadCount: unreadCount,
+        hasMore: hasMore,
+        newNotificationIds: newNotificationIds,
+      ),
+      error: (message, notifications) => null,
+      empty: () => null,
+    );
+
+    if (currentState != null) {
+      final updatedAnimationIds = currentState.newNotificationIds
+          .where((id) => !notificationIds.contains(id))
+          .toSet();
+
+      if (updatedAnimationIds.length !=
+          currentState.newNotificationIds.length) {
+        state = NotificationListState.loaded(
+          notifications: currentState.notifications,
+          unreadCount: currentState.unreadCount,
+          hasMore: currentState.hasMore,
+          newNotificationIds: updatedAnimationIds,
+        );
+      }
     }
   }
 

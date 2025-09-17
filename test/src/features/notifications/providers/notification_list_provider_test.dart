@@ -130,7 +130,7 @@ void main() {
         state.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (notifications, unreadCount, hasMore) {
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
             expect(notifications, hasLength(2));
             expect(notifications[0].id, 1);
             expect(notifications[1].id, 2);
@@ -192,7 +192,7 @@ void main() {
         state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (notifications, unreadCount, hasMore) =>
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) =>
               fail('Expected error state'),
           error: (message, notifications) {
             expect(message, contains('Network error'));
@@ -319,7 +319,7 @@ void main() {
           state.when(
             initial: () => fail('Expected loaded state'),
             loading: () => fail('Expected loaded state'),
-            loaded: (notifications, unreadCount, hasMore) {
+            loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
               expect(notifications, hasLength(2));
               expect(notifications[0].id, 1);
               expect(notifications[1].id, 2);
@@ -505,7 +505,7 @@ void main() {
         state.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (notifications, unreadCount, hasMore) {
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
             expect(notifications, hasLength(2));
             expect(notifications[0].read, true); // Should be marked as read
             expect(notifications[1].read, false); // Should remain unread
@@ -562,7 +562,7 @@ void main() {
         state.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (notifications, unreadCount, hasMore) {
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
             expect(notifications, hasLength(1));
             expect(notifications[0].read, false); // Should remain unread
             expect(unreadCount, 1); // Should remain unchanged
@@ -635,7 +635,7 @@ void main() {
         state.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (notifications, unreadCount, hasMore) {
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
             expect(notifications, hasLength(2));
             expect(notifications[0].read, true); // Should be marked as read
             expect(notifications[1].read, true); // Should be marked as read
@@ -690,7 +690,7 @@ void main() {
         initialState.when(
           initial: () => fail('Expected loaded state'),
           loading: () => fail('Expected loaded state'),
-          loaded: (notifications, unreadCount, hasMore) {
+          loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
             expect(notifications, hasLength(1));
             expect(unreadCount, 1);
           },

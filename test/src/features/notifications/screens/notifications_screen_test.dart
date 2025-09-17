@@ -4,10 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/src/features/notifications/models/notification_list_state.dart';
-import '../../../../../lib/src/features/notifications/providers/notification_list_provider.dart';
-import '../../../../../lib/src/features/notifications/screens/notifications_screen.dart';
-import '../../../../../lib/src/features/notifications/widgets/notification_item.dart';
+import 'package:mindwell/src/features/notifications/models/notification_list_state.dart';
+import 'package:mindwell/src/features/notifications/providers/notification_list_provider.dart';
+import 'package:mindwell/src/features/notifications/screens/notifications_screen.dart';
+import 'package:mindwell/src/features/notifications/widgets/notification_item.dart';
+import 'package:mindwell/src/core/widgets/notification_shimmer.dart';
 
 class MockNotificationListNotifier extends StateNotifier<NotificationListState>
     with Mock
@@ -62,9 +63,8 @@ void main() {
         ),
       );
 
-      // Verify loading state is displayed
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Loading notifications...'), findsOneWidget);
+      // Verify loading state is displayed (using shimmer instead of CircularProgressIndicator)
+      expect(find.byType(NotificationShimmer), findsOneWidget);
     });
 
     testWidgets('displays empty state correctly', (WidgetTester tester) async {

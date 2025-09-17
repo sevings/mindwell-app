@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/theme/spacing.dart';
 import '../../../core/widgets/platform_app_bar.dart';
+import '../../../core/widgets/notification_shimmer.dart';
 import '../providers/notification_list_provider.dart';
-import '../widgets/notification_item.dart';
+import '../widgets/animated_notification_item.dart';
 
 /// Screen that displays a list of user notifications.
 ///
@@ -100,16 +101,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               return state.when(
                 initial: () => const SizedBox.shrink(),
                 loading: () => const SizedBox.shrink(),
-                loaded: (notifications, unreadCount, hasMore) {
-                  if (unreadCount > 0) {
-                    return IconButton(
-                      icon: const Icon(Icons.done_all),
-                      onPressed: _markAllAsRead,
-                      tooltip: l10n?.markAllAsRead ?? 'Mark all as read',
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
+                loaded:
+                    (notifications, unreadCount, hasMore, newNotificationIds) {
+                      if (unreadCount > 0) {
+                        return IconButton(
+                          icon: const Icon(Icons.done_all),
+                          onPressed: _markAllAsRead,
+                          tooltip: l10n?.markAllAsRead ?? 'Mark all as read',
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                 error: (message, notifications) {
                   if (notifications.isNotEmpty) {
                     return IconButton(
@@ -133,7 +135,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           return state.when(
             initial: () => _buildLoadingState(l10n, theme, colorScheme),
             loading: () => _buildLoadingState(l10n, theme, colorScheme),
-            loaded: (notifications, unreadCount, hasMore) {
+            loaded: (notifications, unreadCount, hasMore, newNotificationIds) {
               if (notifications.isEmpty) {
                 return _buildEmptyState(l10n, theme, colorScheme);
               }
@@ -141,6 +143,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 notifications,
                 unreadCount,
                 hasMore,
+                newNotificationIds,
                 l10n,
                 theme,
                 colorScheme,
@@ -154,6 +157,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 notifications,
                 0, // Don't show unread count in error state
                 false,
+                {}, // No new notifications in error state
                 l10n,
                 theme,
                 colorScheme,
@@ -167,27 +171,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  /// Build the loading state.
+  /// Build the loading state with shimmer effect.
   Widget _buildLoadingState(
     AppLocalizations? l10n,
     ThemeData theme,
     ColorScheme colorScheme,
   ) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(color: colorScheme.primary),
-          const SizedBox(height: MindwellSpacing.md),
-          Text(
-            l10n?.loadingNotifications ?? 'Loading notifications...',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
-        ],
-      ),
-    );
+    return const NotificationShimmer(itemCount: 8);
   }
 
   /// Build the empty state.
@@ -272,6 +262,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     List notifications,
     int unreadCount,
     bool hasMore,
+    Set<int> newNotificationIds,
     AppLocalizations? l10n,
     ThemeData theme,
     ColorScheme colorScheme, {
@@ -331,9 +322,21 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 }
 
                 final notification = notifications[index];
-                return NotificationItem(
+                final shouldAnimate = newNotificationIds.contains(
+                  notification.id,
+                );
+                return AnimatedNotificationItem(
                   notification: notification,
                   onTap: () => _markAsRead(notification.id ?? 0),
+                  shouldAnimate: shouldAnimate,
+                  onAnimationComplete: () {
+                    // Clear animation flag when animation completes
+                    if (notification.id != null) {
+                      ref
+                          .read(notificationListProvider.notifier)
+                          .clearAnimationFlags({notification.id!});
+                    }
+                  },
                 );
               },
             ),

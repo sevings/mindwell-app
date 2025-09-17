@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/src/features/notifications/widgets/notification_item.dart';
+import 'package:mindwell/src/features/notifications/widgets/notification_item.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
 

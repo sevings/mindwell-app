@@ -17,6 +17,9 @@ import 'package:mindwell/src/features/profile/screens/profile_screen.dart';
 import 'package:mindwell/src/features/profile/providers/profile_provider.dart';
 import 'package:mindwell/src/features/profile/models/profile_state.dart';
 import 'package:mindwell_api/mindwell_api.dart';
+import 'package:mindwell/src/core/widgets/notification_shimmer.dart';
+import 'package:mindwell/src/features/notifications/providers/notification_list_provider.dart';
+import 'package:mindwell/src/features/notifications/models/notification_list_state.dart';
 
 /// Mock implementations for testing
 class _MockTokenStorageService implements TokenStorageService {
@@ -64,6 +67,35 @@ class _MockAccountApi implements AccountApi {
 class _MockMeApi implements MeApi {
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+class _MockNotificationsApi implements NotificationsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+class _MockNotificationListNotifier extends StateNotifier<NotificationListState>
+    implements NotificationListNotifier {
+  _MockNotificationListNotifier()
+    : super(const NotificationListState.initial());
+
+  @override
+  Future<void> fetchInitialNotifications() async {}
+
+  @override
+  Future<void> fetchMoreNotifications() async {}
+
+  @override
+  Future<void> refresh() async {}
+
+  @override
+  Future<void> markAsRead(int notificationId) async {}
+
+  @override
+  Future<void> markAllAsRead() async {}
+
+  @override
+  void clearAnimationFlags(Set<int> notificationIds) {}
 }
 
 class _MockEntriesApi implements EntriesApi {
@@ -184,6 +216,11 @@ Widget createTestWidget(Widget child, {AuthState? authState}) {
     entryCacheServiceProvider.overrideWith((ref) => _MockEntryCacheService()),
     entryFeedProvider.overrideWith((ref, feedType) => _MockEntryFeedNotifier()),
     usersApiProvider.overrideWith((ref) => _MockUsersApi()),
+    notificationsApiProvider.overrideWith((ref) => _MockNotificationsApi()),
+    // Override notificationListProvider to prevent HTTP requests
+    notificationListProvider.overrideWith(
+      (ref) => _MockNotificationListNotifier(),
+    ),
     // Override profileProvider to prevent HTTP requests
     profileProvider.overrideWith(
       (ref, username) => _MockProfileNotifier(const ProfileState.initial()),
@@ -279,10 +316,12 @@ void main() {
       // Assert - Check if we're on the notifications route
       // The notifications content should be displayed
       expect(find.text('Notifications'), findsAtLeastNWidgets(1));
-      expect(
-        find.text('Stay updated with your mindful journey'),
-        findsOneWidget,
-      );
+      // The notifications screen should be displayed (check for the shimmer loading state)
+      expect(find.byType(NotificationShimmer), findsOneWidget);
+
+      // Clean up any pending timers by pumping a few more times
+      await tester.pump();
+      await tester.pump();
     });
 
     testWidgets('navigates to chat route', (WidgetTester tester) async {
@@ -303,6 +342,10 @@ void main() {
       // Assert
       expect(find.text('Chat'), findsAtLeastNWidgets(1));
       expect(find.text('Connect with your support community'), findsOneWidget);
+
+      // Clean up any pending timers by pumping a few more times
+      await tester.pump();
+      await tester.pump();
     });
 
     testWidgets('navigates to login route', (WidgetTester tester) async {
@@ -432,7 +475,7 @@ void main() {
 
       // Wait for the app to fully load
       await tester.pumpAndSettle();
-      
+
       // Assert - should have HomeScreen structure with feed content
       // The app should show feed content (Russian text indicates the feed is working)
       expect(find.text('Прямой эфир'), findsOneWidget);

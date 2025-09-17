@@ -20,8 +20,8 @@ mixin _$NotificationListState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
@@ -33,8 +33,8 @@ mixin _$NotificationListState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
@@ -45,8 +45,8 @@ mixin _$NotificationListState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,
@@ -142,8 +142,8 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
@@ -158,8 +158,8 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
@@ -173,8 +173,8 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,
@@ -271,8 +271,8 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
@@ -287,8 +287,8 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
@@ -302,8 +302,8 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,
@@ -367,7 +367,10 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       __$$LoadedImplCopyWithImpl<$Res>;
   @useResult
   $Res call(
-      {List<MwNotification> notifications, int unreadCount, bool hasMore});
+      {List<MwNotification> notifications,
+      int unreadCount,
+      bool hasMore,
+      Set<int> newNotificationIds});
 }
 
 /// @nodoc
@@ -384,6 +387,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? notifications = null,
     Object? unreadCount = null,
     Object? hasMore = null,
+    Object? newNotificationIds = null,
   }) {
     return _then(_$LoadedImpl(
       notifications: null == notifications
@@ -398,6 +402,10 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.hasMore
           : hasMore // ignore: cast_nullable_to_non_nullable
               as bool,
+      newNotificationIds: null == newNotificationIds
+          ? _value._newNotificationIds
+          : newNotificationIds // ignore: cast_nullable_to_non_nullable
+              as Set<int>,
     ));
   }
 }
@@ -408,8 +416,10 @@ class _$LoadedImpl implements _Loaded {
   const _$LoadedImpl(
       {required final List<MwNotification> notifications,
       required this.unreadCount,
-      required this.hasMore})
-      : _notifications = notifications;
+      required this.hasMore,
+      final Set<int> newNotificationIds = const {}})
+      : _notifications = notifications,
+        _newNotificationIds = newNotificationIds;
 
   final List<MwNotification> _notifications;
   @override
@@ -423,10 +433,19 @@ class _$LoadedImpl implements _Loaded {
   final int unreadCount;
   @override
   final bool hasMore;
+  final Set<int> _newNotificationIds;
+  @override
+  @JsonKey()
+  Set<int> get newNotificationIds {
+    if (_newNotificationIds is EqualUnmodifiableSetView)
+      return _newNotificationIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableSetView(_newNotificationIds);
+  }
 
   @override
   String toString() {
-    return 'NotificationListState.loaded(notifications: $notifications, unreadCount: $unreadCount, hasMore: $hasMore)';
+    return 'NotificationListState.loaded(notifications: $notifications, unreadCount: $unreadCount, hasMore: $hasMore, newNotificationIds: $newNotificationIds)';
   }
 
   @override
@@ -438,7 +457,9 @@ class _$LoadedImpl implements _Loaded {
                 .equals(other._notifications, _notifications) &&
             (identical(other.unreadCount, unreadCount) ||
                 other.unreadCount == unreadCount) &&
-            (identical(other.hasMore, hasMore) || other.hasMore == hasMore));
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
+            const DeepCollectionEquality()
+                .equals(other._newNotificationIds, _newNotificationIds));
   }
 
   @override
@@ -446,7 +467,8 @@ class _$LoadedImpl implements _Loaded {
       runtimeType,
       const DeepCollectionEquality().hash(_notifications),
       unreadCount,
-      hasMore);
+      hasMore,
+      const DeepCollectionEquality().hash(_newNotificationIds));
 
   @JsonKey(ignore: true)
   @override
@@ -459,15 +481,15 @@ class _$LoadedImpl implements _Loaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
         error,
     required TResult Function() empty,
   }) {
-    return loaded(notifications, unreadCount, hasMore);
+    return loaded(notifications, unreadCount, hasMore, newNotificationIds);
   }
 
   @override
@@ -475,14 +497,15 @@ class _$LoadedImpl implements _Loaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
     TResult? Function()? empty,
   }) {
-    return loaded?.call(notifications, unreadCount, hasMore);
+    return loaded?.call(
+        notifications, unreadCount, hasMore, newNotificationIds);
   }
 
   @override
@@ -490,15 +513,15 @@ class _$LoadedImpl implements _Loaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(notifications, unreadCount, hasMore);
+      return loaded(notifications, unreadCount, hasMore, newNotificationIds);
     }
     return orElse();
   }
@@ -548,11 +571,13 @@ abstract class _Loaded implements NotificationListState {
   const factory _Loaded(
       {required final List<MwNotification> notifications,
       required final int unreadCount,
-      required final bool hasMore}) = _$LoadedImpl;
+      required final bool hasMore,
+      final Set<int> newNotificationIds}) = _$LoadedImpl;
 
   List<MwNotification> get notifications;
   int get unreadCount;
   bool get hasMore;
+  Set<int> get newNotificationIds;
   @JsonKey(ignore: true)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -643,8 +668,8 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
@@ -659,8 +684,8 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
@@ -674,8 +699,8 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,
@@ -780,8 +805,8 @@ class _$EmptyImpl implements _Empty {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)
+    required TResult Function(List<MwNotification> notifications,
+            int unreadCount, bool hasMore, Set<int> newNotificationIds)
         loaded,
     required TResult Function(
             String message, List<MwNotification> notifications)
@@ -796,8 +821,8 @@ class _$EmptyImpl implements _Empty {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult? Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult? Function(String message, List<MwNotification> notifications)?
         error,
@@ -811,8 +836,8 @@ class _$EmptyImpl implements _Empty {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(
-            List<MwNotification> notifications, int unreadCount, bool hasMore)?
+    TResult Function(List<MwNotification> notifications, int unreadCount,
+            bool hasMore, Set<int> newNotificationIds)?
         loaded,
     TResult Function(String message, List<MwNotification> notifications)? error,
     TResult Function()? empty,

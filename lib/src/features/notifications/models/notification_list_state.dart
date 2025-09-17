@@ -20,10 +20,12 @@ class NotificationListState with _$NotificationListState {
   /// [notifications] - List of notifications to display
   /// [unreadCount] - Number of unread notifications
   /// [hasMore] - Whether there are more notifications to load
+  /// [newNotificationIds] - Set of notification IDs that should animate in
   const factory NotificationListState.loaded({
     required List<MwNotification> notifications,
     required int unreadCount,
     required bool hasMore,
+    @Default({}) Set<int> newNotificationIds,
   }) = _Loaded;
 
   /// Error state when an error occurs while fetching notifications.
