@@ -184,8 +184,10 @@ class OfflineMessageService {
 }
 
 /// Provider for the OfflineMessageService
-final offlineMessageServiceProvider = Provider<OfflineMessageService>((ref) {
+final offlineMessageServiceProvider = FutureProvider<OfflineMessageService>((
+  ref,
+) async {
   final service = OfflineMessageService();
-  service.initialize();
+  await service.initialize();
   return service;
 });

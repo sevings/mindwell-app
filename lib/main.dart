@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'src/app.dart';
+import 'src/features/chat/models/cached_message.dart';
 
 /// Main entry point of the Mindwell application.
 ///
@@ -25,6 +26,9 @@ void main() async {
 
   // Initialize Hive for local storage
   await Hive.initFlutter();
+
+  // Register Hive adapters
+  Hive.registerAdapter(CachedMessageAdapter());
 
   // Initialize Flutter Secure Storage
   // This will be used later for storing authentication tokens

@@ -137,9 +137,10 @@ class ChatListItem extends StatelessWidget {
     }
 
     final content = lastMessage.editContent ?? lastMessage.content ?? '';
-    final preview = content.length > 50
-        ? '${content.substring(0, 50)}...'
-        : content;
+    final plainText = _stripHtmlTags(content);
+    final preview = plainText.length > 50
+        ? '${plainText.substring(0, 50)}...'
+        : plainText;
 
     return Text(
       preview,
@@ -228,5 +229,26 @@ class ChatListItem extends StatelessWidget {
     if (username != null && username.isNotEmpty) {
       context.push('/chats/$username');
     }
+  }
+
+  /// Strips HTML tags from content to create plain text preview
+  String _stripHtmlTags(String html) {
+    if (html.isEmpty) return '';
+
+    // Simple HTML tag removal using regex
+    // This handles most common cases for message content
+    return html
+        .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
+        .replaceAll(RegExp(r'&nbsp;'), ' ') // Replace non-breaking spaces
+        .replaceAll(RegExp(r'&amp;'), '&') // Replace HTML entities
+        .replaceAll(RegExp(r'&lt;'), '<')
+        .replaceAll(RegExp(r'&gt;'), '>')
+        .replaceAll(RegExp(r'&quot;'), '"')
+        .replaceAll(RegExp(r'&#39;'), "'")
+        .replaceAll(
+          RegExp(r'\s+'),
+          ' ',
+        ) // Replace multiple whitespace with single space
+        .trim();
   }
 }

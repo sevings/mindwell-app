@@ -104,8 +104,8 @@ void main() {
         final mockMessageList = MwMessageList(
           (b) => b
             ..data = ListBuilder<MwMessage>([mockMessage])
-            ..hasAfter = false
-            ..nextAfter = null,
+            ..hasBefore = false
+            ..nextBefore = null,
         );
 
         final mockResponse = Response<MwMessageList>(
@@ -135,13 +135,72 @@ void main() {
         expect(loadedState.hasMore, isFalse);
       });
 
+      test('should order messages correctly with newest at the end', () async {
+        // Arrange
+        final olderMessage = MwMessage(
+          (b) => b
+            ..id = 1
+            ..chatId = testChatId
+            ..content = 'Older message'
+            ..createdAt =
+                DateTime.now()
+                    .subtract(const Duration(hours: 1))
+                    .millisecondsSinceEpoch /
+                1000
+            ..read = false,
+        );
+
+        final newerMessage = MwMessage(
+          (b) => b
+            ..id = 2
+            ..chatId = testChatId
+            ..content = 'Newer message'
+            ..createdAt = DateTime.now().millisecondsSinceEpoch / 1000
+            ..read = false,
+        );
+
+        // API returns messages in reverse chronological order (newest first)
+        final mockMessageList = MwMessageList(
+          (b) => b
+            ..data = ListBuilder<MwMessage>([newerMessage, olderMessage])
+            ..hasBefore = false
+            ..nextBefore = null,
+        );
+
+        final mockResponse = Response<MwMessageList>(
+          data: mockMessageList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        );
+
+        when(
+          () => mockChatsApi.chatsNameMessagesGet(
+            name: testUsername,
+            limit: 30,
+            after: null,
+            before: null,
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        // Act
+        await notifier.fetchInitialMessages();
+
+        // Assert
+        expect(notifier.state, isA<ChatMessagesLoaded>());
+        final loadedState = notifier.state as ChatMessagesLoaded;
+        expect(loadedState.messages, hasLength(2));
+        // After reversing, older message should be first, newer message should be last
+        expect(loadedState.messages.first.content, equals('Older message'));
+        expect(loadedState.messages.last.content, equals('Newer message'));
+      });
+
       test('should handle empty message list', () async {
         // Arrange
         final mockMessageList = MwMessageList(
           (b) => b
             ..data = ListBuilder<MwMessage>(<MwMessage>[])
-            ..hasAfter = false
-            ..nextAfter = null,
+            ..hasBefore = false
+            ..nextBefore = null,
         );
 
         final mockResponse = Response<MwMessageList>(
@@ -187,6 +246,107 @@ void main() {
         expect(notifier.state, isA<ChatMessagesError>());
         final errorState = notifier.state as ChatMessagesError;
         expect(errorState.message, contains('Failed to load messages'));
+      });
+    });
+
+    group('fetchMoreMessages', () {
+      test('should fetch more messages using before parameter', () async {
+        // Arrange
+        final olderMessage = MwMessage(
+          (b) => b
+            ..id = 1
+            ..chatId = testChatId
+            ..content = 'Older message'
+            ..createdAt =
+                DateTime.now()
+                    .subtract(const Duration(hours: 1))
+                    .millisecondsSinceEpoch /
+                1000
+            ..read = false,
+        );
+
+        final newerMessage = MwMessage(
+          (b) => b
+            ..id = 2
+            ..chatId = testChatId
+            ..content = 'Newer message'
+            ..createdAt = DateTime.now().millisecondsSinceEpoch / 1000
+            ..read = false,
+        );
+
+        final mockMessageList = MwMessageList(
+          (b) => b
+            ..data = ListBuilder<MwMessage>([olderMessage])
+            ..hasBefore = false
+            ..nextBefore = null,
+        );
+
+        final mockResponse = Response<MwMessageList>(
+          data: mockMessageList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/test'),
+        );
+
+        when(
+          () => mockChatsApi.chatsNameMessagesGet(
+            name: testUsername,
+            limit: 30,
+            after: null,
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
+
+        // Set initial state with newer message
+        notifier.state = ChatMessagesState.loaded(
+          messages: [newerMessage],
+          messageStatus: {},
+          hasMore: true,
+        );
+
+        // Act
+        await notifier.fetchMoreMessages();
+
+        // Assert
+        expect(notifier.state, isA<ChatMessagesLoaded>());
+        final loadedState = notifier.state as ChatMessagesLoaded;
+        expect(loadedState.messages, hasLength(2));
+        // Older message should be first (for ListView with reverse: true)
+        expect(loadedState.messages.first.content, equals('Older message'));
+        expect(loadedState.messages.last.content, equals('Newer message'));
+        expect(loadedState.hasMore, isFalse);
+      });
+
+      test('should not fetch more messages when hasMore is false', () async {
+        // Arrange
+        final testMessage = MwMessage(
+          (b) => b
+            ..id = testMessageId
+            ..content = 'Test message'
+            ..createdAt = DateTime.now().millisecondsSinceEpoch / 1000,
+        );
+
+        // Set initial state with hasMore = false
+        notifier.state = ChatMessagesState.loaded(
+          messages: [testMessage],
+          messageStatus: {},
+          hasMore: false,
+        );
+
+        // Clear any previous calls from initialization
+        clearInteractions(mockChatsApi);
+
+        // Act
+        await notifier.fetchMoreMessages();
+
+        // Assert
+        verifyNever(
+          () => mockChatsApi.chatsNameMessagesGet(
+            name: any(named: 'name'),
+            limit: any(named: 'limit'),
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        );
       });
     });
 
@@ -377,8 +537,8 @@ void main() {
         final mockMessageList = MwMessageList(
           (b) => b
             ..data = ListBuilder<MwMessage>([mockMessage])
-            ..hasAfter = false
-            ..nextAfter = null,
+            ..hasBefore = false
+            ..nextBefore = null,
         );
 
         final mockResponse = Response<MwMessageList>(

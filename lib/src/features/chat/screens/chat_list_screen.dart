@@ -48,9 +48,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final chatListState = ref.watch(chatListProvider);
+
+    if (l10n == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       body: CustomScrollView(
@@ -110,10 +114,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final chat = chats[index];
-                return ChatListItem(
-                  chat: chat,
-                  onTap: () => _navigateToChat(chat),
-                );
+                return ChatListItem(chat: chat);
               }, childCount: chats.length),
             ),
             if (isFetchingMore)
@@ -225,13 +226,5 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         strokeWidth: 2,
       ),
     );
-  }
-
-  /// Navigates to a specific chat
-  void _navigateToChat(MwChat chat) {
-    final partner = chat.partner;
-    if (partner?.name != null) {
-      // Navigation will be handled by ChatListItem
-    }
   }
 }

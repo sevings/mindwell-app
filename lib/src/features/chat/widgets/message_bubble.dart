@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
+import '../../../core/widgets/user_avatar.dart';
+import '../../../core/widgets/html_content.dart';
 import '../models/chat_messages_state.dart';
 import '../models/message_action.dart';
 import '../providers/chat_messages_provider.dart';
@@ -183,14 +185,24 @@ class _MessageBubbleState extends ConsumerState<MessageBubble>
           ),
         ],
       ),
-      child: Text(
-        content,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: widget.isFromCurrentUser
-              ? colorScheme.onPrimary
-              : colorScheme.onSurface,
-        ),
-      ),
+      child: _isHtmlContent(content)
+          ? HtmlContent(
+              html: content,
+              textStyle: theme.textTheme.bodyMedium?.copyWith(
+                color: widget.isFromCurrentUser
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurface,
+              ),
+              shrinkWrap: true,
+            )
+          : Text(
+              content,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: widget.isFromCurrentUser
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurface,
+              ),
+            ),
     );
   }
 
@@ -306,8 +318,18 @@ class _MessageBubbleState extends ConsumerState<MessageBubble>
 
   /// Builds the avatar for received messages
   Widget _buildAvatar(ThemeData theme) {
-    // For now, we'll use a simple circle avatar
-    // In a real implementation, you might want to fetch the user's avatar
+    // Use real user avatar from message author data
+    final author = widget.message.author;
+    if (author != null) {
+      return UserAvatar(
+        avatar: author.avatar,
+        radius: 16,
+        showOnlineStatus: true,
+        isOnline: author.isOnline ?? false,
+      );
+    }
+
+    // Fallback to simple circle avatar
     return CircleAvatar(
       radius: 16,
       backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -357,5 +379,12 @@ class _MessageBubbleState extends ConsumerState<MessageBubble>
   String _getSemanticLabel(String content, MessageStatus? status) {
     final statusText = status != null ? 'Status: ${status.name}' : '';
     return '$content. $statusText';
+  }
+
+  /// Checks if the content contains HTML tags
+  bool _isHtmlContent(String content) {
+    // Simple check for HTML tags
+    final htmlTagPattern = RegExp(r'<[^>]*>');
+    return htmlTagPattern.hasMatch(content);
   }
 }

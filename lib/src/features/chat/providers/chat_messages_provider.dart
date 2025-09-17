@@ -30,15 +30,29 @@ final chatMessagesProvider =
       final chatsApi = ref.read(chatsApiProvider);
       final websocketService = ref.read(websocketServiceProvider);
       final connectionService = ref.read(connectionServiceProvider);
-      final offlineMessageService = ref.read(offlineMessageServiceProvider);
-
-      return ChatMessagesNotifier(
-        username: username,
-        chatsApi: chatsApi,
-        websocketService: websocketService,
-        connectionService: connectionService,
-        offlineMessageService: offlineMessageService,
+      final offlineMessageServiceAsync = ref.read(
+        offlineMessageServiceProvider,
       );
+
+      // Handle the async initialization of OfflineMessageService
+      if (offlineMessageServiceAsync.hasValue) {
+        return ChatMessagesNotifier(
+          username: username,
+          chatsApi: chatsApi,
+          websocketService: websocketService,
+          connectionService: connectionService,
+          offlineMessageService: offlineMessageServiceAsync.value!,
+        );
+      } else {
+        // Return a notifier that will handle initialization later
+        return ChatMessagesNotifier(
+          username: username,
+          chatsApi: chatsApi,
+          websocketService: websocketService,
+          connectionService: connectionService,
+          offlineMessageService: null, // Will be set later
+        );
+      }
     });
 
 /// Notifier that manages the state and logic for chat messages.
@@ -55,10 +69,10 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   final ChatsApi _chatsApi;
   final WebSocketService _websocketService;
   final ConnectionService _connectionService;
-  final OfflineMessageService _offlineMessageService;
+  OfflineMessageService? _offlineMessageService;
   final Logger _logger = Logger('ChatMessagesNotifier');
 
-  String? _nextAfter;
+  String? _nextBefore;
   bool _isLoadingMore = false;
   StreamSubscription<Map<String, dynamic>>? _websocketSubscription;
   StreamSubscription<core.ConnectionStatus>? _connectionSubscription;
@@ -69,7 +83,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     required ChatsApi chatsApi,
     required WebSocketService websocketService,
     required ConnectionService connectionService,
-    required OfflineMessageService offlineMessageService,
+    OfflineMessageService? offlineMessageService,
   }) : _chatsApi = chatsApi,
        _websocketService = websocketService,
        _connectionService = connectionService,
@@ -80,6 +94,14 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
 
   /// Initialize the notifier by setting up WebSocket subscription and connection monitoring.
   Future<void> _initialize() async {
+    // Initialize OfflineMessageService if not already available
+    if (_offlineMessageService == null) {
+      // This is a workaround - in a real app, you'd want to use a proper async provider pattern
+      // For now, we'll create a new instance and initialize it
+      _offlineMessageService = OfflineMessageService();
+      await _offlineMessageService!.initialize();
+    }
+
     // Listen to WebSocket message messages
     _websocketSubscription = _websocketService.messageMessagesStream.listen(
       _handleWebSocketMessage,
@@ -144,12 +166,14 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       }
 
       final messages = messageList.data?.toList() ?? [];
-      final hasMore = messageList.hasAfter ?? false;
-      _nextAfter = messageList.nextAfter;
+      // Reverse messages so newest are at the end (for ListView with reverse: true)
+      final orderedMessages = messages.reversed.toList();
+      final hasMore = messageList.hasBefore ?? false;
+      _nextBefore = messageList.nextBefore;
 
       _logger.info('Fetched ${messages.length} messages');
 
-      if (messages.isEmpty) {
+      if (orderedMessages.isEmpty) {
         state = ChatMessagesState.loaded(
           messages: [],
           messageStatus: {},
@@ -157,14 +181,14 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         );
       } else {
         state = ChatMessagesState.loaded(
-          messages: messages,
+          messages: orderedMessages,
           messageStatus: {},
           hasMore: hasMore,
           connectionStatus: _connectionService.currentStatus,
         );
 
         // Cache the fetched messages
-        await _offlineMessageService.cacheMessages(username, messages);
+        await _offlineMessageService?.cacheMessages(username, orderedMessages);
       }
     } catch (e, stackTrace) {
       _logger.severe('Failed to fetch initial messages', e, stackTrace);
@@ -205,30 +229,36 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       final response = await _chatsApi.chatsNameMessagesGet(
         name: username,
         limit: 30,
-        after: _nextAfter,
-        before: null,
+        after: null,
+        before: _nextBefore,
       );
 
       final messageList = response.data;
       if (messageList != null) {
         final newMessages = messageList.data?.toList() ?? [];
-        _nextAfter = messageList.nextAfter;
+        // Reverse new messages so they're in chronological order
+        final orderedNewMessages = newMessages.reversed.toList();
+        _nextBefore = messageList.nextBefore;
 
+        // Prepend older messages to the beginning of the list
         final allMessages = <MwMessage>[
+          ...orderedNewMessages,
           ...currentState.messages,
-          ...newMessages,
         ];
 
-        _logger.info('Fetched ${newMessages.length} more messages');
+        _logger.info('Fetched ${orderedNewMessages.length} more messages');
         state = ChatMessagesState.loaded(
           messages: allMessages,
           messageStatus: {},
-          hasMore: messageList.hasAfter ?? false,
+          hasMore: messageList.hasBefore ?? false,
           connectionStatus: _connectionService.currentStatus,
         );
 
         // Cache the new messages
-        await _offlineMessageService.cacheMessages(username, newMessages);
+        await _offlineMessageService?.cacheMessages(
+          username,
+          orderedNewMessages,
+        );
       }
     } catch (e, stackTrace) {
       _logger.severe('Failed to fetch more messages', e, stackTrace);
@@ -287,8 +317,8 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         ..rights = null,
     );
 
-    // Add the temporary message to the state
-    final updatedMessages = [tempMessage, ...currentState.messages];
+    // Add the temporary message to the end of the state (for ListView with reverse: true)
+    final updatedMessages = [...currentState.messages, tempMessage];
     final updatedMessageStatus = Map<int, MessageStatus>.from(
       currentState.messageStatus,
     );
@@ -306,7 +336,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     // Check if we're offline
     if (currentState.connectionStatus == core.ConnectionStatus.disconnected) {
       // Queue the message for later sending
-      await _offlineMessageService.queueMessage(username, text.trim());
+      await _offlineMessageService?.queueMessage(username, text.trim());
 
       // Update status to failed (will be retried when connection is restored)
       final failedMessageStatus = Map<int, MessageStatus>.from(
@@ -362,7 +392,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         );
 
         // Cache the sent message
-        await _offlineMessageService.cacheMessages(username, [sentMessage]);
+        await _offlineMessageService?.cacheMessages(username, [sentMessage]);
 
         _logger.info('Message sent successfully: ${sentMessage.id}');
       } else {
@@ -481,10 +511,10 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
           );
 
           if (!messageExists) {
-            // Add new message to the beginning of the list
+            // Add new message to the end of the list (for ListView with reverse: true)
             final updatedMessages = <MwMessage>[
-              newMessage,
               ...currentState.messages,
+              newMessage,
             ];
 
             // Set message status based on whether it's from current user
@@ -513,8 +543,10 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   /// Load cached messages from local storage
   Future<void> _loadCachedMessages() async {
     try {
-      final cachedMessages = _offlineMessageService.getCachedMessages(username);
-      final readMessageIds = _offlineMessageService.getReadMessageIds(username);
+      final cachedMessages =
+          _offlineMessageService?.getCachedMessages(username) ?? [];
+      final readMessageIds =
+          _offlineMessageService?.getReadMessageIds(username) ?? {};
 
       if (cachedMessages.isNotEmpty) {
         state = ChatMessagesState.loaded(
@@ -579,7 +611,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   /// Sync queued messages when connection is restored
   Future<void> _syncQueuedMessages() async {
     try {
-      final queuedMessages = _offlineMessageService.getQueuedMessages();
+      final queuedMessages = _offlineMessageService?.getQueuedMessages() ?? [];
       final chatQueuedMessages = queuedMessages
           .where((msg) => msg['chatUsername'] == username)
           .toList();
@@ -594,7 +626,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
 
           if (response.data != null) {
             // Remove from queue
-            await _offlineMessageService.removeQueuedMessage(
+            await _offlineMessageService?.removeQueuedMessage(
               username,
               queuedMessage['uid'] as int,
             );
@@ -660,7 +692,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
         );
 
         // Mark as read locally
-        _offlineMessageService.markMessagesAsRead(username, messageIds);
+        _offlineMessageService?.markMessagesAsRead(username, messageIds);
 
         // Mark as read on server if connected
         if (currentState.connectionStatus == core.ConnectionStatus.connected) {
@@ -957,7 +989,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     _logger.info('Refreshing messages');
 
     // Reset pagination
-    _nextAfter = null;
+    _nextBefore = null;
 
     // Fetch fresh data
     await fetchInitialMessages();
