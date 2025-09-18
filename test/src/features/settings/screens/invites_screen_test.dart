@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/src/features/settings/screens/invites_screen.dart';
-import '../../../../../lib/src/features/settings/providers/invites_provider.dart';
-import '../../../../../lib/src/features/settings/models/invites_state.dart';
-import '../../../../../lib/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/settings/screens/invites_screen.dart';
+import 'package:mindwell/src/features/settings/providers/invites_provider.dart';
+import 'package:mindwell/src/features/settings/models/invites_state.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
 
 class MockInvitesNotifier extends StateNotifier<InvitesState>
     with Mock

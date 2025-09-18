@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/l10n/app_localizations.dart';
-import '../../../../../lib/src/features/settings/models/settings_state.dart';
-import '../../../../../lib/src/features/settings/providers/settings_provider.dart';
-import '../../../../../lib/src/features/settings/screens/settings_screen.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/features/settings/models/settings_state.dart';
+import 'package:mindwell/src/features/settings/providers/settings_provider.dart';
+import 'package:mindwell/src/features/settings/screens/settings_screen.dart';
 
 /// Mock class for AccountApi
 class MockAccountApi extends Mock implements AccountApi {}

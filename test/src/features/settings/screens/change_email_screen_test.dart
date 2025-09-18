@@ -9,7 +9,6 @@ import 'dart:async';
 
 import 'package:mindwell/src/features/settings/screens/change_email_screen.dart';
 import 'package:mindwell/src/core/api/api_provider.dart';
-import 'package:mindwell/l10n/app_localizations.dart';
 
 class MockMindwellApi extends Mock implements MindwellApi {}
 

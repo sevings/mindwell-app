@@ -102,6 +102,12 @@ final watchingsApiProvider = Provider<WatchingsApi>((ref) {
   return api.getWatchingsApi();
 });
 
+/// Provider for the RelationsApi instance.
+final relationsApiProvider = Provider<RelationsApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getRelationsApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 ///
 /// This interceptor:
