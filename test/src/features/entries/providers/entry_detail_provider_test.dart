@@ -9,12 +9,21 @@ import 'package:mindwell/src/features/entries/providers/entry_detail_provider.da
 
 // Mock classes
 class MockEntriesApi extends Mock implements EntriesApi {}
+
 class MockCommentsApi extends Mock implements CommentsApi {}
+
+class MockWatchingsApi extends Mock implements WatchingsApi {}
+
 class MockMwEntry extends Mock implements MwEntry {}
+
 class MockMwComment extends Mock implements MwComment {}
+
 class MockMwCommentList extends Mock implements MwCommentList {}
+
 class MockMwUser extends Mock implements MwUser {}
+
 class MockMwRating extends Mock implements MwRating {}
+
 class MockMwAdjacentEntries extends Mock implements MwAdjacentEntries {}
 
 // Helper functions for testing state
@@ -22,7 +31,14 @@ bool isLoadedState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => false,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => true,
+    loaded:
+        (
+          entry,
+          comments,
+          hasMoreComments,
+          isLoadingComments,
+          adjacentEntries,
+        ) => true,
     error: (message, entry) => false,
   );
 }
@@ -31,7 +47,14 @@ bool isErrorState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => false,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
+    loaded:
+        (
+          entry,
+          comments,
+          hasMoreComments,
+          isLoadingComments,
+          adjacentEntries,
+        ) => false,
     error: (message, entry) => true,
   );
 }
@@ -40,21 +63,41 @@ bool isLoadingState(EntryDetailState state) {
   return state.when(
     initial: () => false,
     loading: () => true,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => false,
+    loaded:
+        (
+          entry,
+          comments,
+          hasMoreComments,
+          isLoadingComments,
+          adjacentEntries,
+        ) => false,
     error: (message, entry) => false,
   );
 }
 
-({MwEntry entry, List<MwComment> comments, bool hasMoreComments, bool isLoadingComments})? getLoadedState(EntryDetailState state) {
+({
+  MwEntry entry,
+  List<MwComment> comments,
+  bool hasMoreComments,
+  bool isLoadingComments,
+})?
+getLoadedState(EntryDetailState state) {
   return state.when(
     initial: () => null,
     loading: () => null,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => (
-      entry: entry,
-      comments: comments,
-      hasMoreComments: hasMoreComments,
-      isLoadingComments: isLoadingComments,
-    ),
+    loaded:
+        (
+          entry,
+          comments,
+          hasMoreComments,
+          isLoadingComments,
+          adjacentEntries,
+        ) => (
+          entry: entry,
+          comments: comments,
+          hasMoreComments: hasMoreComments,
+          isLoadingComments: isLoadingComments,
+        ),
     error: (message, entry) => null,
   );
 }
@@ -63,7 +106,14 @@ String? getErrorMessage(EntryDetailState state) {
   return state.when(
     initial: () => null,
     loading: () => null,
-    loaded: (entry, comments, hasMoreComments, isLoadingComments, adjacentEntries) => null,
+    loaded:
+        (
+          entry,
+          comments,
+          hasMoreComments,
+          isLoadingComments,
+          adjacentEntries,
+        ) => null,
     error: (message, entry) => message,
   );
 }
@@ -127,31 +177,38 @@ void main() {
 
     test('should start with initial state', () {
       // Setup API responses to prevent errors during initialization
-      when(() => mockEntriesApi.entriesIdGet(id: 123))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                requestOptions: RequestOptions(path: '/entries/123'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/entries/123'),
+        ),
+      );
 
-      when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-          .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                data: mockAdjacentEntries,
-                statusCode: 200,
-                requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-              ));
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: mockAdjacentEntries,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+        ),
+      );
 
-        when(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: null,
-            )).thenAnswer((_) async => Response<MwCommentList>(
-                  data: mockCommentList,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/comments'),
-                ));
+      when(
+        () => mockCommentsApi.entriesIdCommentsGet(
+          id: 123,
+          limit: 30,
+          before: null,
+        ),
+      ).thenAnswer(
+        (_) async => Response<MwCommentList>(
+          data: mockCommentList,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/entries/123/comments'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: 123,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -164,21 +221,24 @@ void main() {
     group('fetchEntryDetails', () {
       test('should fetch entry details and comments successfully', () async {
         // Setup API responses
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -188,7 +248,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 100));
 
         expect(isLoadedState(notifier.state), isTrue);
-        
+
         final loadedState = getLoadedState(notifier.state);
         expect(loadedState, isNotNull);
         expect(loadedState!.entry.id, equals(123));
@@ -198,29 +258,34 @@ void main() {
 
         verify(() => mockEntriesApi.entriesIdGet(id: 123)).called(1);
         // Should not make a separate comments API call since comments come from entry response
-        verifyNever(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: null,
-            ));
+        verifyNever(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: null,
+          ),
+        );
       });
 
       test('should handle entry not found error', () async {
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: null,
-                  statusCode: 404,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: null,
+            statusCode: 404,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: null,
-                  statusCode: 404,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: null,
+            statusCode: 404,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -234,13 +299,16 @@ void main() {
       });
 
       test('should handle API error', () async {
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenThrow(Exception('Network error'));
+        when(
+          () => mockEntriesApi.entriesIdGet(id: 123),
+        ).thenThrow(Exception('Network error'));
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenThrow(Exception('Network error'));
+        when(
+          () => mockEntriesApi.entriesIdAdjacentGet(id: 123),
+        ).thenThrow(Exception('Network error'));
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -250,31 +318,35 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 100));
 
         expect(isErrorState(notifier.state), isTrue);
-        expect(getErrorMessage(notifier.state), contains('Failed to load entry'));
+        expect(
+          getErrorMessage(notifier.state),
+          contains('Failed to load entry'),
+        );
       });
 
       test('should not fetch if already loading', () async {
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                requestOptions: RequestOptions(path: '/entries/123'),
-              );
-            });
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          );
+        });
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return Response<MwAdjacentEntries>(
-                data: mockAdjacentEntries,
-                statusCode: 200,
-                requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-              );
-            });
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer((
+          _,
+        ) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          );
+        });
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -297,21 +369,24 @@ void main() {
     group('loadMoreComments', () {
       setUp(() async {
         // Setup initial state with loaded entry and comments
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -328,19 +403,25 @@ void main() {
         when(() => additionalComment.author).thenReturn(mockUser);
 
         final additionalCommentList = MockMwCommentList();
-        when(() => additionalCommentList.data).thenReturn(BuiltList([additionalComment]));
+        when(
+          () => additionalCommentList.data,
+        ).thenReturn(BuiltList([additionalComment]));
         when(() => additionalCommentList.nextBefore).thenReturn(null);
         when(() => additionalCommentList.hasBefore).thenReturn(false);
 
-        when(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: 'next_cursor',
-            )).thenAnswer((_) async => Response<MwCommentList>(
-                  data: additionalCommentList,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/comments'),
-                ));
+        when(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_cursor',
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwCommentList>(
+            data: additionalCommentList,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/comments'),
+          ),
+        );
 
         await notifier.loadMoreComments();
 
@@ -349,11 +430,13 @@ void main() {
         expect(loadedState!.comments.length, equals(2));
         expect(loadedState.hasMoreComments, isFalse);
 
-        verify(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: 'next_cursor',
-            )).called(1);
+        verify(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_cursor',
+          ),
+        ).called(1);
       });
 
       test('should not load more comments if no more available', () async {
@@ -368,96 +451,110 @@ void main() {
         when(() => mockEntryNoMore.favoriteCount).thenReturn(2);
         when(() => mockEntryNoMore.isFavorited).thenReturn(false);
         when(() => mockEntryNoMore.createdAt).thenReturn(1640995200.0);
-        
+
         // Create a comment list with no more comments
         final mockCommentListNoMore = MockMwCommentList();
-        when(() => mockCommentListNoMore.data).thenReturn(BuiltList([mockComment]));
+        when(
+          () => mockCommentListNoMore.data,
+        ).thenReturn(BuiltList([mockComment]));
         when(() => mockCommentListNoMore.nextBefore).thenReturn(null);
         when(() => mockCommentListNoMore.hasBefore).thenReturn(false);
-        
-        when(() => mockEntryNoMore.comments).thenReturn(mockCommentListNoMore);
-        
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntryNoMore,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
-        
+        when(() => mockEntryNoMore.comments).thenReturn(mockCommentListNoMore);
+
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntryNoMore,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
+
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
+
         final testNotifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
         );
-        
+
         // Wait for initial load to complete
         await Future.delayed(const Duration(milliseconds: 100));
-        
+
         // Try to load more comments - should not make API call since hasMoreComments is false
         await testNotifier.loadMoreComments();
-        
+
         // Should not make additional API call
-        verifyNever(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: any(named: 'before'),
-            ));
+        verifyNever(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: any(named: 'before'),
+          ),
+        );
       });
 
       test('should not load more comments if already loading', () async {
-        when(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: 'next_cursor',
-            )).thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return Response<MwCommentList>(
-                data: mockCommentList,
-                statusCode: 200,
-                requestOptions: RequestOptions(path: '/entries/123/comments'),
-              );
-            });
+        when(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_cursor',
+          ),
+        ).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return Response<MwCommentList>(
+            data: mockCommentList,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/comments'),
+          );
+        });
 
         // Start loading more comments
         notifier.loadMoreComments();
-        
+
         // Try to load more while already loading
         await notifier.loadMoreComments();
 
         // Should only be called once
-        verify(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: 'next_cursor',
-            )).called(1);
+        verify(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_cursor',
+          ),
+        ).called(1);
       });
     });
 
     group('refresh', () {
       setUp(() async {
         // Setup initial state
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -471,35 +568,44 @@ void main() {
         await notifier.refresh();
 
         // Should make fresh API calls
-        verify(() => mockEntriesApi.entriesIdGet(id: 123)).called(2); // Once for init, once for refresh
-        verify(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).called(2); // Once for init, once for refresh
+        verify(
+          () => mockEntriesApi.entriesIdGet(id: 123),
+        ).called(2); // Once for init, once for refresh
+        verify(
+          () => mockEntriesApi.entriesIdAdjacentGet(id: 123),
+        ).called(2); // Once for init, once for refresh
         // Should not make separate comments API calls since comments come from entry response
-        verifyNever(() => mockCommentsApi.entriesIdCommentsGet(
-              id: 123,
-              limit: 30,
-              before: null,
-            ));
+        verifyNever(
+          () => mockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: null,
+          ),
+        );
       });
     });
 
     group('voteEntry', () {
       setUp(() async {
         // Setup initial state
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -529,21 +635,24 @@ void main() {
     group('toggleFavorite', () {
       setUp(() async {
         // Setup initial state
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -564,21 +673,24 @@ void main() {
     group('addComment', () {
       setUp(() async {
         // Setup initial state
-        when(() => mockEntriesApi.entriesIdGet(id: 123))
-            .thenAnswer((_) async => Response<MwEntry>(
-                  data: mockEntry,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123'),
-                ));
+        when(() => mockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: mockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
 
-        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123))
-            .thenAnswer((_) async => Response<MwAdjacentEntries>(
-                  data: mockAdjacentEntries,
-                  statusCode: 200,
-                  requestOptions: RequestOptions(path: '/entries/123/adjacent'),
-                ));
+        when(() => mockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
 
         notifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
           entryId: 123,
           entriesApi: mockEntriesApi,
           commentsApi: mockCommentsApi,
@@ -594,43 +706,63 @@ void main() {
         when(() => newComment.content).thenReturn('New comment');
         when(() => newComment.author).thenReturn(mockUser);
 
-        when(() => mockCommentsApi.entriesIdCommentsPost(
-              id: 123,
-              content: 'New comment',
-            )).thenAnswer((_) async => Response<MwComment>(
-                  data: newComment,
-                  statusCode: 201,
-                  requestOptions: RequestOptions(path: '/entries/123/comments'),
-                ));
+        when(
+          () => mockCommentsApi.entriesIdCommentsPost(
+            id: 123,
+            content: 'New comment',
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwComment>(
+            data: newComment,
+            statusCode: 201,
+            requestOptions: RequestOptions(path: '/entries/123/comments'),
+          ),
+        );
 
         await notifier.addComment('New comment');
 
         final loadedState = getLoadedState(notifier.state);
         expect(loadedState, isNotNull);
-        expect(loadedState!.comments.length, equals(2)); // Original + new comment
+        expect(
+          loadedState!.comments.length,
+          equals(2),
+        ); // Original + new comment
         // Note: commentCount is not updated since we can't modify built_value models
         // In a real implementation, this would be updated
-        expect(loadedState.entry.commentCount, equals(3)); // Original count unchanged
+        expect(
+          loadedState.entry.commentCount,
+          equals(3),
+        ); // Original count unchanged
 
-        verify(() => mockCommentsApi.entriesIdCommentsPost(
-              id: 123,
-              content: 'New comment',
-            )).called(1);
+        verify(
+          () => mockCommentsApi.entriesIdCommentsPost(
+            id: 123,
+            content: 'New comment',
+          ),
+        ).called(1);
       });
 
       test('should handle comment addition error gracefully', () async {
-        when(() => mockCommentsApi.entriesIdCommentsPost(
-              id: 123,
-              content: 'New comment',
-            )).thenThrow(Exception('Network error'));
+        when(
+          () => mockCommentsApi.entriesIdCommentsPost(
+            id: 123,
+            content: 'New comment',
+          ),
+        ).thenThrow(Exception('Network error'));
 
         await notifier.addComment('New comment');
 
         // State should remain unchanged on error
         final loadedState = getLoadedState(notifier.state);
         expect(loadedState, isNotNull);
-        expect(loadedState!.comments.length, equals(1)); // Only original comment
-        expect(loadedState.entry.commentCount, equals(3)); // Original count unchanged
+        expect(
+          loadedState!.comments.length,
+          equals(1),
+        ); // Only original comment
+        expect(
+          loadedState.entry.commentCount,
+          equals(3),
+        ); // Original count unchanged
       });
     });
   });

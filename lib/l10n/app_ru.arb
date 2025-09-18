@@ -1242,5 +1242,25 @@
   "unreadMessages": "Непрочитанные сообщения",
   "@unreadMessages": {
     "description": "Unread messages accessibility label"
+  },
+  "reportEntryTitle": "Пожаловаться на эту запись за неподходящий контент.",
+  "@reportEntryTitle": {
+    "description": "Report entry dialog title text"
+  },
+  "additionalDetails": "Дополнительные детали (необязательно)",
+  "@additionalDetails": {
+    "description": "Additional details field label in complain dialog"
+  },
+  "describeIssue": "Пожалуйста, опишите проблему...",
+  "@describeIssue": {
+    "description": "Describe issue field hint in complain dialog"
+  },
+  "submitComplaint": "Отправить жалобу",
+  "@submitComplaint": {
+    "description": "Submit complaint button text"
+  },
+  "failedToSubmitComplaint": "Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.",
+  "@failedToSubmitComplaint": {
+    "description": "Error message when complaint submission fails"
   }
 }

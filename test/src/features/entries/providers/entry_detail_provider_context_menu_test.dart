@@ -9,7 +9,10 @@ import 'package:mindwell/src/features/entries/providers/entry_detail_provider.da
 import 'package:mindwell/src/features/entries/models/entry_detail_state.dart';
 
 class MockEntriesApi extends Mock implements EntriesApi {}
+
 class MockCommentsApi extends Mock implements CommentsApi {}
+
+class MockWatchingsApi extends Mock implements WatchingsApi {}
 
 void main() {
   group('EntryDetailProvider Context Menu Actions', () {
@@ -20,7 +23,7 @@ void main() {
     setUp(() {
       mockEntriesApi = MockEntriesApi();
       mockCommentsApi = MockCommentsApi();
-      
+
       // Suppress logging during tests
       Logger.root.level = Level.OFF;
       Logger.root.onRecord.listen((record) {});
@@ -29,21 +32,34 @@ void main() {
     test('pinEntry calls API and updates state', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..isPinned = false
-        ..rights = MwEntryRights((b) => b..pin = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..isPinned = false
+          ..rights = MwEntryRights((b) => b..pin = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -51,34 +67,65 @@ void main() {
 
       // Wait for initial load
       await Future.delayed(const Duration(milliseconds: 100));
+
+      // Mock the pin API response
+      when(() => mockEntriesApi.entriesIdPinPut(id: entryId)).thenAnswer(
+        (_) async => Response<MwPinStatus>(
+          data: MwPinStatus((b) => b..isPinned = true),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/pin'),
+        ),
+      );
 
       // Act
       await notifier.pinEntry();
 
       // Assert
-      // In a real implementation, we would verify the API call was made
-      // and the state was updated with the new pinned status
-      expect(notifier.state, isA<EntryDetailState>());
+      verify(() => mockEntriesApi.entriesIdPinPut(id: entryId)).called(1);
+
+      // Verify that the entry state is updated with isPinned = true
+      final state = notifier.state;
+      expect(
+        state.maybeWhen(
+          loaded: (entry, _, _, _, _) => entry.isPinned,
+          orElse: () => null,
+        ),
+        isTrue,
+      );
     });
 
     test('unpinEntry calls API and updates state', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..isPinned = true
-        ..rights = MwEntryRights((b) => b..pin = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..isPinned = true
+          ..rights = MwEntryRights((b) => b..pin = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -86,32 +133,66 @@ void main() {
 
       // Wait for initial load
       await Future.delayed(const Duration(milliseconds: 100));
+
+      // Mock the unpin API response
+      when(() => mockEntriesApi.entriesIdPinDelete(id: entryId)).thenAnswer(
+        (_) async => Response<MwPinStatus>(
+          data: MwPinStatus((b) => b..isPinned = false),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/pin'),
+        ),
+      );
 
       // Act
       await notifier.unpinEntry();
 
       // Assert
-      expect(notifier.state, isA<EntryDetailState>());
+      verify(() => mockEntriesApi.entriesIdPinDelete(id: entryId)).called(1);
+
+      // Verify that the entry state is updated with isPinned = false
+      final state = notifier.state;
+      expect(
+        state.maybeWhen(
+          loaded: (entry, _, _, _, _) => entry.isPinned,
+          orElse: () => null,
+        ),
+        isFalse,
+      );
     });
 
     test('followEntry calls API and updates state', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..isWatching = false
-        ..rights = MwEntryRights((b) => b..vote = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..isWatching = false
+          ..rights = MwEntryRights((b) => b..vote = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
 
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
+
+      final mockWatchingsApi = MockWatchingsApi();
       notifier = EntryDetailNotifier(
+        watchingsApi: mockWatchingsApi,
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -119,32 +200,68 @@ void main() {
 
       // Wait for initial load
       await Future.delayed(const Duration(milliseconds: 100));
+
+      // Mock the follow API response
+      when(() => mockWatchingsApi.entriesIdWatchingPut(id: entryId)).thenAnswer(
+        (_) async => Response<MwWatchingStatus>(
+          data: MwWatchingStatus((b) => b..isWatching = true),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/watching'),
+        ),
+      );
 
       // Act
       await notifier.followEntry();
 
       // Assert
-      expect(notifier.state, isA<EntryDetailState>());
+      verify(
+        () => mockWatchingsApi.entriesIdWatchingPut(id: entryId),
+      ).called(1);
+
+      // Verify that the entry state is updated with isWatching = true
+      final state = notifier.state;
+      expect(
+        state.maybeWhen(
+          loaded: (entry, _, _, _, _) => entry.isWatching,
+          orElse: () => null,
+        ),
+        isTrue,
+      );
     });
 
     test('unfollowEntry calls API and updates state', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..isWatching = true
-        ..rights = MwEntryRights((b) => b..vote = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..isWatching = true
+          ..rights = MwEntryRights((b) => b..vote = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
 
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
+
+      final mockWatchingsApi = MockWatchingsApi();
       notifier = EntryDetailNotifier(
+        watchingsApi: mockWatchingsApi,
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -153,30 +270,67 @@ void main() {
       // Wait for initial load
       await Future.delayed(const Duration(milliseconds: 100));
 
+      // Mock the unfollow API response
+      when(
+        () => mockWatchingsApi.entriesIdWatchingDelete(id: entryId),
+      ).thenAnswer(
+        (_) async => Response<MwWatchingStatus>(
+          data: MwWatchingStatus((b) => b..isWatching = false),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/watching'),
+        ),
+      );
+
       // Act
       await notifier.unfollowEntry();
 
       // Assert
-      expect(notifier.state, isA<EntryDetailState>());
+      verify(
+        () => mockWatchingsApi.entriesIdWatchingDelete(id: entryId),
+      ).called(1);
+
+      // Verify that the entry state is updated with isWatching = false
+      final state = notifier.state;
+      expect(
+        state.maybeWhen(
+          loaded: (entry, _, _, _, _) => entry.isWatching,
+          orElse: () => null,
+        ),
+        isFalse,
+      );
     });
 
     test('deleteEntry calls API', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..rights = MwEntryRights((b) => b..delete = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..rights = MwEntryRights((b) => b..delete = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -196,20 +350,33 @@ void main() {
     test('complainEntry calls API', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..rights = MwEntryRights((b) => b..complain = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..rights = MwEntryRights((b) => b..complain = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -219,7 +386,7 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 100));
 
       // Act
-      await notifier.complainEntry();
+      await notifier.complainEntry(content: 'Test complaint content');
 
       // Assert
       // In a real implementation, we would verify the complaint API call was made
@@ -230,30 +397,47 @@ void main() {
       // Arrange
       const entryId = 1;
       const commentId = 123;
-      final mockComment = MwComment((b) => b
-        ..id = commentId
-        ..content = 'Test comment'
-        ..rights = MwCommentRights((b) => b..delete = true).toBuilder());
-      
-      final mockCommentList = MwCommentList((b) => b
-        ..data = ListBuilder<MwComment>([mockComment])
-        ..hasBefore = false);
+      final mockComment = MwComment(
+        (b) => b
+          ..id = commentId
+          ..content = 'Test comment'
+          ..rights = MwCommentRights((b) => b..delete = true).toBuilder(),
+      );
 
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..comments = mockCommentList.toBuilder()
-        ..rights = MwEntryRights((b) => b..delete = true).toBuilder());
+      final mockCommentList = MwCommentList(
+        (b) => b
+          ..data = ListBuilder<MwComment>([mockComment])
+          ..hasBefore = false,
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..comments = mockCommentList.toBuilder()
+          ..rights = MwEntryRights((b) => b..delete = true).toBuilder(),
+      );
+
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -278,30 +462,47 @@ void main() {
       // Arrange
       const entryId = 1;
       const commentId = 123;
-      final mockComment = MwComment((b) => b
-        ..id = commentId
-        ..content = 'Test comment'
-        ..rights = MwCommentRights((b) => b..vote = true).toBuilder());
-      
-      final mockCommentList = MwCommentList((b) => b
-        ..data = ListBuilder<MwComment>([mockComment])
-        ..hasBefore = false);
+      final mockComment = MwComment(
+        (b) => b
+          ..id = commentId
+          ..content = 'Test comment'
+          ..rights = MwCommentRights((b) => b..vote = true).toBuilder(),
+      );
 
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..comments = mockCommentList.toBuilder()
-        ..rights = MwEntryRights((b) => b..vote = true).toBuilder());
+      final mockCommentList = MwCommentList(
+        (b) => b
+          ..data = ListBuilder<MwComment>([mockComment])
+          ..hasBefore = false,
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..comments = mockCommentList.toBuilder()
+          ..rights = MwEntryRights((b) => b..vote = true).toBuilder(),
+      );
+
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -322,30 +523,47 @@ void main() {
       // Arrange
       const entryId = 1;
       const commentId = 123;
-      final mockComment = MwComment((b) => b
-        ..id = commentId
-        ..content = 'Test comment'
-        ..rights = MwCommentRights((b) => b..complain = true).toBuilder());
-      
-      final mockCommentList = MwCommentList((b) => b
-        ..data = ListBuilder<MwComment>([mockComment])
-        ..hasBefore = false);
+      final mockComment = MwComment(
+        (b) => b
+          ..id = commentId
+          ..content = 'Test comment'
+          ..rights = MwCommentRights((b) => b..complain = true).toBuilder(),
+      );
 
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..comments = mockCommentList.toBuilder()
-        ..rights = MwEntryRights((b) => b..complain = true).toBuilder());
+      final mockCommentList = MwCommentList(
+        (b) => b
+          ..data = ListBuilder<MwComment>([mockComment])
+          ..hasBefore = false,
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..comments = mockCommentList.toBuilder()
+          ..rights = MwEntryRights((b) => b..complain = true).toBuilder(),
+      );
+
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -365,20 +583,33 @@ void main() {
     test('handles errors gracefully in context menu actions', () async {
       // Arrange
       const entryId = 1;
-      final mockEntry = MwEntry((b) => b
-        ..id = entryId
-        ..title = 'Test Entry'
-        ..rights = MwEntryRights((b) => b..pin = true).toBuilder());
+      final mockEntry = MwEntry(
+        (b) => b
+          ..id = entryId
+          ..title = 'Test Entry'
+          ..rights = MwEntryRights((b) => b..pin = true).toBuilder(),
+      );
 
-      when(() => mockEntriesApi.entriesIdGet(id: entryId))
-          .thenAnswer((_) async => Response<MwEntry>(
-                data: mockEntry,
-                statusCode: 200,
-                headers: Headers(),
-                requestOptions: RequestOptions(path: '/entries/$entryId'),
-              ));
+      when(() => mockEntriesApi.entriesIdGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwEntry>(
+          data: mockEntry,
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId'),
+        ),
+      );
+
+      when(() => mockEntriesApi.entriesIdAdjacentGet(id: entryId)).thenAnswer(
+        (_) async => Response<MwAdjacentEntries>(
+          data: MwAdjacentEntries(),
+          statusCode: 200,
+          headers: Headers(),
+          requestOptions: RequestOptions(path: '/entries/$entryId/adjacent'),
+        ),
+      );
 
       notifier = EntryDetailNotifier(
+        watchingsApi: MockWatchingsApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,

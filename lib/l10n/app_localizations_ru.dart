@@ -938,4 +938,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get unreadMessages => 'Непрочитанные сообщения';
+
+  @override
+  String get reportEntryTitle =>
+      'Пожаловаться на эту запись за неподходящий контент.';
+
+  @override
+  String get additionalDetails => 'Дополнительные детали (необязательно)';
+
+  @override
+  String get describeIssue => 'Пожалуйста, опишите проблему...';
+
+  @override
+  String get submitComplaint => 'Отправить жалобу';
+
+  @override
+  String get failedToSubmitComplaint =>
+      'Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.';
 }

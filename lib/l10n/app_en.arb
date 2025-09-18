@@ -1209,5 +1209,25 @@
   "unreadMessages": "Unread messages",
   "@unreadMessages": {
     "description": "Unread messages accessibility label"
+  },
+  "reportEntryTitle": "Report this entry for inappropriate content.",
+  "@reportEntryTitle": {
+    "description": "Report entry dialog title text"
+  },
+  "additionalDetails": "Additional details (optional)",
+  "@additionalDetails": {
+    "description": "Additional details field label in complain dialog"
+  },
+  "describeIssue": "Please describe the issue...",
+  "@describeIssue": {
+    "description": "Describe issue field hint in complain dialog"
+  },
+  "submitComplaint": "Submit Complaint",
+  "@submitComplaint": {
+    "description": "Submit complaint button text"
+  },
+  "failedToSubmitComplaint": "Failed to submit complaint. Please try again.",
+  "@failedToSubmitComplaint": {
+    "description": "Error message when complaint submission fails"
   }
 }

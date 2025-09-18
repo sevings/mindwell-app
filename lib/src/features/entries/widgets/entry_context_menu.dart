@@ -3,42 +3,44 @@ import 'package:flutter/services.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../config/config.dart';
+import 'entry_complain_dialog.dart';
 
 /// A context menu widget for entries that provides various actions based on user permissions.
-/// 
+///
 /// This widget displays a popup menu with different options depending on the user's rights
 /// for the specific entry. Actions include pin, follow, edit, delete, complain, share, and copy link.
 class EntryContextMenu extends StatelessWidget {
   /// The entry to show context menu for
   final MwEntry entry;
-  
+
   /// Callback when pin action is triggered
   final VoidCallback? onPin;
-  
+
   /// Callback when unpin action is triggered
   final VoidCallback? onUnpin;
-  
+
   /// Callback when follow action is triggered
   final VoidCallback? onFollow;
-  
+
   /// Callback when unfollow action is triggered
   final VoidCallback? onUnfollow;
-  
+
   /// Callback when edit action is triggered
   final VoidCallback? onEdit;
-  
+
   /// Callback when delete action is triggered
   final VoidCallback? onDelete;
-  
+
   /// Callback when complain action is triggered
   final VoidCallback? onComplain;
-  
+
   /// Callback when share action is triggered
   final VoidCallback? onShare;
-  
+
   /// Callback when copy link action is triggered
   final VoidCallback? onCopyLink;
-  
+
   /// Whether the menu is currently loading (for optimistic UI)
   final bool isLoading;
 
@@ -61,7 +63,7 @@ class EntryContextMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final rights = entry.rights;
-    
+
     if (rights == null) {
       return const SizedBox.shrink();
     }
@@ -69,7 +71,7 @@ class EntryContextMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       onSelected: (value) => _handleAction(context, value),
       itemBuilder: (context) => _buildMenuItems(context, l10n, rights),
-      icon: isLoading 
+      icon: isLoading
           ? SizedBox(
               width: 20,
               height: 20,
@@ -100,13 +102,17 @@ class EntryContextMenu extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                entry.isPinned == true ? Icons.push_pin : Icons.push_pin_outlined,
+                entry.isPinned == true
+                    ? Icons.push_pin
+                    : Icons.push_pin_outlined,
                 size: 20,
               ),
               const SizedBox(width: 12),
-              Text(entry.isPinned == true 
-                  ? (l10n?.unpin ?? 'Unpin')
-                  : (l10n?.pin ?? 'Pin')),
+              Text(
+                entry.isPinned == true
+                    ? (l10n?.unpin ?? 'Unpin')
+                    : (l10n?.pin ?? 'Pin'),
+              ),
             ],
           ),
         ),
@@ -120,13 +126,17 @@ class EntryContextMenu extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              entry.isWatching == true ? Icons.visibility_off : Icons.visibility,
+              entry.isWatching == true
+                  ? Icons.visibility_off
+                  : Icons.visibility,
               size: 20,
             ),
             const SizedBox(width: 12),
-            Text(entry.isWatching == true 
-                ? (l10n?.unfollow ?? 'Unfollow')
-                : (l10n?.follow ?? 'Follow')),
+            Text(
+              entry.isWatching == true
+                  ? (l10n?.unfollow ?? 'Unfollow')
+                  : (l10n?.follow ?? 'Follow'),
+            ),
           ],
         ),
       ),
@@ -191,9 +201,7 @@ class EntryContextMenu extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 l10n?.delete ?? 'Delete',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
           ),
@@ -216,9 +224,7 @@ class EntryContextMenu extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 l10n?.complain ?? 'Complain',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
           ),
@@ -247,10 +253,10 @@ class EntryContextMenu extends StatelessWidget {
         onEdit?.call();
         break;
       case 'delete':
-        _showDeleteConfirmation(context);
+        onDelete?.call();
         break;
       case 'complain':
-        onComplain?.call();
+        _showComplainDialog(context);
         break;
       case 'share':
         onShare?.call();
@@ -261,43 +267,26 @@ class EntryContextMenu extends StatelessWidget {
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
+  void _showComplainDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n?.delete ?? 'Delete'),
-        content: Text(l10n?.confirmDelete ?? 'Are you sure you want to delete this entry?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.goBack ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              onDelete?.call();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: Text(l10n?.delete ?? 'Delete'),
-          ),
-        ],
+      builder: (context) => EntryComplainDialog(
+        entry: entry,
+        onComplaintSubmitted: () {
+          // Optionally refresh entry data or show additional feedback
+        },
       ),
     );
   }
 
   void _copyLinkToClipboard(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
-    // In a real implementation, you would construct the actual entry URL
-    // For now, we'll use a placeholder
-    const entryUrl = 'https://mindwell.com/entries/123';
-    
+
+    // Construct the actual entry URL using the config baseUrl and entry ID
+    final entryUrl = '${Config.baseUrl}/entries/${entry.id}';
+
     Clipboard.setData(ClipboardData(text: entryUrl));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.linkCopied ?? 'Link copied to clipboard'),

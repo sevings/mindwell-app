@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
@@ -995,17 +996,47 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onDeleteEntry() {
-    if (widget.entryId != null) {
-      ref.read(entryDetailProvider(widget.entryId!).notifier).deleteEntry();
-      final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n?.entryDeleted ?? 'Entry deleted successfully'),
-          duration: const Duration(seconds: 2),
+    final l10n = AppLocalizations.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n?.delete ?? 'Delete'),
+        content: Text(
+          l10n?.confirmDelete ?? 'Are you sure you want to delete this entry?',
         ),
-      );
-      // TODO: Navigate back or show deleted state
-    }
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n?.goBack ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (widget.entryId != null) {
+                ref
+                    .read(entryDetailProvider(widget.entryId!).notifier)
+                    .deleteEntry();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      l10n?.entryDeleted ?? 'Entry deleted successfully',
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+                // Navigate back after successful deletion
+                context.pop();
+              }
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n?.delete ?? 'Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onComplainEntry() {
@@ -1024,14 +1055,33 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   }
 
   void _onShareEntry() {
-    // TODO: Implement sharing functionality
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Share entry functionality')));
+    final l10n = AppLocalizations.of(context);
+
+    // For now, show a placeholder message since share_plus package is not available
+    // In a real implementation, you would use share_plus package to share the entry
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.share ?? 'Share functionality will be implemented'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    // TODO: Implement actual sharing using share_plus package
+    // Example implementation:
+    // final entryUrl = 'https://mindwell.com/entries/${widget.entryId}';
+    // final entryTitle = entry.title ?? l10n?.untitled ?? 'Untitled';
+    // await Share.share('$entryTitle\n$entryUrl');
   }
 
   void _onCopyLink() {
     final l10n = AppLocalizations.of(context);
+
+    // Construct the entry URL
+    final entryUrl = 'https://mindwell.com/entries/${widget.entryId}';
+
+    // Copy to clipboard
+    Clipboard.setData(ClipboardData(text: entryUrl));
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.linkCopied ?? 'Link copied to clipboard'),

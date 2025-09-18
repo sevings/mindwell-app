@@ -60,7 +60,7 @@ class MockEntryDetailNotifier extends StateNotifier<EntryDetailState>
   Future<void> deleteEntry() async {}
 
   @override
-  Future<void> complainEntry() async {}
+  Future<void> complainEntry({String? content}) async {}
 
   @override
   Future<void> deleteComment(int commentId) async {}

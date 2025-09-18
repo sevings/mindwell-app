@@ -930,4 +930,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unreadMessages => 'Unread messages';
+
+  @override
+  String get reportEntryTitle => 'Report this entry for inappropriate content.';
+
+  @override
+  String get additionalDetails => 'Additional details (optional)';
+
+  @override
+  String get describeIssue => 'Please describe the issue...';
+
+  @override
+  String get submitComplaint => 'Submit Complaint';
+
+  @override
+  String get failedToSubmitComplaint =>
+      'Failed to submit complaint. Please try again.';
 }

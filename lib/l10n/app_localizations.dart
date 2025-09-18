@@ -1861,6 +1861,36 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Непрочитанные сообщения'**
   String get unreadMessages;
+
+  /// Report entry dialog title text
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожаловаться на эту запись за неподходящий контент.'**
+  String get reportEntryTitle;
+
+  /// Additional details field label in complain dialog
+  ///
+  /// In ru, this message translates to:
+  /// **'Дополнительные детали (необязательно)'**
+  String get additionalDetails;
+
+  /// Describe issue field hint in complain dialog
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, опишите проблему...'**
+  String get describeIssue;
+
+  /// Submit complaint button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить жалобу'**
+  String get submitComplaint;
+
+  /// Error message when complaint submission fails
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.'**
+  String get failedToSubmitComplaint;
 }
 
 class _AppLocalizationsDelegate
