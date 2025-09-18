@@ -935,6 +935,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportEntryTitle => 'Report this entry for inappropriate content.';
 
   @override
+  String get reportCommentTitle =>
+      'Report this comment for inappropriate content.';
+
+  @override
+  String get failedToDeleteComment =>
+      'Failed to delete comment. Please try again.';
+
+  @override
   String get additionalDetails => 'Additional details (optional)';
 
   @override

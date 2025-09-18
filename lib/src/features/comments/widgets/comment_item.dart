@@ -9,52 +9,49 @@ import '../../../core/widgets/images/cached_image.dart';
 import 'comment_context_menu.dart';
 
 /// A widget that displays a single comment with author information, content, and voting options.
-/// 
+///
 /// This widget is designed to be reusable across different screens that need to display comments,
 /// such as the entry detail screen, comment list screen, or user profile screen.
 class CommentItem extends StatelessWidget {
   /// The comment to display
   final MwComment comment;
-  
+
   /// Whether to show voting buttons
   final bool showVoting;
-  
+
   /// Whether to show the entry title (useful in comment list contexts)
   final bool showEntryTitle;
-  
+
   /// The entry title to display (if showEntryTitle is true)
   final String? entryTitle;
-  
+
   /// Callback when the comment is tapped
   final VoidCallback? onTap;
-  
+
   /// Callback when the author is tapped
   final VoidCallback? onAuthorTap;
-  
+
   /// Callback when upvote is tapped
   final VoidCallback? onUpvote;
-  
+
   /// Callback when downvote is tapped
   final VoidCallback? onDownvote;
-  
+
   /// Whether the comment is currently being voted on (for optimistic UI)
   final bool isVoting;
-  
+
   /// Custom padding for the comment
   final EdgeInsetsGeometry? padding;
-  
+
   /// Custom margin for the comment
   final EdgeInsetsGeometry? margin;
-  
+
   /// Callback when edit action is triggered from context menu
   final VoidCallback? onEdit;
-  
+
   /// Callback when delete action is triggered from context menu
   final VoidCallback? onDelete;
-  
-  /// Callback when complain action is triggered from context menu
-  final VoidCallback? onComplain;
-  
+
   /// Whether to show context menu on long press
   final bool showContextMenu;
 
@@ -73,7 +70,6 @@ class CommentItem extends StatelessWidget {
     this.margin,
     this.onEdit,
     this.onDelete,
-    this.onComplain,
     this.showContextMenu = false,
   });
 
@@ -88,7 +84,6 @@ class CommentItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          onLongPress: showContextMenu ? () => _showContextMenu(context) : null,
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: padding ?? const EdgeInsets.all(16),
@@ -101,18 +96,13 @@ class CommentItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(
-                      child: _buildHeader(context, author),
-                    ),
+                    Expanded(child: _buildHeader(context, author)),
                     if (showContextMenu) ...[
                       const SizedBox(width: 8),
                       CommentContextMenu(
                         comment: comment,
                         onEdit: onEdit,
                         onDelete: onDelete,
-                        onComplain: onComplain,
-                        onUpvote: onUpvote,
-                        onDownvote: onDownvote,
                       ),
                     ],
                   ],
@@ -143,7 +133,7 @@ class CommentItem extends StatelessWidget {
           child: CachedAvatar(
             imageUrl: _getAvatarUrl(author.avatar),
             size: 32,
-            fallbackText: author.name?.isNotEmpty == true 
+            fallbackText: author.name?.isNotEmpty == true
                 ? author.name!.substring(0, 1).toUpperCase()
                 : '?',
           ),
@@ -154,7 +144,9 @@ class CommentItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: onAuthorTap ?? () => _navigateToAuthorProfile(context, author),
+                onTap:
+                    onAuthorTap ??
+                    () => _navigateToAuthorProfile(context, author),
                 child: Text(
                   author.name ?? 'Unknown',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -183,7 +175,9 @@ class CommentItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -233,19 +227,13 @@ class CommentItem extends StatelessWidget {
           lineHeight: const LineHeight(1.4),
           color: Theme.of(context).colorScheme.onSurface,
         ),
-        "p": Style(
-          margin: Margins.only(bottom: 8),
-        ),
+        "p": Style(margin: Margins.only(bottom: 8)),
         "a": Style(
           color: Theme.of(context).colorScheme.primary,
           textDecoration: TextDecoration.underline,
         ),
-        "strong": Style(
-          fontWeight: FontWeight.bold,
-        ),
-        "em": Style(
-          fontStyle: FontStyle.italic,
-        ),
+        "strong": Style(fontWeight: FontWeight.bold),
+        "em": Style(fontStyle: FontStyle.italic),
         "code": Style(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           padding: HtmlPaddings.symmetric(horizontal: 4, vertical: 2),
@@ -274,7 +262,7 @@ class CommentItem extends StatelessWidget {
           icon: Icon(
             Icons.thumb_up_outlined,
             size: 16,
-            color: isVoting 
+            color: isVoting
                 ? Theme.of(context).colorScheme.onSurfaceVariant
                 : Theme.of(context).colorScheme.onSurface,
           ),
@@ -285,7 +273,7 @@ class CommentItem extends StatelessWidget {
         Text(
           upvotes.toString(),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: isVoting 
+            color: isVoting
                 ? Theme.of(context).colorScheme.onSurfaceVariant
                 : Theme.of(context).colorScheme.onSurface,
           ),
@@ -297,7 +285,7 @@ class CommentItem extends StatelessWidget {
           icon: Icon(
             Icons.thumb_down_outlined,
             size: 16,
-            color: isVoting 
+            color: isVoting
                 ? Theme.of(context).colorScheme.onSurfaceVariant
                 : Theme.of(context).colorScheme.onSurface,
           ),
@@ -308,7 +296,7 @@ class CommentItem extends StatelessWidget {
         Text(
           downvotes.toString(),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: isVoting 
+            color: isVoting
                 ? Theme.of(context).colorScheme.onSurfaceVariant
                 : Theme.of(context).colorScheme.onSurface,
           ),
@@ -336,7 +324,9 @@ class CommentItem extends StatelessWidget {
   }
 
   String _formatTimestamp(double timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+    final date = DateTime.fromMillisecondsSinceEpoch(
+      (timestamp * 1000).round(),
+    );
     final now = DateTime.now();
     final difference = now.difference(date);
 
@@ -349,131 +339,6 @@ class CommentItem extends StatelessWidget {
     } else {
       return 'Just now';
     }
-  }
-
-  void _showContextMenu(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final rights = comment.rights;
-    
-    if (rights == null) return;
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-            Text(
-              l10n?.commentActions ?? 'Comment Actions',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (rights.vote == true) ...[
-              ListTile(
-                leading: const Icon(Icons.thumb_up_outlined),
-                title: Text(l10n?.upvote ?? 'Upvote'),
-                onTap: () {
-                  Navigator.pop(context);
-                  onUpvote?.call();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.thumb_down_outlined),
-                title: Text(l10n?.downvote ?? 'Downvote'),
-                onTap: () {
-                  Navigator.pop(context);
-                  onDownvote?.call();
-                },
-              ),
-            ],
-            if (rights.edit == true) ...[
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: Text(l10n?.edit ?? 'Edit'),
-                onTap: () {
-                  Navigator.pop(context);
-                  onEdit?.call();
-                },
-              ),
-            ],
-            if (rights.delete == true) ...[
-              ListTile(
-                leading: Icon(
-                  Icons.delete,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                title: Text(
-                  l10n?.delete ?? 'Delete',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDeleteConfirmation(context);
-                },
-              ),
-            ],
-            if (rights.complain == true) ...[
-              ListTile(
-                leading: Icon(
-                  Icons.report,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                title: Text(
-                  l10n?.complain ?? 'Complain',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  onComplain?.call();
-                },
-              ),
-            ],
-          ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n?.delete ?? 'Delete'),
-        content: Text(l10n?.confirmDeleteComment ?? 'Are you sure you want to delete this comment?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.goBack ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              onDelete?.call();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: Text(l10n?.delete ?? 'Delete'),
-          ),
-        ],
-      ),
-    );
   }
 
   /// Navigates to the author's profile screen

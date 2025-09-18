@@ -6,7 +6,7 @@ import '../../../core/widgets/loaders/skeleton_loader.dart';
 import 'comment_item.dart';
 
 /// A widget that displays a list of comments with pagination support.
-/// 
+///
 /// This widget handles:
 /// - Displaying a list of comments using CommentItem widgets
 /// - Loading states with skeleton placeholders
@@ -16,64 +16,64 @@ import 'comment_item.dart';
 class CommentList extends StatelessWidget {
   /// The list of comments to display
   final List<MwComment> comments;
-  
+
   /// Whether more comments are available to load
   final bool hasMore;
-  
+
   /// Whether comments are currently being loaded
   final bool isLoading;
-  
+
   /// Whether there was an error loading comments
   final bool hasError;
-  
+
   /// The error message (if hasError is true)
   final String? errorMessage;
-  
+
   /// Whether to show voting buttons on comments
   final bool showVoting;
-  
+
   /// Whether to show entry titles (useful in comment list contexts)
   final bool showEntryTitles;
-  
+
   /// Map of entry IDs to entry titles (if showEntryTitles is true)
   final Map<int, String>? entryTitles;
-  
+
   /// Callback when a comment is tapped
   final void Function(MwComment comment)? onCommentTap;
-  
+
   /// Callback when an author is tapped
   final void Function(MwUser author)? onAuthorTap;
-  
+
   /// Callback when upvote is tapped
   final void Function(MwComment comment)? onUpvote;
-  
+
   /// Callback when downvote is tapped
   final void Function(MwComment comment)? onDownvote;
-  
+
   /// Callback when "Load More" is tapped
   final VoidCallback? onLoadMore;
-  
+
   /// Callback when retry is tapped (for error states)
   final VoidCallback? onRetry;
-  
+
   /// Custom padding for the list
   final EdgeInsetsGeometry? padding;
-  
+
   /// Whether to show a separator between comments
   final bool showSeparator;
-  
+
   /// The separator widget (if showSeparator is true)
   final Widget? separator;
-  
+
   /// Callback when edit action is triggered from context menu
   final void Function(MwComment comment)? onEditComment;
-  
+
   /// Callback when delete action is triggered from context menu
   final void Function(MwComment comment)? onDeleteComment;
-  
+
   /// Callback when complain action is triggered from context menu
   final void Function(MwComment comment)? onComplainComment;
-  
+
   /// Whether to show context menu on comments
   final bool showContextMenu;
 
@@ -117,7 +117,7 @@ class CommentList extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               padding: padding,
               itemCount: comments.length,
-              separatorBuilder: showSeparator 
+              separatorBuilder: showSeparator
                   ? (context, index) => separator ?? const SizedBox(height: 8)
                   : (context, index) => const SizedBox.shrink(),
               itemBuilder: (context, index) {
@@ -127,15 +127,22 @@ class CommentList extends StatelessWidget {
                   showVoting: showVoting,
                   showEntryTitle: showEntryTitles,
                   entryTitle: _getEntryTitle(comment.entryId),
-                  onTap: onCommentTap != null ? () => onCommentTap!(comment) : null,
-                  onAuthorTap: onAuthorTap != null && comment.author != null 
+                  onTap: onCommentTap != null
+                      ? () => onCommentTap!(comment)
+                      : null,
+                  onAuthorTap: onAuthorTap != null && comment.author != null
                       ? () => onAuthorTap!(comment.author!)
                       : null,
                   onUpvote: onUpvote != null ? () => onUpvote!(comment) : null,
-                  onDownvote: onDownvote != null ? () => onDownvote!(comment) : null,
-                  onEdit: onEditComment != null ? () => onEditComment!(comment) : null,
-                  onDelete: onDeleteComment != null ? () => onDeleteComment!(comment) : null,
-                  onComplain: onComplainComment != null ? () => onComplainComment!(comment) : null,
+                  onDownvote: onDownvote != null
+                      ? () => onDownvote!(comment)
+                      : null,
+                  onEdit: onEditComment != null
+                      ? () => onEditComment!(comment)
+                      : null,
+                  onDelete: onDeleteComment != null
+                      ? () => onDeleteComment!(comment)
+                      : null,
                   showContextMenu: showContextMenu,
                 );
               },
@@ -145,12 +152,8 @@ class CommentList extends StatelessWidget {
               _buildLoadMoreSection(context),
             ],
           ],
-          if (isLoading && comments.isEmpty) ...[
-            _buildLoadingState(context),
-          ],
-          if (hasError) ...[
-            _buildErrorState(context),
-          ],
+          if (isLoading && comments.isEmpty) ...[_buildLoadingState(context)],
+          if (hasError) ...[_buildErrorState(context)],
         ],
       ),
     );
@@ -158,7 +161,7 @@ class CommentList extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -306,7 +309,7 @@ class CommentList extends StatelessWidget {
 
   Widget _buildLoadMoreSection(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     if (isLoading) {
       return Center(
         child: Padding(
@@ -382,10 +385,7 @@ class CommentList extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: Text('Retry'),
-            ),
+            ElevatedButton(onPressed: onRetry, child: Text('Retry')),
           ],
         ),
       ),

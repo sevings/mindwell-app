@@ -1868,6 +1868,18 @@ abstract class AppLocalizations {
   /// **'Пожаловаться на эту запись за неподходящий контент.'**
   String get reportEntryTitle;
 
+  /// Report comment dialog title text
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожаловаться на этот комментарий за неподходящий контент.'**
+  String get reportCommentTitle;
+
+  /// Error message when comment deletion fails
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось удалить комментарий. Попробуйте еще раз.'**
+  String get failedToDeleteComment;
+
   /// Additional details field label in complain dialog
   ///
   /// In ru, this message translates to:

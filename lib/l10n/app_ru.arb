@@ -1247,6 +1247,18 @@
   "@reportEntryTitle": {
     "description": "Report entry dialog title text"
   },
+  "reportCommentTitle": "Пожаловаться на этот комментарий за неподходящий контент.",
+  "@reportCommentTitle": {
+    "description": "Report comment dialog title text"
+  },
+  "commentDeleted": "Комментарий успешно удален",
+  "@commentDeleted": {
+    "description": "Success message when comment is deleted"
+  },
+  "failedToDeleteComment": "Не удалось удалить комментарий. Попробуйте еще раз.",
+  "@failedToDeleteComment": {
+    "description": "Error message when comment deletion fails"
+  },
   "additionalDetails": "Дополнительные детали (необязательно)",
   "@additionalDetails": {
     "description": "Additional details field label in complain dialog"

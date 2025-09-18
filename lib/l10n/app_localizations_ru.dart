@@ -944,6 +944,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Пожаловаться на эту запись за неподходящий контент.';
 
   @override
+  String get reportCommentTitle =>
+      'Пожаловаться на этот комментарий за неподходящий контент.';
+
+  @override
+  String get failedToDeleteComment =>
+      'Не удалось удалить комментарий. Попробуйте еще раз.';
+
+  @override
   String get additionalDetails => 'Дополнительные детали (необязательно)';
 
   @override

@@ -1214,6 +1214,18 @@
   "@reportEntryTitle": {
     "description": "Report entry dialog title text"
   },
+  "reportCommentTitle": "Report this comment for inappropriate content.",
+  "@reportCommentTitle": {
+    "description": "Report comment dialog title text"
+  },
+  "commentDeleted": "Comment deleted successfully",
+  "@commentDeleted": {
+    "description": "Success message when comment is deleted"
+  },
+  "failedToDeleteComment": "Failed to delete comment. Please try again.",
+  "@failedToDeleteComment": {
+    "description": "Error message when comment deletion fails"
+  },
   "additionalDetails": "Additional details (optional)",
   "@additionalDetails": {
     "description": "Additional details field label in complain dialog"
