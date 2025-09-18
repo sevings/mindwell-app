@@ -1435,6 +1435,66 @@
   "@blockedProfiles": {
     "description": "Blocked profiles setting title"
   },
+  "blockedProfilesExplanation": "Профиль пользователя закрыт для заблокированных пользователей. Они не могут видеть ваши записи и комментарии, и вы не видите их, если не зайдете на их профиль напрямую.",
+  "@blockedProfilesExplanation": {
+    "description": "Объяснение функциональности заблокированных профилей"
+  },
+  "unblock": "Разблокировать",
+  "@unblock": {
+    "description": "Текст кнопки разблокировки"
+  },
+  "unblockUser": "Разблокировать пользователя",
+  "@unblockUser": {
+    "description": "Заголовок диалога разблокировки пользователя"
+  },
+  "unblockUserConfirmation": "Вы уверены, что хотите разблокировать {username}?",
+  "@unblockUserConfirmation": {
+    "description": "Сообщение подтверждения для разблокировки пользователя",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Имя пользователя для разблокировки"
+      }
+    }
+  },
+  "noBlockedUsers": "Нет заблокированных пользователей",
+  "@noBlockedUsers": {
+    "description": "Заголовок пустого состояния когда нет заблокированных пользователей"
+  },
+  "noBlockedUsersMessage": "Вы еще не заблокировали ни одного пользователя.",
+  "@noBlockedUsersMessage": {
+    "description": "Сообщение пустого состояния когда нет заблокированных пользователей"
+  },
+  "userUnblocked": "Пользователь {username} разблокирован",
+  "@userUnblocked": {
+    "description": "Сообщение об успешной разблокировке пользователя",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "Имя разблокированного пользователя"
+      }
+    }
+  },
+  "unblockUserError": "Не удалось разблокировать пользователя",
+  "@unblockUserError": {
+    "description": "Сообщение об ошибке при разблокировке пользователя"
+  },
+  "online": "В сети",
+  "@online": {
+    "description": "Текст статуса онлайн"
+  },
+  "cancel": "Отмена",
+  "@cancel": {
+    "description": "Текст кнопки отмены"
+  },
+  "tryAgain": "Попробовать снова",
+  "@tryAgain": {
+    "description": "Текст кнопки повторной попытки"
+  },
+  "refresh": "Обновить",
+  "@refresh": {
+    "description": "Текст кнопки обновления"
+  },
   "hiddenProfiles": "Скрытые профили",
   "@hiddenProfiles": {
     "description": "Hidden profiles setting title"

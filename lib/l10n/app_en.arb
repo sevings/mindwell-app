@@ -1393,6 +1393,66 @@
   "@blockedProfiles": {
     "description": "Blocked profiles setting title"
   },
+  "blockedProfilesExplanation": "The user profile is closed for blocked users. They can't see your entries and comments, and you don't see theirs unless you visit their profile directly.",
+  "@blockedProfilesExplanation": {
+    "description": "Explanation text for blocked profiles functionality"
+  },
+  "unblock": "Unblock",
+  "@unblock": {
+    "description": "Unblock action button text"
+  },
+  "unblockUser": "Unblock User",
+  "@unblockUser": {
+    "description": "Unblock user dialog title"
+  },
+  "unblockUserConfirmation": "Are you sure you want to unblock {username}?",
+  "@unblockUserConfirmation": {
+    "description": "Confirmation message for unblocking a user",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "The username of the user to be unblocked"
+      }
+    }
+  },
+  "noBlockedUsers": "No Blocked Users",
+  "@noBlockedUsers": {
+    "description": "Empty state title when no users are blocked"
+  },
+  "noBlockedUsersMessage": "You haven't blocked any users yet.",
+  "@noBlockedUsersMessage": {
+    "description": "Empty state message when no users are blocked"
+  },
+  "userUnblocked": "User {username} has been unblocked",
+  "@userUnblocked": {
+    "description": "Success message when a user is unblocked",
+    "placeholders": {
+      "username": {
+        "type": "String",
+        "description": "The username of the unblocked user"
+      }
+    }
+  },
+  "unblockUserError": "Failed to unblock user",
+  "@unblockUserError": {
+    "description": "Error message when unblocking a user fails"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
   "hiddenProfiles": "Hidden Profiles",
   "@hiddenProfiles": {
     "description": "Hidden profiles setting title"

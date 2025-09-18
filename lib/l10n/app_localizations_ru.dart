@@ -685,7 +685,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get blockUser => 'Заблокировать';
 
   @override
-  String get unblockUser => 'Разблокировать';
+  String get unblockUser => 'Разблокировать пользователя';
 
   @override
   String get messageUser => 'Написать';
@@ -1081,6 +1081,36 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get blockedProfiles => 'Заблокированные профили';
+
+  @override
+  String get blockedProfilesExplanation =>
+      'Профиль пользователя закрыт для заблокированных пользователей. Они не могут видеть ваши записи и комментарии, и вы не видите их, если не зайдете на их профиль напрямую.';
+
+  @override
+  String get unblock => 'Разблокировать';
+
+  @override
+  String unblockUserConfirmation(String username) {
+    return 'Вы уверены, что хотите разблокировать $username?';
+  }
+
+  @override
+  String get noBlockedUsers => 'Нет заблокированных пользователей';
+
+  @override
+  String get noBlockedUsersMessage =>
+      'Вы еще не заблокировали ни одного пользователя.';
+
+  @override
+  String userUnblocked(String username) {
+    return 'Пользователь $username разблокирован';
+  }
+
+  @override
+  String get unblockUserError => 'Не удалось разблокировать пользователя';
+
+  @override
+  String get tryAgain => 'Попробовать снова';
 
   @override
   String get hiddenProfiles => 'Скрытые профили';

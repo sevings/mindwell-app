@@ -680,7 +680,7 @@ abstract class AppLocalizations {
   /// **'Интервал обновления'**
   String get refreshInterval;
 
-  /// Refresh button text
+  /// Текст кнопки обновления
   ///
   /// In ru, this message translates to:
   /// **'Обновить'**
@@ -1406,10 +1406,10 @@ abstract class AppLocalizations {
   /// **'Заблокировать'**
   String get blockUser;
 
-  /// Unblock user button text
+  /// Заголовок диалога разблокировки пользователя
   ///
   /// In ru, this message translates to:
-  /// **'Разблокировать'**
+  /// **'Разблокировать пользователя'**
   String get unblockUser;
 
   /// Message user button text
@@ -1418,7 +1418,7 @@ abstract class AppLocalizations {
   /// **'Написать'**
   String get messageUser;
 
-  /// Online status text
+  /// Текст статуса онлайн
   ///
   /// In ru, this message translates to:
   /// **'В сети'**
@@ -1664,7 +1664,7 @@ abstract class AppLocalizations {
   /// **'Сохранить'**
   String get save;
 
-  /// Cancel button text
+  /// Текст кнопки отмены
   ///
   /// In ru, this message translates to:
   /// **'Отмена'**
@@ -2125,6 +2125,54 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Заблокированные профили'**
   String get blockedProfiles;
+
+  /// Объяснение функциональности заблокированных профилей
+  ///
+  /// In ru, this message translates to:
+  /// **'Профиль пользователя закрыт для заблокированных пользователей. Они не могут видеть ваши записи и комментарии, и вы не видите их, если не зайдете на их профиль напрямую.'**
+  String get blockedProfilesExplanation;
+
+  /// Текст кнопки разблокировки
+  ///
+  /// In ru, this message translates to:
+  /// **'Разблокировать'**
+  String get unblock;
+
+  /// Сообщение подтверждения для разблокировки пользователя
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите разблокировать {username}?'**
+  String unblockUserConfirmation(String username);
+
+  /// Заголовок пустого состояния когда нет заблокированных пользователей
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет заблокированных пользователей'**
+  String get noBlockedUsers;
+
+  /// Сообщение пустого состояния когда нет заблокированных пользователей
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы еще не заблокировали ни одного пользователя.'**
+  String get noBlockedUsersMessage;
+
+  /// Сообщение об успешной разблокировке пользователя
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь {username} разблокирован'**
+  String userUnblocked(String username);
+
+  /// Сообщение об ошибке при разблокировке пользователя
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось разблокировать пользователя'**
+  String get unblockUserError;
+
+  /// Текст кнопки повторной попытки
+  ///
+  /// In ru, this message translates to:
+  /// **'Попробовать снова'**
+  String get tryAgain;
 
   /// Hidden profiles setting title
   ///

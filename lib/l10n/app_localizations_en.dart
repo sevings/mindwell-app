@@ -677,7 +677,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockUser => 'Block';
 
   @override
-  String get unblockUser => 'Unblock';
+  String get unblockUser => 'Unblock User';
 
   @override
   String get messageUser => 'Message';
@@ -1072,6 +1072,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get blockedProfiles => 'Blocked Profiles';
+
+  @override
+  String get blockedProfilesExplanation =>
+      'The user profile is closed for blocked users. They can\'t see your entries and comments, and you don\'t see theirs unless you visit their profile directly.';
+
+  @override
+  String get unblock => 'Unblock';
+
+  @override
+  String unblockUserConfirmation(String username) {
+    return 'Are you sure you want to unblock $username?';
+  }
+
+  @override
+  String get noBlockedUsers => 'No Blocked Users';
+
+  @override
+  String get noBlockedUsersMessage => 'You haven\'t blocked any users yet.';
+
+  @override
+  String userUnblocked(String username) {
+    return 'User $username has been unblocked';
+  }
+
+  @override
+  String get unblockUserError => 'Failed to unblock user';
+
+  @override
+  String get tryAgain => 'Try Again';
 
   @override
   String get hiddenProfiles => 'Hidden Profiles';
