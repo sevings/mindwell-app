@@ -59,6 +59,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
 
   FeedSettings _settings = FeedSettings.defaultSettings;
   String? _nextAfter;
+  String? _nextBefore;
   bool _isLoadingMore = false;
   String? _feedParameter; // For profile/theme feeds
   String? _tagFilter; // For tag-filtered feeds
@@ -161,7 +162,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
       final feed = await _fetchFromApi();
       if (feed != null) {
         final entries = feed.entries?.toList() ?? [];
-        _nextAfter = feed.nextAfter;
+        _setPaginationTokens(feed);
 
         // Cache the fresh data
         await cacheService.storeEntries(cacheKey, entries, page: 1);
@@ -174,7 +175,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
         } else {
           state = EntryFeedState.loaded(
             entries: entries,
-            hasMore: feed.hasAfter ?? false,
+            hasMore: _getHasMore(feed),
             settings: _settings,
           );
         }
@@ -231,10 +232,14 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
 
     try {
       final cacheService = await _cacheServiceAsync;
-      final feed = await _fetchFromApi(after: _nextAfter);
+      final paginationToken = _getPaginationToken();
+      final feed = await _fetchFromApi(
+        after: _shouldUseAfterPagination() ? paginationToken : null,
+        before: _shouldUseAfterPagination() ? null : paginationToken,
+      );
       if (feed != null) {
         final newEntries = feed.entries?.toList() ?? [];
-        _nextAfter = feed.nextAfter;
+        _setPaginationTokens(feed);
 
         final allEntries = [...currentState.entries, ...newEntries];
 
@@ -247,7 +252,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
         _logger.info('Fetched ${newEntries.length} more entries');
         state = EntryFeedState.loaded(
           entries: allEntries,
-          hasMore: feed.hasAfter ?? false,
+          hasMore: _getHasMore(feed),
           settings: _settings,
         );
       }
@@ -284,6 +289,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
 
     // Reset pagination
     _nextAfter = null;
+    _nextBefore = null;
 
     // Fetch fresh data with current settings
     await fetchInitialEntries();
@@ -328,6 +334,7 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
 
     // Reset pagination
     _nextAfter = null;
+    _nextBefore = null;
 
     // Fetch data with new settings
     await fetchInitialEntries();
@@ -371,6 +378,39 @@ class EntryFeedNotifier extends StateNotifier<EntryFeedState> {
       // If neither is selected, default to all
       return 'all';
     }
+  }
+
+  /// Determine if we should use "after" pagination (oldest to newest) or "before" pagination (newest to oldest)
+  ///
+  /// Returns true if we should use "after" pagination (hasAfter/nextAfter)
+  /// Returns false if we should use "before" pagination (hasBefore/nextBefore)
+  bool _shouldUseAfterPagination() {
+    // Only use "after" pagination for profile feeds with oldest-first sorting
+    return _feedType == FeedType.profile &&
+        _settings.sortOrder == SortOrder.oldest;
+  }
+
+  /// Get the appropriate pagination token for the current configuration
+  String? _getPaginationToken() {
+    return _shouldUseAfterPagination() ? _nextAfter : _nextBefore;
+  }
+
+  /// Set the appropriate pagination token based on the feed response
+  void _setPaginationTokens(MwFeed feed) {
+    if (_shouldUseAfterPagination()) {
+      _nextAfter = feed.nextAfter;
+      _nextBefore = null;
+    } else {
+      _nextBefore = feed.nextBefore;
+      _nextAfter = null;
+    }
+  }
+
+  /// Get the appropriate hasMore flag based on the feed response
+  bool _getHasMore(MwFeed feed) {
+    return _shouldUseAfterPagination()
+        ? (feed.hasAfter ?? false)
+        : (feed.hasBefore ?? false);
   }
 
   /// Fetch entries from the API based on the feed type.

@@ -100,7 +100,9 @@ void main() {
       when(() => mockFeed.nextAfter).thenReturn('next_after_token');
       when(() => mockFeed.hasAfter).thenReturn(true);
       when(() => mockFeed.nextBefore).thenReturn('next_before_token');
-      when(() => mockFeed.hasBefore).thenReturn(false);
+      when(
+        () => mockFeed.hasBefore,
+      ).thenReturn(true); // Changed to true for non-profile feeds
 
       when(
         () => mockCacheService.getEntries(any(), page: any(named: 'page')),
@@ -350,6 +352,10 @@ void main() {
         when(() => mockFeed.entries).thenReturn(BuiltList(newEntries));
         when(() => mockFeed.nextAfter).thenReturn('new_next_after');
         when(() => mockFeed.hasAfter).thenReturn(false);
+        when(() => mockFeed.nextBefore).thenReturn('new_next_before');
+        when(
+          () => mockFeed.hasBefore,
+        ).thenReturn(false); // Set to false for this test
 
         when(
           () => mockEntriesApi.entriesLiveGet(
