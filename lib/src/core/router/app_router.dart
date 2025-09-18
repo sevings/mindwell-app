@@ -23,6 +23,7 @@ import '../../features/settings/screens/change_password_screen.dart';
 import '../../features/settings/screens/change_email_screen.dart';
 import '../../features/settings/screens/invites_screen.dart';
 import '../../features/settings/screens/blocked_users_screen.dart';
+import '../../features/settings/screens/hidden_users_screen.dart';
 
 /// Application router configuration using GoRouter.
 ///
@@ -156,6 +157,11 @@ class AppRouter {
             path: '/settings/blocked-users',
             name: 'blockedUsers',
             builder: (context, state) => const BlockedUsersScreen(),
+          ),
+          GoRoute(
+            path: '/settings/hidden-users',
+            name: 'hiddenUsers',
+            builder: (context, state) => const HiddenUsersScreen(),
           ),
           GoRoute(
             path: '/chats/:name',

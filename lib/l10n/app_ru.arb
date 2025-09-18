@@ -1598,5 +1598,43 @@
   "invalidEmailFormat": "Пожалуйста, введите корректный email адрес",
   "@invalidEmailFormat": {
     "description": "Invalid email format validation message"
+  },
+  "hiddenProfilesExplanation": "Вы не видите их записи в лентах 'живое' и 'лучшее', но они могут видеть ваши записи и комментарии как обычно.",
+  "@hiddenProfilesExplanation": {
+    "description": "Explanation of what hidden profiles mean"
+  },
+  "unhideUser": "Показать пользователя",
+  "@unhideUser": {
+    "description": "Unhide user action text"
+  },
+  "unhideUserConfirmation": "Вы уверены, что хотите показать {username}?",
+  "@unhideUserConfirmation": {
+    "description": "Unhide user confirmation message",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "noHiddenUsers": "Нет скрытых пользователей",
+  "@noHiddenUsers": {
+    "description": "No hidden users title"
+  },
+  "noHiddenUsersMessage": "Вы еще не скрыли ни одного пользователя.",
+  "@noHiddenUsersMessage": {
+    "description": "No hidden users message"
+  },
+  "unhideUserError": "Не удалось показать пользователя",
+  "@unhideUserError": {
+    "description": "Unhide user error message"
+  },
+  "userUnhidden": "Пользователь {username} больше не скрыт",
+  "@userUnhidden": {
+    "description": "User unhidden success message",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
   }
 }

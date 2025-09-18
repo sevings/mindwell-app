@@ -2323,6 +2323,48 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Пожалуйста, введите корректный email адрес'**
   String get invalidEmailFormat;
+
+  /// Explanation of what hidden profiles mean
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы не видите их записи в лентах \'живое\' и \'лучшее\', но они могут видеть ваши записи и комментарии как обычно.'**
+  String get hiddenProfilesExplanation;
+
+  /// Unhide user action text
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать пользователя'**
+  String get unhideUser;
+
+  /// Unhide user confirmation message
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите показать {username}?'**
+  String unhideUserConfirmation(String username);
+
+  /// No hidden users title
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет скрытых пользователей'**
+  String get noHiddenUsers;
+
+  /// No hidden users message
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы еще не скрыли ни одного пользователя.'**
+  String get noHiddenUsersMessage;
+
+  /// Unhide user error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось показать пользователя'**
+  String get unhideUserError;
+
+  /// User unhidden success message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пользователь {username} больше не скрыт'**
+  String userUnhidden(String username);
 }
 
 class _AppLocalizationsDelegate

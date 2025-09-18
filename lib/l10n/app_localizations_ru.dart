@@ -1195,4 +1195,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get invalidEmailFormat => 'Пожалуйста, введите корректный email адрес';
+
+  @override
+  String get hiddenProfilesExplanation =>
+      'Вы не видите их записи в лентах \'живое\' и \'лучшее\', но они могут видеть ваши записи и комментарии как обычно.';
+
+  @override
+  String get unhideUser => 'Показать пользователя';
+
+  @override
+  String unhideUserConfirmation(String username) {
+    return 'Вы уверены, что хотите показать $username?';
+  }
+
+  @override
+  String get noHiddenUsers => 'Нет скрытых пользователей';
+
+  @override
+  String get noHiddenUsersMessage => 'Вы еще не скрыли ни одного пользователя.';
+
+  @override
+  String get unhideUserError => 'Не удалось показать пользователя';
+
+  @override
+  String userUnhidden(String username) {
+    return 'Пользователь $username больше не скрыт';
+  }
 }

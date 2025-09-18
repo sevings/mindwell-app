@@ -1556,5 +1556,43 @@
   "invalidEmailFormat": "Please enter a valid email address",
   "@invalidEmailFormat": {
     "description": "Invalid email format validation message"
+  },
+  "hiddenProfilesExplanation": "You don't see their entries in 'live' and 'best' feeds, but they can see your entries and comments as always.",
+  "@hiddenProfilesExplanation": {
+    "description": "Explanation of what hidden profiles mean"
+  },
+  "unhideUser": "Unhide User",
+  "@unhideUser": {
+    "description": "Unhide user action text"
+  },
+  "unhideUserConfirmation": "Are you sure you want to unhide {username}?",
+  "@unhideUserConfirmation": {
+    "description": "Unhide user confirmation message",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "noHiddenUsers": "No Hidden Users",
+  "@noHiddenUsers": {
+    "description": "No hidden users title"
+  },
+  "noHiddenUsersMessage": "You haven't hidden any users yet.",
+  "@noHiddenUsersMessage": {
+    "description": "No hidden users message"
+  },
+  "unhideUserError": "Failed to unhide user",
+  "@unhideUserError": {
+    "description": "Unhide user error message"
+  },
+  "userUnhidden": "User {username} has been unhidden",
+  "@userUnhidden": {
+    "description": "User unhidden success message",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
   }
 }

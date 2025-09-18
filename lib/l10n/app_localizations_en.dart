@@ -1182,4 +1182,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidEmailFormat => 'Please enter a valid email address';
+
+  @override
+  String get hiddenProfilesExplanation =>
+      'You don\'t see their entries in \'live\' and \'best\' feeds, but they can see your entries and comments as always.';
+
+  @override
+  String get unhideUser => 'Unhide User';
+
+  @override
+  String unhideUserConfirmation(String username) {
+    return 'Are you sure you want to unhide $username?';
+  }
+
+  @override
+  String get noHiddenUsers => 'No Hidden Users';
+
+  @override
+  String get noHiddenUsersMessage => 'You haven\'t hidden any users yet.';
+
+  @override
+  String get unhideUserError => 'Failed to unhide user';
+
+  @override
+  String userUnhidden(String username) {
+    return 'User $username has been unhidden';
+  }
 }
