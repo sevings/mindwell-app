@@ -1921,6 +1921,162 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.'**
   String get failedToSubmitComplaint;
+
+  /// Account settings section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Аккаунт'**
+  String get accountSettings;
+
+  /// Change password setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить пароль'**
+  String get changePassword;
+
+  /// Change email setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить email'**
+  String get changeEmail;
+
+  /// Notification settings section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления'**
+  String get notificationSettings;
+
+  /// Notification settings section subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Управляйте тем, как вы получаете уведомления'**
+  String get notificationSettingsSubtitle;
+
+  /// Email notifications setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Email уведомления'**
+  String get emailNotifications;
+
+  /// Email notifications setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Получать уведомления по email'**
+  String get emailNotificationsSubtitle;
+
+  /// Telegram notifications setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Telegram уведомления'**
+  String get telegramNotifications;
+
+  /// Telegram notifications setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Получать уведомления через Telegram'**
+  String get telegramNotificationsSubtitle;
+
+  /// On-site notifications setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления в приложении'**
+  String get onsiteNotifications;
+
+  /// On-site notifications setting subtitle
+  ///
+  /// In ru, this message translates to:
+  /// **'Получать уведомления в приложении'**
+  String get onsiteNotificationsSubtitle;
+
+  /// Privacy settings section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Конфиденциальность и данные'**
+  String get privacySettings;
+
+  /// Blocked profiles setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Заблокированные профили'**
+  String get blockedProfiles;
+
+  /// Hidden profiles setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Скрытые профили'**
+  String get hiddenProfiles;
+
+  /// Delete account setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить аккаунт'**
+  String get deleteAccount;
+
+  /// Delete account confirmation warning
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить, и все ваши данные будут безвозвратно потеряны.'**
+  String get deleteAccountWarning;
+
+  /// App version setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Версия приложения'**
+  String get appVersion;
+
+  /// Contact us setting title
+  ///
+  /// In ru, this message translates to:
+  /// **'Связаться с нами'**
+  String get contactUs;
+
+  /// Loading settings message
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка настроек...'**
+  String get loadingSettings;
+
+  /// Email notification settings coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки email уведомлений скоро будут доступны'**
+  String get emailNotificationSettingsComingSoon;
+
+  /// Telegram notification settings coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки Telegram уведомлений скоро будут доступны'**
+  String get telegramNotificationSettingsComingSoon;
+
+  /// On-site notification settings coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки уведомлений в приложении скоро будут доступны'**
+  String get onsiteNotificationSettingsComingSoon;
+
+  /// Privacy policy coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Политика конфиденциальности скоро будет доступна'**
+  String get privacyPolicyComingSoon;
+
+  /// Terms of service coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Условия использования скоро будут доступны'**
+  String get termsOfServiceComingSoon;
+
+  /// Delete account coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Удаление аккаунта скоро будет доступно'**
+  String get deleteAccountComingSoon;
+
+  /// Contact us coming soon message
+  ///
+  /// In ru, this message translates to:
+  /// **'Связь с нами скоро будет доступна'**
+  String get contactUsComingSoon;
 }
 
 class _AppLocalizationsDelegate

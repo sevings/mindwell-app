@@ -294,7 +294,7 @@ class NavDrawer extends ConsumerWidget {
           title: l10n.settings,
           onTap: () {
             Navigator.of(context).pop();
-            // TODO: Navigate to settings screen
+            context.go('/settings');
           },
           theme: theme,
         ),

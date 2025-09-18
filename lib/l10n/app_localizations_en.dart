@@ -963,4 +963,89 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get failedToSubmitComplaint =>
       'Failed to submit complaint. Please try again.';
+
+  @override
+  String get accountSettings => 'Account';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changeEmail => 'Change Email';
+
+  @override
+  String get notificationSettings => 'Notifications';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'Manage how you receive notifications';
+
+  @override
+  String get emailNotifications => 'Email Notifications';
+
+  @override
+  String get emailNotificationsSubtitle => 'Receive notifications via email';
+
+  @override
+  String get telegramNotifications => 'Telegram Notifications';
+
+  @override
+  String get telegramNotificationsSubtitle =>
+      'Receive notifications via Telegram';
+
+  @override
+  String get onsiteNotifications => 'On-site Notifications';
+
+  @override
+  String get onsiteNotificationsSubtitle =>
+      'Receive notifications within the app';
+
+  @override
+  String get privacySettings => 'Privacy & Data';
+
+  @override
+  String get blockedProfiles => 'Blocked Profiles';
+
+  @override
+  String get hiddenProfiles => 'Hidden Profiles';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.';
+
+  @override
+  String get appVersion => 'App Version';
+
+  @override
+  String get contactUs => 'Contact Us';
+
+  @override
+  String get loadingSettings => 'Loading settings...';
+
+  @override
+  String get emailNotificationSettingsComingSoon =>
+      'Email notification settings coming soon';
+
+  @override
+  String get telegramNotificationSettingsComingSoon =>
+      'Telegram notification settings coming soon';
+
+  @override
+  String get onsiteNotificationSettingsComingSoon =>
+      'On-site notification settings coming soon';
+
+  @override
+  String get privacyPolicyComingSoon => 'Privacy policy coming soon';
+
+  @override
+  String get termsOfServiceComingSoon => 'Terms of service coming soon';
+
+  @override
+  String get deleteAccountComingSoon => 'Account deletion coming soon';
+
+  @override
+  String get contactUsComingSoon => 'Contact us coming soon';
 }

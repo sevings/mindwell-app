@@ -1294,5 +1294,109 @@
   "failedToSubmitComplaint": "Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.",
   "@failedToSubmitComplaint": {
     "description": "Error message when complaint submission fails"
+  },
+  "accountSettings": "Аккаунт",
+  "@accountSettings": {
+    "description": "Account settings section title"
+  },
+  "changePassword": "Изменить пароль",
+  "@changePassword": {
+    "description": "Change password setting title"
+  },
+  "changeEmail": "Изменить email",
+  "@changeEmail": {
+    "description": "Change email setting title"
+  },
+  "notificationSettings": "Уведомления",
+  "@notificationSettings": {
+    "description": "Notification settings section title"
+  },
+  "notificationSettingsSubtitle": "Управляйте тем, как вы получаете уведомления",
+  "@notificationSettingsSubtitle": {
+    "description": "Notification settings section subtitle"
+  },
+  "emailNotifications": "Email уведомления",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Получать уведомления по email",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "telegramNotifications": "Telegram уведомления",
+  "@telegramNotifications": {
+    "description": "Telegram notifications setting title"
+  },
+  "telegramNotificationsSubtitle": "Получать уведомления через Telegram",
+  "@telegramNotificationsSubtitle": {
+    "description": "Telegram notifications setting subtitle"
+  },
+  "onsiteNotifications": "Уведомления в приложении",
+  "@onsiteNotifications": {
+    "description": "On-site notifications setting title"
+  },
+  "onsiteNotificationsSubtitle": "Получать уведомления в приложении",
+  "@onsiteNotificationsSubtitle": {
+    "description": "On-site notifications setting subtitle"
+  },
+  "privacySettings": "Конфиденциальность и данные",
+  "@privacySettings": {
+    "description": "Privacy settings section title"
+  },
+  "blockedProfiles": "Заблокированные профили",
+  "@blockedProfiles": {
+    "description": "Blocked profiles setting title"
+  },
+  "hiddenProfiles": "Скрытые профили",
+  "@hiddenProfiles": {
+    "description": "Hidden profiles setting title"
+  },
+  "deleteAccount": "Удалить аккаунт",
+  "@deleteAccount": {
+    "description": "Delete account setting title"
+  },
+  "deleteAccountWarning": "Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить, и все ваши данные будут безвозвратно потеряны.",
+  "@deleteAccountWarning": {
+    "description": "Delete account confirmation warning"
+  },
+  "appVersion": "Версия приложения",
+  "@appVersion": {
+    "description": "App version setting title"
+  },
+  "contactUs": "Связаться с нами",
+  "@contactUs": {
+    "description": "Contact us setting title"
+  },
+  "loadingSettings": "Загрузка настроек...",
+  "@loadingSettings": {
+    "description": "Loading settings message"
+  },
+  "emailNotificationSettingsComingSoon": "Настройки email уведомлений скоро будут доступны",
+  "@emailNotificationSettingsComingSoon": {
+    "description": "Email notification settings coming soon message"
+  },
+  "telegramNotificationSettingsComingSoon": "Настройки Telegram уведомлений скоро будут доступны",
+  "@telegramNotificationSettingsComingSoon": {
+    "description": "Telegram notification settings coming soon message"
+  },
+  "onsiteNotificationSettingsComingSoon": "Настройки уведомлений в приложении скоро будут доступны",
+  "@onsiteNotificationSettingsComingSoon": {
+    "description": "On-site notification settings coming soon message"
+  },
+  "privacyPolicyComingSoon": "Политика конфиденциальности скоро будет доступна",
+  "@privacyPolicyComingSoon": {
+    "description": "Privacy policy coming soon message"
+  },
+  "termsOfServiceComingSoon": "Условия использования скоро будут доступны",
+  "@termsOfServiceComingSoon": {
+    "description": "Terms of service coming soon message"
+  },
+  "deleteAccountComingSoon": "Удаление аккаунта скоро будет доступно",
+  "@deleteAccountComingSoon": {
+    "description": "Delete account coming soon message"
+  },
+  "contactUsComingSoon": "Связь с нами скоро будет доступна",
+  "@contactUsComingSoon": {
+    "description": "Contact us coming soon message"
   }
 }

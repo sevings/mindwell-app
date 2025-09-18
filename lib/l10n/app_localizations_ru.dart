@@ -972,4 +972,91 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get failedToSubmitComplaint =>
       'Не удалось отправить жалобу. Пожалуйста, попробуйте еще раз.';
+
+  @override
+  String get accountSettings => 'Аккаунт';
+
+  @override
+  String get changePassword => 'Изменить пароль';
+
+  @override
+  String get changeEmail => 'Изменить email';
+
+  @override
+  String get notificationSettings => 'Уведомления';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'Управляйте тем, как вы получаете уведомления';
+
+  @override
+  String get emailNotifications => 'Email уведомления';
+
+  @override
+  String get emailNotificationsSubtitle => 'Получать уведомления по email';
+
+  @override
+  String get telegramNotifications => 'Telegram уведомления';
+
+  @override
+  String get telegramNotificationsSubtitle =>
+      'Получать уведомления через Telegram';
+
+  @override
+  String get onsiteNotifications => 'Уведомления в приложении';
+
+  @override
+  String get onsiteNotificationsSubtitle => 'Получать уведомления в приложении';
+
+  @override
+  String get privacySettings => 'Конфиденциальность и данные';
+
+  @override
+  String get blockedProfiles => 'Заблокированные профили';
+
+  @override
+  String get hiddenProfiles => 'Скрытые профили';
+
+  @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountWarning =>
+      'Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить, и все ваши данные будут безвозвратно потеряны.';
+
+  @override
+  String get appVersion => 'Версия приложения';
+
+  @override
+  String get contactUs => 'Связаться с нами';
+
+  @override
+  String get loadingSettings => 'Загрузка настроек...';
+
+  @override
+  String get emailNotificationSettingsComingSoon =>
+      'Настройки email уведомлений скоро будут доступны';
+
+  @override
+  String get telegramNotificationSettingsComingSoon =>
+      'Настройки Telegram уведомлений скоро будут доступны';
+
+  @override
+  String get onsiteNotificationSettingsComingSoon =>
+      'Настройки уведомлений в приложении скоро будут доступны';
+
+  @override
+  String get privacyPolicyComingSoon =>
+      'Политика конфиденциальности скоро будет доступна';
+
+  @override
+  String get termsOfServiceComingSoon =>
+      'Условия использования скоро будут доступны';
+
+  @override
+  String get deleteAccountComingSoon =>
+      'Удаление аккаунта скоро будет доступно';
+
+  @override
+  String get contactUsComingSoon => 'Связь с нами скоро будет доступна';
 }

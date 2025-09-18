@@ -1252,5 +1252,109 @@
   "failedToSubmitComplaint": "Failed to submit complaint. Please try again.",
   "@failedToSubmitComplaint": {
     "description": "Error message when complaint submission fails"
+  },
+  "accountSettings": "Account",
+  "@accountSettings": {
+    "description": "Account settings section title"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password setting title"
+  },
+  "changeEmail": "Change Email",
+  "@changeEmail": {
+    "description": "Change email setting title"
+  },
+  "notificationSettings": "Notifications",
+  "@notificationSettings": {
+    "description": "Notification settings section title"
+  },
+  "notificationSettingsSubtitle": "Manage how you receive notifications",
+  "@notificationSettingsSubtitle": {
+    "description": "Notification settings section subtitle"
+  },
+  "emailNotifications": "Email Notifications",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Receive notifications via email",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "telegramNotifications": "Telegram Notifications",
+  "@telegramNotifications": {
+    "description": "Telegram notifications setting title"
+  },
+  "telegramNotificationsSubtitle": "Receive notifications via Telegram",
+  "@telegramNotificationsSubtitle": {
+    "description": "Telegram notifications setting subtitle"
+  },
+  "onsiteNotifications": "On-site Notifications",
+  "@onsiteNotifications": {
+    "description": "On-site notifications setting title"
+  },
+  "onsiteNotificationsSubtitle": "Receive notifications within the app",
+  "@onsiteNotificationsSubtitle": {
+    "description": "On-site notifications setting subtitle"
+  },
+  "privacySettings": "Privacy & Data",
+  "@privacySettings": {
+    "description": "Privacy settings section title"
+  },
+  "blockedProfiles": "Blocked Profiles",
+  "@blockedProfiles": {
+    "description": "Blocked profiles setting title"
+  },
+  "hiddenProfiles": "Hidden Profiles",
+  "@hiddenProfiles": {
+    "description": "Hidden profiles setting title"
+  },
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {
+    "description": "Delete account setting title"
+  },
+  "deleteAccountWarning": "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.",
+  "@deleteAccountWarning": {
+    "description": "Delete account confirmation warning"
+  },
+  "appVersion": "App Version",
+  "@appVersion": {
+    "description": "App version setting title"
+  },
+  "contactUs": "Contact Us",
+  "@contactUs": {
+    "description": "Contact us setting title"
+  },
+  "loadingSettings": "Loading settings...",
+  "@loadingSettings": {
+    "description": "Loading settings message"
+  },
+  "emailNotificationSettingsComingSoon": "Email notification settings coming soon",
+  "@emailNotificationSettingsComingSoon": {
+    "description": "Email notification settings coming soon message"
+  },
+  "telegramNotificationSettingsComingSoon": "Telegram notification settings coming soon",
+  "@telegramNotificationSettingsComingSoon": {
+    "description": "Telegram notification settings coming soon message"
+  },
+  "onsiteNotificationSettingsComingSoon": "On-site notification settings coming soon",
+  "@onsiteNotificationSettingsComingSoon": {
+    "description": "On-site notification settings coming soon message"
+  },
+  "privacyPolicyComingSoon": "Privacy policy coming soon",
+  "@privacyPolicyComingSoon": {
+    "description": "Privacy policy coming soon message"
+  },
+  "termsOfServiceComingSoon": "Terms of service coming soon",
+  "@termsOfServiceComingSoon": {
+    "description": "Terms of service coming soon message"
+  },
+  "deleteAccountComingSoon": "Account deletion coming soon",
+  "@deleteAccountComingSoon": {
+    "description": "Delete account coming soon message"
+  },
+  "contactUsComingSoon": "Contact us coming soon",
+  "@contactUsComingSoon": {
+    "description": "Contact us coming soon message"
   }
 }
