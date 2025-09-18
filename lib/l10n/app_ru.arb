@@ -1307,6 +1307,54 @@
   "@changeEmail": {
     "description": "Change email setting title"
   },
+  "currentPassword": "Текущий пароль",
+  "@currentPassword": {
+    "description": "Current password field label"
+  },
+  "currentPasswordHint": "Введите ваш текущий пароль",
+  "@currentPasswordHint": {
+    "description": "Current password field hint text"
+  },
+  "currentPasswordRequired": "Текущий пароль обязателен",
+  "@currentPasswordRequired": {
+    "description": "Current password validation error message"
+  },
+  "newPassword": "Новый пароль",
+  "@newPassword": {
+    "description": "New password field label"
+  },
+  "newPasswordHint": "Введите ваш новый пароль",
+  "@newPasswordHint": {
+    "description": "New password field hint text"
+  },
+  "newPasswordRequired": "Новый пароль обязателен",
+  "@newPasswordRequired": {
+    "description": "New password validation error message"
+  },
+  "newPasswordSameAsCurrent": "Новый пароль должен отличаться от текущего",
+  "@newPasswordSameAsCurrent": {
+    "description": "New password same as current password validation error message"
+  },
+  "confirmNewPassword": "Подтвердите новый пароль",
+  "@confirmNewPassword": {
+    "description": "Confirm new password field label"
+  },
+  "confirmNewPasswordHint": "Подтвердите ваш новый пароль",
+  "@confirmNewPasswordHint": {
+    "description": "Confirm new password field hint text"
+  },
+  "confirmNewPasswordRequired": "Пожалуйста, подтвердите ваш новый пароль",
+  "@confirmNewPasswordRequired": {
+    "description": "Confirm new password validation error message"
+  },
+  "changePasswordButton": "Изменить пароль",
+  "@changePasswordButton": {
+    "description": "Change password button text"
+  },
+  "changePasswordSuccess": "Пароль успешно изменен",
+  "@changePasswordSuccess": {
+    "description": "Password change success message"
+  },
   "notificationSettings": "Уведомления",
   "@notificationSettings": {
     "description": "Notification settings section title"

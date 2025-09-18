@@ -1940,6 +1940,78 @@ abstract class AppLocalizations {
   /// **'Изменить email'**
   String get changeEmail;
 
+  /// Current password field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущий пароль'**
+  String get currentPassword;
+
+  /// Current password field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш текущий пароль'**
+  String get currentPasswordHint;
+
+  /// Current password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущий пароль обязателен'**
+  String get currentPasswordRequired;
+
+  /// New password field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый пароль'**
+  String get newPassword;
+
+  /// New password field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш новый пароль'**
+  String get newPasswordHint;
+
+  /// New password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый пароль обязателен'**
+  String get newPasswordRequired;
+
+  /// New password same as current password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый пароль должен отличаться от текущего'**
+  String get newPasswordSameAsCurrent;
+
+  /// Confirm new password field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите новый пароль'**
+  String get confirmNewPassword;
+
+  /// Confirm new password field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите ваш новый пароль'**
+  String get confirmNewPasswordHint;
+
+  /// Confirm new password validation error message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, подтвердите ваш новый пароль'**
+  String get confirmNewPasswordRequired;
+
+  /// Change password button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить пароль'**
+  String get changePasswordButton;
+
+  /// Password change success message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль успешно изменен'**
+  String get changePasswordSuccess;
+
   /// Notification settings section title
   ///
   /// In ru, this message translates to:

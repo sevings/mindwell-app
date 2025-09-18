@@ -983,6 +983,44 @@ class AppLocalizationsRu extends AppLocalizations {
   String get changeEmail => 'Изменить email';
 
   @override
+  String get currentPassword => 'Текущий пароль';
+
+  @override
+  String get currentPasswordHint => 'Введите ваш текущий пароль';
+
+  @override
+  String get currentPasswordRequired => 'Текущий пароль обязателен';
+
+  @override
+  String get newPassword => 'Новый пароль';
+
+  @override
+  String get newPasswordHint => 'Введите ваш новый пароль';
+
+  @override
+  String get newPasswordRequired => 'Новый пароль обязателен';
+
+  @override
+  String get newPasswordSameAsCurrent =>
+      'Новый пароль должен отличаться от текущего';
+
+  @override
+  String get confirmNewPassword => 'Подтвердите новый пароль';
+
+  @override
+  String get confirmNewPasswordHint => 'Подтвердите ваш новый пароль';
+
+  @override
+  String get confirmNewPasswordRequired =>
+      'Пожалуйста, подтвердите ваш новый пароль';
+
+  @override
+  String get changePasswordButton => 'Изменить пароль';
+
+  @override
+  String get changePasswordSuccess => 'Пароль успешно изменен';
+
+  @override
   String get notificationSettings => 'Уведомления';
 
   @override

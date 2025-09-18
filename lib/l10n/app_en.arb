@@ -1265,6 +1265,54 @@
   "@changeEmail": {
     "description": "Change email setting title"
   },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Current password field label"
+  },
+  "currentPasswordHint": "Enter your current password",
+  "@currentPasswordHint": {
+    "description": "Current password field hint text"
+  },
+  "currentPasswordRequired": "Current password is required",
+  "@currentPasswordRequired": {
+    "description": "Current password validation error message"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password field label"
+  },
+  "newPasswordHint": "Enter your new password",
+  "@newPasswordHint": {
+    "description": "New password field hint text"
+  },
+  "newPasswordRequired": "New password is required",
+  "@newPasswordRequired": {
+    "description": "New password validation error message"
+  },
+  "newPasswordSameAsCurrent": "New password must be different from current password",
+  "@newPasswordSameAsCurrent": {
+    "description": "New password same as current password validation error message"
+  },
+  "confirmNewPassword": "Confirm New Password",
+  "@confirmNewPassword": {
+    "description": "Confirm new password field label"
+  },
+  "confirmNewPasswordHint": "Confirm your new password",
+  "@confirmNewPasswordHint": {
+    "description": "Confirm new password field hint text"
+  },
+  "confirmNewPasswordRequired": "Please confirm your new password",
+  "@confirmNewPasswordRequired": {
+    "description": "Confirm new password validation error message"
+  },
+  "changePasswordButton": "Change Password",
+  "@changePasswordButton": {
+    "description": "Change password button text"
+  },
+  "changePasswordSuccess": "Password changed successfully",
+  "@changePasswordSuccess": {
+    "description": "Password change success message"
+  },
   "notificationSettings": "Notifications",
   "@notificationSettings": {
     "description": "Notification settings section title"
