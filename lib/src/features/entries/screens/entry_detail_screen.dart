@@ -1026,7 +1026,13 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                   ),
                 );
                 // Navigate back after successful deletion
-                context.pop();
+                // Check if we can pop, otherwise navigate to home
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  // If this is the only screen on the stack, navigate to home
+                  context.go('/');
+                }
               }
             },
             style: TextButton.styleFrom(
