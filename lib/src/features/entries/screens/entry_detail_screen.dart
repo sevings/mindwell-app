@@ -266,19 +266,16 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      entry.title ?? '',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    AppLocalizations.of(context)?.entry ?? 'Entry',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               )
             : Text(
-                entry.title ?? '',
+                AppLocalizations.of(context)?.entry ?? 'Entry',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -318,11 +315,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Background image section (if entry has images)
-            if (entry.images != null && entry.images!.isNotEmpty) ...[
-              _buildAppBarBackground(entry),
-              const SizedBox(height: 16),
-            ],
             // Content
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -330,6 +322,8 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAuthorInfo(entry),
+                  const SizedBox(height: 16),
+                  _buildEntryTitle(entry),
                   const SizedBox(height: 16),
                   _buildEntryContent(entry),
                   const SizedBox(height: 16),
@@ -355,45 +349,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAppBarBackground(MwEntry entry) {
-    // If entry has images, use the first one as background
-    final images = entry.images;
-    if (images != null && images.isNotEmpty) {
-      final firstImage = images.first;
-      final imageUrl =
-          firstImage.medium?.url ??
-          firstImage.small?.url ??
-          firstImage.thumbnail?.url ??
-          firstImage.large?.url;
-
-      if (imageUrl != null) {
-        return SizedBox(
-          height: 200,
-          width: double.infinity,
-          child: CachedImage(
-            imageUrl: imageUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        );
-      }
-    }
-
-    // Default gradient background
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFF5E3A), Color(0xFFFF8A65)],
         ),
       ),
     );
@@ -436,6 +391,21 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEntryTitle(MwEntry entry) {
+    final title = entry.title;
+    if (title == null || title.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.bold,
+        height: 1.2,
+      ),
     );
   }
 

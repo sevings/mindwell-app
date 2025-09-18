@@ -4,17 +4,18 @@ import 'package:mindwell_api/mindwell_api.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Widget that displays navigation to adjacent entries (previous and next).
-/// 
-/// This widget shows clickable titles and arrows for the previous and next entries,
-/// allowing users to navigate directly to adjacent entries without going back to the feed.
+///
+/// On small screens: older entry at top with right arrow, newer entry at bottom with left arrow.
+/// On wider screens: displays both entries in one row.
+/// No text labels, just arrows and entry titles.
 class AdjacentEntryNavigation extends StatelessWidget {
   /// The adjacent entries data containing previous and next entry information
   final MwAdjacentEntries? adjacentEntries;
-  
-  /// Callback when user taps on the previous entry
+
+  /// Callback when user taps on the previous entry (older)
   final VoidCallback? onPreviousTap;
-  
-  /// Callback when user taps on the next entry
+
+  /// Callback when user taps on the next entry (newer)
   final VoidCallback? onNextTap;
 
   const AdjacentEntryNavigation({
@@ -27,15 +28,15 @@ class AdjacentEntryNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // Don't show navigation if no adjacent entries
     if (adjacentEntries == null) {
       return const SizedBox.shrink();
     }
-    
+
     final older = adjacentEntries!.older;
     final newer = adjacentEntries!.newer;
-    
+
     // Don't show navigation if no adjacent entries are available
     if (older == null && newer == null) {
       return const SizedBox.shrink();
@@ -51,50 +52,110 @@ class AdjacentEntryNavigation extends StatelessWidget {
           width: 1.0,
         ),
       ),
-      child: Column(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Use responsive layout based on screen width
+          final isWideScreen = constraints.maxWidth > 600;
+
+          if (isWideScreen) {
+            // Wide screen: display in one row
+            return _buildWideLayout(context, older, newer);
+          } else {
+            // Small screen: display vertically
+            return _buildNarrowLayout(context, older, newer);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildWideLayout(
+    BuildContext context,
+    MwCalendarEntry? older,
+    MwCalendarEntry? newer,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
         children: [
-          // Previous entry (older)
-          if (older != null) _buildEntryNavigation(
-            context,
-            entry: older,
-            isPrevious: true,
-            onTap: onPreviousTap,
-          ),
-          
-          // Divider between entries if both exist
-          if (older != null && newer != null)
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
+          // Newer entry (left side)
+          if (newer != null) ...[
+            Expanded(
+              child: _buildEntryNavigation(
+                context,
+                entry: newer,
+                isOlder: false,
+                onTap: onNextTap,
+              ),
             ),
-          
-          // Next entry (newer)
-          if (newer != null) _buildEntryNavigation(
-            context,
-            entry: newer,
-            isPrevious: false,
-            onTap: onNextTap,
-          ),
+            if (older != null) const SizedBox(width: 16),
+          ],
+
+          // Older entry (right side)
+          if (older != null)
+            Expanded(
+              child: _buildEntryNavigation(
+                context,
+                entry: older,
+                isOlder: true,
+                onTap: onPreviousTap,
+              ),
+            ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNarrowLayout(
+    BuildContext context,
+    MwCalendarEntry? older,
+    MwCalendarEntry? newer,
+  ) {
+    return Column(
+      children: [
+        // Older entry (top)
+        if (older != null)
+          _buildEntryNavigation(
+            context,
+            entry: older,
+            isOlder: true,
+            onTap: onPreviousTap,
+          ),
+
+        // Divider between entries if both exist
+        if (older != null && newer != null)
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          ),
+
+        // Newer entry (bottom)
+        if (newer != null)
+          _buildEntryNavigation(
+            context,
+            entry: newer,
+            isOlder: false,
+            onTap: onNextTap,
+          ),
+      ],
     );
   }
 
   Widget _buildEntryNavigation(
     BuildContext context, {
     required MwCalendarEntry entry,
-    required bool isPrevious,
+    required bool isOlder,
     VoidCallback? onTap,
   }) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    
-    final title = entry.title?.isNotEmpty == true 
-        ? entry.title! 
+
+    final title = entry.title?.isNotEmpty == true
+        ? entry.title!
         : l10n?.untitled ?? 'Untitled';
-    
-    final timestamp = entry.createdAt != null 
+
+    final timestamp = entry.createdAt != null
         ? _formatTimestamp(entry.createdAt!)
         : null;
 
@@ -109,29 +170,17 @@ class AdjacentEntryNavigation extends StatelessWidget {
             children: [
               // Navigation arrow
               Icon(
-                isPrevious ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
+                isOlder ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
                 size: 16,
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 12),
-              
+
               // Entry information
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Navigation label
-                    Text(
-                      isPrevious 
-                          ? (l10n?.previousEntry ?? 'Previous Entry')
-                          : (l10n?.nextEntry ?? 'Next Entry'),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    
                     // Entry title
                     Text(
                       title,
@@ -142,10 +191,10 @@ class AdjacentEntryNavigation extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     // Timestamp
                     if (timestamp != null) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         timestamp,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -156,13 +205,6 @@ class AdjacentEntryNavigation extends StatelessWidget {
                   ],
                 ),
               ),
-              
-              // Arrow indicator at the end
-              Icon(
-                isPrevious ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
-                size: 16,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
             ],
           ),
         ),
@@ -171,7 +213,9 @@ class AdjacentEntryNavigation extends StatelessWidget {
   }
 
   String _formatTimestamp(double timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+    final date = DateTime.fromMillisecondsSinceEpoch(
+      (timestamp * 1000).round(),
+    );
     final now = DateTime.now();
     final difference = now.difference(date);
 

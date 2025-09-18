@@ -327,6 +327,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entryDetail => 'Entry Detail';
 
   @override
+  String get entry => 'Entry';
+
+  @override
   String get comments => 'Comments';
 
   @override

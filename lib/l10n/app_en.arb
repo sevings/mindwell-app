@@ -362,6 +362,10 @@
   "@entryDetail": {
     "description": "Entry detail screen title"
   },
+  "entry": "Entry",
+  "@entry": {
+    "description": "Generic entry title fallback"
+  },
   "comments": "Comments",
   "@comments": {
     "description": "Comments section title"

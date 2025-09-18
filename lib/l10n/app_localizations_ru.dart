@@ -332,6 +332,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get entryDetail => 'Детали записи';
 
   @override
+  String get entry => 'Запись';
+
+  @override
   String get comments => 'Комментарии';
 
   @override

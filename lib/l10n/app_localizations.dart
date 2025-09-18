@@ -728,6 +728,12 @@ abstract class AppLocalizations {
   /// **'Детали записи'**
   String get entryDetail;
 
+  /// Generic entry title fallback
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись'**
+  String get entry;
+
   /// Comments section title
   ///
   /// In ru, this message translates to:
