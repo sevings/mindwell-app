@@ -88,7 +88,7 @@ void main() {
       final state = notifier.state;
       expect(
         state.maybeWhen(
-          loaded: (entry, _, _, _, _) => entry.isPinned,
+          loaded: (entry, _, _, _, _, _) => entry.isPinned,
           orElse: () => null,
         ),
         isTrue,
@@ -154,7 +154,7 @@ void main() {
       final state = notifier.state;
       expect(
         state.maybeWhen(
-          loaded: (entry, _, _, _, _) => entry.isPinned,
+          loaded: (entry, _, _, _, _, _) => entry.isPinned,
           orElse: () => null,
         ),
         isFalse,
@@ -223,7 +223,7 @@ void main() {
       final state = notifier.state;
       expect(
         state.maybeWhen(
-          loaded: (entry, _, _, _, _) => entry.isWatching,
+          loaded: (entry, _, _, _, _, _) => entry.isWatching,
           orElse: () => null,
         ),
         isTrue,
@@ -294,7 +294,7 @@ void main() {
       final state = notifier.state;
       expect(
         state.maybeWhen(
-          loaded: (entry, _, _, _, _) => entry.isWatching,
+          loaded: (entry, _, _, _, _, _) => entry.isWatching,
           orElse: () => null,
         ),
         isFalse,

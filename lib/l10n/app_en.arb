@@ -383,6 +383,10 @@
       }
     }
   },
+  "displayMoreComments": "Display more comments",
+  "@displayMoreComments": {
+    "description": "Button to display more comments when there are many available"
+  },
   "addComment": "Add comment",
   "@addComment": {
     "description": "Add comment button text"

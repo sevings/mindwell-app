@@ -346,6 +346,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get displayMoreComments => 'Показать больше комментариев';
+
+  @override
   String get addComment => 'Добавить комментарий';
 
   @override

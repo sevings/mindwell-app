@@ -38,6 +38,7 @@ bool isLoadedState(EntryDetailState state) {
           hasMoreComments,
           isLoadingComments,
           adjacentEntries,
+          availableCommentsCount,
         ) => true,
     error: (message, entry) => false,
   );
@@ -54,6 +55,7 @@ bool isErrorState(EntryDetailState state) {
           hasMoreComments,
           isLoadingComments,
           adjacentEntries,
+          availableCommentsCount,
         ) => false,
     error: (message, entry) => true,
   );
@@ -70,6 +72,7 @@ bool isLoadingState(EntryDetailState state) {
           hasMoreComments,
           isLoadingComments,
           adjacentEntries,
+          availableCommentsCount,
         ) => false,
     error: (message, entry) => false,
   );
@@ -80,6 +83,8 @@ bool isLoadingState(EntryDetailState state) {
   List<MwComment> comments,
   bool hasMoreComments,
   bool isLoadingComments,
+  MwAdjacentEntries? adjacentEntries,
+  int? availableCommentsCount,
 })?
 getLoadedState(EntryDetailState state) {
   return state.when(
@@ -92,11 +97,14 @@ getLoadedState(EntryDetailState state) {
           hasMoreComments,
           isLoadingComments,
           adjacentEntries,
+          availableCommentsCount,
         ) => (
           entry: entry,
           comments: comments,
           hasMoreComments: hasMoreComments,
           isLoadingComments: isLoadingComments,
+          adjacentEntries: adjacentEntries,
+          availableCommentsCount: availableCommentsCount,
         ),
     error: (message, entry) => null,
   );
@@ -113,6 +121,7 @@ String? getErrorMessage(EntryDetailState state) {
           hasMoreComments,
           isLoadingComments,
           adjacentEntries,
+          availableCommentsCount,
         ) => null,
     error: (message, entry) => message,
   );
@@ -763,6 +772,259 @@ void main() {
           loadedState.entry.commentCount,
           equals(3),
         ); // Original count unchanged
+      });
+    });
+
+    group('Available Comments Count', () {
+      test(
+        'should calculate available comments count correctly on initial load',
+        () async {
+          // Create additional mock comments
+          final mockComment1 = MockMwComment();
+          when(() => mockComment1.id).thenReturn(1);
+          when(() => mockComment1.content).thenReturn('Comment 1');
+          when(() => mockComment1.author).thenReturn(mockUser);
+          when(() => mockComment1.rating).thenReturn(mockRating);
+          when(() => mockComment1.createdAt).thenReturn(1640995200.0);
+
+          final mockComment2 = MockMwComment();
+          when(() => mockComment2.id).thenReturn(2);
+          when(() => mockComment2.content).thenReturn('Comment 2');
+          when(() => mockComment2.author).thenReturn(mockUser);
+          when(() => mockComment2.rating).thenReturn(mockRating);
+          when(() => mockComment2.createdAt).thenReturn(1640995200.0);
+
+          final mockComment3 = MockMwComment();
+          when(() => mockComment3.id).thenReturn(3);
+          when(() => mockComment3.content).thenReturn('Comment 3');
+          when(() => mockComment3.author).thenReturn(mockUser);
+          when(() => mockComment3.rating).thenReturn(mockRating);
+          when(() => mockComment3.createdAt).thenReturn(1640995200.0);
+
+          final mockComment4 = MockMwComment();
+          when(() => mockComment4.id).thenReturn(4);
+          when(() => mockComment4.content).thenReturn('Comment 4');
+          when(() => mockComment4.author).thenReturn(mockUser);
+          when(() => mockComment4.rating).thenReturn(mockRating);
+          when(() => mockComment4.createdAt).thenReturn(1640995200.0);
+
+          final mockComment5 = MockMwComment();
+          when(() => mockComment5.id).thenReturn(5);
+          when(() => mockComment5.content).thenReturn('Comment 5');
+          when(() => mockComment5.author).thenReturn(mockUser);
+          when(() => mockComment5.rating).thenReturn(mockRating);
+          when(() => mockComment5.createdAt).thenReturn(1640995200.0);
+
+          // Setup entry with 10 total comments but only 5 loaded initially
+          when(() => mockEntry.commentCount).thenReturn(10);
+          when(() => mockCommentList.data).thenReturn(
+            BuiltList<MwComment>([
+              mockComment1,
+              mockComment2,
+              mockComment3,
+              mockComment4,
+              mockComment5,
+            ]),
+          );
+          when(() => mockCommentList.hasBefore).thenReturn(true);
+          when(
+            () => mockCommentList.nextBefore,
+          ).thenReturn('next_before_token');
+
+          when(() => mockEntry.comments).thenReturn(mockCommentList);
+
+          await notifier.fetchEntryDetails();
+
+          final loadedState = getLoadedState(notifier.state);
+          expect(loadedState, isNotNull);
+          expect(
+            loadedState!.availableCommentsCount,
+            equals(5),
+          ); // 10 total - 5 loaded = 5 available
+          expect(loadedState.comments.length, equals(5));
+          expect(loadedState.hasMoreComments, isTrue);
+        },
+      );
+
+      test('should track available comments count correctly', () async {
+        // Setup initial state with 10 total comments, 1 loaded initially
+        when(() => mockEntry.commentCount).thenReturn(10);
+        when(
+          () => mockCommentList.data,
+        ).thenReturn(BuiltList<MwComment>([mockComment]));
+        when(() => mockCommentList.hasBefore).thenReturn(true);
+        when(() => mockCommentList.nextBefore).thenReturn('next_before_token');
+        when(() => mockEntry.comments).thenReturn(mockCommentList);
+
+        await notifier.fetchEntryDetails();
+
+        final initialState = getLoadedState(notifier.state);
+        expect(initialState, isNotNull);
+        expect(
+          initialState!.availableCommentsCount,
+          equals(9),
+        ); // 10 total - 1 loaded = 9 available
+        expect(initialState.comments.length, equals(1));
+        expect(initialState.hasMoreComments, isTrue);
+      });
+
+      test('should handle case when no more comments are available', () async {
+        // Setup entry with 1 total comment, all 1 loaded initially
+        when(() => mockEntry.commentCount).thenReturn(1);
+        when(
+          () => mockCommentList.data,
+        ).thenReturn(BuiltList<MwComment>([mockComment]));
+        when(() => mockCommentList.hasBefore).thenReturn(false);
+        when(() => mockCommentList.nextBefore).thenReturn(null);
+        when(() => mockEntry.comments).thenReturn(mockCommentList);
+
+        await notifier.fetchEntryDetails();
+
+        final loadedState = getLoadedState(notifier.state);
+        expect(loadedState, isNotNull);
+        expect(
+          loadedState!.availableCommentsCount,
+          equals(0),
+        ); // 1 total - 1 loaded = 0 available
+        expect(loadedState.comments.length, equals(1));
+        expect(loadedState.hasMoreComments, isFalse);
+      });
+
+      test('should prepend new comments to the list', () async {
+        // Create fresh mock objects for this test
+        final testMockEntry = MockMwEntry();
+        final testMockCommentList = MockMwCommentList();
+        final testMockComment = MockMwComment();
+        final testMockEntriesApi = MockEntriesApi();
+        final testMockCommentsApi = MockCommentsApi();
+
+        // Setup the original comment
+        when(() => testMockComment.id).thenReturn(123);
+        when(() => testMockComment.content).thenReturn('Original comment');
+        when(() => testMockComment.author).thenReturn(mockUser);
+        when(() => testMockComment.rating).thenReturn(mockRating);
+        when(() => testMockComment.createdAt).thenReturn(1640995200.0);
+
+        // Setup the comment list
+        when(
+          () => testMockCommentList.data,
+        ).thenReturn(BuiltList<MwComment>([testMockComment]));
+        when(() => testMockCommentList.hasBefore).thenReturn(true);
+        when(
+          () => testMockCommentList.nextBefore,
+        ).thenReturn('next_before_token');
+
+        // Setup the entry
+        when(() => testMockEntry.id).thenReturn(123);
+        when(() => testMockEntry.title).thenReturn('Test Entry');
+        when(() => testMockEntry.content).thenReturn('Test content');
+        when(() => testMockEntry.author).thenReturn(mockUser);
+        when(() => testMockEntry.rating).thenReturn(mockRating);
+        when(() => testMockEntry.commentCount).thenReturn(5);
+        when(() => testMockEntry.favoriteCount).thenReturn(2);
+        when(() => testMockEntry.isFavorited).thenReturn(false);
+        when(() => testMockEntry.createdAt).thenReturn(1640995200.0);
+        when(() => testMockEntry.comments).thenReturn(testMockCommentList);
+
+        // Create a new notifier for this test
+        final testNotifier = EntryDetailNotifier(
+          watchingsApi: MockWatchingsApi(),
+          entryId: 123,
+          entriesApi: testMockEntriesApi,
+          commentsApi: testMockCommentsApi,
+        );
+
+        // Mock the entry API response
+        when(() => testMockEntriesApi.entriesIdGet(id: 123)).thenAnswer(
+          (_) async => Response<MwEntry>(
+            data: testMockEntry,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123'),
+          ),
+        );
+
+        when(() => testMockEntriesApi.entriesIdAdjacentGet(id: 123)).thenAnswer(
+          (_) async => Response<MwAdjacentEntries>(
+            data: mockAdjacentEntries,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/adjacent'),
+          ),
+        );
+
+        await testNotifier.fetchEntryDetails();
+
+        final initialState = getLoadedState(testNotifier.state);
+        expect(initialState, isNotNull);
+        expect(initialState!.comments.length, equals(1));
+        expect(initialState.comments.first.id, equals(123)); // Original comment
+        expect(
+          initialState.hasMoreComments,
+          isTrue,
+        ); // Should have more comments
+
+        // Create 2 additional comments that should be prepended
+        final mockComment2 = MockMwComment();
+        when(() => mockComment2.id).thenReturn(456);
+        when(() => mockComment2.content).thenReturn('Comment 2');
+        when(() => mockComment2.author).thenReturn(mockUser);
+        when(() => mockComment2.rating).thenReturn(mockRating);
+        when(() => mockComment2.createdAt).thenReturn(1640995200.0);
+
+        final mockComment3 = MockMwComment();
+        when(() => mockComment3.id).thenReturn(789);
+        when(() => mockComment3.content).thenReturn('Comment 3');
+        when(() => mockComment3.author).thenReturn(mockUser);
+        when(() => mockComment3.rating).thenReturn(mockRating);
+        when(() => mockComment3.createdAt).thenReturn(1640995200.0);
+
+        // Mock the API response for loading more comments
+        final additionalCommentList = MockMwCommentList();
+        when(
+          () => additionalCommentList.data,
+        ).thenReturn(BuiltList<MwComment>([mockComment2, mockComment3]));
+        when(() => additionalCommentList.hasBefore).thenReturn(false);
+        when(() => additionalCommentList.nextBefore).thenReturn(null);
+
+        when(
+          () => testMockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_before_token',
+          ),
+        ).thenAnswer(
+          (_) async => Response<MwCommentList>(
+            data: additionalCommentList,
+            statusCode: 200,
+            requestOptions: RequestOptions(path: '/entries/123/comments'),
+          ),
+        );
+
+        // Load more comments
+        await testNotifier.loadMoreComments();
+
+        // Wait a bit for the async operation to complete
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Verify that the API call was made
+        verify(
+          () => testMockCommentsApi.entriesIdCommentsGet(
+            id: 123,
+            limit: 30,
+            before: 'next_before_token',
+          ),
+        ).called(1);
+
+        final finalState = getLoadedState(testNotifier.state);
+        expect(finalState, isNotNull);
+        expect(finalState!.comments.length, equals(3));
+
+        // Verify that new comments are prepended (at the beginning of the list)
+        expect(finalState.comments[0].id, equals(456)); // First new comment
+        expect(finalState.comments[1].id, equals(789)); // Second new comment
+        expect(
+          finalState.comments[2].id,
+          equals(123),
+        ); // Original comment moved to end
       });
     });
   });

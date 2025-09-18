@@ -53,6 +53,9 @@ class CommentList extends StatelessWidget {
   /// Callback when "Load More" is tapped
   final VoidCallback? onLoadMore;
 
+  /// Number of comments available to load (for button text)
+  final int? availableCommentsCount;
+
   /// Callback when retry is tapped (for error states)
   final VoidCallback? onRetry;
 
@@ -92,6 +95,7 @@ class CommentList extends StatelessWidget {
     this.onUpvote,
     this.onDownvote,
     this.onLoadMore,
+    this.availableCommentsCount,
     this.onRetry,
     this.padding,
     this.showSeparator = false,
@@ -111,6 +115,10 @@ class CommentList extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          if ((hasMore || isLoading) && comments.isNotEmpty) ...[
+            _buildLoadMoreSection(context),
+            const SizedBox(height: 16),
+          ],
           if (comments.isNotEmpty) ...[
             ListView.separated(
               shrinkWrap: true,
@@ -147,10 +155,6 @@ class CommentList extends StatelessWidget {
                 );
               },
             ),
-            if (hasMore || isLoading) ...[
-              const SizedBox(height: 16),
-              _buildLoadMoreSection(context),
-            ],
           ],
           if (isLoading && comments.isEmpty) ...[_buildLoadingState(context)],
           if (hasError) ...[_buildErrorState(context)],
@@ -340,13 +344,22 @@ class CommentList extends StatelessWidget {
     }
 
     if (hasMore) {
+      // Determine button text based on available comments count
+      String buttonText;
+      if (availableCommentsCount != null && availableCommentsCount! > 20) {
+        buttonText = l10n?.displayMoreComments ?? 'Display more comments';
+      } else if (availableCommentsCount != null) {
+        buttonText =
+            l10n?.displayComments(availableCommentsCount!) ??
+            'Display $availableCommentsCount comments';
+      } else {
+        buttonText = l10n?.loadMoreComments ?? 'Load more comments';
+      }
+
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: TextButton(
-            onPressed: onLoadMore,
-            child: Text(l10n?.loadMoreComments ?? 'Load more comments'),
-          ),
+          child: TextButton(onPressed: onLoadMore, child: Text(buttonText)),
         ),
       );
     }

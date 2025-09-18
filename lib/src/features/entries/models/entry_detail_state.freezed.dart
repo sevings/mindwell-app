@@ -25,7 +25,8 @@ mixin _$EntryDetailState {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) =>
@@ -39,7 +40,8 @@ mixin _$EntryDetailState {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) =>
@@ -53,7 +55,8 @@ mixin _$EntryDetailState {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -149,7 +152,8 @@ class _$InitialImpl implements _Initial {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -166,7 +170,8 @@ class _$InitialImpl implements _Initial {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -183,7 +188,8 @@ class _$InitialImpl implements _Initial {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -281,7 +287,8 @@ class _$LoadingImpl implements _Loading {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -298,7 +305,8 @@ class _$LoadingImpl implements _Loading {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -315,7 +323,8 @@ class _$LoadingImpl implements _Loading {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
@@ -379,7 +388,8 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       List<MwComment> comments,
       bool hasMoreComments,
       bool isLoadingComments,
-      MwAdjacentEntries? adjacentEntries});
+      MwAdjacentEntries? adjacentEntries,
+      int? availableCommentsCount});
 }
 
 /// @nodoc
@@ -398,6 +408,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? hasMoreComments = null,
     Object? isLoadingComments = null,
     Object? adjacentEntries = freezed,
+    Object? availableCommentsCount = freezed,
   }) {
     return _then(_$LoadedImpl(
       entry: null == entry
@@ -420,6 +431,10 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.adjacentEntries
           : adjacentEntries // ignore: cast_nullable_to_non_nullable
               as MwAdjacentEntries?,
+      availableCommentsCount: freezed == availableCommentsCount
+          ? _value.availableCommentsCount
+          : availableCommentsCount // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -432,7 +447,8 @@ class _$LoadedImpl implements _Loaded {
       final List<MwComment> comments = const [],
       this.hasMoreComments = false,
       this.isLoadingComments = false,
-      this.adjacentEntries})
+      this.adjacentEntries,
+      this.availableCommentsCount})
       : _comments = comments;
 
   @override
@@ -454,10 +470,12 @@ class _$LoadedImpl implements _Loaded {
   final bool isLoadingComments;
   @override
   final MwAdjacentEntries? adjacentEntries;
+  @override
+  final int? availableCommentsCount;
 
   @override
   String toString() {
-    return 'EntryDetailState.loaded(entry: $entry, comments: $comments, hasMoreComments: $hasMoreComments, isLoadingComments: $isLoadingComments, adjacentEntries: $adjacentEntries)';
+    return 'EntryDetailState.loaded(entry: $entry, comments: $comments, hasMoreComments: $hasMoreComments, isLoadingComments: $isLoadingComments, adjacentEntries: $adjacentEntries, availableCommentsCount: $availableCommentsCount)';
   }
 
   @override
@@ -472,7 +490,9 @@ class _$LoadedImpl implements _Loaded {
             (identical(other.isLoadingComments, isLoadingComments) ||
                 other.isLoadingComments == isLoadingComments) &&
             (identical(other.adjacentEntries, adjacentEntries) ||
-                other.adjacentEntries == adjacentEntries));
+                other.adjacentEntries == adjacentEntries) &&
+            (identical(other.availableCommentsCount, availableCommentsCount) ||
+                other.availableCommentsCount == availableCommentsCount));
   }
 
   @override
@@ -482,7 +502,8 @@ class _$LoadedImpl implements _Loaded {
       const DeepCollectionEquality().hash(_comments),
       hasMoreComments,
       isLoadingComments,
-      adjacentEntries);
+      adjacentEntries,
+      availableCommentsCount);
 
   @JsonKey(ignore: true)
   @override
@@ -500,12 +521,13 @@ class _$LoadedImpl implements _Loaded {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
-    return loaded(
-        entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
+    return loaded(entry, comments, hasMoreComments, isLoadingComments,
+        adjacentEntries, availableCommentsCount);
   }
 
   @override
@@ -518,12 +540,13 @@ class _$LoadedImpl implements _Loaded {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
-    return loaded?.call(
-        entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
+    return loaded?.call(entry, comments, hasMoreComments, isLoadingComments,
+        adjacentEntries, availableCommentsCount);
   }
 
   @override
@@ -536,14 +559,15 @@ class _$LoadedImpl implements _Loaded {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(
-          entry, comments, hasMoreComments, isLoadingComments, adjacentEntries);
+      return loaded(entry, comments, hasMoreComments, isLoadingComments,
+          adjacentEntries, availableCommentsCount);
     }
     return orElse();
   }
@@ -592,13 +616,15 @@ abstract class _Loaded implements EntryDetailState {
       final List<MwComment> comments,
       final bool hasMoreComments,
       final bool isLoadingComments,
-      final MwAdjacentEntries? adjacentEntries}) = _$LoadedImpl;
+      final MwAdjacentEntries? adjacentEntries,
+      final int? availableCommentsCount}) = _$LoadedImpl;
 
   MwEntry get entry;
   List<MwComment> get comments;
   bool get hasMoreComments;
   bool get isLoadingComments;
   MwAdjacentEntries? get adjacentEntries;
+  int? get availableCommentsCount;
   @JsonKey(ignore: true)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -683,7 +709,8 @@ class _$ErrorImpl implements _Error {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)
         loaded,
     required TResult Function(String message, MwEntry? entry) error,
   }) {
@@ -700,7 +727,8 @@ class _$ErrorImpl implements _Error {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult? Function(String message, MwEntry? entry)? error,
   }) {
@@ -717,7 +745,8 @@ class _$ErrorImpl implements _Error {
             List<MwComment> comments,
             bool hasMoreComments,
             bool isLoadingComments,
-            MwAdjacentEntries? adjacentEntries)?
+            MwAdjacentEntries? adjacentEntries,
+            int? availableCommentsCount)?
         loaded,
     TResult Function(String message, MwEntry? entry)? error,
     required TResult orElse(),

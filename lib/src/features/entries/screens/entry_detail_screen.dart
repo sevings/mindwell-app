@@ -50,27 +50,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      // Load more comments when near bottom (only if we have an entryId)
-      if (widget.entryId != null) {
-        ref
-            .read(entryDetailProvider(widget.entryId!).notifier)
-            .loadMoreComments();
-      }
-    }
   }
 
   @override
@@ -87,6 +69,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         false, // No more comments
         false, // Not loading comments
         null, // No adjacent entries in preview
+        null, // No available comments count in preview
       );
     }
 
@@ -104,6 +87,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               hasMoreComments,
               isLoadingComments,
               adjacentEntries,
+              availableCommentsCount,
             ) => _buildLoadedState(
               context,
               l10n,
@@ -112,6 +96,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               hasMoreComments,
               isLoadingComments,
               adjacentEntries,
+              availableCommentsCount,
             ),
         error: (message, entry) =>
             _buildErrorState(context, l10n, message, entry),
@@ -226,6 +211,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     bool hasMoreComments,
     bool isLoadingComments,
     MwAdjacentEntries? adjacentEntries,
+    int? availableCommentsCount,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -344,6 +330,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                           comments,
                           hasMoreComments,
                           isLoadingComments,
+                          availableCommentsCount,
                         ),
                 ],
               ),
@@ -659,6 +646,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     List<MwComment> comments,
     bool hasMoreComments,
     bool isLoadingComments,
+    int? availableCommentsCount,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -683,6 +671,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           onUpvote: (comment) => _onCommentVote(comment, true),
           onDownvote: (comment) => _onCommentVote(comment, false),
           onLoadMore: _loadMoreComments,
+          availableCommentsCount: availableCommentsCount,
           onEditComment: (comment) => _onEditComment(comment),
           onDeleteComment: (comment) => _onDeleteComment(comment),
           onComplainComment: (comment) => _onComplainComment(comment),
@@ -806,7 +795,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     } else if (widget.entryId != null) {
       final entryState = ref.read(entryDetailProvider(widget.entryId!));
       title = entryState.maybeWhen(
-        loaded: (entry, _, _, _, _) => entry.title,
+        loaded: (entry, _, _, _, _, _) => entry.title,
         orElse: () => null,
       );
     }

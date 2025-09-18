@@ -42,6 +42,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
 
   String? _commentsBefore;
   bool _isLoadingComments = false;
+  int? _availableCommentsCount;
 
   EntryDetailNotifier({
     required int entryId,
@@ -75,6 +76,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => false,
       error: (message, entry) => false,
     )) {
@@ -112,6 +114,11 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
         final initialComments = commentList.data?.toList() ?? [];
         _commentsBefore = commentList.nextBefore;
 
+        // Calculate available comments count
+        final totalComments = entry.commentCount ?? 0;
+        final loadedComments = initialComments.length;
+        _availableCommentsCount = totalComments - loadedComments;
+
         _logger.info(
           'Loaded ${initialComments.length} initial comments from entry response',
         );
@@ -122,15 +129,18 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: commentList.hasBefore ?? false,
           isLoadingComments: false,
           adjacentEntries: adjacentEntries,
+          availableCommentsCount: _availableCommentsCount,
         );
       } else {
         // No comments in the entry response
+        _availableCommentsCount = entry.commentCount ?? 0;
         state = EntryDetailState.loaded(
           entry: entry,
           comments: [],
           hasMoreComments: false,
           isLoadingComments: false,
           adjacentEntries: adjacentEntries,
+          availableCommentsCount: _availableCommentsCount,
         );
       }
     } catch (e, stackTrace) {
@@ -174,26 +184,35 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
                 hasMoreComments,
                 isLoadingComments,
                 adjacentEntries,
+                availableCommentsCount,
               ) => (
                 entry: entry,
                 comments: comments,
                 hasMoreComments: hasMoreComments,
                 adjacentEntries: adjacentEntries,
+                availableCommentsCount: availableCommentsCount,
               ),
           error: (message, entry) => null,
         );
 
         if (currentState != null) {
           final allComments = <MwComment>[
-            ...currentState.comments,
             ...newComments,
+            ...currentState.comments,
           ];
+
+          // Update available comments count
+          final totalComments = currentState.entry.commentCount ?? 0;
+          final totalLoadedComments = allComments.length;
+          _availableCommentsCount = totalComments - totalLoadedComments;
+
           state = EntryDetailState.loaded(
             entry: currentState.entry,
             comments: allComments,
             hasMoreComments: commentList.hasBefore ?? false,
             isLoadingComments: false,
             adjacentEntries: currentState.adjacentEntries,
+            availableCommentsCount: _availableCommentsCount,
           );
         }
 
@@ -219,11 +238,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
               hasMoreComments,
               isLoadingComments,
               adjacentEntries,
+              availableCommentsCount,
             ) => (
               entry: entry,
               comments: comments,
               hasMoreComments: hasMoreComments,
               adjacentEntries: adjacentEntries,
+              availableCommentsCount: availableCommentsCount,
             ),
         error: (message, entry) => null,
       );
@@ -235,6 +256,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
       }
     } finally {
@@ -242,7 +264,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     }
   }
 
-  /// Load more comments for infinite scrolling.
+  /// Load more comments for pagination.
   Future<void> loadMoreComments() async {
     final currentState = state.when(
       initial: () => null,
@@ -254,11 +276,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -281,6 +305,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
 
     // Reset pagination
     _commentsBefore = null;
+    _availableCommentsCount = null;
 
     // Fetch fresh data
     await fetchEntryDetails();
@@ -300,11 +325,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -355,11 +382,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -417,11 +446,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -464,6 +495,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
 
         _logger.info('Added comment to entry $_entryId');
@@ -489,11 +521,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -521,6 +555,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
       }
     } catch (e, stackTrace) {
@@ -549,11 +584,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -581,6 +618,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
       }
     } catch (e, stackTrace) {
@@ -609,11 +647,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -641,6 +681,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
       }
     } catch (e, stackTrace) {
@@ -669,11 +710,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -703,6 +746,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
           hasMoreComments: currentState.hasMoreComments,
           isLoadingComments: false,
           adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
         );
       }
     } catch (e, stackTrace) {
@@ -731,11 +775,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -769,11 +815,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -812,11 +860,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -870,11 +920,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );
@@ -906,11 +958,13 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
             hasMoreComments,
             isLoadingComments,
             adjacentEntries,
+            availableCommentsCount,
           ) => (
             entry: entry,
             comments: comments,
             hasMoreComments: hasMoreComments,
             adjacentEntries: adjacentEntries,
+            availableCommentsCount: availableCommentsCount,
           ),
       error: (message, entry) => null,
     );

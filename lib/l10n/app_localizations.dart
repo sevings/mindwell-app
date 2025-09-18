@@ -752,6 +752,12 @@ abstract class AppLocalizations {
   /// **'Показать {count} комментариев'**
   String displayComments(int count);
 
+  /// Button to display more comments when there are many available
+  ///
+  /// In ru, this message translates to:
+  /// **'Показать больше комментариев'**
+  String get displayMoreComments;
+
   /// Add comment button text
   ///
   /// In ru, this message translates to:

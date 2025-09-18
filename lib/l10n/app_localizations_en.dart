@@ -341,6 +341,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get displayMoreComments => 'Display more comments';
+
+  @override
   String get addComment => 'Add comment';
 
   @override

@@ -449,6 +449,10 @@
       }
     }
   },
+  "displayMoreComments": "Показать больше комментариев",
+  "@displayMoreComments": {
+    "description": "Button to display more comments when there are many available"
+  },
   "addComment": "Добавить комментарий",
   "@addComment": {
     "description": "Add comment button text"

@@ -7,8 +7,11 @@ import 'package:mindwell/src/features/comments/widgets/comment_list.dart';
 
 // Mock classes
 class MockMwComment extends Mock implements MwComment {}
+
 class MockMwUser extends Mock implements MwUser {}
+
 class MockMwRating extends Mock implements MwRating {}
+
 class MockMwAvatar extends Mock implements MwAvatar {}
 
 void main() {
@@ -29,7 +32,9 @@ void main() {
 
       when(() => mockAvatar.x42).thenReturn('https://example.com/avatar42.jpg');
       when(() => mockAvatar.x92).thenReturn('https://example.com/avatar92.jpg');
-      when(() => mockAvatar.x124).thenReturn('https://example.com/avatar124.jpg');
+      when(
+        () => mockAvatar.x124,
+      ).thenReturn('https://example.com/avatar124.jpg');
 
       when(() => mockAuthor.id).thenReturn(1);
       when(() => mockAuthor.name).thenReturn('Test User');
@@ -63,12 +68,12 @@ void main() {
       mockComments = [comment1, comment2, comment3];
     });
 
-    testWidgets('displays list of comments correctly', (WidgetTester tester) async {
+    testWidgets('displays list of comments correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentList(comments: mockComments),
-          ),
+          home: Scaffold(body: CommentList(comments: mockComments)),
         ),
       );
 
@@ -81,12 +86,12 @@ void main() {
       expect(find.text('Test User'), findsNWidgets(3));
     });
 
-    testWidgets('displays empty state when no comments', (WidgetTester tester) async {
+    testWidgets('displays empty state when no comments', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentList(comments: []),
-          ),
+          home: Scaffold(body: CommentList(comments: [])),
         ),
       );
 
@@ -95,25 +100,27 @@ void main() {
       expect(find.byIcon(Icons.comment_outlined), findsOneWidget);
     });
 
-    testWidgets('displays loading state when loading and no comments', (WidgetTester tester) async {
+    testWidgets('displays loading state when loading and no comments', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentList(
-              comments: [],
-              isLoading: true,
-            ),
-          ),
+          home: Scaffold(body: CommentList(comments: [], isLoading: true)),
         ),
       );
 
       // Check that skeleton loaders are displayed
-      expect(find.byType(CircularProgressIndicator), findsNothing); // No loading indicator in skeleton
+      expect(
+        find.byType(CircularProgressIndicator),
+        findsNothing,
+      ); // No loading indicator in skeleton
       // Check for skeleton elements (they use SkeletonLoader internally)
       expect(find.byType(Container), findsWidgets);
     });
 
-    testWidgets('displays load more button when hasMore is true', (WidgetTester tester) async {
+    testWidgets('displays load more button when hasMore is true', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -130,7 +137,9 @@ void main() {
       expect(find.text('Load more comments'), findsOneWidget);
     });
 
-    testWidgets('displays loading indicator when loading more comments', (WidgetTester tester) async {
+    testWidgets('displays loading indicator when loading more comments', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -148,7 +157,9 @@ void main() {
       expect(find.text('Loading comments...'), findsOneWidget);
     });
 
-    testWidgets('displays error state when hasError is true', (WidgetTester tester) async {
+    testWidgets('displays error state when hasError is true', (
+      WidgetTester tester,
+    ) async {
       bool onRetryCalled = false;
 
       await tester.pumpWidget(
@@ -176,7 +187,9 @@ void main() {
       expect(onRetryCalled, isTrue);
     });
 
-    testWidgets('calls onCommentTap when comment is tapped', (WidgetTester tester) async {
+    testWidgets('calls onCommentTap when comment is tapped', (
+      WidgetTester tester,
+    ) async {
       MwComment? tappedComment;
 
       await tester.pumpWidget(
@@ -197,7 +210,9 @@ void main() {
       expect(tappedComment, equals(mockComments[0]));
     });
 
-    testWidgets('calls onAuthorTap when author is tapped', (WidgetTester tester) async {
+    testWidgets('calls onAuthorTap when author is tapped', (
+      WidgetTester tester,
+    ) async {
       MwUser? tappedAuthor;
 
       await tester.pumpWidget(
@@ -218,7 +233,9 @@ void main() {
       expect(tappedAuthor, equals(mockAuthor));
     });
 
-    testWidgets('calls onUpvote when upvote button is tapped', (WidgetTester tester) async {
+    testWidgets('calls onUpvote when upvote button is tapped', (
+      WidgetTester tester,
+    ) async {
       MwComment? upvotedComment;
 
       await tester.pumpWidget(
@@ -239,7 +256,9 @@ void main() {
       expect(upvotedComment, equals(mockComments[0]));
     });
 
-    testWidgets('calls onDownvote when downvote button is tapped', (WidgetTester tester) async {
+    testWidgets('calls onDownvote when downvote button is tapped', (
+      WidgetTester tester,
+    ) async {
       MwComment? downvotedComment;
 
       await tester.pumpWidget(
@@ -260,7 +279,9 @@ void main() {
       expect(downvotedComment, equals(mockComments[0]));
     });
 
-    testWidgets('displays entry titles when showEntryTitles is true', (WidgetTester tester) async {
+    testWidgets('displays entry titles when showEntryTitles is true', (
+      WidgetTester tester,
+    ) async {
       final entryTitles = {1: 'Entry 1', 2: 'Entry 2', 3: 'Entry 3'};
 
       await tester.pumpWidget(
@@ -282,14 +303,13 @@ void main() {
       expect(find.byIcon(Icons.article_outlined), findsNWidgets(3));
     });
 
-    testWidgets('hides voting buttons when showVoting is false', (WidgetTester tester) async {
+    testWidgets('hides voting buttons when showVoting is false', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: CommentList(
-              comments: mockComments,
-              showVoting: false,
-            ),
+            body: CommentList(comments: mockComments, showVoting: false),
           ),
         ),
       );
@@ -299,14 +319,13 @@ void main() {
       expect(find.byIcon(Icons.thumb_down_outlined), findsNothing);
     });
 
-    testWidgets('displays separators when showSeparator is true', (WidgetTester tester) async {
+    testWidgets('displays separators when showSeparator is true', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: CommentList(
-              comments: mockComments,
-              showSeparator: true,
-            ),
+            body: CommentList(comments: mockComments, showSeparator: true),
           ),
         ),
       );
@@ -323,10 +342,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: CommentList(
-              comments: mockComments,
-              padding: customPadding,
-            ),
+            body: CommentList(comments: mockComments, padding: customPadding),
           ),
         ),
       );
@@ -335,20 +351,22 @@ void main() {
       expect(find.byType(CommentList), findsOneWidget);
     });
 
-    testWidgets('handles comments without ratings gracefully', (WidgetTester tester) async {
+    testWidgets('handles comments without ratings gracefully', (
+      WidgetTester tester,
+    ) async {
       final commentWithoutRating = MockMwComment();
       when(() => commentWithoutRating.id).thenReturn(1);
       when(() => commentWithoutRating.entryId).thenReturn(1);
       when(() => commentWithoutRating.author).thenReturn(mockAuthor);
-      when(() => commentWithoutRating.content).thenReturn('<p>Comment without rating</p>');
+      when(
+        () => commentWithoutRating.content,
+      ).thenReturn('<p>Comment without rating</p>');
       when(() => commentWithoutRating.createdAt).thenReturn(1640995200.0);
       when(() => commentWithoutRating.rating).thenReturn(null);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentList(comments: [commentWithoutRating]),
-          ),
+          home: Scaffold(body: CommentList(comments: [commentWithoutRating])),
         ),
       );
 
@@ -359,25 +377,128 @@ void main() {
       expect(find.byIcon(Icons.thumb_down_outlined), findsNothing);
     });
 
-    testWidgets('handles comments without authors gracefully', (WidgetTester tester) async {
+    testWidgets('handles comments without authors gracefully', (
+      WidgetTester tester,
+    ) async {
       final commentWithoutAuthor = MockMwComment();
       when(() => commentWithoutAuthor.id).thenReturn(1);
       when(() => commentWithoutAuthor.entryId).thenReturn(1);
       when(() => commentWithoutAuthor.author).thenReturn(null);
-      when(() => commentWithoutAuthor.content).thenReturn('<p>Comment without author</p>');
+      when(
+        () => commentWithoutAuthor.content,
+      ).thenReturn('<p>Comment without author</p>');
       when(() => commentWithoutAuthor.createdAt).thenReturn(1640995200.0);
       when(() => commentWithoutAuthor.rating).thenReturn(mockRating);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentList(comments: [commentWithoutAuthor]),
-          ),
+          home: Scaffold(body: CommentList(comments: [commentWithoutAuthor])),
         ),
       );
 
       // Check that the comment list is rendered (comment without author should be skipped)
       expect(find.byType(CommentList), findsOneWidget);
+    });
+
+    group('Load More Button Text', () {
+      testWidgets('shows "Display more comments" when available count > 20', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                hasMore: true,
+                availableCommentsCount: 25,
+                onLoadMore: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Display more comments'), findsOneWidget);
+      });
+
+      testWidgets('shows "Display X comments" when available count <= 20', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                hasMore: true,
+                availableCommentsCount: 15,
+                onLoadMore: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Display 15 comments'), findsOneWidget);
+      });
+
+      testWidgets('shows "Load more comments" when available count is null', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                hasMore: true,
+                availableCommentsCount: null,
+                onLoadMore: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Load more comments'), findsOneWidget);
+      });
+
+      testWidgets('does not show load more button when hasMore is false', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                hasMore: false,
+                availableCommentsCount: 10,
+                onLoadMore: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Display 10 comments'), findsNothing);
+        expect(find.text('Display more comments'), findsNothing);
+        expect(find.text('Load more comments'), findsNothing);
+      });
+
+      testWidgets('shows loading indicator when isLoading is true', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                hasMore: true,
+                isLoading: true,
+                availableCommentsCount: 10,
+                onLoadMore: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.text('Loading comments...'), findsOneWidget);
+      });
     });
   });
 }
