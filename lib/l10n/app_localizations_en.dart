@@ -1085,4 +1085,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactUsComingSoon => 'Contact us coming soon';
+
+  @override
+  String get newEmail => 'New Email';
+
+  @override
+  String get newEmailHint => 'Enter your new email address';
+
+  @override
+  String get changeEmailButton => 'Change Email';
+
+  @override
+  String get currentEmail => 'Current Email';
+
+  @override
+  String get emailVerification => 'Email Verification';
+
+  @override
+  String get changeEmailSuccess =>
+      'Email changed successfully. Please check your new email for verification.';
+
+  @override
+  String get emailVerified => 'Email verified';
+
+  @override
+  String get emailNotVerified => 'Email not verified';
+
+  @override
+  String get noEmailSet => 'No email set';
+
+  @override
+  String get changeEmailInfo =>
+      'After changing your email, you will need to verify the new email address.';
+
+  @override
+  String get newEmailRequired => 'New email is required';
+
+  @override
+  String get invalidEmailFormat => 'Please enter a valid email address';
 }

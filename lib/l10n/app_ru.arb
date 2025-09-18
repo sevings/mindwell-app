@@ -1446,5 +1446,57 @@
   "contactUsComingSoon": "Связь с нами скоро будет доступна",
   "@contactUsComingSoon": {
     "description": "Contact us coming soon message"
+  },
+  "changeEmail": "Изменить Email",
+  "@changeEmail": {
+    "description": "Change email screen title"
+  },
+  "newEmail": "Новый Email",
+  "@newEmail": {
+    "description": "New email field label"
+  },
+  "newEmailHint": "Введите ваш новый email адрес",
+  "@newEmailHint": {
+    "description": "New email field hint text"
+  },
+  "changeEmailButton": "Изменить Email",
+  "@changeEmailButton": {
+    "description": "Change email button text"
+  },
+  "currentEmail": "Текущий Email",
+  "@currentEmail": {
+    "description": "Current email label"
+  },
+  "emailVerification": "Подтверждение Email",
+  "@emailVerification": {
+    "description": "Email verification label"
+  },
+  "changeEmailSuccess": "Email успешно изменен. Пожалуйста, проверьте ваш новый email для подтверждения.",
+  "@changeEmailSuccess": {
+    "description": "Change email success message"
+  },
+  "emailVerified": "Email подтвержден",
+  "@emailVerified": {
+    "description": "Email verified status"
+  },
+  "emailNotVerified": "Email не подтвержден",
+  "@emailNotVerified": {
+    "description": "Email not verified status"
+  },
+  "noEmailSet": "Email не установлен",
+  "@noEmailSet": {
+    "description": "No email set message"
+  },
+  "changeEmailInfo": "После изменения email вам потребуется подтвердить новый email адрес.",
+  "@changeEmailInfo": {
+    "description": "Change email information message"
+  },
+  "newEmailRequired": "Новый email обязателен",
+  "@newEmailRequired": {
+    "description": "New email required validation message"
+  },
+  "invalidEmailFormat": "Пожалуйста, введите корректный email адрес",
+  "@invalidEmailFormat": {
+    "description": "Invalid email format validation message"
   }
 }

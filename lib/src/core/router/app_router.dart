@@ -20,6 +20,7 @@ import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/chat/screens/chat_messages_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/change_password_screen.dart';
+import '../../features/settings/screens/change_email_screen.dart';
 
 /// Application router configuration using GoRouter.
 ///
@@ -138,6 +139,11 @@ class AppRouter {
             path: '/settings/change-password',
             name: 'changePassword',
             builder: (context, state) => const ChangePasswordScreen(),
+          ),
+          GoRoute(
+            path: '/settings/change-email',
+            name: 'changeEmail',
+            builder: (context, state) => const ChangeEmailScreen(),
           ),
           GoRoute(
             path: '/chats/:name',

@@ -1934,10 +1934,10 @@ abstract class AppLocalizations {
   /// **'Изменить пароль'**
   String get changePassword;
 
-  /// Change email setting title
+  /// Change email screen title
   ///
   /// In ru, this message translates to:
-  /// **'Изменить email'**
+  /// **'Изменить Email'**
   String get changeEmail;
 
   /// Current password field label
@@ -2149,6 +2149,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Связь с нами скоро будет доступна'**
   String get contactUsComingSoon;
+
+  /// New email field label
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый Email'**
+  String get newEmail;
+
+  /// New email field hint text
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите ваш новый email адрес'**
+  String get newEmailHint;
+
+  /// Change email button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить Email'**
+  String get changeEmailButton;
+
+  /// Current email label
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущий Email'**
+  String get currentEmail;
+
+  /// Email verification label
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтверждение Email'**
+  String get emailVerification;
+
+  /// Change email success message
+  ///
+  /// In ru, this message translates to:
+  /// **'Email успешно изменен. Пожалуйста, проверьте ваш новый email для подтверждения.'**
+  String get changeEmailSuccess;
+
+  /// Email verified status
+  ///
+  /// In ru, this message translates to:
+  /// **'Email подтвержден'**
+  String get emailVerified;
+
+  /// Email not verified status
+  ///
+  /// In ru, this message translates to:
+  /// **'Email не подтвержден'**
+  String get emailNotVerified;
+
+  /// No email set message
+  ///
+  /// In ru, this message translates to:
+  /// **'Email не установлен'**
+  String get noEmailSet;
+
+  /// Change email information message
+  ///
+  /// In ru, this message translates to:
+  /// **'После изменения email вам потребуется подтвердить новый email адрес.'**
+  String get changeEmailInfo;
+
+  /// New email required validation message
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый email обязателен'**
+  String get newEmailRequired;
+
+  /// Invalid email format validation message
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, введите корректный email адрес'**
+  String get invalidEmailFormat;
 }
 
 class _AppLocalizationsDelegate

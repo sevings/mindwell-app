@@ -980,7 +980,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get changePassword => 'Изменить пароль';
 
   @override
-  String get changeEmail => 'Изменить email';
+  String get changeEmail => 'Изменить Email';
 
   @override
   String get currentPassword => 'Текущий пароль';
@@ -1097,4 +1097,42 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get contactUsComingSoon => 'Связь с нами скоро будет доступна';
+
+  @override
+  String get newEmail => 'Новый Email';
+
+  @override
+  String get newEmailHint => 'Введите ваш новый email адрес';
+
+  @override
+  String get changeEmailButton => 'Изменить Email';
+
+  @override
+  String get currentEmail => 'Текущий Email';
+
+  @override
+  String get emailVerification => 'Подтверждение Email';
+
+  @override
+  String get changeEmailSuccess =>
+      'Email успешно изменен. Пожалуйста, проверьте ваш новый email для подтверждения.';
+
+  @override
+  String get emailVerified => 'Email подтвержден';
+
+  @override
+  String get emailNotVerified => 'Email не подтвержден';
+
+  @override
+  String get noEmailSet => 'Email не установлен';
+
+  @override
+  String get changeEmailInfo =>
+      'После изменения email вам потребуется подтвердить новый email адрес.';
+
+  @override
+  String get newEmailRequired => 'Новый email обязателен';
+
+  @override
+  String get invalidEmailFormat => 'Пожалуйста, введите корректный email адрес';
 }

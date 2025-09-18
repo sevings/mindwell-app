@@ -1404,5 +1404,57 @@
   "contactUsComingSoon": "Contact us coming soon",
   "@contactUsComingSoon": {
     "description": "Contact us coming soon message"
+  },
+  "changeEmail": "Change Email",
+  "@changeEmail": {
+    "description": "Change email screen title"
+  },
+  "newEmail": "New Email",
+  "@newEmail": {
+    "description": "New email field label"
+  },
+  "newEmailHint": "Enter your new email address",
+  "@newEmailHint": {
+    "description": "New email field hint text"
+  },
+  "changeEmailButton": "Change Email",
+  "@changeEmailButton": {
+    "description": "Change email button text"
+  },
+  "currentEmail": "Current Email",
+  "@currentEmail": {
+    "description": "Current email label"
+  },
+  "emailVerification": "Email Verification",
+  "@emailVerification": {
+    "description": "Email verification label"
+  },
+  "changeEmailSuccess": "Email changed successfully. Please check your new email for verification.",
+  "@changeEmailSuccess": {
+    "description": "Change email success message"
+  },
+  "emailVerified": "Email verified",
+  "@emailVerified": {
+    "description": "Email verified status"
+  },
+  "emailNotVerified": "Email not verified",
+  "@emailNotVerified": {
+    "description": "Email not verified status"
+  },
+  "noEmailSet": "No email set",
+  "@noEmailSet": {
+    "description": "No email set message"
+  },
+  "changeEmailInfo": "After changing your email, you will need to verify the new email address.",
+  "@changeEmailInfo": {
+    "description": "Change email information message"
+  },
+  "newEmailRequired": "New email is required",
+  "@newEmailRequired": {
+    "description": "New email required validation message"
+  },
+  "invalidEmailFormat": "Please enter a valid email address",
+  "@invalidEmailFormat": {
+    "description": "Invalid email format validation message"
   }
 }
