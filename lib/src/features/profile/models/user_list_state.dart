@@ -7,16 +7,31 @@ part 'user_list_state.freezed.dart';
 enum UserListType {
   /// List of users who follow the specified user
   followers,
+
   /// List of users that the specified user follows
   following,
+
   /// List of users invited by the specified user
   invited,
+
   /// General user search/list
   users,
 }
 
+/// Represents the different tab types for the general user list screen.
+enum UserListTabType {
+  /// New users (invited)
+  invited,
+
+  /// Users waiting for approval
+  waiting,
+
+  /// Users ranked by popularity/activity
+  rank,
+}
+
 /// Represents the state of a user list screen.
-/// 
+///
 /// This sealed class uses freezed to ensure immutability and provides
 /// different states for various user list loading scenarios.
 @freezed
@@ -28,7 +43,7 @@ sealed class UserListState with _$UserListState {
   const factory UserListState.loading() = _Loading;
 
   /// Loaded state when user list data has been successfully fetched.
-  /// 
+  ///
   /// [users] List of users from the API.
   /// [hasMore] Whether there are more users to load (for pagination).
   /// [nextAfter] Cursor for the next page of results.
@@ -41,9 +56,7 @@ sealed class UserListState with _$UserListState {
   }) = _Loaded;
 
   /// Error state when user list data fetching fails.
-  /// 
+  ///
   /// [message] The error message describing what went wrong.
-  const factory UserListState.error({
-    required String message,
-  }) = _Error;
+  const factory UserListState.error({required String message}) = _Error;
 }

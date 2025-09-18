@@ -9,6 +9,7 @@ import 'package:mindwell/src/features/profile/models/user_list_state.dart';
 
 // Mock classes
 class MockUsersApi extends Mock implements UsersApi {}
+
 class MockResponse<T> extends Mock implements Response<T> {}
 
 void main() {
@@ -33,61 +34,73 @@ void main() {
         );
       });
 
-      test('should fetch followers list successfully and update state to loaded', () async {
-        // Arrange
-        final mockFriend = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'follower1'
-          ..showName = 'Follower One'
-          ..isTheme = false
-          ..isOnline = true
-        );
+      test(
+        'should fetch followers list successfully and update state to loaded',
+        () async {
+          // Arrange
+          final mockFriend = $MwFriend(
+            (b) => b
+              ..id = 1
+              ..name = 'follower1'
+              ..showName = 'Follower One'
+              ..isTheme = false
+              ..isOnline = true,
+          );
 
-        final mockFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend])
-          ..hasAfter = true
-          ..nextAfter = 'cursor123'
-          ..hasBefore = false
-        );
+          final mockFriendList = MwFriendList(
+            (b) => b
+              ..users = ListBuilder<MwFriend>([mockFriend])
+              ..hasAfter = true
+              ..nextAfter = 'cursor123'
+              ..hasBefore = false,
+          );
 
-        when(() => mockFriendListResponse.data).thenReturn(mockFriendList);
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => mockFriendListResponse);
+          when(() => mockFriendListResponse.data).thenReturn(mockFriendList);
+          when(
+            () => mockUsersApi.usersNameFollowersGet(
+              name: 'testuser',
+              after: any(named: 'after'),
+              before: any(named: 'before'),
+            ),
+          ).thenAnswer((_) async => mockFriendListResponse);
 
-        // Act
-        await userListNotifier.fetchUserList();
+          // Act
+          await userListNotifier.fetchUserList();
 
-        // Assert
-        expect(userListNotifier.state, isA<UserListState>());
-        userListNotifier.state.when(
-          initial: () => fail('Expected loaded state'),
-          loading: () => fail('Expected loaded state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) {
-            expect(users, hasLength(1));
-            expect(users.first.name, equals('follower1'));
-            expect(hasMore, isTrue);
-            expect(nextAfter, equals('cursor123'));
-          },
-          error: (message) => fail('Expected loaded state, got error: $message'),
-        );
-      });
+          // Assert
+          expect(userListNotifier.state, isA<UserListState>());
+          userListNotifier.state.when(
+            initial: () => fail('Expected loaded state'),
+            loading: () => fail('Expected loaded state'),
+            loaded: (users, hasMore, nextAfter, nextBefore) {
+              expect(users, hasLength(1));
+              expect(users.first.name, equals('follower1'));
+              expect(hasMore, isTrue);
+              expect(nextAfter, equals('cursor123'));
+            },
+            error: (message) =>
+                fail('Expected loaded state, got error: $message'),
+          );
+        },
+      );
 
       test('should handle API error and update state to error', () async {
         // Arrange
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/users/testuser/followers'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/users/testuser/followers'),
-            statusCode: 404,
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
           ),
-        ));
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/users/testuser/followers'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/users/testuser/followers'),
+              statusCode: 404,
+            ),
+          ),
+        );
 
         // Act
         await userListNotifier.fetchUserList();
@@ -97,73 +110,88 @@ void main() {
         userListNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) => fail('Expected error state'),
+          loaded: (users, hasMore, nextAfter, nextBefore) =>
+              fail('Expected error state'),
           error: (message) {
             expect(message, equals('Пользователь не найден'));
           },
         );
       });
 
-      test('should fetch next page successfully and append to existing users', () async {
-        // Arrange
-        final mockFriend1 = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'follower1'
-          ..showName = 'Follower One'
-        );
+      test(
+        'should fetch next page successfully and append to existing users',
+        () async {
+          // Arrange
+          final mockFriend1 = $MwFriend(
+            (b) => b
+              ..id = 1
+              ..name = 'follower1'
+              ..showName = 'Follower One',
+          );
 
-        final mockFriend2 = $MwFriend((b) => b
-          ..id = 2
-          ..name = 'follower2'
-          ..showName = 'Follower Two'
-        );
+          final mockFriend2 = $MwFriend(
+            (b) => b
+              ..id = 2
+              ..name = 'follower2'
+              ..showName = 'Follower Two',
+          );
 
-        final initialFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend1])
-          ..hasAfter = true
-          ..nextAfter = 'cursor123'
-        );
+          final initialFriendList = MwFriendList(
+            (b) => b
+              ..users = ListBuilder<MwFriend>([mockFriend1])
+              ..hasAfter = true
+              ..nextAfter = 'cursor123',
+          );
 
-        final nextPageFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend2])
-          ..hasAfter = false
-          ..nextAfter = null
-        );
+          final nextPageFriendList = MwFriendList(
+            (b) => b
+              ..users = ListBuilder<MwFriend>([mockFriend2])
+              ..hasAfter = false
+              ..nextAfter = null,
+          );
 
-        when(() => mockFriendListResponse.data).thenReturn(initialFriendList);
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => mockFriendListResponse);
+          when(() => mockFriendListResponse.data).thenReturn(initialFriendList);
+          when(
+            () => mockUsersApi.usersNameFollowersGet(
+              name: 'testuser',
+              after: any(named: 'after'),
+              before: any(named: 'before'),
+            ),
+          ).thenAnswer((_) async => mockFriendListResponse);
 
-        // Load initial data
-        await userListNotifier.fetchUserList();
+          // Load initial data
+          await userListNotifier.fetchUserList();
 
-        // Setup next page response
-        when(() => mockFriendListResponse.data).thenReturn(nextPageFriendList);
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: 'cursor123',
-        )).thenAnswer((_) async => mockFriendListResponse);
+          // Setup next page response
+          when(
+            () => mockFriendListResponse.data,
+          ).thenReturn(nextPageFriendList);
+          when(
+            () => mockUsersApi.usersNameFollowersGet(
+              name: 'testuser',
+              after: 'cursor123',
+            ),
+          ).thenAnswer((_) async => mockFriendListResponse);
 
-        // Act
-        await userListNotifier.fetchNextPage();
+          // Act
+          await userListNotifier.fetchNextPage();
 
-        // Assert
-        expect(userListNotifier.state, isA<UserListState>());
-        userListNotifier.state.when(
-          initial: () => fail('Expected loaded state'),
-          loading: () => fail('Expected loaded state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) {
-            expect(users, hasLength(2));
-            expect(users.first.name, equals('follower1'));
-            expect(users.last.name, equals('follower2'));
-            expect(hasMore, isFalse);
-          },
-          error: (message) => fail('Expected loaded state, got error: $message'),
-        );
-      });
+          // Assert
+          expect(userListNotifier.state, isA<UserListState>());
+          userListNotifier.state.when(
+            initial: () => fail('Expected loaded state'),
+            loading: () => fail('Expected loaded state'),
+            loaded: (users, hasMore, nextAfter, nextBefore) {
+              expect(users, hasLength(2));
+              expect(users.first.name, equals('follower1'));
+              expect(users.last.name, equals('follower2'));
+              expect(hasMore, isFalse);
+            },
+            error: (message) =>
+                fail('Expected loaded state, got error: $message'),
+          );
+        },
+      );
     });
 
     group('following list', () {
@@ -177,23 +205,27 @@ void main() {
 
       test('should fetch following list successfully', () async {
         // Arrange
-        final mockFriend = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'following1'
-          ..showName = 'Following One'
+        final mockFriend = $MwFriend(
+          (b) => b
+            ..id = 1
+            ..name = 'following1'
+            ..showName = 'Following One',
         );
 
-        final mockFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend])
-          ..hasAfter = false
+        final mockFriendList = MwFriendList(
+          (b) => b
+            ..users = ListBuilder<MwFriend>([mockFriend])
+            ..hasAfter = false,
         );
 
         when(() => mockFriendListResponse.data).thenReturn(mockFriendList);
-        when(() => mockUsersApi.usersNameFollowingsGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => mockFriendListResponse);
+        when(
+          () => mockUsersApi.usersNameFollowingsGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockFriendListResponse);
 
         // Act
         await userListNotifier.fetchUserList();
@@ -208,7 +240,8 @@ void main() {
             expect(users.first.name, equals('following1'));
             expect(hasMore, isFalse);
           },
-          error: (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
       });
     });
@@ -224,23 +257,27 @@ void main() {
 
       test('should fetch invited list successfully', () async {
         // Arrange
-        final mockFriend = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'invited1'
-          ..showName = 'Invited One'
+        final mockFriend = $MwFriend(
+          (b) => b
+            ..id = 1
+            ..name = 'invited1'
+            ..showName = 'Invited One',
         );
 
-        final mockFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend])
-          ..hasAfter = false
+        final mockFriendList = MwFriendList(
+          (b) => b
+            ..users = ListBuilder<MwFriend>([mockFriend])
+            ..hasAfter = false,
         );
 
         when(() => mockFriendListResponse.data).thenReturn(mockFriendList);
-        when(() => mockUsersApi.usersNameInvitedGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => mockFriendListResponse);
+        when(
+          () => mockUsersApi.usersNameInvitedGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockFriendListResponse);
 
         // Act
         await userListNotifier.fetchUserList();
@@ -255,7 +292,8 @@ void main() {
             expect(users.first.name, equals('invited1'));
             expect(hasMore, isFalse);
           },
-          error: (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
       });
     });
@@ -271,18 +309,21 @@ void main() {
 
       test('should fetch general users list successfully', () async {
         // Arrange
-        final mockFriend = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'user1'
-          ..showName = 'User One'
+        final mockFriend = $MwFriend(
+          (b) => b
+            ..id = 1
+            ..name = 'user1'
+            ..showName = 'User One',
         );
 
-        final mockUsersData = MwUsersGet200Response((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend])
+        final mockUsersData = MwUsersGet200Response(
+          (b) => b..users = ListBuilder<MwFriend>([mockFriend]),
         );
 
         when(() => mockUsersResponse.data).thenReturn(mockUsersData);
-        when(() => mockUsersApi.usersGet()).thenAnswer((_) async => mockUsersResponse);
+        when(
+          () => mockUsersApi.usersGet(top: any(named: 'top')),
+        ).thenAnswer((_) async => mockUsersResponse);
 
         // Act
         await userListNotifier.fetchUserList();
@@ -297,8 +338,161 @@ void main() {
             expect(users.first.name, equals('user1'));
             expect(hasMore, isFalse);
           },
-          error: (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
+      });
+    });
+
+    group('general users list with tabs', () {
+      group('invited tab', () {
+        setUp(() {
+          userListNotifier = UserListNotifier(
+            type: UserListType.users,
+            username: '',
+            tabType: UserListTabType.invited,
+            usersApi: mockUsersApi,
+          );
+        });
+
+        test('should fetch invited users with correct top parameter', () async {
+          // Arrange
+          final mockFriend = $MwFriend(
+            (b) => b
+              ..id = 1
+              ..name = 'invited1'
+              ..showName = 'Invited User',
+          );
+
+          final mockUsersData = MwUsersGet200Response(
+            (b) => b..users = ListBuilder<MwFriend>([mockFriend]),
+          );
+
+          when(() => mockUsersResponse.data).thenReturn(mockUsersData);
+          when(
+            () => mockUsersApi.usersGet(top: 'new'),
+          ).thenAnswer((_) async => mockUsersResponse);
+
+          // Act
+          await userListNotifier.fetchUserList();
+
+          // Assert
+          expect(userListNotifier.state, isA<UserListState>());
+          userListNotifier.state.when(
+            initial: () => fail('Expected loaded state'),
+            loading: () => fail('Expected loaded state'),
+            loaded: (users, hasMore, nextAfter, nextBefore) {
+              expect(users, hasLength(1));
+              expect(users.first.name, equals('invited1'));
+              expect(hasMore, isFalse);
+            },
+            error: (message) =>
+                fail('Expected loaded state, got error: $message'),
+          );
+
+          // Verify the correct API call was made (called once in constructor, once in test)
+          verify(() => mockUsersApi.usersGet(top: 'new')).called(2);
+        });
+      });
+
+      group('waiting tab', () {
+        setUp(() {
+          userListNotifier = UserListNotifier(
+            type: UserListType.users,
+            username: '',
+            tabType: UserListTabType.waiting,
+            usersApi: mockUsersApi,
+          );
+        });
+
+        test('should fetch waiting users with correct top parameter', () async {
+          // Arrange
+          final mockFriend = $MwFriend(
+            (b) => b
+              ..id = 1
+              ..name = 'waiting1'
+              ..showName = 'Waiting User',
+          );
+
+          final mockUsersData = MwUsersGet200Response(
+            (b) => b..users = ListBuilder<MwFriend>([mockFriend]),
+          );
+
+          when(() => mockUsersResponse.data).thenReturn(mockUsersData);
+          when(
+            () => mockUsersApi.usersGet(top: 'waiting'),
+          ).thenAnswer((_) async => mockUsersResponse);
+
+          // Act
+          await userListNotifier.fetchUserList();
+
+          // Assert
+          expect(userListNotifier.state, isA<UserListState>());
+          userListNotifier.state.when(
+            initial: () => fail('Expected loaded state'),
+            loading: () => fail('Expected loaded state'),
+            loaded: (users, hasMore, nextAfter, nextBefore) {
+              expect(users, hasLength(1));
+              expect(users.first.name, equals('waiting1'));
+              expect(hasMore, isFalse);
+            },
+            error: (message) =>
+                fail('Expected loaded state, got error: $message'),
+          );
+
+          // Verify the correct API call was made (called once in constructor, once in test)
+          verify(() => mockUsersApi.usersGet(top: 'waiting')).called(2);
+        });
+      });
+
+      group('rank tab', () {
+        setUp(() {
+          userListNotifier = UserListNotifier(
+            type: UserListType.users,
+            username: '',
+            tabType: UserListTabType.rank,
+            usersApi: mockUsersApi,
+          );
+        });
+
+        test('should fetch ranked users with correct top parameter', () async {
+          // Arrange
+          final mockFriend = $MwFriend(
+            (b) => b
+              ..id = 1
+              ..name = 'ranked1'
+              ..showName = 'Ranked User',
+          );
+
+          final mockUsersData = MwUsersGet200Response(
+            (b) => b..users = ListBuilder<MwFriend>([mockFriend]),
+          );
+
+          when(() => mockUsersResponse.data).thenReturn(mockUsersData);
+          when(
+            () => mockUsersApi.usersGet(top: 'rank'),
+          ).thenAnswer((_) async => mockUsersResponse);
+
+          // Act
+          await userListNotifier.fetchUserList();
+
+          // Assert
+          expect(userListNotifier.state, isA<UserListState>());
+          userListNotifier.state.when(
+            initial: () => fail('Expected loaded state'),
+            loading: () => fail('Expected loaded state'),
+            loaded: (users, hasMore, nextAfter, nextBefore) {
+              expect(users, hasLength(1));
+              expect(users.first.name, equals('ranked1'));
+              expect(hasMore, isFalse);
+            },
+            error: (message) =>
+                fail('Expected loaded state, got error: $message'),
+          );
+
+          // Verify the correct API call was made (called once in constructor, once in test)
+          verify(() => mockUsersApi.usersGet(top: 'rank')).called(2);
+        });
       });
     });
 
@@ -313,23 +507,27 @@ void main() {
 
       test('should refresh the user list', () async {
         // Arrange
-        final mockFriend = $MwFriend((b) => b
-          ..id = 1
-          ..name = 'follower1'
-          ..showName = 'Follower One'
+        final mockFriend = $MwFriend(
+          (b) => b
+            ..id = 1
+            ..name = 'follower1'
+            ..showName = 'Follower One',
         );
 
-        final mockFriendList = MwFriendList((b) => b
-          ..users = ListBuilder<MwFriend>([mockFriend])
-          ..hasAfter = false
+        final mockFriendList = MwFriendList(
+          (b) => b
+            ..users = ListBuilder<MwFriend>([mockFriend])
+            ..hasAfter = false,
         );
 
         when(() => mockFriendListResponse.data).thenReturn(mockFriendList);
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenAnswer((_) async => mockFriendListResponse);
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenAnswer((_) async => mockFriendListResponse);
 
         // Act
         await userListNotifier.refresh();
@@ -343,7 +541,8 @@ void main() {
             expect(users, hasLength(1));
             expect(users.first.name, equals('follower1'));
           },
-          error: (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
       });
     });
@@ -359,17 +558,21 @@ void main() {
 
       test('should handle 403 error correctly', () async {
         // Arrange
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/users/testuser/followers'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/users/testuser/followers'),
-            statusCode: 403,
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
           ),
-        ));
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/users/testuser/followers'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/users/testuser/followers'),
+              statusCode: 403,
+            ),
+          ),
+        );
 
         // Act
         await userListNotifier.fetchUserList();
@@ -379,7 +582,8 @@ void main() {
         userListNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) => fail('Expected error state'),
+          loaded: (users, hasMore, nextAfter, nextBefore) =>
+              fail('Expected error state'),
           error: (message) {
             expect(message, equals('Нет доступа к списку пользователей'));
           },
@@ -388,17 +592,21 @@ void main() {
 
       test('should handle 429 error correctly', () async {
         // Arrange
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/users/testuser/followers'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/users/testuser/followers'),
-            statusCode: 429,
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
           ),
-        ));
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/users/testuser/followers'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/users/testuser/followers'),
+              statusCode: 429,
+            ),
+          ),
+        );
 
         // Act
         await userListNotifier.fetchUserList();
@@ -408,7 +616,8 @@ void main() {
         userListNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) => fail('Expected error state'),
+          loaded: (users, hasMore, nextAfter, nextBefore) =>
+              fail('Expected error state'),
           error: (message) {
             expect(message, equals('Слишком много запросов. Попробуйте позже'));
           },
@@ -417,17 +626,21 @@ void main() {
 
       test('should handle generic network error correctly', () async {
         // Arrange
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/users/testuser/followers'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/users/testuser/followers'),
-            statusCode: 500,
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
           ),
-        ));
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/users/testuser/followers'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/users/testuser/followers'),
+              statusCode: 500,
+            ),
+          ),
+        );
 
         // Act
         await userListNotifier.fetchUserList();
@@ -437,20 +650,28 @@ void main() {
         userListNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) => fail('Expected error state'),
+          loaded: (users, hasMore, nextAfter, nextBefore) =>
+              fail('Expected error state'),
           error: (message) {
-            expect(message, equals('Произошла ошибка сети. Проверьте подключение к интернету'));
+            expect(
+              message,
+              equals(
+                'Произошла ошибка сети. Проверьте подключение к интернету',
+              ),
+            );
           },
         );
       });
 
       test('should handle unknown error correctly', () async {
         // Arrange
-        when(() => mockUsersApi.usersNameFollowersGet(
-          name: 'testuser',
-          after: any(named: 'after'),
-          before: any(named: 'before'),
-        )).thenThrow(Exception('Unknown error'));
+        when(
+          () => mockUsersApi.usersNameFollowersGet(
+            name: 'testuser',
+            after: any(named: 'after'),
+            before: any(named: 'before'),
+          ),
+        ).thenThrow(Exception('Unknown error'));
 
         // Act
         await userListNotifier.fetchUserList();
@@ -460,7 +681,8 @@ void main() {
         userListNotifier.state.when(
           initial: () => fail('Expected error state'),
           loading: () => fail('Expected error state'),
-          loaded: (users, hasMore, nextAfter, nextBefore) => fail('Expected error state'),
+          loaded: (users, hasMore, nextAfter, nextBefore) =>
+              fail('Expected error state'),
           error: (message) {
             expect(message, equals('Exception: Unknown error'));
           },

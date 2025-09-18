@@ -47,19 +47,27 @@ class UserListScreen extends ConsumerStatefulWidget {
   ConsumerState<UserListScreen> createState() => _UserListScreenState();
 }
 
-class _UserListScreenState extends ConsumerState<UserListScreen> {
+class _UserListScreenState extends ConsumerState<UserListScreen>
+    with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+
+    // Initialize tab controller only if this is the general users screen (accessed from app drawer)
+    if (widget.type == UserListType.users && widget.username.isEmpty) {
+      _tabController = TabController(length: 3, vsync: this);
+    }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
@@ -116,24 +124,44 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
 
   /// Refreshes the user list
   Future<void> _refreshUsers() async {
-    await ref
-        .read(
-          userListProvider((
-            type: widget.type,
-            username: widget.username,
-          )).notifier,
-        )
-        .refresh();
+    final isGeneralUsersScreen =
+        widget.type == UserListType.users && widget.username.isEmpty;
+
+    if (isGeneralUsersScreen) {
+      // Refresh all tabs
+      for (final tabType in UserListTabType.values) {
+        await ref
+            .read(
+              userListWithTabProvider((
+                type: widget.type,
+                username: widget.username,
+                tabType: tabType,
+              )).notifier,
+            )
+            .refresh();
+      }
+    } else {
+      // Refresh single content
+      await ref
+          .read(
+            userListProvider((
+              type: widget.type,
+              username: widget.username,
+            )).notifier,
+          )
+          .refresh();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userListState = ref.watch(
-      userListProvider((type: widget.type, username: widget.username)),
-    );
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Check if this is the general users screen accessed from app drawer
+    final isGeneralUsersScreen =
+        widget.type == UserListType.users && widget.username.isEmpty;
 
     return Column(
       children: [
@@ -193,17 +221,92 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
           ),
         ),
 
+        // Tab bar (only for general users screen)
+        if (isGeneralUsersScreen && _tabController != null)
+          Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              border: Border(
+                bottom: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.2),
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController!,
+              tabs: [
+                Tab(text: l10n?.invited ?? 'Invited'),
+                Tab(text: l10n?.waiting ?? 'Waiting'),
+                Tab(text: l10n?.rank ?? 'Rank'),
+              ],
+              labelColor: colorScheme.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              indicatorColor: colorScheme.primary,
+            ),
+          ),
+
         // Content
         Expanded(
-          child: userListState.when(
-            initial: () => _buildLoadingScreen(context),
-            loading: () => _buildLoadingScreen(context),
-            loaded: (users, hasMore, nextAfter, nextBefore) =>
-                _buildLoadedScreen(context, l10n, users, hasMore),
-            error: (message) => _buildErrorScreen(context, l10n, message),
-          ),
+          child: isGeneralUsersScreen && _tabController != null
+              ? _buildTabbedContent(context, l10n)
+              : _buildSingleContent(context, l10n),
         ),
       ],
+    );
+  }
+
+  /// Builds the tabbed content for the general users screen
+  Widget _buildTabbedContent(BuildContext context, AppLocalizations? l10n) {
+    if (_tabController == null) {
+      return _buildSingleContent(context, l10n);
+    }
+
+    return TabBarView(
+      controller: _tabController!,
+      children: [
+        _buildTabContent(context, l10n, UserListTabType.invited),
+        _buildTabContent(context, l10n, UserListTabType.waiting),
+        _buildTabContent(context, l10n, UserListTabType.rank),
+      ],
+    );
+  }
+
+  /// Builds the single content for non-general user screens
+  Widget _buildSingleContent(BuildContext context, AppLocalizations? l10n) {
+    final userListState = ref.watch(
+      userListProvider((type: widget.type, username: widget.username)),
+    );
+
+    return userListState.when(
+      initial: () => _buildLoadingScreen(context),
+      loading: () => _buildLoadingScreen(context),
+      loaded: (users, hasMore, nextAfter, nextBefore) =>
+          _buildLoadedScreen(context, l10n, users, hasMore),
+      error: (message) => _buildErrorScreen(context, l10n, message),
+    );
+  }
+
+  /// Builds content for a specific tab
+  Widget _buildTabContent(
+    BuildContext context,
+    AppLocalizations? l10n,
+    UserListTabType tabType,
+  ) {
+    final userListState = ref.watch(
+      userListWithTabProvider((
+        type: widget.type,
+        username: widget.username,
+        tabType: tabType,
+      )),
+    );
+
+    return userListState.when(
+      initial: () => _buildLoadingScreen(context),
+      loading: () => _buildLoadingScreen(context),
+      loaded: (users, hasMore, nextAfter, nextBefore) =>
+          _buildLoadedScreen(context, l10n, users, hasMore),
+      error: (message) => _buildErrorScreen(context, l10n, message),
     );
   }
 

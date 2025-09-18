@@ -7,12 +7,13 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:mindwell/src/features/profile/models/user_list_state.dart';
 import 'package:mindwell/src/features/profile/screens/user_list_screen.dart';
 import 'package:mindwell/src/features/profile/providers/user_list_provider.dart';
+import 'package:mindwell/src/core/api/api_provider.dart';
 
 // Mock classes
 class MockUserListNotifier extends UserListNotifier {
   MockUserListNotifier()
     : super(type: UserListType.users, username: '', usersApi: MockUsersApi()) {
-    // Override the state to be loaded with empty users
+    // Override the state to be loaded with empty users without calling _initialize
     state = const UserListState.loaded(users: [], hasMore: false);
   }
 
@@ -58,6 +59,14 @@ void main() {
         expect(UserListType.following, isA<UserListType>());
         expect(UserListType.invited, isA<UserListType>());
         expect(UserListType.users, isA<UserListType>());
+      });
+    });
+
+    group('UserListTabType Enum', () {
+      test('UserListTabType has correct values', () {
+        expect(UserListTabType.invited, isA<UserListTabType>());
+        expect(UserListTabType.waiting, isA<UserListTabType>());
+        expect(UserListTabType.rank, isA<UserListTabType>());
       });
     });
 
@@ -112,6 +121,7 @@ void main() {
       }) {
         return ProviderScope(
           overrides: [
+            usersApiProvider.overrideWith((ref) => MockUsersApi()),
             userListProvider.overrideWith(
               (ref, params) => MockUserListNotifier(),
             ),
@@ -222,6 +232,126 @@ void main() {
 
         // Assert - Should show "Users" in the custom app bar
         expect(find.text('Users'), findsOneWidget);
+      });
+    });
+
+    group('Tab Bar Functionality', () {
+      Widget createTestWidgetWithTabs({
+        required UserListType type,
+        required String username,
+      }) {
+        return ProviderScope(
+          overrides: [
+            usersApiProvider.overrideWith((ref) => MockUsersApi()),
+            userListProvider.overrideWith(
+              (ref, params) => MockUserListNotifier(),
+            ),
+            userListWithTabProvider.overrideWith(
+              (ref, params) => MockUserListNotifier(),
+            ),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              drawer: const Drawer(child: Text('Test Drawer')),
+              body: UserListScreen(type: type, username: username),
+            ),
+          ),
+        );
+      }
+
+      testWidgets(
+        'shows tab bar when accessed from app drawer (general users screen)',
+        (WidgetTester tester) async {
+          // Act
+          await tester.pumpWidget(
+            createTestWidgetWithTabs(
+              type: UserListType.users,
+              username: '', // Empty username indicates accessed from app drawer
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Assert - Look for tab bar elements
+          expect(find.byType(TabBar), findsOneWidget);
+          expect(find.text('Invited'), findsOneWidget);
+          expect(find.text('Waiting'), findsOneWidget);
+          expect(find.text('Rank'), findsOneWidget);
+        },
+      );
+
+      testWidgets('does not show tab bar when accessed from user profile', (
+        WidgetTester tester,
+      ) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidgetWithTabs(
+            type: UserListType.followers,
+            username:
+                'testuser', // Non-empty username indicates accessed from profile
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Assert - Tab bar should not be present
+        expect(find.byType(TabBar), findsNothing);
+        expect(find.text('Invited'), findsNothing);
+        expect(find.text('Waiting'), findsNothing);
+        expect(find.text('Rank'), findsNothing);
+      });
+
+      testWidgets('does not show tab bar for invited users list from profile', (
+        WidgetTester tester,
+      ) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidgetWithTabs(
+            type: UserListType.invited,
+            username:
+                'testuser', // Non-empty username indicates accessed from profile
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Assert - Tab bar should not be present
+        expect(find.byType(TabBar), findsNothing);
+        expect(find.text('Invited'), findsNothing);
+        expect(find.text('Waiting'), findsNothing);
+        expect(find.text('Rank'), findsNothing);
+      });
+
+      testWidgets('tab bar contains correct number of tabs', (
+        WidgetTester tester,
+      ) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidgetWithTabs(
+            type: UserListType.users,
+            username: '', // Empty username indicates accessed from app drawer
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Assert - Should have exactly 3 tabs
+        final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+        expect(tabBar.tabs.length, equals(3));
+      });
+
+      testWidgets('tab bar view contains correct number of pages', (
+        WidgetTester tester,
+      ) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidgetWithTabs(
+            type: UserListType.users,
+            username: '', // Empty username indicates accessed from app drawer
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Assert - Should have TabBarView with 3 children
+        expect(find.byType(TabBarView), findsOneWidget);
+        final tabBarView = tester.widget<TabBarView>(find.byType(TabBarView));
+        expect(tabBarView.children.length, equals(3));
       });
     });
   });

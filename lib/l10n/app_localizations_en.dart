@@ -39,6 +39,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themes => 'Themes';
 
   @override
+  String get invited => 'Invited';
+
+  @override
+  String get waiting => 'Waiting';
+
+  @override
+  String get rank => 'Rank';
+
+  @override
   String get settings => 'Settings';
 
   @override
@@ -184,12 +193,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genderFemale => 'Female';
-
-  @override
-  String get invited => 'Invited';
-
-  @override
-  String get waiting => 'Waiting';
 
   @override
   String get discussed => 'Discussed';

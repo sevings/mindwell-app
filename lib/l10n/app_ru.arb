@@ -40,6 +40,18 @@
   "@themes": {
     "description": "Themes menu item"
   },
+  "invited": "Приглашённые",
+  "@invited": {
+    "description": "Invited users tab"
+  },
+  "waiting": "Ожидающие",
+  "@waiting": {
+    "description": "Waiting users tab"
+  },
+  "rank": "Рейтинг",
+  "@rank": {
+    "description": "Rank users tab"
+  },
   "settings": "Настройки",
   "@settings": {
     "description": "Settings menu item"

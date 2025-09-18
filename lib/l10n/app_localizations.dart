@@ -158,6 +158,24 @@ abstract class AppLocalizations {
   /// **'Темы'**
   String get themes;
 
+  /// Tab label for invited entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашенные'**
+  String get invited;
+
+  /// Tab label for waiting entries
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидающие'**
+  String get waiting;
+
+  /// Rank users tab
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейтинг'**
+  String get rank;
+
   /// Settings menu item
   ///
   /// In ru, this message translates to:
@@ -445,18 +463,6 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Женский'**
   String get genderFemale;
-
-  /// Tab label for invited entries
-  ///
-  /// In ru, this message translates to:
-  /// **'Приглашенные'**
-  String get invited;
-
-  /// Tab label for waiting entries
-  ///
-  /// In ru, this message translates to:
-  /// **'Ожидающие'**
-  String get waiting;
 
   /// Tab label for discussed entries
   ///

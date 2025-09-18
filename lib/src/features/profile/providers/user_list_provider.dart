@@ -7,23 +7,46 @@ import '../../../core/api/api_provider.dart';
 import '../models/user_list_state.dart';
 
 /// Provider for the UserListNotifier that manages the state of user lists.
-/// 
-/// Takes a [UserListType] and [username] as parameters to create separate providers 
+///
+/// Takes a [UserListType] and [username] as parameters to create separate providers
 /// for each type of user list and user.
-final userListProvider = StateNotifierProvider.family<UserListNotifier, UserListState, ({UserListType type, String username})>(
-  (ref, params) {
-    final usersApi = ref.read(usersApiProvider);
-    
-    return UserListNotifier(
-      type: params.type,
-      username: params.username,
-      usersApi: usersApi,
-    );
-  },
-);
+final userListProvider =
+    StateNotifierProvider.family<
+      UserListNotifier,
+      UserListState,
+      ({UserListType type, String username})
+    >((ref, params) {
+      final usersApi = ref.read(usersApiProvider);
+
+      return UserListNotifier(
+        type: params.type,
+        username: params.username,
+        usersApi: usersApi,
+      );
+    });
+
+/// Provider for the UserListNotifier that manages the state of user lists with tabs.
+///
+/// Takes a [UserListType], [username], and [UserListTabType] as parameters to create separate providers
+/// for each type of user list, user, and tab.
+final userListWithTabProvider =
+    StateNotifierProvider.family<
+      UserListNotifier,
+      UserListState,
+      ({UserListType type, String username, UserListTabType tabType})
+    >((ref, params) {
+      final usersApi = ref.read(usersApiProvider);
+
+      return UserListNotifier(
+        type: params.type,
+        username: params.username,
+        tabType: params.tabType,
+        usersApi: usersApi,
+      );
+    });
 
 /// Notifier that manages the state and logic for fetching user list data.
-/// 
+///
 /// This class handles:
 /// - Fetching user list data from the appropriate API endpoint based on list type
 /// - Pagination support with cursor-based navigation
@@ -32,20 +55,23 @@ final userListProvider = StateNotifierProvider.family<UserListNotifier, UserList
 class UserListNotifier extends StateNotifier<UserListState> {
   final UserListType _type;
   final String _username;
+  final UserListTabType? _tabType;
   final UsersApi _usersApi;
   final Logger _logger = Logger('UserListNotifier');
-  
+
   bool _isLoading = false;
   bool _isLoadingMore = false;
 
   UserListNotifier({
     required UserListType type,
     required String username,
+    UserListTabType? tabType,
     required UsersApi usersApi,
-  })  : _type = type,
-        _username = username,
-        _usersApi = usersApi,
-        super(const UserListState.initial()) {
+  }) : _type = type,
+       _username = username,
+       _tabType = tabType,
+       _usersApi = usersApi,
+       super(const UserListState.initial()) {
     _initialize();
   }
 
@@ -55,7 +81,7 @@ class UserListNotifier extends StateNotifier<UserListState> {
   }
 
   /// Fetch user list data from the API.
-  /// 
+  ///
   /// This method fetches the appropriate user list based on the type:
   /// - followers: Users who follow the specified user
   /// - following: Users that the specified user follows
@@ -65,14 +91,14 @@ class UserListNotifier extends StateNotifier<UserListState> {
     if (_isLoading) {
       return; // Prevent multiple simultaneous loads
     }
-    
+
     _logger.info('Fetching ${_type.name} list for user $_username');
     state = const UserListState.loading();
     _isLoading = true;
-    
+
     try {
       Response<MwFriendList> response;
-      
+
       switch (_type) {
         case UserListType.followers:
           response = await _usersApi.usersNameFollowersGet(
@@ -96,9 +122,23 @@ class UserListNotifier extends StateNotifier<UserListState> {
           );
           break;
         case UserListType.users:
-          // For general user search, we'll use the usersGet endpoint
-          // This would typically be used for search functionality
-          final usersResponse = await _usersApi.usersGet();
+          // For general user search, we'll use the usersGet endpoint with appropriate top parameter
+          String? topParameter;
+          if (_tabType != null) {
+            switch (_tabType) {
+              case UserListTabType.invited:
+                topParameter = 'new';
+                break;
+              case UserListTabType.waiting:
+                topParameter = 'waiting';
+                break;
+              case UserListTabType.rank:
+                topParameter = 'rank';
+                break;
+            }
+          }
+
+          final usersResponse = await _usersApi.usersGet(top: topParameter);
           final users = usersResponse.data?.users?.toList() ?? [];
           state = UserListState.loaded(
             users: users,
@@ -106,49 +146,50 @@ class UserListNotifier extends StateNotifier<UserListState> {
           );
           return;
       }
-      
+
       final friendList = response.data;
       if (friendList == null) {
         throw Exception('User list not found');
       }
-      
+
       final users = friendList.users?.toList() ?? [];
       final hasMore = friendList.hasAfter ?? false;
       final nextAfter = friendList.nextAfter;
       final nextBefore = friendList.nextBefore;
-      
+
       _logger.info('Fetched ${users.length} users for ${_type.name} list');
-      
+
       state = UserListState.loaded(
         users: users,
         hasMore: hasMore,
         nextAfter: nextAfter,
         nextBefore: nextBefore,
       );
-      
     } catch (e, stackTrace) {
-      _logger.severe('Failed to fetch ${_type.name} list for user $_username', e, stackTrace);
-      state = UserListState.error(
-        message: _getErrorMessage(e),
+      _logger.severe(
+        'Failed to fetch ${_type.name} list for user $_username',
+        e,
+        stackTrace,
       );
+      state = UserListState.error(message: _getErrorMessage(e));
     } finally {
       _isLoading = false;
     }
   }
 
   /// Fetch the next page of users (for pagination).
-  /// 
+  ///
   /// This method appends new users to the existing list.
   Future<void> fetchNextPage() async {
     if (_isLoadingMore) {
       return; // Prevent multiple simultaneous loads
     }
-    
+
     final currentState = state;
     bool hasMore = false;
     String? nextAfter;
     List<MwFriend> currentUsers = [];
-    
+
     currentState.when(
       initial: () {},
       loading: () {},
@@ -159,18 +200,20 @@ class UserListNotifier extends StateNotifier<UserListState> {
       },
       error: (message) {},
     );
-    
+
     if (!hasMore) {
       return; // No more data to load
     }
-    
-    _logger.info('Fetching next page of ${_type.name} list for user $_username');
+
+    _logger.info(
+      'Fetching next page of ${_type.name} list for user $_username',
+    );
     _isLoadingMore = true;
-    
+
     try {
       Response<MwFriendList> response;
-      
-        switch (_type) {
+
+      switch (_type) {
         case UserListType.followers:
           response = await _usersApi.usersNameFollowersGet(
             name: _username,
@@ -193,28 +236,33 @@ class UserListNotifier extends StateNotifier<UserListState> {
           // General user list doesn't support pagination
           return;
       }
-      
+
       final friendList = response.data;
       if (friendList == null) {
         throw Exception('User list not found');
       }
-      
+
       final newUsers = friendList.users?.toList() ?? [];
       final allUsers = [...currentUsers, ...newUsers];
       final hasMoreNew = friendList.hasAfter ?? false;
       final nextAfterNew = friendList.nextAfter;
-      
-      _logger.info('Fetched ${newUsers.length} more users for ${_type.name} list');
-      
+
+      _logger.info(
+        'Fetched ${newUsers.length} more users for ${_type.name} list',
+      );
+
       state = UserListState.loaded(
         users: allUsers,
         hasMore: hasMoreNew,
         nextAfter: nextAfterNew,
         nextBefore: null, // We don't need to preserve nextBefore for pagination
       );
-      
     } catch (e, stackTrace) {
-      _logger.severe('Failed to fetch next page of ${_type.name} list for user $_username', e, stackTrace);
+      _logger.severe(
+        'Failed to fetch next page of ${_type.name} list for user $_username',
+        e,
+        stackTrace,
+      );
       // Don't change state on error - user can retry
     } finally {
       _isLoadingMore = false;
@@ -222,7 +270,7 @@ class UserListNotifier extends StateNotifier<UserListState> {
   }
 
   /// Refresh the user list data.
-  /// 
+  ///
   /// This method clears the current state and fetches fresh data from the beginning.
   Future<void> refresh() async {
     _logger.info('Refreshing ${_type.name} list for user $_username');
@@ -230,10 +278,10 @@ class UserListNotifier extends StateNotifier<UserListState> {
   }
 
   /// Extracts a user-friendly error message from an exception.
-  /// 
+  ///
   /// This method handles different types of exceptions and returns
   /// appropriate error messages for display to the user.
-  /// 
+  ///
   /// [error] The exception that occurred
   /// Returns a user-friendly error message
   String _getErrorMessage(dynamic error) {
@@ -249,11 +297,11 @@ class UserListNotifier extends StateNotifier<UserListState> {
           return 'Произошла ошибка сети. Проверьте подключение к интернету';
       }
     }
-    
+
     if (error is Exception) {
       return error.toString();
     }
-    
+
     return 'Произошла неизвестная ошибка';
   }
 }
