@@ -174,6 +174,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get termsOfService => 'Условиями использования';
 
   @override
+  String get invites => 'Приглашения';
+
+  @override
+  String get availableInvites => 'Доступные приглашения';
+
+  @override
+  String get invitesDescription =>
+      'Вы можете дать приглашение другому пользователю на странице его профиля, предоставив ему полные права.';
+
+  @override
+  String get howItWorks => 'Как это работает';
+
+  @override
+  String get tip => 'Совет';
+
+  @override
+  String get inviteTip =>
+      'Посетите страницу профиля любого пользователя, чтобы отправить ему приглашение. Он получит полный доступ к платформе.';
+
+  @override
+  String get noInvitesAvailable => 'Нет доступных приглашений';
+
+  @override
+  String get noInvitesDescription =>
+      'У вас нет приглашений для отправки в данный момент.';
+
+  @override
+  String get retry => 'Повторить';
+
+  @override
+  String get loading => 'Загрузка...';
+
+  @override
   String get privacyPolicy => 'Политикой конфиденциальности';
 
   @override
@@ -407,9 +440,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get publishing => 'Публикация...';
-
-  @override
-  String get retry => 'Повторить';
 
   @override
   String get goBack => 'Назад';

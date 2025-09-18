@@ -216,6 +216,46 @@
   "@termsOfService": {
     "description": "Terms of Service link text"
   },
+  "invites": "Приглашения",
+  "@invites": {
+    "description": "Invites screen title"
+  },
+  "availableInvites": "Доступные приглашения",
+  "@availableInvites": {
+    "description": "Available invites label"
+  },
+  "invitesDescription": "Вы можете дать приглашение другому пользователю на странице его профиля, предоставив ему полные права.",
+  "@invitesDescription": {
+    "description": "Description text explaining how invites work"
+  },
+  "howItWorks": "Как это работает",
+  "@howItWorks": {
+    "description": "How it works section title"
+  },
+  "tip": "Совет",
+  "@tip": {
+    "description": "Tip section title"
+  },
+  "inviteTip": "Посетите страницу профиля любого пользователя, чтобы отправить ему приглашение. Он получит полный доступ к платформе.",
+  "@inviteTip": {
+    "description": "Tip text explaining how to send invites"
+  },
+  "noInvitesAvailable": "Нет доступных приглашений",
+  "@noInvitesAvailable": {
+    "description": "Message when user has no invites"
+  },
+  "noInvitesDescription": "У вас нет приглашений для отправки в данный момент.",
+  "@noInvitesDescription": {
+    "description": "Description when user has no invites"
+  },
+  "retry": "Повторить",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "loading": "Загрузка...",
+  "@loading": {
+    "description": "Loading text"
+  },
   "privacyPolicy": "Политикой конфиденциальности",
   "@privacyPolicy": {
     "description": "Privacy Policy link text"

@@ -141,6 +141,46 @@
   "@termsOfService": {
     "description": "Terms of Service link text"
   },
+  "invites": "Invites",
+  "@invites": {
+    "description": "Invites screen title"
+  },
+  "availableInvites": "Available Invites",
+  "@availableInvites": {
+    "description": "Available invites label"
+  },
+  "invitesDescription": "You can give an invite to another user on their profile page, granting that user full rights.",
+  "@invitesDescription": {
+    "description": "Description text explaining how invites work"
+  },
+  "howItWorks": "How it works",
+  "@howItWorks": {
+    "description": "How it works section title"
+  },
+  "tip": "Tip",
+  "@tip": {
+    "description": "Tip section title"
+  },
+  "inviteTip": "Visit any user's profile page to send them an invite. They will receive full access to the platform.",
+  "@inviteTip": {
+    "description": "Tip text explaining how to send invites"
+  },
+  "noInvitesAvailable": "No invites available",
+  "@noInvitesAvailable": {
+    "description": "Message when user has no invites"
+  },
+  "noInvitesDescription": "You don't have any invites to give out at the moment.",
+  "@noInvitesDescription": {
+    "description": "Description when user has no invites"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading text"
+  },
   "privacyPolicy": "Privacy Policy",
   "@privacyPolicy": {
     "description": "Privacy Policy link text"

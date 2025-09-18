@@ -422,6 +422,66 @@ abstract class AppLocalizations {
   /// **'Условиями использования'**
   String get termsOfService;
 
+  /// Invites screen title
+  ///
+  /// In ru, this message translates to:
+  /// **'Приглашения'**
+  String get invites;
+
+  /// Available invites label
+  ///
+  /// In ru, this message translates to:
+  /// **'Доступные приглашения'**
+  String get availableInvites;
+
+  /// Description text explaining how invites work
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы можете дать приглашение другому пользователю на странице его профиля, предоставив ему полные права.'**
+  String get invitesDescription;
+
+  /// How it works section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Как это работает'**
+  String get howItWorks;
+
+  /// Tip section title
+  ///
+  /// In ru, this message translates to:
+  /// **'Совет'**
+  String get tip;
+
+  /// Tip text explaining how to send invites
+  ///
+  /// In ru, this message translates to:
+  /// **'Посетите страницу профиля любого пользователя, чтобы отправить ему приглашение. Он получит полный доступ к платформе.'**
+  String get inviteTip;
+
+  /// Message when user has no invites
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет доступных приглашений'**
+  String get noInvitesAvailable;
+
+  /// Description when user has no invites
+  ///
+  /// In ru, this message translates to:
+  /// **'У вас нет приглашений для отправки в данный момент.'**
+  String get noInvitesDescription;
+
+  /// Retry button text
+  ///
+  /// In ru, this message translates to:
+  /// **'Повторить'**
+  String get retry;
+
+  /// Loading text
+  ///
+  /// In ru, this message translates to:
+  /// **'Загрузка...'**
+  String get loading;
+
   /// Privacy Policy link text
   ///
   /// In ru, this message translates to:
@@ -877,12 +937,6 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Публикация...'**
   String get publishing;
-
-  /// Retry button text
-  ///
-  /// In ru, this message translates to:
-  /// **'Повторить'**
-  String get retry;
 
   /// Go back button text
   ///

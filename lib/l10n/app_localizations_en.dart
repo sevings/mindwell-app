@@ -172,6 +172,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get termsOfService => 'Terms of Service';
 
   @override
+  String get invites => 'Invites';
+
+  @override
+  String get availableInvites => 'Available Invites';
+
+  @override
+  String get invitesDescription =>
+      'You can give an invite to another user on their profile page, granting that user full rights.';
+
+  @override
+  String get howItWorks => 'How it works';
+
+  @override
+  String get tip => 'Tip';
+
+  @override
+  String get inviteTip =>
+      'Visit any user\'s profile page to send them an invite. They will receive full access to the platform.';
+
+  @override
+  String get noInvitesAvailable => 'No invites available';
+
+  @override
+  String get noInvitesDescription =>
+      'You don\'t have any invites to give out at the moment.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
   String get privacyPolicy => 'Privacy Policy';
 
   @override
@@ -402,9 +435,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get publishing => 'Publishing...';
-
-  @override
-  String get retry => 'Retry';
 
   @override
   String get goBack => 'Go Back';
