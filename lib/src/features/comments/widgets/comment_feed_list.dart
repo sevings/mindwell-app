@@ -5,10 +5,11 @@ import 'package:mindwell_api/mindwell_api.dart';
 import '../../../core/theme/spacing.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../providers/comment_feed_provider.dart';
+import '../providers/comment_interactions_provider.dart';
 import 'comment_card.dart';
 
 /// A widget that displays a list of comments in a feed format.
-/// 
+///
 /// This widget:
 /// - Watches the [commentFeedProvider] and displays the list of comments
 /// - Uses [ListView.builder] for efficient rendering
@@ -19,16 +20,16 @@ import 'comment_card.dart';
 class CommentFeedList extends ConsumerStatefulWidget {
   /// The username to fetch comments for
   final String username;
-  
+
   /// Whether to enable pull-to-refresh
   final bool enablePullToRefresh;
-  
+
   /// Whether to enable infinite scrolling
   final bool enableInfiniteScroll;
-  
+
   /// The number of comments to load before the end to trigger loading more
   final int loadMoreThreshold;
-  
+
   /// Custom padding for the list
   final EdgeInsetsGeometry? padding;
 
@@ -48,19 +49,22 @@ class CommentFeedList extends ConsumerStatefulWidget {
 class _CommentFeedListState extends ConsumerState<CommentFeedList> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+  final Set<int> _votingComments = <int>{};
 
   @override
   void initState() {
     super.initState();
-    
+
     // Set up infinite scrolling
     if (widget.enableInfiniteScroll) {
       _scrollController.addListener(_onScroll);
     }
-    
+
     // Fetch initial comments
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(commentFeedProvider(widget.username).notifier).fetchInitialComments();
+      ref
+          .read(commentFeedProvider(widget.username).notifier)
+          .fetchInitialComments();
     });
   }
 
@@ -73,13 +77,15 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
   @override
   void didUpdateWidget(CommentFeedList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Update username if it changed
     if (widget.username != oldWidget.username) {
       // Use Future.microtask to avoid modifying providers during build
       Future.microtask(() {
         if (mounted) {
-          ref.read(commentFeedProvider(widget.username).notifier).fetchInitialComments();
+          ref
+              .read(commentFeedProvider(widget.username).notifier)
+              .fetchInitialComments();
         }
       });
     }
@@ -88,11 +94,11 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
   /// Handles scroll events for infinite scrolling
   void _onScroll() {
     if (!widget.enableInfiniteScroll || _isLoadingMore) return;
-    
+
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     final delta = maxScroll - currentScroll;
-    
+
     // Trigger loading more when user is near the end
     if (delta < 200) {
       _loadMoreComments();
@@ -102,13 +108,15 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
   /// Loads more comments for infinite scrolling
   Future<void> _loadMoreComments() async {
     if (_isLoadingMore) return;
-    
+
     setState(() {
       _isLoadingMore = true;
     });
-    
+
     try {
-      await ref.read(commentFeedProvider(widget.username).notifier).fetchMoreComments();
+      await ref
+          .read(commentFeedProvider(widget.username).notifier)
+          .fetchMoreComments();
     } finally {
       if (mounted) {
         setState(() {
@@ -123,14 +131,84 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
     await ref.read(commentFeedProvider(widget.username).notifier).refresh();
   }
 
+  /// Handles upvoting a comment
+  Future<void> _handleUpvote(MwComment comment) async {
+    if (comment.id == null) return;
+
+    setState(() {
+      _votingComments.add(comment.id!);
+    });
+
+    try {
+      final interactionsNotifier = ref.read(commentInteractionsProvider);
+      final updatedRating = await interactionsNotifier.voteComment(
+        comment.id!,
+        true,
+      );
+
+      if (updatedRating != null) {
+        // Update the comment in the feed provider
+        ref
+            .read(commentFeedProvider(widget.username).notifier)
+            .updateCommentRating(comment.id!, updatedRating);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _votingComments.remove(comment.id!);
+        });
+      }
+    }
+  }
+
+  /// Handles downvoting a comment (removing vote if already upvoted)
+  Future<void> _handleDownvote(MwComment comment) async {
+    if (comment.id == null) return;
+
+    setState(() {
+      _votingComments.add(comment.id!);
+    });
+
+    try {
+      final interactionsNotifier = ref.read(commentInteractionsProvider);
+      final currentVote = comment.rating?.vote;
+
+      MwRating? updatedRating;
+      if (currentVote == 1) {
+        // Remove vote if currently upvoted
+        updatedRating = await interactionsNotifier.removeVote(comment.id!);
+      } else {
+        // Downvote if not currently upvoted
+        updatedRating = await interactionsNotifier.voteComment(
+          comment.id!,
+          false,
+        );
+      }
+
+      if (updatedRating != null) {
+        // Update the comment in the feed provider
+        ref
+            .read(commentFeedProvider(widget.username).notifier)
+            .updateCommentRating(comment.id!, updatedRating);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _votingComments.remove(comment.id!);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final feedState = ref.watch(commentFeedProvider(widget.username));
-    
+
     return feedState.when(
       initial: () => _buildLoadingState(),
       loading: () => _buildLoadingState(),
-      loaded: (comments, hasMore, isFetchingMore) => _buildLoadedState(comments, hasMore, isFetchingMore),
+      loaded: (comments, hasMore, isFetchingMore) =>
+          _buildLoadedState(comments, hasMore, isFetchingMore),
       error: (message, comments) => _buildErrorState(message, comments),
       empty: () => _buildEmptyState(),
     );
@@ -140,38 +218,45 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
   Widget _buildLoadingState() {
     return ListView.builder(
       controller: _scrollController,
-      padding: widget.padding ?? EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
+      padding:
+          widget.padding ?? EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
       itemCount: 5, // Show 5 skeleton items
       itemBuilder: (context, index) => _buildSkeletonCard(),
     );
   }
 
   /// Builds the loaded state with actual comments
-  Widget _buildLoadedState(List<MwComment> comments, bool hasMore, bool isFetchingMore) {
+  Widget _buildLoadedState(
+    List<MwComment> comments,
+    bool hasMore,
+    bool isFetchingMore,
+  ) {
     Widget content = ListView.builder(
       controller: _scrollController,
-      padding: widget.padding ?? EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
-      itemCount: comments.length + (hasMore ? 1 : 0), // +1 for loading indicator
+      padding:
+          widget.padding ?? EdgeInsets.symmetric(vertical: MindwellSpacing.sm),
+      itemCount:
+          comments.length + (hasMore ? 1 : 0), // +1 for loading indicator
       itemBuilder: (context, index) {
         if (index >= comments.length) {
           // Show loading indicator at the end
           return _buildLoadingMoreIndicator();
         }
-        
+
         final comment = comments[index];
         return CommentCard(
           key: ValueKey('comment_${comment.id}'),
           comment: comment,
+          onUpvote: () => _handleUpvote(comment),
+          onDownvote: () => _handleDownvote(comment),
+          isVoting: comment.id != null && _votingComments.contains(comment.id!),
         );
       },
     );
 
     // Wrap with RefreshIndicator if pull-to-refresh is enabled
     if (widget.enablePullToRefresh) {
-      return RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: content,
-      );
+      return RefreshIndicator(onRefresh: _onRefresh, child: content);
     }
 
     return content;
@@ -184,9 +269,7 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
       return Column(
         children: [
           _buildErrorBanner(message),
-          Expanded(
-            child: _buildLoadedState(comments, false, false),
-          ),
+          Expanded(child: _buildLoadedState(comments, false, false)),
         ],
       );
     }
@@ -218,7 +301,9 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
             SizedBox(height: MindwellSpacing.lg),
             ElevatedButton(
               onPressed: () {
-                ref.read(commentFeedProvider(widget.username).notifier).fetchInitialComments();
+                ref
+                    .read(commentFeedProvider(widget.username).notifier)
+                    .fetchInitialComments();
               },
               child: const Text('Попробовать снова'),
             ),
@@ -256,7 +341,9 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
             SizedBox(height: MindwellSpacing.lg),
             ElevatedButton(
               onPressed: () {
-                ref.read(commentFeedProvider(widget.username).notifier).refresh();
+                ref
+                    .read(commentFeedProvider(widget.username).notifier)
+                    .refresh();
               },
               child: const Text('Обновить'),
             ),
@@ -309,20 +396,12 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
                     ],
                   ),
                 ),
-                SkeletonBox(
-                  width: 16.0,
-                  height: 16.0,
-                  borderRadius: 8.0,
-                ),
+                SkeletonBox(width: 16.0, height: 16.0, borderRadius: 8.0),
               ],
             ),
             SizedBox(height: MindwellSpacing.md),
             // Entry title skeleton
-            SkeletonBox(
-              width: 120.0,
-              height: 24.0,
-              borderRadius: 8.0,
-            ),
+            SkeletonBox(width: 120.0, height: 24.0, borderRadius: 8.0),
             SizedBox(height: MindwellSpacing.sm),
             // Content skeleton
             SkeletonText(
@@ -335,23 +414,11 @@ class _CommentFeedListState extends ConsumerState<CommentFeedList> {
             // Footer skeleton
             Row(
               children: [
-                SkeletonBox(
-                  width: 60.0,
-                  height: 24.0,
-                  borderRadius: 6.0,
-                ),
+                SkeletonBox(width: 60.0, height: 24.0, borderRadius: 6.0),
                 SizedBox(width: MindwellSpacing.sm),
-                SkeletonBox(
-                  width: 60.0,
-                  height: 24.0,
-                  borderRadius: 6.0,
-                ),
+                SkeletonBox(width: 60.0, height: 24.0, borderRadius: 6.0),
                 const Spacer(),
-                SkeletonBox(
-                  width: 80.0,
-                  height: 16.0,
-                  borderRadius: 8.0,
-                ),
+                SkeletonBox(width: 80.0, height: 16.0, borderRadius: 8.0),
               ],
             ),
           ],

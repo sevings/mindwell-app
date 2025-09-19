@@ -43,6 +43,11 @@ class MockCommentFeedNotifier extends StateNotifier<CommentFeedState>
   void updateUsername(String username) {
     // Don't do anything - just return immediately
   }
+
+  @override
+  void updateCommentRating(int commentId, MwRating newRating) {
+    // Don't do anything - just return immediately
+  }
 }
 
 void main() {

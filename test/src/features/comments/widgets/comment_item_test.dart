@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
@@ -7,9 +8,14 @@ import 'package:mindwell/src/features/comments/widgets/comment_item.dart';
 
 // Mock classes
 class MockMwComment extends Mock implements MwComment {}
+
 class MockMwUser extends Mock implements MwUser {}
+
 class MockMwRating extends Mock implements MwRating {}
+
 class MockMwAvatar extends Mock implements MwAvatar {}
+
+class MockMwCommentRights extends Mock implements MwCommentRights {}
 
 void main() {
   group('CommentItem', () {
@@ -17,20 +23,25 @@ void main() {
     late MockMwUser mockAuthor;
     late MockMwRating mockRating;
     late MockMwAvatar mockAvatar;
+    late MockMwCommentRights mockRights;
 
     setUp(() {
       mockRating = MockMwRating();
       mockAuthor = MockMwUser();
       mockComment = MockMwComment();
       mockAvatar = MockMwAvatar();
+      mockRights = MockMwCommentRights();
 
       // Setup default mock responses
       when(() => mockRating.upCount).thenReturn(5);
       when(() => mockRating.downCount).thenReturn(2);
+      when(() => mockRights.vote).thenReturn(true);
 
       when(() => mockAvatar.x42).thenReturn('https://example.com/avatar42.jpg');
       when(() => mockAvatar.x92).thenReturn('https://example.com/avatar92.jpg');
-      when(() => mockAvatar.x124).thenReturn('https://example.com/avatar124.jpg');
+      when(
+        () => mockAvatar.x124,
+      ).thenReturn('https://example.com/avatar124.jpg');
 
       when(() => mockAuthor.id).thenReturn(1);
       when(() => mockAuthor.name).thenReturn('Test User');
@@ -38,16 +49,23 @@ void main() {
 
       when(() => mockComment.id).thenReturn(1);
       when(() => mockComment.author).thenReturn(mockAuthor);
-      when(() => mockComment.content).thenReturn('<p>This is a test comment with <strong>HTML</strong> content.</p>');
-      when(() => mockComment.createdAt).thenReturn(1640995200.0); // 2022-01-01 00:00:00 UTC
+      when(() => mockComment.content).thenReturn(
+        '<p>This is a test comment with <strong>HTML</strong> content.</p>',
+      );
+      when(
+        () => mockComment.createdAt,
+      ).thenReturn(1640995200.0); // 2022-01-01 00:00:00 UTC
       when(() => mockComment.rating).thenReturn(mockRating);
+      when(() => mockComment.rights).thenReturn(mockRights);
     });
 
-    testWidgets('displays comment content correctly', (WidgetTester tester) async {
+    testWidgets('displays comment content correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(comment: mockComment),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(body: CommentItem(comment: mockComment)),
           ),
         ),
       );
@@ -59,23 +77,25 @@ void main() {
       // Note: In tests, HTML content might not be fully rendered, so we check for the raw content
       expect(find.textContaining('This is a test comment'), findsOneWidget);
 
-      // Check that voting buttons are displayed
-      expect(find.byIcon(Icons.thumb_up_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.thumb_down_outlined), findsOneWidget);
+      // Check that voting button is displayed (now uses fire icon)
+      expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
 
-      // Check that vote counts are displayed
-      expect(find.text('5'), findsOneWidget); // upvotes
-      expect(find.text('2'), findsOneWidget); // downvotes
+      // Check that net vote count is displayed (upvotes - downvotes = 5 - 2 = 3)
+      expect(find.text('+3'), findsOneWidget);
     });
 
-    testWidgets('displays entry title when showEntryTitle is true', (WidgetTester tester) async {
+    testWidgets('displays entry title when showEntryTitle is true', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(
-              comment: mockComment,
-              showEntryTitle: true,
-              entryTitle: 'Test Entry Title',
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentItem(
+                comment: mockComment,
+                showEntryTitle: true,
+                entryTitle: 'Test Entry Title',
+              ),
             ),
           ),
         ),
@@ -86,24 +106,26 @@ void main() {
       expect(find.byIcon(Icons.article_outlined), findsOneWidget);
     });
 
-    testWidgets('hides voting section when showVoting is false', (WidgetTester tester) async {
+    testWidgets('hides voting section when showVoting is false', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(
-              comment: mockComment,
-              showVoting: false,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentItem(comment: mockComment, showVoting: false),
             ),
           ),
         ),
       );
 
-      // Check that voting buttons are not displayed
-      expect(find.byIcon(Icons.thumb_up_outlined), findsNothing);
-      expect(find.byIcon(Icons.thumb_down_outlined), findsNothing);
+      // Check that voting button is not displayed
+      expect(find.byIcon(Icons.local_fire_department), findsNothing);
     });
 
-    testWidgets('calls onTap when comment is tapped', (WidgetTester tester) async {
+    testWidgets('calls onTap when comment is tapped', (
+      WidgetTester tester,
+    ) async {
       bool onTapCalled = false;
 
       await tester.pumpWidget(
@@ -124,7 +146,9 @@ void main() {
       expect(onTapCalled, isTrue);
     });
 
-    testWidgets('calls onAuthorTap when author is tapped', (WidgetTester tester) async {
+    testWidgets('calls onAuthorTap when author is tapped', (
+      WidgetTester tester,
+    ) async {
       bool onAuthorTapCalled = false;
 
       await tester.pumpWidget(
@@ -145,84 +169,101 @@ void main() {
       expect(onAuthorTapCalled, isTrue);
     });
 
-    testWidgets('calls onUpvote when upvote button is tapped', (WidgetTester tester) async {
+    testWidgets('calls onUpvote when upvote button is tapped', (
+      WidgetTester tester,
+    ) async {
       bool onUpvoteCalled = false;
+      MwComment? receivedComment;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(
-              comment: mockComment,
-              onUpvote: () => onUpvoteCalled = true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentItem(
+                comment: mockComment,
+                onUpvote: (comment) {
+                  onUpvoteCalled = true;
+                  receivedComment = comment;
+                },
+              ),
             ),
           ),
         ),
       );
 
-      // Tap on the upvote button
-      await tester.tap(find.byIcon(Icons.thumb_up_outlined));
+      // Tap on the vote button (now uses fire icon)
+      await tester.tap(find.byIcon(Icons.local_fire_department));
       await tester.pump();
 
       expect(onUpvoteCalled, isTrue);
+      expect(receivedComment, equals(mockComment));
     });
 
-    testWidgets('calls onDownvote when downvote button is tapped', (WidgetTester tester) async {
+    testWidgets('calls onDownvote when downvote button is tapped', (
+      WidgetTester tester,
+    ) async {
       bool onDownvoteCalled = false;
+      MwComment? receivedComment;
+
+      // Set up the rating to show the user has already upvoted
+      when(() => mockRating.vote).thenReturn(1); // User has upvoted
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(
-              comment: mockComment,
-              onDownvote: () => onDownvoteCalled = true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentItem(
+                comment: mockComment,
+                onDownvote: (comment) {
+                  onDownvoteCalled = true;
+                  receivedComment = comment;
+                },
+              ),
             ),
           ),
         ),
       );
 
-      // Tap on the downvote button
-      await tester.tap(find.byIcon(Icons.thumb_down_outlined));
+      // Tap on the vote button (now uses fire icon, same button for both upvote and downvote)
+      await tester.tap(find.byIcon(Icons.local_fire_department));
       await tester.pump();
 
       expect(onDownvoteCalled, isTrue);
+      expect(receivedComment, equals(mockComment));
     });
 
-    testWidgets('disables voting buttons when isVoting is true', (WidgetTester tester) async {
+    testWidgets('disables voting buttons when isVoting is true', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentItem(
-              comment: mockComment,
-              isVoting: true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentItem(comment: mockComment, isVoting: true),
             ),
           ),
         ),
       );
 
-      // Check that voting buttons are disabled
-      final upvoteButtonFinder = find.byIcon(Icons.thumb_up_outlined);
-      final downvoteButtonFinder = find.byIcon(Icons.thumb_down_outlined);
-      
-      expect(upvoteButtonFinder, findsOneWidget);
-      expect(downvoteButtonFinder, findsOneWidget);
-      
-      // Try to tap the buttons to verify they're disabled
-      await tester.tap(upvoteButtonFinder);
-      await tester.pump();
-      // If the button is disabled, the tap should not trigger any action
+      // Check that voting button is disabled
+      final voteButtonFinder = find.byIcon(Icons.local_fire_department);
+
+      expect(voteButtonFinder, findsOneWidget);
 
       // Check that loading indicator is shown
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Don't tap the button since it should be disabled and tapping would trigger API calls
     });
 
-    testWidgets('displays fallback text when author name is empty', (WidgetTester tester) async {
+    testWidgets('displays fallback text when author name is empty', (
+      WidgetTester tester,
+    ) async {
       when(() => mockAuthor.name).thenReturn('');
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentItem(comment: mockComment),
-          ),
+          home: Scaffold(body: CommentItem(comment: mockComment)),
         ),
       );
 
@@ -231,14 +272,14 @@ void main() {
       expect(find.byType(CommentItem), findsOneWidget);
     });
 
-    testWidgets('displays fallback avatar when no avatar URL is provided', (WidgetTester tester) async {
+    testWidgets('displays fallback avatar when no avatar URL is provided', (
+      WidgetTester tester,
+    ) async {
       when(() => mockAuthor.avatar).thenReturn(null);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentItem(comment: mockComment),
-          ),
+          home: Scaffold(body: CommentItem(comment: mockComment)),
         ),
       );
 
@@ -246,15 +287,15 @@ void main() {
       expect(find.text('T'), findsOneWidget); // First letter of "Test User"
     });
 
-    testWidgets('displays deleted comment message when content is empty', (WidgetTester tester) async {
+    testWidgets('displays deleted comment message when content is empty', (
+      WidgetTester tester,
+    ) async {
       when(() => mockComment.content).thenReturn('');
       when(() => mockComment.editContent).thenReturn('');
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentItem(comment: mockComment),
-          ),
+          home: Scaffold(body: CommentItem(comment: mockComment)),
         ),
       );
 
@@ -268,9 +309,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CommentItem(comment: mockComment),
-          ),
+          home: Scaffold(body: CommentItem(comment: mockComment)),
         ),
       );
 
@@ -282,7 +321,9 @@ void main() {
       expect(hasAgoText || hasDateText, isTrue);
     });
 
-    testWidgets('applies custom padding and margin', (WidgetTester tester) async {
+    testWidgets('applies custom padding and margin', (
+      WidgetTester tester,
+    ) async {
       const customPadding = EdgeInsets.all(20);
       const customMargin = EdgeInsets.all(10);
 

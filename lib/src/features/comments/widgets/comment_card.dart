@@ -6,7 +6,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 import '../../../core/widgets/images/cached_image.dart';
 
 /// A widget that displays a single comment within a feed context.
-/// 
+///
 /// This widget is specifically designed for comment feeds and provides:
 /// - Author information with avatar and name
 /// - Entry title context
@@ -16,22 +16,22 @@ import '../../../core/widgets/images/cached_image.dart';
 class CommentCard extends StatelessWidget {
   /// The comment to display
   final MwComment comment;
-  
+
   /// The title of the entry this comment belongs to
   final String? entryTitle;
-  
+
   /// Callback when upvote is tapped
   final VoidCallback? onUpvote;
-  
+
   /// Callback when downvote is tapped
   final VoidCallback? onDownvote;
-  
+
   /// Whether the comment is currently being voted on (for optimistic UI)
   final bool isVoting;
-  
+
   /// Custom padding for the card
   final EdgeInsetsGeometry? padding;
-  
+
   /// Custom margin for the card
   final EdgeInsetsGeometry? margin;
 
@@ -64,7 +64,9 @@ class CommentCard extends StatelessWidget {
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -96,7 +98,7 @@ class CommentCard extends StatelessWidget {
           child: CachedAvatar(
             imageUrl: _getAvatarUrl(author.avatar),
             size: 40,
-            fallbackText: author.name?.isNotEmpty == true 
+            fallbackText: author.name?.isNotEmpty == true
                 ? author.name!.substring(0, 1).toUpperCase()
                 : '?',
           ),
@@ -141,7 +143,9 @@ class CommentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -183,8 +187,8 @@ class CommentCard extends StatelessWidget {
 
     // Strip HTML tags for snippet display and limit length
     final plainText = _stripHtmlTags(content);
-    final snippet = plainText.length > 150 
-        ? '${plainText.substring(0, 150)}...' 
+    final snippet = plainText.length > 150
+        ? '${plainText.substring(0, 150)}...'
         : plainText;
 
     return Text(
@@ -229,96 +233,77 @@ class CommentCard extends StatelessWidget {
 
   Widget _buildVotingSection(BuildContext context) {
     final rating = comment.rating!;
-    final upvotes = rating.upCount ?? 0;
-    final downvotes = rating.downCount ?? 0;
+    final upVotes = rating.upCount ?? 0;
+    final downVotes = rating.downCount ?? 0;
+    final netVotes = upVotes - downVotes;
+    final userVote = rating.vote;
+    final hasVoted = userVote != null && userVote != 0;
+    final isUpvoted = userVote == 1;
+    final canVote = comment.rights?.vote == true;
 
-    return Row(
-      children: [
-        // Upvote button
-        GestureDetector(
-          onTap: isVoting ? null : onUpvote,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.thumb_up_outlined,
-                  size: 14,
-                  color: isVoting 
-                      ? Theme.of(context).colorScheme.onSurfaceVariant
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                if (upvotes > 0) ...[
-                  const SizedBox(width: 4),
-                  Text(
-                    upvotes.toString(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isVoting 
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+    // Determine button color based on vote status and voting rights
+    Color buttonColor;
+    Color iconColor;
+    if (!canVote) {
+      // User doesn't have right to vote - disabled state
+      buttonColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+      iconColor = Theme.of(
+        context,
+      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
+    } else if (hasVoted && isUpvoted) {
+      // User has upvoted - filled with mindwell orange
+      buttonColor = const Color(0xFFFF6B35); // Mindwell orange
+      iconColor = Colors.white;
+    } else {
+      // User can vote but hasn't voted or downvoted - outline only
+      buttonColor = Colors.transparent;
+      iconColor = Theme.of(context).colorScheme.onSurfaceVariant;
+    }
+
+    return GestureDetector(
+      onTap: (canVote && !isVoting)
+          ? () => _handleVote(context, isUpvoted)
+          : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: buttonColor,
+          borderRadius: BorderRadius.circular(20.0),
+          border: canVote && !hasVoted
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  width: 1.0,
+                )
+              : null,
         ),
-        const SizedBox(width: 8),
-        // Downvote button
-        GestureDetector(
-          onTap: isVoting ? null : onDownvote,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.thumb_down_outlined,
-                  size: 14,
-                  color: isVoting 
-                      ? Theme.of(context).colorScheme.onSurfaceVariant
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                if (downvotes > 0) ...[
-                  const SizedBox(width: 4),
-                  Text(
-                    downvotes.toString(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isVoting 
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-        if (isVoting) ...[
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 14,
-            height: 14,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.local_fire_department, size: 18.0, color: iconColor),
+            const SizedBox(width: 4.0),
+            Text(
+              netVotes > 0 ? '+$netVotes' : netVotes.toString(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: iconColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-        ],
-      ],
+            if (isVoting) ...[
+              const SizedBox(width: 8.0),
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -328,7 +313,9 @@ class CommentCard extends StatelessWidget {
   }
 
   String _formatTimestamp(double timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+    final date = DateTime.fromMillisecondsSinceEpoch(
+      (timestamp * 1000).round(),
+    );
     final now = DateTime.now();
     final difference = now.difference(date);
 
@@ -369,6 +356,15 @@ class CommentCard extends StatelessWidget {
       // Navigate to user profile - this route will be implemented in future tasks
       // For now, we'll use a placeholder navigation
       context.go('/profile');
+    }
+  }
+
+  /// Handles voting on the comment
+  void _handleVote(BuildContext context, bool isCurrentlyUpvoted) {
+    if (isCurrentlyUpvoted) {
+      onDownvote?.call();
+    } else {
+      onUpvote?.call();
     }
   }
 }

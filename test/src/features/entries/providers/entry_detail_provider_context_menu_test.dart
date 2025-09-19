@@ -14,6 +14,8 @@ class MockCommentsApi extends Mock implements CommentsApi {}
 
 class MockWatchingsApi extends Mock implements WatchingsApi {}
 
+class MockVotesApi extends Mock implements VotesApi {}
+
 void main() {
   group('EntryDetailProvider Context Menu Actions', () {
     late MockEntriesApi mockEntriesApi;
@@ -60,6 +62,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -126,6 +129,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -193,6 +197,7 @@ void main() {
       final mockWatchingsApi = MockWatchingsApi();
       notifier = EntryDetailNotifier(
         watchingsApi: mockWatchingsApi,
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -262,6 +267,7 @@ void main() {
       final mockWatchingsApi = MockWatchingsApi();
       notifier = EntryDetailNotifier(
         watchingsApi: mockWatchingsApi,
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -331,6 +337,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -377,6 +384,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -438,6 +446,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -503,6 +512,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -564,6 +574,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,
@@ -610,6 +621,7 @@ void main() {
 
       notifier = EntryDetailNotifier(
         watchingsApi: MockWatchingsApi(),
+        votesApi: MockVotesApi(),
         entryId: entryId,
         entriesApi: mockEntriesApi,
         commentsApi: mockCommentsApi,

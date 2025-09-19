@@ -141,9 +141,11 @@ class CommentList extends StatelessWidget {
                   onAuthorTap: onAuthorTap != null && comment.author != null
                       ? () => onAuthorTap!(comment.author!)
                       : null,
-                  onUpvote: onUpvote != null ? () => onUpvote!(comment) : null,
+                  onUpvote: onUpvote != null
+                      ? (comment) => onUpvote!(comment)
+                      : null,
                   onDownvote: onDownvote != null
-                      ? () => onDownvote!(comment)
+                      ? (comment) => onDownvote!(comment)
                       : null,
                   onEdit: onEditComment != null
                       ? () => onEditComment!(comment)

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/html_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../l10n/app_localizations.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import 'comment_context_menu.dart';
+import '../providers/comment_interactions_provider.dart';
 
 /// A widget that displays a single comment with author information, content, and voting options.
 ///
 /// This widget is designed to be reusable across different screens that need to display comments,
 /// such as the entry detail screen, comment list screen, or user profile screen.
-class CommentItem extends StatelessWidget {
+class CommentItem extends ConsumerStatefulWidget {
   /// The comment to display
   final MwComment comment;
 
@@ -32,10 +33,10 @@ class CommentItem extends StatelessWidget {
   final VoidCallback? onAuthorTap;
 
   /// Callback when upvote is tapped
-  final VoidCallback? onUpvote;
+  final void Function(MwComment comment)? onUpvote;
 
   /// Callback when downvote is tapped
-  final VoidCallback? onDownvote;
+  final void Function(MwComment comment)? onDownvote;
 
   /// Whether the comment is currently being voted on (for optimistic UI)
   final bool isVoting;
@@ -74,19 +75,41 @@ class CommentItem extends StatelessWidget {
   });
 
   @override
+  ConsumerState<CommentItem> createState() => _CommentItemState();
+}
+
+class _CommentItemState extends ConsumerState<CommentItem> {
+  late MwComment _currentComment;
+  bool _isVoting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentComment = widget.comment;
+  }
+
+  @override
+  void didUpdateWidget(CommentItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.comment != widget.comment) {
+      _currentComment = widget.comment;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final author = comment.author;
+    final author = _currentComment.author;
     if (author == null) return const SizedBox.shrink();
 
     return Container(
-      margin: margin ?? const EdgeInsets.only(bottom: 16),
+      margin: widget.margin ?? const EdgeInsets.only(bottom: 16),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: padding ?? const EdgeInsets.all(16),
+            padding: widget.padding ?? const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
@@ -97,25 +120,25 @@ class CommentItem extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(child: _buildHeader(context, author)),
-                    if (showContextMenu) ...[
+                    if (widget.showContextMenu) ...[
                       const SizedBox(width: 8),
                       CommentContextMenu(
-                        comment: comment,
-                        onEdit: onEdit,
-                        onDelete: onDelete,
+                        comment: _currentComment,
+                        onEdit: widget.onEdit,
+                        onDelete: widget.onDelete,
                       ),
                     ],
                   ],
                 ),
-                if (showEntryTitle && entryTitle != null) ...[
+                if (widget.showEntryTitle && widget.entryTitle != null) ...[
                   const SizedBox(height: 8),
                   _buildEntryTitle(context),
                 ],
                 const SizedBox(height: 12),
                 _buildContent(context),
-                if (showVoting && comment.rating != null) ...[
+                if (widget.showVoting && _currentComment.rating != null) ...[
                   const SizedBox(height: 12),
-                  _buildVotingSection(context),
+                  _buildVoteButton(context),
                 ],
               ],
             ),
@@ -129,7 +152,9 @@ class CommentItem extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: onAuthorTap ?? () => _navigateToAuthorProfile(context, author),
+          onTap:
+              widget.onAuthorTap ??
+              () => _navigateToAuthorProfile(context, author),
           child: CachedAvatar(
             imageUrl: _getAvatarUrl(author.avatar),
             size: 32,
@@ -145,7 +170,7 @@ class CommentItem extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap:
-                    onAuthorTap ??
+                    widget.onAuthorTap ??
                     () => _navigateToAuthorProfile(context, author),
                 child: Text(
                   author.name ?? 'Unknown',
@@ -155,10 +180,10 @@ class CommentItem extends StatelessWidget {
                   ),
                 ),
               ),
-              if (comment.createdAt != null) ...[
+              if (_currentComment.createdAt != null) ...[
                 const SizedBox(height: 2),
                 Text(
-                  _formatTimestamp(comment.createdAt!),
+                  _formatTimestamp(_currentComment.createdAt!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -191,7 +216,7 @@ class CommentItem extends StatelessWidget {
           const SizedBox(width: 4),
           Flexible(
             child: Text(
-              entryTitle!,
+              widget.entryTitle!,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.w500,
@@ -206,7 +231,7 @@ class CommentItem extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    final content = comment.content ?? comment.editContent;
+    final content = _currentComment.content ?? _currentComment.editContent;
     if (content == null || content.isEmpty) {
       return Text(
         'Comment deleted',
@@ -225,73 +250,164 @@ class CommentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildVotingSection(BuildContext context) {
-    final rating = comment.rating!;
-    final upvotes = rating.upCount ?? 0;
-    final downvotes = rating.downCount ?? 0;
+  /// Builds the vote button with fire icon
+  Widget _buildVoteButton(BuildContext context) {
+    final rating = _currentComment.rating!;
+    final upVotes = rating.upCount ?? 0;
+    final downVotes = rating.downCount ?? 0;
+    final netVotes = upVotes - downVotes;
+    final userVote = rating.vote;
+    final hasVoted = userVote != null && userVote != 0;
+    final isUpvoted = userVote == 1;
+    final canVote = _currentComment.rights?.vote == true;
 
-    return Row(
-      children: [
-        // Upvote button
-        IconButton(
-          onPressed: isVoting ? null : onUpvote,
-          icon: Icon(
-            Icons.thumb_up_outlined,
-            size: 16,
-            color: isVoting
-                ? Theme.of(context).colorScheme.onSurfaceVariant
-                : Theme.of(context).colorScheme.onSurface,
+    // Determine button color based on vote status and voting rights
+    Color buttonColor;
+    Color iconColor;
+    if (!canVote) {
+      // User doesn't have right to vote - disabled state
+      buttonColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+      iconColor = Theme.of(
+        context,
+      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
+    } else if (hasVoted && isUpvoted) {
+      // User has upvoted - filled with mindwell orange
+      buttonColor = const Color(0xFFFF6B35); // Mindwell orange
+      iconColor = Colors.white;
+    } else {
+      // User can vote but hasn't voted or downvoted - outline only
+      buttonColor = Colors.transparent;
+      iconColor = Theme.of(context).colorScheme.onSurfaceVariant;
+    }
+
+    return AbsorbPointer(
+      absorbing: !canVote,
+      child: GestureDetector(
+        onTap: canVote ? () => _handleVote(context, isUpvoted) : null,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            color: buttonColor,
+            borderRadius: BorderRadius.circular(20.0),
+            border: canVote && !hasVoted
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    width: 1.0,
+                  )
+                : null,
           ),
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          padding: EdgeInsets.zero,
-          tooltip: AppLocalizations.of(context)?.upvote ?? 'Upvote',
-        ),
-        Text(
-          upvotes.toString(),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: isVoting
-                ? Theme.of(context).colorScheme.onSurfaceVariant
-                : Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(width: 8),
-        // Downvote button
-        IconButton(
-          onPressed: isVoting ? null : onDownvote,
-          icon: Icon(
-            Icons.thumb_down_outlined,
-            size: 16,
-            color: isVoting
-                ? Theme.of(context).colorScheme.onSurfaceVariant
-                : Theme.of(context).colorScheme.onSurface,
-          ),
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          padding: EdgeInsets.zero,
-          tooltip: AppLocalizations.of(context)?.downvote ?? 'Downvote',
-        ),
-        Text(
-          downvotes.toString(),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: isVoting
-                ? Theme.of(context).colorScheme.onSurfaceVariant
-                : Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        if (isVoting) ...[
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.local_fire_department, size: 18.0, color: iconColor),
+              const SizedBox(width: 4.0),
+              Text(
+                netVotes > 0 ? '+$netVotes' : netVotes.toString(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: iconColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
+              if (_isVoting || widget.isVoting) ...[
+                const SizedBox(width: 8.0),
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-        ],
-      ],
+        ),
+      ),
     );
+  }
+
+  /// Handles voting on the comment
+  Future<void> _handleVote(
+    BuildContext context,
+    bool isCurrentlyUpvoted,
+  ) async {
+    if (_currentComment.id == null) return;
+
+    // If callbacks are provided, use them instead of internal voting logic
+    if (widget.onUpvote != null || widget.onDownvote != null) {
+      if (isCurrentlyUpvoted) {
+        widget.onDownvote?.call(_currentComment);
+      } else {
+        widget.onUpvote?.call(_currentComment);
+      }
+      return;
+    }
+
+    // Check if user has permission to vote
+    final canVote = _currentComment.rights?.vote == true;
+
+    if (!canVote) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'У вас нет права голосовать за этот комментарий',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    final interactionsNotifier = ref.read(commentInteractionsProvider);
+
+    setState(() {
+      _isVoting = true;
+    });
+
+    try {
+      MwRating? updatedRating;
+      if (isCurrentlyUpvoted) {
+        // Remove vote
+        updatedRating = await interactionsNotifier.removeVote(
+          _currentComment.id!,
+        );
+      } else {
+        // Add upvote
+        updatedRating = await interactionsNotifier.voteComment(
+          _currentComment.id!,
+          true,
+        );
+      }
+
+      // Update the comment with the new rating
+      if (updatedRating != null && mounted) {
+        setState(() {
+          _currentComment = _currentComment.rebuild(
+            (b) => b.rating = updatedRating!.toBuilder(),
+          );
+        });
+      }
+    } catch (e) {
+      // Show error message to user
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Ошибка при голосовании'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVoting = false;
+        });
+      }
+    }
   }
 
   String? _getAvatarUrl(MwAvatar? avatar) {

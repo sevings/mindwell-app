@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
@@ -14,21 +15,26 @@ class MockMwRating extends Mock implements MwRating {}
 
 class MockMwAvatar extends Mock implements MwAvatar {}
 
+class MockMwCommentRights extends Mock implements MwCommentRights {}
+
 void main() {
   group('CommentList', () {
     late List<MockMwComment> mockComments;
     late MockMwUser mockAuthor;
     late MockMwRating mockRating;
     late MockMwAvatar mockAvatar;
+    late MockMwCommentRights mockRights;
 
     setUp(() {
       mockRating = MockMwRating();
       mockAuthor = MockMwUser();
       mockAvatar = MockMwAvatar();
+      mockRights = MockMwCommentRights();
 
       // Setup default mock responses
       when(() => mockRating.upCount).thenReturn(5);
       when(() => mockRating.downCount).thenReturn(2);
+      when(() => mockRights.vote).thenReturn(true);
 
       when(() => mockAvatar.x42).thenReturn('https://example.com/avatar42.jpg');
       when(() => mockAvatar.x92).thenReturn('https://example.com/avatar92.jpg');
@@ -48,6 +54,7 @@ void main() {
       when(() => comment1.content).thenReturn('<p>First comment</p>');
       when(() => comment1.createdAt).thenReturn(1640995200.0);
       when(() => comment1.rating).thenReturn(mockRating);
+      when(() => comment1.rights).thenReturn(mockRights);
 
       final comment2 = MockMwComment();
       when(() => comment2.id).thenReturn(2);
@@ -56,6 +63,7 @@ void main() {
       when(() => comment2.content).thenReturn('<p>Second comment</p>');
       when(() => comment2.createdAt).thenReturn(1640995200.0);
       when(() => comment2.rating).thenReturn(mockRating);
+      when(() => comment2.rights).thenReturn(mockRights);
 
       final comment3 = MockMwComment();
       when(() => comment3.id).thenReturn(3);
@@ -64,6 +72,7 @@ void main() {
       when(() => comment3.content).thenReturn('<p>Third comment</p>');
       when(() => comment3.createdAt).thenReturn(1640995200.0);
       when(() => comment3.rating).thenReturn(mockRating);
+      when(() => comment3.rights).thenReturn(mockRights);
 
       mockComments = [comment1, comment2, comment3];
     });
@@ -239,18 +248,20 @@ void main() {
       MwComment? upvotedComment;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentList(
-              comments: mockComments,
-              onUpvote: (comment) => upvotedComment = comment,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                onUpvote: (comment) => upvotedComment = comment,
+              ),
             ),
           ),
         ),
       );
 
-      // Tap on the first upvote button
-      await tester.tap(find.byIcon(Icons.thumb_up_outlined).first);
+      // Tap on the first upvote button (now uses fire icon)
+      await tester.tap(find.byIcon(Icons.local_fire_department).first);
       await tester.pump();
 
       expect(upvotedComment, equals(mockComments[0]));
@@ -261,19 +272,24 @@ void main() {
     ) async {
       MwComment? downvotedComment;
 
+      // Set up the rating to show the user has already upvoted
+      when(() => mockRating.vote).thenReturn(1); // User has upvoted
+
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CommentList(
-              comments: mockComments,
-              onDownvote: (comment) => downvotedComment = comment,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: CommentList(
+                comments: mockComments,
+                onDownvote: (comment) => downvotedComment = comment,
+              ),
             ),
           ),
         ),
       );
 
-      // Tap on the first downvote button
-      await tester.tap(find.byIcon(Icons.thumb_down_outlined).first);
+      // Tap on the first downvote button (now uses fire icon)
+      await tester.tap(find.byIcon(Icons.local_fire_department).first);
       await tester.pump();
 
       expect(downvotedComment, equals(mockComments[0]));
@@ -315,8 +331,7 @@ void main() {
       );
 
       // Check that voting buttons are not displayed
-      expect(find.byIcon(Icons.thumb_up_outlined), findsNothing);
-      expect(find.byIcon(Icons.thumb_down_outlined), findsNothing);
+      expect(find.byIcon(Icons.local_fire_department), findsNothing);
     });
 
     testWidgets('displays separators when showSeparator is true', (
@@ -373,8 +388,7 @@ void main() {
       // Check that comment is still displayed
       expect(find.text('Comment without rating'), findsOneWidget);
       // Check that voting buttons are not displayed (since no rating)
-      expect(find.byIcon(Icons.thumb_up_outlined), findsNothing);
-      expect(find.byIcon(Icons.thumb_down_outlined), findsNothing);
+      expect(find.byIcon(Icons.local_fire_department), findsNothing);
     });
 
     testWidgets('handles comments without authors gracefully', (

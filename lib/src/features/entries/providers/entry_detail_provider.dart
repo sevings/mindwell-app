@@ -17,12 +17,14 @@ final entryDetailProvider =
       final entriesApi = ref.read(entriesApiProvider);
       final commentsApi = ref.read(commentsApiProvider);
       final watchingsApi = ref.read(watchingsApiProvider);
+      final votesApi = ref.read(votesApiProvider);
 
       return EntryDetailNotifier(
         entryId: entryId,
         entriesApi: entriesApi,
         commentsApi: commentsApi,
         watchingsApi: watchingsApi,
+        votesApi: votesApi,
       );
     });
 
@@ -38,6 +40,7 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
   final EntriesApi _entriesApi;
   final CommentsApi _commentsApi;
   final WatchingsApi _watchingsApi;
+  final VotesApi _votesApi;
   final Logger _logger = Logger('EntryDetailNotifier');
 
   String? _commentsBefore;
@@ -49,10 +52,12 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     required EntriesApi entriesApi,
     required CommentsApi commentsApi,
     required WatchingsApi watchingsApi,
+    required VotesApi votesApi,
   }) : _entryId = entryId,
        _entriesApi = entriesApi,
        _commentsApi = commentsApi,
        _watchingsApi = watchingsApi,
+       _votesApi = votesApi,
        super(const EntryDetailState.initial()) {
     _initialize();
   }
@@ -934,15 +939,142 @@ class EntryDetailNotifier extends StateNotifier<EntryDetailState> {
     if (currentState == null) return;
 
     try {
-      // Make API call to vote on comment
-      // Note: The actual comment voting API endpoint would need to be implemented
-      // For now, we'll just log the action
       _logger.info('Voting ${isUpvote ? 'up' : 'down'} on comment $commentId');
 
-      // Optimistic update - in a real implementation, you'd update the comment's rating
-      // For now, we'll just keep the current comments unchanged
+      // Find the comment to update
+      final commentIndex = currentState.comments.indexWhere(
+        (comment) => comment.id == commentId,
+      );
+
+      if (commentIndex == -1) {
+        _logger.warning('Comment $commentId not found in current state');
+        return;
+      }
+
+      final comment = currentState.comments[commentIndex];
+      final currentRating = comment.rating;
+
+      // Optimistic update - update the comment's rating
+      MwComment updatedComment;
+      if (currentRating != null) {
+        final currentVote = currentRating.vote ?? 0;
+        final newVote = (currentVote == (isUpvote ? 1 : -1))
+            ? 0
+            : (isUpvote ? 1 : -1);
+
+        // Calculate new vote counts
+        final currentUpCount = currentRating.upCount ?? 0;
+        final currentDownCount = currentRating.downCount ?? 0;
+
+        int newUpCount = currentUpCount;
+        int newDownCount = currentDownCount;
+
+        // Adjust counts based on vote change
+        if (currentVote == 1 && newVote == 0) {
+          // Removing upvote
+          newUpCount = (currentUpCount - 1).clamp(0, double.infinity).toInt();
+        } else if (currentVote == -1 && newVote == 0) {
+          // Removing downvote
+          newDownCount = (currentDownCount - 1)
+              .clamp(0, double.infinity)
+              .toInt();
+        } else if (currentVote == 0 && newVote == 1) {
+          // Adding upvote
+          newUpCount = currentUpCount + 1;
+        } else if (currentVote == 0 && newVote == -1) {
+          // Adding downvote
+          newDownCount = currentDownCount + 1;
+        } else if (currentVote == 1 && newVote == -1) {
+          // Changing from upvote to downvote
+          newUpCount = (currentUpCount - 1).clamp(0, double.infinity).toInt();
+          newDownCount = currentDownCount + 1;
+        } else if (currentVote == -1 && newVote == 1) {
+          // Changing from downvote to upvote
+          newUpCount = currentUpCount + 1;
+          newDownCount = (currentDownCount - 1)
+              .clamp(0, double.infinity)
+              .toInt();
+        }
+
+        final updatedRating = currentRating.rebuild(
+          (b) => b
+            ..vote = newVote
+            ..upCount = newUpCount
+            ..downCount = newDownCount,
+        );
+
+        updatedComment = comment.rebuild(
+          (b) => b..rating = updatedRating.toBuilder(),
+        );
+      } else {
+        // No existing rating, create a new one
+        final newRating = MwRating(
+          (b) => b
+            ..vote = isUpvote ? 1 : -1
+            ..upCount = isUpvote ? 1 : 0
+            ..downCount = isUpvote ? 0 : 1,
+        );
+
+        updatedComment = comment.rebuild(
+          (b) => b..rating = newRating.toBuilder(),
+        );
+      }
+
+      // Update the comments list
+      final updatedComments = List<MwComment>.from(currentState.comments);
+      updatedComments[commentIndex] = updatedComment;
+
+      // Update state with optimistic update
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: updatedComments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
+        availableCommentsCount: currentState.availableCommentsCount,
+      );
+
+      // Make API call
+      final response = await _votesApi.commentsIdVotePut(
+        id: commentId,
+        positive: isUpvote,
+      );
+
+      final apiRating = response.data;
+      if (apiRating != null) {
+        // Update with actual API response
+        final finalUpdatedComment = updatedComment.rebuild(
+          (b) => b..rating = apiRating.toBuilder(),
+        );
+
+        final finalUpdatedComments = List<MwComment>.from(
+          currentState.comments,
+        );
+        finalUpdatedComments[commentIndex] = finalUpdatedComment;
+
+        state = EntryDetailState.loaded(
+          entry: currentState.entry,
+          comments: finalUpdatedComments,
+          hasMoreComments: currentState.hasMoreComments,
+          isLoadingComments: false,
+          adjacentEntries: currentState.adjacentEntries,
+          availableCommentsCount: currentState.availableCommentsCount,
+        );
+
+        _logger.info('Successfully voted on comment $commentId');
+      }
     } catch (e, stackTrace) {
       _logger.severe('Failed to vote on comment $commentId', e, stackTrace);
+
+      // Revert optimistic update on error
+      state = EntryDetailState.loaded(
+        entry: currentState.entry,
+        comments: currentState.comments,
+        hasMoreComments: currentState.hasMoreComments,
+        isLoadingComments: false,
+        adjacentEntries: currentState.adjacentEntries,
+        availableCommentsCount: currentState.availableCommentsCount,
+      );
     }
   }
 
