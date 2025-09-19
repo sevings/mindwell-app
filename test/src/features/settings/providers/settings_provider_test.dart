@@ -131,7 +131,8 @@ void main() {
         state.when(
           initial: () => fail('Expected error state, got initial'),
           loading: () => fail('Expected error state, got loading'),
-          loaded: (_, __, ___) => fail('Expected error state, got loaded'),
+          loaded: (emailSettings, telegramSettings, onsiteSettings) =>
+              fail('Expected error state, got loaded'),
           error: (message) => expect(message, contains('Ошибка сервера')),
         );
       });
@@ -179,7 +180,8 @@ void main() {
         state.when(
           initial: () => fail('Expected error state, got initial'),
           loading: () => fail('Expected error state, got loading'),
-          loaded: (_, __, ___) => fail('Expected error state, got loaded'),
+          loaded: (emailSettings, telegramSettings, onsiteSettings) =>
+              fail('Expected error state, got loaded'),
           error: (message) =>
               expect(message, contains('Failed to fetch settings data')),
         );
@@ -314,7 +316,8 @@ void main() {
         state.when(
           initial: () => fail('Expected error state, got initial'),
           loading: () => fail('Expected error state, got loading'),
-          loaded: (_, __, ___) => fail('Expected error state, got loaded'),
+          loaded: (emailSettings, telegramSettings, onsiteSettings) =>
+              fail('Expected error state, got loaded'),
           error: (message) =>
               expect(message, contains('Неверные данные настроек')),
         );

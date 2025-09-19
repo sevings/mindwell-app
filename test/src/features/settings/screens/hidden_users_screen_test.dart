@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 
-import '../../../../../lib/src/features/settings/screens/hidden_users_screen.dart';
-import '../../../../../lib/src/features/settings/providers/hidden_users_provider.dart';
-import '../../../../../lib/src/features/settings/models/hidden_users_state.dart';
-import '../../../../../lib/l10n/app_localizations.dart';
-import '../../../../../lib/src/core/widgets/loaders/skeleton_loader.dart';
+import 'package:mindwell/src/features/settings/screens/hidden_users_screen.dart';
+import 'package:mindwell/src/features/settings/providers/hidden_users_provider.dart';
+import 'package:mindwell/src/features/settings/models/hidden_users_state.dart';
+import 'package:mindwell/l10n/app_localizations.dart';
+import 'package:mindwell/src/core/widgets/loaders/skeleton_loader.dart';
 
 /// Mock classes for testing
 class MockMeApi extends Mock implements MeApi {}

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -155,7 +154,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
           padding: const EdgeInsets.all(16.0),
           color: Theme.of(
             context,
-          ).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           child: Text(
             l10n?.blockedProfilesExplanation ??
                 'The user profile is closed for blocked users. They can\'t see your entries and comments, and you don\'t see theirs unless you visit their profile directly.',
@@ -214,7 +213,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
               // User avatar
               CircleAvatar(
                 radius: 24,
-                backgroundColor: colorScheme.surfaceVariant,
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 backgroundImage: user.avatar?.x92 != null
                     ? CachedNetworkImageProvider(user.avatar!.x92!)
                     : null,
@@ -492,17 +491,10 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
       builder: (context) => AlertDialog(
         title: Text(l10n?.unblockUser ?? 'Unblock User'),
         content: Text(
-          (l10n?.unblockUserConfirmation.toString() ?? '')
-                  .replaceAll(
-                    '{username}',
-                    user.showName ?? user.name ?? 'Unknown User',
-                  )
-                  .isNotEmpty
-              ? (l10n?.unblockUserConfirmation.toString() ?? '').replaceAll(
-                  '{username}',
-                  user.showName ?? user.name ?? 'Unknown User',
-                )
-              : 'Are you sure you want to unblock ${user.showName ?? user.name ?? 'this user'}?',
+          l10n?.unblockUserConfirmation(
+                user.showName ?? user.name ?? 'Unknown User',
+              ) ??
+              'Are you sure you want to unblock ${user.showName ?? user.name ?? 'this user'}?',
         ),
         actions: [
           TextButton(
