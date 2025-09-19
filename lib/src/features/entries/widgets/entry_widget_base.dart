@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../../core/widgets/images/cached_image.dart';
 import '../../../core/widgets/html_content.dart';
 import '../../../core/theme/spacing.dart';
+import '../providers/entry_interactions_provider.dart';
 
 /// Base widget for displaying entries with configurable display options.
 ///
 /// This widget provides a common foundation for all entry display formats
 /// while allowing customization through the EntryDisplayConfig.
-class EntryWidgetBase extends StatelessWidget {
+class EntryWidgetBase extends ConsumerStatefulWidget {
   /// The entry to display
   final MwEntry entry;
 
@@ -32,32 +34,53 @@ class EntryWidgetBase extends StatelessWidget {
   });
 
   @override
+  ConsumerState<EntryWidgetBase> createState() => _EntryWidgetBaseState();
+}
+
+class _EntryWidgetBaseState extends ConsumerState<EntryWidgetBase> {
+  late MwEntry _currentEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentEntry = widget.entry;
+  }
+
+  @override
+  void didUpdateWidget(EntryWidgetBase oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.entry != widget.entry) {
+      _currentEntry = widget.entry;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
-      margin: config.cardMargin,
+      margin: widget.config.cardMargin,
       child: InkWell(
-        onTap: onTap ?? () => _navigateToEntryDetail(context),
+        onTap: widget.onTap ?? () => _navigateToEntryDetail(context),
         borderRadius: BorderRadius.circular(12.0),
         child: Padding(
-          padding: config.contentPadding,
+          padding: widget.config.contentPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(context, theme),
-              SizedBox(height: config.headerSpacing),
+              SizedBox(height: widget.config.headerSpacing),
               _buildContent(context, theme),
-              if (config.showImages && _hasImages()) ...[
-                SizedBox(height: config.contentSpacing),
+              if (widget.config.showImages && _hasImages()) ...[
+                SizedBox(height: widget.config.contentSpacing),
                 _buildImages(context),
               ],
-              if (config.showTags && _hasTags()) ...[
-                SizedBox(height: config.contentSpacing),
+              if (widget.config.showTags && _hasTags()) ...[
+                SizedBox(height: widget.config.contentSpacing),
                 _buildTags(context, theme),
               ],
-              SizedBox(height: config.footerSpacing),
-              _buildFooter(context, theme),
+              SizedBox(height: widget.config.footerSpacing),
+              _buildFooter(context, theme, ref),
             ],
           ),
         ),
@@ -67,9 +90,9 @@ class EntryWidgetBase extends StatelessWidget {
 
   /// Builds the header with author info and timestamp
   Widget _buildHeader(BuildContext context, ThemeData theme) {
-    final author = entry.author;
+    final author = _currentEntry.author;
     final authorName = author?.showName ?? author?.name ?? 'Anonymous';
-    final timestamp = _formatTimestamp(entry.createdAt);
+    final timestamp = _formatTimestamp(_currentEntry.createdAt);
 
     return Row(
       children: [
@@ -77,11 +100,11 @@ class EntryWidgetBase extends StatelessWidget {
           onTap: () => _navigateToAuthorProfile(context, author),
           child: CachedAvatar(
             imageUrl: author?.avatar?.x42,
-            size: config.avatarSize,
+            size: widget.config.avatarSize,
             fallbackText: _getInitials(authorName),
           ),
         ),
-        SizedBox(width: config.avatarSpacing),
+        SizedBox(width: widget.config.avatarSpacing),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +114,7 @@ class EntryWidgetBase extends StatelessWidget {
                 child: Text(
                   authorName,
                   style:
-                      config.authorTextStyle?.copyWith(
+                      widget.config.authorTextStyle?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: theme.colorScheme.primary,
                       ) ??
@@ -106,7 +129,7 @@ class EntryWidgetBase extends StatelessWidget {
               Text(
                 timestamp,
                 style:
-                    config.timestampTextStyle?.copyWith(
+                    widget.config.timestampTextStyle?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ) ??
                     theme.textTheme.bodySmall?.copyWith(
@@ -116,14 +139,15 @@ class EntryWidgetBase extends StatelessWidget {
             ],
           ),
         ),
-        if (entry.isPinned == true) _buildPinnedIndicator(context, theme),
+        if (_currentEntry.isPinned == true)
+          _buildPinnedIndicator(context, theme),
       ],
     );
   }
 
   /// Builds the pinned indicator
   Widget _buildPinnedIndicator(BuildContext context, ThemeData theme) {
-    if (config.pinnedStyle == PinnedStyle.simple) {
+    if (widget.config.pinnedStyle == PinnedStyle.simple) {
       return Icon(Icons.push_pin, size: 16.0, color: theme.colorScheme.primary);
     } else {
       return Container(
@@ -155,12 +179,12 @@ class EntryWidgetBase extends StatelessWidget {
 
   /// Builds the content section with title and content
   Widget _buildContent(BuildContext context, ThemeData theme) {
-    final title = config.useCutContent
-        ? (entry.cutTitle ?? entry.title ?? '')
-        : (entry.title ?? entry.cutTitle ?? '');
-    final content = config.useCutContent
-        ? (entry.cutContent ?? entry.content ?? '')
-        : (entry.content ?? entry.cutContent ?? '');
+    final title = widget.config.useCutContent
+        ? (_currentEntry.cutTitle ?? _currentEntry.title ?? '')
+        : (_currentEntry.title ?? _currentEntry.cutTitle ?? '');
+    final content = widget.config.useCutContent
+        ? (_currentEntry.cutContent ?? _currentEntry.content ?? '')
+        : (_currentEntry.content ?? _currentEntry.cutContent ?? '');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,17 +193,19 @@ class EntryWidgetBase extends StatelessWidget {
           Text(
             _decodeHtmlEntities(title),
             style:
-                config.titleTextStyle?.copyWith(fontWeight: FontWeight.w600) ??
+                widget.config.titleTextStyle?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ) ??
                 theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
-            maxLines: config.titleMaxLines,
+            maxLines: widget.config.titleMaxLines,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: config.titleSpacing),
+          SizedBox(height: widget.config.titleSpacing),
         ],
         if (content.isNotEmpty) ...[
-          HtmlContent(html: content, textStyle: config.contentTextStyle),
+          HtmlContent(html: content, textStyle: widget.config.contentTextStyle),
         ],
       ],
     );
@@ -187,12 +213,12 @@ class EntryWidgetBase extends StatelessWidget {
 
   /// Builds the entry images if available
   Widget _buildImages(BuildContext context) {
-    final images = entry.images ?? entry.insertedImages;
+    final images = _currentEntry.images ?? _currentEntry.insertedImages;
     if (images == null || images.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    if (config.imageDisplayStyle == ImageDisplayStyle.single) {
+    if (widget.config.imageDisplayStyle == ImageDisplayStyle.single) {
       // Show only the first image
       final firstImage = images.first;
       final imageUrl =
@@ -217,7 +243,7 @@ class EntryWidgetBase extends StatelessWidget {
       );
     } else {
       // Show multiple images
-      final displayImages = images.take(config.maxImages).toList();
+      final displayImages = images.take(widget.config.maxImages).toList();
 
       if (displayImages.length == 1) {
         final firstImage = displayImages.first;
@@ -277,12 +303,12 @@ class EntryWidgetBase extends StatelessWidget {
 
   /// Builds the tags display
   Widget _buildTags(BuildContext context, ThemeData theme) {
-    final tags = entry.tags;
+    final tags = _currentEntry.tags;
     if (tags == null || tags.isEmpty) return const SizedBox.shrink();
 
-    final displayTags = tags.take(config.maxTags).toList();
+    final displayTags = tags.take(widget.config.maxTags).toList();
 
-    if (config.tagDisplayStyle == TagDisplayStyle.wrap) {
+    if (widget.config.tagDisplayStyle == TagDisplayStyle.wrap) {
       return Wrap(
         spacing: 8.0,
         runSpacing: 4.0,
@@ -319,24 +345,23 @@ class EntryWidgetBase extends StatelessWidget {
   }
 
   /// Builds the footer with stats and actions
-  Widget _buildFooter(BuildContext context, ThemeData theme) {
+  Widget _buildFooter(BuildContext context, ThemeData theme, WidgetRef ref) {
     return Row(
       children: [
-        if (config.showCommentButton) ...[
+        // Vote button (if rating exists)
+        if (_currentEntry.rating != null) ...[
+          _buildVoteButton(context, theme, ref),
+          SizedBox(width: MindwellSpacing.sm),
+        ],
+        // Favorite button (always show)
+        _buildFavoriteButton(context, theme, ref),
+        const Spacer(),
+        // Comment button (only for entry card widgets, on the right side)
+        if (widget.config.showCommentButton) ...[
           _buildCommentButton(context, theme),
           SizedBox(width: MindwellSpacing.sm),
         ],
-        _buildStat(
-          context,
-          theme,
-          Icons.favorite_outline,
-          entry.favoriteCount ?? 0,
-          isActive: entry.isFavorited == true,
-        ),
-        SizedBox(width: MindwellSpacing.sm),
-        if (entry.rating != null) _buildRating(context, theme),
-        const Spacer(),
-        if (config.showShareButton)
+        if (widget.config.showShareButton)
           _buildActionButton(
             context,
             theme,
@@ -347,10 +372,131 @@ class EntryWidgetBase extends StatelessWidget {
     );
   }
 
+  /// Builds the vote button with fire icon
+  Widget _buildVoteButton(
+    BuildContext context,
+    ThemeData theme,
+    WidgetRef ref,
+  ) {
+    final rating = _currentEntry.rating;
+    if (rating == null) return const SizedBox.shrink();
+
+    final upVotes = rating.upCount ?? 0;
+    final downVotes = rating.downCount ?? 0;
+    final netVotes = upVotes - downVotes;
+    final userVote = rating.vote;
+    final hasVoted = userVote != null && userVote != 0;
+    final isUpvoted = userVote == 1;
+    final isDownvoted = userVote == -1;
+    final canVote = _currentEntry.rights?.vote == true;
+
+    // Determine button color based on vote status and voting rights
+    Color buttonColor;
+    Color iconColor;
+    if (!canVote) {
+      // User doesn't have right to vote - disabled state
+      buttonColor = theme.colorScheme.surfaceContainerHighest;
+      iconColor = theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
+    } else if (hasVoted) {
+      if (isUpvoted) {
+        buttonColor = const Color(0xFFFF6B35); // Mindwell orange
+        iconColor = Colors.white;
+      } else if (isDownvoted) {
+        buttonColor = Colors.grey;
+        iconColor = Colors.white;
+      } else {
+        buttonColor = theme.colorScheme.surfaceContainerHighest;
+        iconColor = theme.colorScheme.onSurfaceVariant;
+      }
+    } else {
+      buttonColor = theme.colorScheme.surfaceContainerHighest;
+      iconColor = theme.colorScheme.onSurfaceVariant;
+    }
+
+    return AbsorbPointer(
+      absorbing: !canVote,
+      child: GestureDetector(
+        onTap: canVote ? () => _handleVote(context, ref, isUpvoted) : null,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            color: buttonColor,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.local_fire_department, size: 18.0, color: iconColor),
+              const SizedBox(width: 4.0),
+              Text(
+                netVotes > 0 ? '+$netVotes' : netVotes.toString(),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: iconColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the favorite button
+  Widget _buildFavoriteButton(
+    BuildContext context,
+    ThemeData theme,
+    WidgetRef ref,
+  ) {
+    final favoriteCount = _currentEntry.favoriteCount ?? 0;
+    final isFavorited = _currentEntry.isFavorited == true;
+
+    // Determine button color based on favorite status
+    final buttonColor = isFavorited
+        ? const Color(0xFFFF6B35) // Mindwell orange
+        : theme.colorScheme.surfaceContainerHighest;
+    final iconColor = isFavorited
+        ? Colors.white
+        : theme.colorScheme.onSurfaceVariant;
+
+    return GestureDetector(
+      onTap: () => _handleFavorite(context, ref),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: buttonColor,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isFavorited ? Icons.bookmark : Icons.bookmark_outline,
+              size: 18.0,
+              color: iconColor,
+            ),
+            if (favoriteCount > 0) ...[
+              const SizedBox(width: 4.0),
+              Text(
+                _formatCount(favoriteCount),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: iconColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Builds the comment button
   Widget _buildCommentButton(BuildContext context, ThemeData theme) {
     return GestureDetector(
-      onTap: onCommentTap ?? () => _navigateToEntryDetail(context),
+      onTap:
+          widget.onCommentTap ??
+          () => _navigateToEntryDetailWithComments(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         decoration: BoxDecoration(
@@ -367,7 +513,7 @@ class EntryWidgetBase extends StatelessWidget {
             ),
             const SizedBox(width: 4.0),
             Text(
-              _formatCount(entry.commentCount ?? 0),
+              _formatCount(_currentEntry.commentCount ?? 0),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
@@ -375,87 +521,6 @@ class EntryWidgetBase extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  /// Builds a stat item (favorites, etc.)
-  Widget _buildStat(
-    BuildContext context,
-    ThemeData theme,
-    IconData icon,
-    int count, {
-    bool isActive = false,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // Handle stat interaction (e.g., toggle favorite)
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isActive
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 18.0,
-              color: isActive
-                  ? theme.colorScheme.onPrimaryContainer
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4.0),
-            Text(
-              _formatCount(count),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isActive
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Builds the rating display
-  Widget _buildRating(BuildContext context, ThemeData theme) {
-    final rating = entry.rating;
-    if (rating == null) return const SizedBox.shrink();
-
-    final score = rating.rating?.round() ?? 0;
-    final color = score > 0
-        ? Colors.green
-        : score < 0
-        ? Colors.red
-        : theme.colorScheme.onSurfaceVariant;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.trending_up, size: 18.0, color: color),
-          const SizedBox(width: 4.0),
-          Text(
-            score > 0 ? '+$score' : score.toString(),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -486,16 +551,131 @@ class EntryWidgetBase extends StatelessWidget {
     );
   }
 
+  /// Handles voting on the entry
+  Future<void> _handleVote(
+    BuildContext context,
+    WidgetRef ref,
+    bool isCurrentlyUpvoted,
+  ) async {
+    if (_currentEntry.id == null) return;
+
+    // Check if user has permission to vote
+    final canVote = _currentEntry.rights?.vote == true;
+
+    if (!canVote) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('У вас нет права голосовать за эту запись'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    final interactionsNotifier = ref.read(entryInteractionsProvider);
+
+    try {
+      MwRating? updatedRating;
+      if (isCurrentlyUpvoted) {
+        // Remove vote
+        updatedRating = await interactionsNotifier.removeVote(
+          _currentEntry.id!,
+        );
+      } else {
+        // Add upvote
+        updatedRating = await interactionsNotifier.voteEntry(
+          _currentEntry.id!,
+          true,
+        );
+      }
+
+      // Update the entry with the new rating
+      if (updatedRating != null && mounted) {
+        setState(() {
+          _currentEntry = _currentEntry.rebuild(
+            (b) => b.rating = updatedRating!.toBuilder(),
+          );
+        });
+      }
+    } catch (e) {
+      // Show error message to user
+      if (context.mounted) {
+        String errorMessage = 'Ошибка при голосовании';
+
+        // Provide more specific error messages based on the error type
+        if (e.toString().contains('403')) {
+          errorMessage = 'У вас нет права голосовать за эту запись';
+        } else if (e.toString().contains('401')) {
+          errorMessage = 'Необходимо войти в систему для голосования';
+        } else if (e.toString().contains('429')) {
+          errorMessage = 'Слишком много попыток. Попробуйте позже';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Handles favoriting the entry
+  Future<void> _handleFavorite(BuildContext context, WidgetRef ref) async {
+    if (_currentEntry.id == null) return;
+
+    final interactionsNotifier = ref.read(entryInteractionsProvider);
+    final isCurrentlyFavorited = _currentEntry.isFavorited == true;
+
+    try {
+      final updatedFavoriteStatus = await interactionsNotifier.toggleFavorite(
+        _currentEntry.id!,
+        isCurrentlyFavorited,
+      );
+
+      // Update the entry with the new favorite status
+      if (updatedFavoriteStatus != null && mounted) {
+        setState(() {
+          _currentEntry = _currentEntry.rebuild(
+            (b) => b
+              ..isFavorited = updatedFavoriteStatus.isFavorited
+              ..favoriteCount = updatedFavoriteStatus.count,
+          );
+        });
+      }
+    } catch (e) {
+      // Show error message to user
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка при добавлении в избранное: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   /// Navigates to the entry detail screen
   void _navigateToEntryDetail(BuildContext context) {
-    if (entry.id != null) {
-      context.push('/entries/${entry.id}');
+    if (_currentEntry.id != null) {
+      context.push('/entries/${_currentEntry.id}');
+    }
+  }
+
+  /// Navigates to the entry detail screen and scrolls to comments
+  void _navigateToEntryDetailWithComments(BuildContext context) {
+    if (_currentEntry.id != null) {
+      context.push('/entries/${_currentEntry.id}?scrollToComments=true');
     }
   }
 
   /// Checks if the entry has any images
   bool _hasImages() {
-    final images = entry.images ?? entry.insertedImages;
+    final images = _currentEntry.images ?? _currentEntry.insertedImages;
     return images != null &&
         images.isNotEmpty &&
         images.any(
@@ -508,7 +688,7 @@ class EntryWidgetBase extends StatelessWidget {
 
   /// Checks if the entry has any tags
   bool _hasTags() {
-    final tags = entry.tags;
+    final tags = _currentEntry.tags;
     return tags != null && tags.isNotEmpty;
   }
 

@@ -39,7 +39,12 @@ void main() {
           ..commentCount = 5
           ..favoriteCount = 10
           ..isFavorited = false
-          ..rating = MwRating((b) => b..rating = 15.0).toBuilder()
+          ..rating = MwRating(
+            (b) => b
+              ..rating = 15.0
+              ..upCount = 15
+              ..downCount = 0,
+          ).toBuilder()
           ..tags = ListBuilder(['flutter', 'dart', 'testing'])
           ..isPinned = false,
       );
@@ -125,7 +130,7 @@ void main() {
       await tester.pumpWidget(createTestWidget(entry: favoritedEntry));
 
       // The favorite icon should be present and styled differently
-      expect(find.byIcon(Icons.favorite_outline), findsOneWidget);
+      expect(find.byIcon(Icons.bookmark), findsOneWidget);
     });
 
     testWidgets('handles entry without title', (WidgetTester tester) async {
@@ -172,7 +177,7 @@ void main() {
 
       // Should still show the stat icons but with 0 values
       expect(find.byIcon(Icons.chat_bubble_outline), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_outline), findsOneWidget);
+      expect(find.byIcon(Icons.bookmark_outline), findsOneWidget);
     });
 
     testWidgets('handles entry without tags', (WidgetTester tester) async {
@@ -284,7 +289,13 @@ void main() {
 
     testWidgets('handles negative rating', (WidgetTester tester) async {
       final entryWithNegativeRating = mockEntry.rebuild(
-        (b) => b..rating = MwRating((b) => b..rating = -5.0).toBuilder(),
+        (b) => b
+          ..rating = MwRating(
+            (b) => b
+              ..rating = -5.0
+              ..upCount = 0
+              ..downCount = 5,
+          ).toBuilder(),
       );
 
       await tester.pumpWidget(createTestWidget(entry: entryWithNegativeRating));

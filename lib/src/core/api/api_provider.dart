@@ -108,6 +108,18 @@ final relationsApiProvider = Provider<RelationsApi>((ref) {
   return api.getRelationsApi();
 });
 
+/// Provider for the VotesApi instance.
+final votesApiProvider = Provider<VotesApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getVotesApi();
+});
+
+/// Provider for the FavoritesApi instance.
+final favoritesApiProvider = Provider<FavoritesApi>((ref) {
+  final api = ref.read(mindwellApiProvider);
+  return api.getFavoritesApi();
+});
+
 /// Authentication interceptor for Dio that handles token injection and refresh.
 ///
 /// This interceptor:

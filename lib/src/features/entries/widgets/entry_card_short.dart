@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import '../../../core/theme/spacing.dart';
 import 'entry_widget_base.dart';
@@ -39,6 +40,7 @@ class EntryCardShort extends StatelessWidget {
     return EntryWidgetBase(
       entry: entry,
       onTap: onTap,
+      onCommentTap: () => _navigateToEntryDetail(context),
       config: EntryDisplayConfig(
         cardMargin: EdgeInsets.symmetric(
           horizontal: MindwellSpacing.sm,
@@ -52,7 +54,7 @@ class EntryCardShort extends StatelessWidget {
         avatarSpacing: MindwellSpacing.sm,
         showImages: showImage,
         showTags: false, // Hide tags in short format
-        showCommentButton: false,
+        showCommentButton: true,
         showShareButton: false,
         useCutContent: true, // Use cutContent/cutTitle when available
         titleMaxLines: 1000, // No limit since content is truncated server-side
@@ -66,5 +68,12 @@ class EntryCardShort extends StatelessWidget {
         tagDisplayStyle: TagDisplayStyle.row,
       ),
     );
+  }
+
+  /// Navigates to the entry detail screen
+  void _navigateToEntryDetail(BuildContext context) {
+    if (entry.id != null) {
+      context.push('/entries/${entry.id}');
+    }
   }
 }
