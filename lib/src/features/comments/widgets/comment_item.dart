@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import '../../../core/widgets/html_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mindwell_api/mindwell_api.dart';
@@ -217,35 +217,11 @@ class CommentItem extends StatelessWidget {
       );
     }
 
-    return Html(
-      data: content,
-      style: {
-        "body": Style(
-          margin: Margins.zero,
-          padding: HtmlPaddings.zero,
-          fontSize: FontSize(14),
-          lineHeight: const LineHeight(1.4),
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        "p": Style(margin: Margins.only(bottom: 8)),
-        "a": Style(
-          color: Theme.of(context).colorScheme.primary,
-          textDecoration: TextDecoration.underline,
-        ),
-        "strong": Style(fontWeight: FontWeight.bold),
-        "em": Style(fontStyle: FontStyle.italic),
-        "code": Style(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          padding: HtmlPaddings.symmetric(horizontal: 4, vertical: 2),
-          fontFamily: 'monospace',
-        ),
-        "pre": Style(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          padding: HtmlPaddings.all(8),
-          fontFamily: 'monospace',
-          whiteSpace: WhiteSpace.pre,
-        ),
-      },
+    return HtmlContent(
+      html: content,
+      textStyle: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(fontSize: 14, height: 1.4),
     );
   }
 

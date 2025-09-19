@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../../core/widgets/images/cached_image.dart';
+import '../../../core/widgets/html_content.dart';
 import '../../../core/theme/spacing.dart';
 
 /// Base widget for displaying entries with configurable display options.
@@ -178,10 +179,7 @@ class EntryWidgetBase extends StatelessWidget {
           SizedBox(height: config.titleSpacing),
         ],
         if (content.isNotEmpty) ...[
-          Html(
-            data: content,
-            style: config.htmlStyle ?? _getDefaultHtmlStyle(),
-          ),
+          HtmlContent(html: content, textStyle: config.contentTextStyle),
         ],
       ],
     );
@@ -584,24 +582,6 @@ class EntryWidgetBase extends StatelessWidget {
     if (author?.name != null && author!.name!.isNotEmpty) {
       context.go('/users/${Uri.encodeComponent(author.name!)}');
     }
-  }
-
-  /// Gets default HTML style for content rendering
-  Map<String, Style> _getDefaultHtmlStyle() {
-    return {
-      "body": Style(
-        margin: Margins.zero,
-        padding: HtmlPaddings.zero,
-        fontSize: FontSize(16),
-        lineHeight: const LineHeight(1.5),
-      ),
-      "p": Style(margin: Margins.only(bottom: 12)),
-      "h1, h2, h3, h4, h5, h6": Style(
-        margin: Margins.only(top: 16, bottom: 8),
-        fontWeight: FontWeight.bold,
-      ),
-      "img": Style(width: Width(100, Unit.percent), height: Height.auto()),
-    };
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:mindwell_api/mindwell_api.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import 'package:mindwell/src/features/entries/widgets/entry_card_full.dart';
 import 'package:mindwell/src/core/widgets/images/cached_image.dart';
@@ -291,7 +292,7 @@ void main() {
       expect(find.text('-5'), findsOneWidget);
     });
 
-    testWidgets('strips HTML tags from content', (WidgetTester tester) async {
+    testWidgets('renders HTML content properly', (WidgetTester tester) async {
       final entryWithHtml = mockEntry.rebuild(
         (b) => b
           ..content =
@@ -300,10 +301,27 @@ void main() {
 
       await tester.pumpWidget(createTestWidget(entry: entryWithHtml));
 
-      expect(
-        find.text('This has bold and italic text with links.'),
-        findsOneWidget,
+      // Check that the HTML widget is present (indicating HTML is being rendered, not stripped)
+      expect(find.byType(Html), findsOneWidget);
+
+      // The text content should still be findable, but now it's rendered as HTML
+      expect(find.textContaining('This has'), findsOneWidget);
+    });
+
+    testWidgets('renders HTML with images', (WidgetTester tester) async {
+      final entryWithImages = mockEntry.rebuild(
+        (b) => b
+          ..content =
+              '<p>Content with image: <img src="https://example.com/image.jpg" alt="Test image" /></p>',
       );
+
+      await tester.pumpWidget(createTestWidget(entry: entryWithImages));
+
+      // Check that the HTML widget is present
+      expect(find.byType(Html), findsOneWidget);
+
+      // Check that content is rendered
+      expect(find.textContaining('Content with image:'), findsOneWidget);
     });
 
     testWidgets('generates correct initials for author', (
