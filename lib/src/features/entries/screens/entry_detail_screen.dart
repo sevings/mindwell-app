@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:intl/intl.dart';
 import 'package:mindwell_api/mindwell_api.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../core/widgets/images/cached_image.dart';
 import '../../../core/widgets/loaders/skeleton_loader.dart';
 import '../../../core/widgets/platform_app_bar.dart';
 import '../../comments/widgets/comment_list.dart';
@@ -15,7 +12,7 @@ import '../../comments/widgets/add_comment_form.dart';
 import '../providers/entry_detail_provider.dart';
 import '../widgets/entry_context_menu.dart';
 import '../widgets/adjacent_entry_navigation.dart';
-import 'image_gallery_screen.dart';
+import '../widgets/entry_widget_base.dart';
 
 /// Screen that displays a single entry in detail with comments and interaction options.
 ///
@@ -301,302 +298,63 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Content
+            // Entry content using base widget
+            EntryWidgetBase(
+              entry: entry,
+              config: EntryDisplayConfig(
+                cardMargin: EdgeInsets.zero,
+                contentPadding: const EdgeInsets.all(16.0),
+                headerSpacing: 16.0,
+                contentSpacing: 16.0,
+                footerSpacing: 16.0,
+                avatarSize: 42.0,
+                avatarSpacing: 12.0,
+                showImages: true,
+                showTags: true,
+                showCommentButton: false, // No comment button in detail view
+                showShareButton: false, // No share button in detail view
+                useCutContent: false, // Always show full content in detail
+                titleMaxLines:
+                    1000, // No limit since content is truncated server-side
+                contentMaxLines:
+                    1000, // No limit since content is truncated server-side
+                maxImages: 100, // Show all images
+                maxTags: 100, // Show all tags
+                titleSpacing: 16.0,
+                pinnedStyle: PinnedStyle.badge,
+                imageDisplayStyle: ImageDisplayStyle.multiple,
+                tagDisplayStyle: TagDisplayStyle.wrap,
+                titleTextStyle: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold, height: 1.2),
+              ),
+            ),
+            // Adjacent entries navigation
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAuthorInfo(entry),
-                  const SizedBox(height: 16),
-                  _buildEntryTitle(entry),
-                  const SizedBox(height: 16),
-                  _buildEntryContent(entry),
-                  const SizedBox(height: 16),
-                  _buildActionButtons(entry),
-                  const SizedBox(height: 16),
-                  AdjacentEntryNavigation(
-                    adjacentEntries: adjacentEntries,
-                    onPreviousTap: () =>
-                        _onAdjacentEntryTap(adjacentEntries?.older),
-                    onNextTap: () =>
-                        _onAdjacentEntryTap(adjacentEntries?.newer),
-                  ),
-                  const SizedBox(height: 24),
-                  widget.isPreview
-                      ? _buildPreviewCommentsSection()
-                      : _buildCommentsSection(
-                          l10n,
-                          comments,
-                          hasMoreComments,
-                          isLoadingComments,
-                          availableCommentsCount,
-                        ),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: AdjacentEntryNavigation(
+                adjacentEntries: adjacentEntries,
+                onPreviousTap: () =>
+                    _onAdjacentEntryTap(adjacentEntries?.older),
+                onNextTap: () => _onAdjacentEntryTap(adjacentEntries?.newer),
               ),
+            ),
+            const SizedBox(height: 24),
+            // Comments section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: widget.isPreview
+                  ? _buildPreviewCommentsSection()
+                  : _buildCommentsSection(
+                      l10n,
+                      comments,
+                      hasMoreComments,
+                      isLoadingComments,
+                      availableCommentsCount,
+                    ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAuthorInfo(MwEntry entry) {
-    final author = entry.author;
-    if (author == null) return const SizedBox.shrink();
-
-    return Row(
-      children: [
-        CachedAvatar(
-          imageUrl: _getAvatarUrl(author.avatar),
-          size: 40,
-          fallbackText: author.name?.isNotEmpty == true
-              ? author.name!.substring(0, 1).toUpperCase()
-              : '?',
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                author.name ?? 'Unknown',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              if (entry.createdAt != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  _formatTimestamp(entry.createdAt!),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEntryTitle(MwEntry entry) {
-    final title = entry.title;
-    if (title == null || title.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.bold,
-        height: 1.2,
-      ),
-    );
-  }
-
-  Widget _buildEntryContent(MwEntry entry) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Entry content with HTML rendering
-        if (entry.content != null && entry.content!.isNotEmpty) ...[
-          Html(
-            data: entry.content!,
-            style: {
-              "body": Style(
-                margin: Margins.zero,
-                padding: HtmlPaddings.zero,
-                fontSize: FontSize(16),
-                lineHeight: const LineHeight(1.5),
-              ),
-              "p": Style(margin: Margins.only(bottom: 12)),
-              "h1, h2, h3, h4, h5, h6": Style(
-                margin: Margins.only(top: 16, bottom: 8),
-                fontWeight: FontWeight.bold,
-              ),
-              "img": Style(
-                width: Width(100, Unit.percent),
-                height: Height.auto(),
-              ),
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
-
-        // Images gallery
-        if (entry.images != null && entry.images!.isNotEmpty) ...[
-          _buildImageGallery(entry.images!.toList()),
-          const SizedBox(height: 16),
-        ],
-
-        // Tags
-        if (entry.tags != null && entry.tags!.isNotEmpty) ...[
-          _buildTags(entry.tags!.toList()),
-          const SizedBox(height: 16),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildImageGallery(List<MwImage> images) {
-    if (images.length == 1) {
-      final imageUrl = _getImageUrl(images.first);
-      if (imageUrl != null) {
-        return CachedPostImage(
-          imageUrl: imageUrl,
-          width: double.infinity,
-          aspectRatio: 16 / 9,
-          onTap: () => _openImageGallery(images, 0),
-        );
-      }
-    }
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 1,
-      ),
-      itemCount: images.length,
-      itemBuilder: (context, index) {
-        final imageUrl = _getImageUrl(images[index]);
-        if (imageUrl != null) {
-          return CachedPostImage(
-            imageUrl: imageUrl,
-            borderRadius: 8,
-            onTap: () => _openImageGallery(images, index),
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-
-  String? _getImageUrl(MwImage image) {
-    return image.medium?.url ??
-        image.small?.url ??
-        image.thumbnail?.url ??
-        image.large?.url;
-  }
-
-  String? _getAvatarUrl(MwAvatar? avatar) {
-    if (avatar == null) return null;
-    return avatar.x92 ?? avatar.x124 ?? avatar.x42;
-  }
-
-  Widget _buildTags(List<String> tags) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: tags.map((tag) => _buildTag(tag)).toList(),
-    );
-  }
-
-  Widget _buildTag(String tag) {
-    return GestureDetector(
-      onTap: () => _onTagTapped(tag),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          '#$tag',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(MwEntry entry) {
-    final rating = entry.rating;
-    final upvotes = rating?.upCount ?? 0;
-    final downvotes = rating?.downCount ?? 0;
-    final score = upvotes - downvotes;
-
-    // In preview mode, disable all interactive buttons
-    if (widget.isPreview) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Colors.orange.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.visibility, color: Colors.orange, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              AppLocalizations.of(context)?.previewMode ??
-                  'Preview Mode - Interactions Disabled',
-              style: TextStyle(
-                color: Colors.orange.shade700,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        // Vote buttons
-        Row(
-          children: [
-            IconButton(
-              onPressed: () => _onVote(true),
-              icon: const Icon(Icons.thumb_up_outlined),
-              tooltip: AppLocalizations.of(context)?.upvote ?? 'Upvote',
-            ),
-            Text(
-              score.toString(),
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            IconButton(
-              onPressed: () => _onVote(false),
-              icon: const Icon(Icons.thumb_down_outlined),
-              tooltip: AppLocalizations.of(context)?.downvote ?? 'Downvote',
-            ),
-          ],
-        ),
-        const SizedBox(width: 16),
-        // Favorite button
-        IconButton(
-          onPressed: _onToggleFavorite,
-          icon: const Icon(Icons.favorite_border),
-          tooltip: AppLocalizations.of(context)?.favorite ?? 'Favorite',
-        ),
-        const Spacer(),
-        // Comments count
-        Row(
-          children: [
-            const Icon(Icons.comment_outlined, size: 16),
-            const SizedBox(width: 4),
-            Text(
-              entry.commentCount?.toString() ?? '0',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ],
     );
   }
 
@@ -746,68 +504,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  String _formatTimestamp(double timestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch(
-      (timestamp * 1000).round(),
-    );
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays > 0) {
-      return DateFormat('MMM d, y').format(date);
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
-  }
-
-  void _onVote(bool isUpvote) {
-    if (widget.entryId != null) {
-      ref
-          .read(entryDetailProvider(widget.entryId!).notifier)
-          .voteEntry(isUpvote);
-    }
-  }
-
-  void _onToggleFavorite() {
-    if (widget.entryId != null) {
-      ref.read(entryDetailProvider(widget.entryId!).notifier).toggleFavorite();
-    }
-  }
-
-  void _onTagTapped(String tag) {
-    // Navigate to tag-filtered feed
-    context.push('/tags/${Uri.encodeComponent(tag)}');
-  }
-
-  void _openImageGallery(List<MwImage> images, int initialIndex) {
-    String? title;
-
-    if (widget.entryData != null) {
-      title = widget.entryData!.title;
-    } else if (widget.entryId != null) {
-      final entryState = ref.read(entryDetailProvider(widget.entryId!));
-      title = entryState.maybeWhen(
-        loaded: (entry, _, _, _, _, _) => entry.title,
-        orElse: () => null,
-      );
-    }
-
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ImageGalleryScreen(
-          images: images,
-          initialIndex: initialIndex,
-          title: title,
-        ),
-        fullscreenDialog: true,
       ),
     );
   }
